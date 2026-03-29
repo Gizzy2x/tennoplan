@@ -308,7 +308,10 @@ function getWeekKey() {
 const WEEK_KEY = getWeekKey();
 let state = JSON.parse(localStorage.getItem('wf-tracker-v2') || '{}');
 if (!state[WEEK_KEY]) state[WEEK_KEY] = { tasks:{}, nw:{}, pulses:[false,false,false,false,false], alloc:{eda:0,net:0,tmp:0} };
+if (!state.arb) state.arb = { doneForKey: null };
 const week = state[WEEK_KEY];
+let lastArbitrationPayload = null;
+let wfArbTickOn = false;
 function persist() { localStorage.setItem('wf-tracker-v2', JSON.stringify(state)); }
 
 // ── Fetch with timeout ──
@@ -438,6 +441,107 @@ function arbitrationPayloadOk(arb) {
   return true;
 }
 
+function arbHourSlotKey(ts = Date.now()) {
+  return new Date(ts).toISOString().slice(0, 13);
+}
+function nextUtcHourMs(ts = Date.now()) {
+  const d = new Date(ts);
+  d.setUTCSeconds(0, 0);
+  d.setUTCMinutes(0);
+  const t0 = d.getTime();
+  return t0 <= ts ? t0 + 3600000 : t0;
+}
+function getArbitrationSlotKey(arb, ok) {
+  if (ok && arb && arb.id) return 'id:' + arb.id;
+  if (ok && arb) return 'n:' + String(arb.node) + '|' + String(arb.activation || '');
+  return 'fb:' + arbHourSlotKey();
+}
+function tickArbitrationTimers() {
+  document.querySelectorAll('[data-arb-until]').forEach(el => {
+    const u = el.getAttribute('data-arb-until');
+    if (!u) return;
+    el.textContent = formatDur(new Date(u) - Date.now());
+  });
+}
+
+function applyArbitrationCard(arb) {
+  if (!arb) return;
+  lastArbitrationPayload = arb;
+  const dc = document.getElementById('daily-cards');
+  if (!dc) return;
+  let div = document.getElementById('card-arbitration');
+  if (!div) {
+    div = document.createElement('div');
+    div.id = 'card-arbitration';
+    dc.appendChild(div);
+  }
+  const ok = arbitrationPayloadOk(arb);
+  const slotKey = getArbitrationSlotKey(arb, ok);
+  const done = state.arb.doneForKey === slotKey;
+  const rotIso = ok && arb.expiry ? new Date(arb.expiry).toISOString() : new Date(nextUtcHourMs()).toISOString();
+  const typ = (arb.type && arb.type !== 'Unknown')
+    ? arb.type
+    : (arb.typeKey && arb.typeKey !== 'Unknown' ? String(arb.typeKey).replace(/_/g, ' ') : null);
+  const nodeLabel = ok ? arb.node : null;
+  const enemyLabel = ok && arb.enemy && arb.enemy !== 'Tenno' ? arb.enemy : null;
+  const rotSpan = `<span data-arb-until="${rotIso}">${formatDur(new Date(rotIso) - Date.now())}</span>`;
+  const rotateRow = ok && !done
+    ? `<div class="sortie-stage">Mission rotates in ${rotSpan}</div>`
+    : '';
+
+  const fallbackExtra = !ok && !done
+    ? `<div class="sortie-stage">Next UTC hour (typical rotation window): ${rotSpan}</div>`
+    : '';
+
+  const missionLines = ok
+    ? `<div class="sortie-stage"><strong>${typ || 'Mission'}</strong> — ${nodeLabel}</div>`
+      + (enemyLabel ? `<div class="sortie-stage">Enemy: <strong>${enemyLabel}</strong></div>` : '')
+      + rotateRow
+    : `<div class="sortie-stage">Mission type and node are not in the API snapshot — open <strong>Navigation → Arbitrations</strong> in-game (always available; rotates hourly UTC).</div>`
+      + fallbackExtra;
+
+  const doneLine = done
+    ? `<div class="sortie-stage arb-done-line">Completed for this Arbitration. New mission in ${rotSpan}</div>`
+    : '';
+
+  div.className = 'card' + (done ? ' done' : '');
+  div.innerHTML = `
+    <div class="card-header">
+      <div class="card-title">Arbitration</div>
+      <div class="card-check">${checkSVG()}</div>
+    </div>
+    <div class="card-desc">Elite endless mission with unique Arbitration mods. Available from the Star Chart; rotates about every hour.</div>
+    <div class="card-live-info">
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">Status</div>
+      <div class="sortie-stages">
+        <div class="sortie-stage" style="color:var(--accent)">Arbitration is available in-game.</div>
+        ${missionLines}
+        ${doneLine}
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-tag tag-daily">daily</span>
+      <span class="card-reward">Arbitration mods</span>
+      <a class="card-wiki" href="https://warframe.fandom.com/wiki/Arbitrations" target="_blank" rel="noopener" onclick="event.stopPropagation()">Wiki ↗</a>
+    </div>`;
+
+  div.onclick = () => {
+    const a = lastArbitrationPayload;
+    if (!a) return;
+    const k = getArbitrationSlotKey(a, arbitrationPayloadOk(a));
+    if (state.arb.doneForKey === k) state.arb.doneForKey = null;
+    else state.arb.doneForKey = k;
+    persist();
+    applyArbitrationCard(a);
+  };
+
+  if (!wfArbTickOn) {
+    wfArbTickOn = true;
+    setInterval(tickArbitrationTimers, 1000);
+  }
+  tickArbitrationTimers();
+}
+
 // ── Countdown ──
 function updateCountdown() {
   const now = new Date();
@@ -458,6 +562,7 @@ function resetAll() {
   week.tasks = {}; week.nw = {};
   week.pulses = [false,false,false,false,false];
   week.alloc  = {eda:0,net:0,tmp:0};
+  state.arb = { doneForKey: null };
   persist(); location.reload();
 }
 
@@ -584,46 +689,14 @@ async function init() {
   loadVoidFissures();
   setInterval(loadVoidFissures, FISSURES_POLL_MS);
 
-// Fetch live Arbitration
-apiFetch(`${API}/arbitration${LANG}`)
-    .then(arb => {
-      if (!arb) return;
-      const dc = document.getElementById('daily-cards');
-      if (!dc) return;
-      const div = document.createElement('div');
-      div.className = 'card';
-      div.id = 'card-arbitration';
-      const done = !!week.tasks['arbitration'];
-      if (done) div.classList.add('done');
-      const ok = arbitrationPayloadOk(arb);
-      const expires = ok && arb.expiry ? formatDur(new Date(arb.expiry) - Date.now()) : null;
-      const stages = ok
-        ? `<div class="sortie-stage"><strong>${arb.type}</strong> — ${arb.node}</div>
-            <div class="sortie-stage">Enemy: <strong>${arb.enemy}</strong> · Rotates in ${expires}</div>`
-        : `<div class="sortie-stage">Mission not available from the API right now (often between rotations). Check the in-game Star Chart for the current Arbitration.</div>`;
-      div.innerHTML = `
-        <div class="card-header">
-          <div class="card-title">Arbitration</div>
-          <div class="card-check">${checkSVG()}</div>
-        </div>
-        <div class="card-desc">Elite endless mission with unique Arbitration mods. Rotates hourly.</div>
-        <div class="card-live-info">
-          <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">${ok ? 'Current mission:' : 'Live details:'}</div>
-          <div class="sortie-stages">${stages}</div>
-        </div>
-        <div class="card-footer">
-          <span class="card-tag tag-daily">daily</span>
-          <span class="card-reward">Arbitration mods</span>
-          <a class="card-wiki" href="https://warframe.fandom.com/wiki/Arbitrations" target="_blank" rel="noopener" onclick="event.stopPropagation()">Wiki ↗</a>
-        </div>`;
-      div.onclick = () => {
-        week.tasks['arbitration'] = !week.tasks['arbitration'];
-        div.classList.toggle('done', !!week.tasks['arbitration']);
-        persist();
-      };
-      dc.appendChild(div);
-    })
-    .catch(() => {});
+  const ARB_POLL_MS = 60000;
+  function loadArbitrationLive() {
+    apiFetch(`${API}/arbitration${LANG}`)
+      .then(arb => { if (arb) applyArbitrationCard(arb); })
+      .catch(() => {});
+  }
+  loadArbitrationLive();
+  setInterval(loadArbitrationLive, ARB_POLL_MS);
 // Fetch live Archon Hunt
 apiFetch(`${API}/archonHunt${LANG}`)
     .then(hunt => {
