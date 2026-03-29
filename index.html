@@ -227,6 +227,75 @@
     .baro-status { font-size: 12px; color: var(--text-dim); }
     .baro-timer { font-size: 13px; font-weight: 600; color: var(--gold); font-variant-numeric: tabular-nums; }
 
+    /* ── Steel Path Honors ── */
+    .sp-box {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px;
+    }
+    .sp-main {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+    .sp-reward-block { flex: 1; min-width: 0; }
+    .sp-reward-label { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+    .sp-reward-name  { font-size: 17px; font-weight: 700; color: var(--gold); margin-bottom: 4px; line-height: 1.2; }
+    .sp-reward-cost  { font-size: 12px; color: var(--text-dim); }
+    .sp-reward-cost strong { color: var(--amber); }
+    .sp-timer-block  { text-align: right; flex-shrink: 0; }
+    .sp-timer-label  { font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
+    .sp-timer-val    { font-size: 15px; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
+    .sp-claimed-btn  {
+      margin-top: 12px; padding: 7px 14px; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border); background: var(--bg3); color: var(--text-dim);
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .sp-claimed-btn:hover        { border-color: var(--green); color: var(--green); }
+    .sp-claimed-btn.claimed      { border-color: var(--green); background: rgba(76,175,130,0.12); color: var(--green); }
+    .sp-rotation { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .sp-rotation-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-hint); margin-bottom: 8px; }
+    .sp-rotation-list  { display: flex; flex-wrap: wrap; gap: 6px; }
+    .sp-rotation-item  {
+      font-size: 11px; padding: 4px 10px; border-radius: 20px;
+      background: var(--bg3); border: 1px solid var(--border); color: var(--text-dim);
+    }
+    .sp-rotation-item.current { border-color: rgba(200,168,75,0.5); color: var(--gold); background: rgba(200,168,75,0.1); }
+    .sp-offline { font-size: 12px; color: var(--text-dim); padding: 4px 0; }
+
+    /* ── Invasions ── */
+    .inv-list { display: flex; flex-direction: column; gap: 10px; }
+    .inv-row {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .inv-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .inv-node { font-size: 13px; font-weight: 600; color: var(--text); }
+    .inv-desc { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .inv-pct  { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; flex-shrink: 0; color: var(--text-dim); }
+    .inv-bar-wrap { display: flex; flex-direction: column; gap: 5px; }
+    .inv-bar-labels { display: flex; justify-content: space-between; }
+    .inv-bar-label  { font-size: 11px; font-weight: 600; }
+    .inv-bar-reward { font-size: 11px; color: var(--gold); }
+    .inv-bar-bg {
+      height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden;
+      border: 1px solid var(--border); position: relative;
+    }
+    /* attacker fills from left (red), defender fill sits on right */
+    .inv-bar-atk  { height: 100%; border-radius: 4px 0 0 4px; position: absolute; left: 0; top: 0; transition: width 0.4s ease; }
+    .inv-bar-def  { height: 100%; border-radius: 0 4px 4px 0; position: absolute; right: 0; top: 0; transition: width 0.4s ease; }
+    /* Faction colours */
+    .fc-grineer  { color: #e0763a; }
+    .fc-corpus   { color: #4fc3f7; }
+    .fc-infested { color: #5dc98a; }
+    .fc-other    { color: var(--text-dim); }
+    .bg-grineer  { background: #e0763a; }
+    .bg-corpus   { background: #4fc3f7; }
+    .bg-infested { background: #5dc98a; }
+    .bg-other    { background: var(--text-dim); }
+    .inv-infestation-badge {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 20px; border: 1px solid #1a3a1a; background: #0d1f0d; color: #5dc98a;
+    }
+    .inv-offline { font-size: 12px; color: var(--text-dim); padding: 4px 0; }
+    .inv-empty   { font-size: 12px; color: var(--text-hint); padding: 4px 0; }
+
     .skeleton { height: 80px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); animation: pulse 1.5s ease-in-out infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
@@ -250,6 +319,55 @@
       text-decoration: none; transition: background 0.15s, border-color 0.15s;
     }
     .kofi-btn:hover { background: #1e2840; border-color: var(--accent); }
+
+    /* ── Mobile responsiveness ── */
+    @media (max-width: 600px) {
+      .app { padding: 16px 12px 48px; }
+
+      /* Header: stack badge below title/subtitle on small screens */
+      .header { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 20px; }
+      .header-right { width: 100%; justify-content: space-between; }
+      .reset-badge { flex: 1; text-align: left; }
+
+      /* Section titles: tighter top margin */
+      .section-title { margin: 20px 0 10px; }
+
+      /* Cards: single column — 260px minmax breaks on 375px phones */
+      .cards { grid-template-columns: 1fr; }
+
+      /* Pulse grid: single column */
+      .pulse-mode-grid { grid-template-columns: 1fr; }
+
+      /* Pulse run pills: allow smaller wrap */
+      .pulse-run { padding: 7px 10px; font-size: 11px; }
+
+      /* Baro strip: stack vertically */
+      .baro-strip { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .baro-timer { font-size: 14px; }
+
+      /* Steel Path main block: stack vertically */
+      .sp-main { flex-direction: column; gap: 12px; }
+      .sp-timer-block { text-align: left; }
+      .sp-reward-name { font-size: 15px; }
+
+      /* Nightwave acts: tighten up */
+      .nw-act { padding: 7px 8px; }
+      .nw-act-type { display: none; } /* hide type label on tiny screens to save space */
+
+      /* Invasion rows: reward wraps below faction name */
+      .inv-bar-labels { flex-wrap: wrap; gap: 2px; }
+
+      /* Support bar: stack */
+      .support-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
+    }
+
+    @media (max-width: 380px) {
+      /* Extra tight for very small phones (320–380px) */
+      .header-left h1 { font-size: 17px; }
+      .reset-badge .countdown { font-size: 13px; }
+      .pulse-runs { gap: 6px; }
+      .sp-claimed-btn { width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -340,6 +458,11 @@
     <div class="baro-timer" id="baro-timer">—</div>
   </div>
 
+  <div class="section-title">Steel Path Honors</div>
+  <div class="sp-box" id="sp-box">
+    <div class="sp-offline">Loading Steel Path Honors...</div>
+  </div>
+
   <div class="section-title">
     <span>Weekly Activities</span>
     <button class="reset-all-btn" onclick="resetAll()">Reset all</button>
@@ -361,6 +484,12 @@
 
   <div class="section-title">Daily Activities</div>
   <div class="cards" id="daily-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
+
+  <div class="section-title">
+    Invasions
+    <span style="font-size:10px;color:var(--green);margin-left:8px" id="inv-live-badge"></span>
+  </div>
+  <div id="inv-container"><div class="inv-offline">Loading invasions...</div></div>
 
   <div class="support-bar">
     <div class="support-text">
@@ -785,7 +914,7 @@ async function init() {
 
   let liveOk = 0;
   let liveFail = 0;
-  const TOTAL_ENDPOINTS = 5; // nightwave, baro, sortie, archon, fissures
+  const TOTAL_ENDPOINTS = 7; // nightwave, baro, sortie, archon, fissures, steelPath, invasions
   function checkBadge() {
     const attempted = liveOk + liveFail;
     if (attempted === 0) { setBadge('loading'); return; }
@@ -975,6 +1104,202 @@ if (!missions.length) { liveFail++; checkBadge(); return; }
       liveOk++; checkBadge();
     })
     .catch(() => { liveFail++; checkBadge(); });
+
+  // ── 6. Steel Path Honors — weekly rotating reward from Teshin ──
+  // API: /pc/steelPath — returns currentReward{name,cost}, expiry, rotation[{name,cost}], evergreens[{name,cost}]
+  function renderSteelPath(sp, offline) {
+    const box = document.getElementById('sp-box');
+    if (!box) return;
+
+    // Offline / error fallback
+    if (offline || !sp || !sp.currentReward) {
+      box.innerHTML = '<div class="sp-offline">Steel Path Honors data unavailable — check back soon. Visit Teshin in any Relay to see this week\'s rotating item.</div>';
+      return;
+    }
+
+    const reward     = sp.currentReward;
+    const rewardName = reward.name  || 'Unknown reward';
+    const rewardCost = reward.cost  != null ? reward.cost : '?';
+    const expiry     = sp.expiry    ? new Date(sp.expiry) : null;
+    const rotation   = Array.isArray(sp.rotation)   ? sp.rotation   : [];
+    const evergreens = Array.isArray(sp.evergreens)  ? sp.evergreens : [];
+
+    // Claimed state stored per week, keyed by reward name to survive re-renders
+    const claimKey = 'sp-' + rewardName.replace(/\s+/g, '-').toLowerCase();
+    const isClaimed = !!week.tasks[claimKey];
+
+    // Build rotation pills (highlight current)
+    const rotHtml = rotation.length
+      ? rotation.map(r =>
+          `<span class="sp-rotation-item${r.name === rewardName ? ' current' : ''}" title="${r.cost} Steel Essence">${r.name}</span>`
+        ).join('')
+      : '<span style="font-size:11px;color:var(--text-hint)">Rotation data unavailable</span>';
+
+    // Timer display — expiry is weekly reset (Sunday midnight UTC per DE)
+    const timerStr = expiry ? formatDur(expiry - Date.now()) : '—';
+    const expiryIso = expiry ? expiry.toISOString() : '';
+
+    box.innerHTML = `
+      <div class="sp-main">
+        <div class="sp-reward-block">
+          <div class="sp-reward-label">This week's rotating item</div>
+          <div class="sp-reward-name">${rewardName}</div>
+          <div class="sp-reward-cost">Costs <strong>${rewardCost} Steel Essence</strong> — visit Teshin in any Relay</div>
+          <button class="sp-claimed-btn${isClaimed ? ' claimed' : ''}" id="sp-claimed-btn">
+            ${isClaimed ? '✓ Claimed this week' : 'Mark as claimed'}
+          </button>
+        </div>
+        <div class="sp-timer-block">
+          <div class="sp-timer-label">Resets in</div>
+          <div class="sp-timer-val" id="sp-timer-val" ${expiryIso ? `data-sp-expiry="${expiryIso}"` : ''}>${timerStr}</div>
+        </div>
+      </div>
+      ${rotation.length ? `
+      <div class="sp-rotation">
+        <div class="sp-rotation-label">8-week rotation — your place in the cycle</div>
+        <div class="sp-rotation-list">${rotHtml}</div>
+      </div>` : ''}
+    `;
+
+    // Wire up the claim button
+    document.getElementById('sp-claimed-btn').onclick = () => {
+      week.tasks[claimKey] = !week.tasks[claimKey];
+      persist();
+      renderSteelPath(sp, false); // re-render to update button state
+    };
+  }
+
+  // Tick the SP reset countdown every second
+  function tickSteelPathTimer() {
+    const el = document.getElementById('sp-timer-val');
+    if (!el) return;
+    const iso = el.getAttribute('data-sp-expiry');
+    if (!iso) return;
+    el.textContent = formatDur(new Date(iso) - Date.now());
+  }
+  setInterval(tickSteelPathTimer, 1000);
+
+  apiFetch(`${API}/steelPath${LANG}`)
+    .then(sp => { renderSteelPath(sp, false); liveOk++; checkBadge(); })
+    .catch(() => { renderSteelPath(null, true); liveFail++; checkBadge(); });
+
+  // ── 7. Invasions — live faction battles with rewards ──
+  // API: /pc/invasions — array of invasion objects.
+  // Each has: node, desc, completed, completion (0-100%), vsInfestation,
+  //   attacker: { faction, factionKey, reward: { itemString } }
+  //   defender: { faction, factionKey, reward: { itemString } }
+  // We skip completed invasions and sort by how close they are to finishing (most contested first).
+  // Polls every 2 minutes — invasions move slowly but we want fresh progress bars.
+
+  const INVASIONS_POLL_MS = 120000;
+  let invasionsFirstLoad = true;
+
+  function factionClass(key) {
+    if (!key) return 'other';
+    const k = String(key).toLowerCase();
+    if (k.includes('grineer'))  return 'grineer';
+    if (k.includes('corpus'))   return 'corpus';
+    if (k.includes('infested')) return 'infested';
+    return 'other';
+  }
+
+  function renderInvasions(data) {
+    const container = document.getElementById('inv-container');
+    const badge     = document.getElementById('inv-live-badge');
+    if (!container) return;
+
+    // Filter out completed invasions; keep active ones
+    const active = (data || []).filter(inv => !inv.completed);
+
+    if (!active.length) {
+      container.innerHTML = '<div class="inv-empty">No active invasions right now — check back later.</div>';
+      if (badge) badge.textContent = '';
+      return;
+    }
+
+    if (badge) badge.textContent = 'LIVE';
+
+    // Sort: battles closest to 100% (most contested / nearly decided) first
+    active.sort((a, b) => Math.abs(50 - (b.completion || 0)) - Math.abs(50 - (a.completion || 0)));
+
+    const list = document.createElement('div');
+    list.className = 'inv-list';
+
+    active.forEach(inv => {
+      const pct         = Math.max(0, Math.min(100, inv.completion || 0));
+      const isInfest    = !!inv.vsInfestation;
+
+      // Attacker side (always present)
+      const atkFaction  = (inv.attacker && inv.attacker.faction)  || (inv.attackingFaction) || 'Unknown';
+      const atkKey      = (inv.attacker && inv.attacker.factionKey) || atkFaction;
+      const atkReward   = (inv.attacker && inv.attacker.reward && inv.attacker.reward.itemString) || '';
+      const atkCls      = factionClass(atkKey);
+
+      // Defender side (absent for infested invasions — no reward offered)
+      const defFaction  = (inv.defender && inv.defender.faction)  || (inv.defendingFaction) || 'Unknown';
+      const defKey      = (inv.defender && inv.defender.factionKey) || defFaction;
+      const defReward   = (inv.defender && inv.defender.reward && inv.defender.reward.itemString) || '';
+      const defCls      = factionClass(defKey);
+
+      // Progress bar: attacker fills from left, defender from right
+      // completion% represents attacker's progress toward winning
+      const atkPct = pct.toFixed(0);
+      const defPct = (100 - pct).toFixed(0);
+
+      const row = document.createElement('div');
+      row.className = 'inv-row';
+      row.innerHTML = `
+        <div class="inv-top">
+          <div>
+            <div class="inv-node">${inv.node || 'Unknown node'}</div>
+            <div class="inv-desc">${inv.desc || ''}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+            ${isInfest ? '<span class="inv-infestation-badge">Infestation</span>' : ''}
+            <span class="inv-pct">${atkPct}%</span>
+          </div>
+        </div>
+        <div class="inv-bar-wrap">
+          <div class="inv-bar-labels">
+            <div>
+              <span class="inv-bar-label fc-${atkCls}">${atkFaction}</span>
+              ${atkReward ? `<span class="inv-bar-reward"> — ${atkReward}</span>` : ''}
+            </div>
+            ${!isInfest ? `<div style="text-align:right">
+              <span class="inv-bar-label fc-${defCls}">${defFaction}</span>
+              ${defReward ? `<span class="inv-bar-reward"> — ${defReward}</span>` : ''}
+            </div>` : ''}
+          </div>
+          <div class="inv-bar-bg" style="height:8px">
+            <div class="inv-bar-atk bg-${atkCls}" style="width:${atkPct}%"></div>
+            ${!isInfest ? `<div class="inv-bar-def bg-${defCls}" style="width:${defPct}%"></div>` : ''}
+          </div>
+        </div>`;
+
+      list.appendChild(row);
+    });
+
+    container.innerHTML = '';
+    container.appendChild(list);
+  }
+
+  function loadInvasions() {
+    apiFetch(`${API}/invasions${LANG}`)
+      .then(data => {
+        renderInvasions(data);
+        if (invasionsFirstLoad) { invasionsFirstLoad = false; liveOk++; checkBadge(); }
+      })
+      .catch(() => {
+        if (invasionsFirstLoad) {
+          invasionsFirstLoad = false;
+          document.getElementById('inv-container').innerHTML =
+            '<div class="inv-offline">Invasion data unavailable — check back soon.</div>';
+          liveFail++; checkBadge();
+        }
+      });
+  }
+  loadInvasions();
+  setInterval(loadInvasions, INVASIONS_POLL_MS);
 }
 
 init();
