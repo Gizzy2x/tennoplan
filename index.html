@@ -1049,7 +1049,7 @@ async function init() {
 
   let liveOk = 0;
   let liveFail = 0;
-  const TOTAL_ENDPOINTS = 7; // nightwave, baro, sortie, archon, fissures, steelPath, invasions
+  const TOTAL_ENDPOINTS = 10; // nightwave, baro, sortie, archon, fissures, steelPath, invasions, cetusCycle, vallisCycle, cambionCycle
   function checkBadge() {
     const attempted = liveOk + liveFail;
     if (attempted === 0) { setBadge('loading'); return; }
@@ -1435,6 +1435,139 @@ if (!missions.length) { liveFail++; checkBadge(); return; }
   }
   loadInvasions();
   setInterval(loadInvasions, INVASIONS_POLL_MS);
+
+  // ── 8/9/10. World State Cycles — Cetus, Orb Vallis, Cambion Drift ──
+  // Polls every 30 seconds. Progress bar = remaining / totalDuration — shrinks to 0 as phase ends.
+  // Pill + bar class matches current state (day/night/warm/cold/fass/vome).
+  // Single shared setInterval ticks all three timers + bars every second.
+  const CYCLES_POLL_MS = 30000;
+  let cyclesTickOn = false;
+  let cetusFirstLoad = true;
+  let vallisFirstLoad = true;
+  let cambionFirstLoad = true;
+
+  // Fixed phase durations in milliseconds
+  const CYCLE_DUR_MS = {
+    day: 6000000, night: 3000000,
+    warm:  400000, cold:  800000,
+    fass: 6000000, vome: 6000000
+  };
+
+  // Hint text per state
+  const CYCLE_HINTS = {
+    day:   'Mining & bounties',
+    night: 'Eidolons & fishing',
+    warm:  'Toroid farming',
+    cold:  'Fishing & conservation',
+    fass:  'Rare Vome drops',
+    vome:  'Fishing & bounties'
+  };
+
+  function applyCycle(id, stateKey, expiryIso) {
+    const pill  = document.getElementById(id + '-pill');
+    const bar   = document.getElementById(id + '-bar');
+    const timer = document.getElementById(id + '-timer');
+    const hint  = document.getElementById(id + '-hint');
+    if (!pill || !bar || !timer) return;
+
+    // Store state on timer element for the tick function
+    timer.setAttribute('data-cycle-expiry', expiryIso);
+    timer.setAttribute('data-cycle-state', stateKey);
+
+    const durationMs = CYCLE_DUR_MS[stateKey] || 6000000;
+    const remaining  = new Date(expiryIso).getTime() - Date.now();
+    const pct        = durationMs > 0 ? Math.max(0, Math.min(100, (remaining / durationMs) * 100)) : 0;
+
+    pill.className   = 'cycle-state-pill ' + stateKey;
+    pill.textContent = stateKey.charAt(0).toUpperCase() + stateKey.slice(1);
+    bar.className    = 'cycle-bar-fill ' + stateKey;
+    bar.style.width  = pct.toFixed(1) + '%';
+    timer.textContent = formatDur(remaining);
+    if (hint) hint.textContent = CYCLE_HINTS[stateKey] || '';
+  }
+
+  function tickCycleTimers() {
+    document.querySelectorAll('[data-cycle-expiry]').forEach(el => {
+      const expiryIso = el.getAttribute('data-cycle-expiry');
+      const stateKey  = el.getAttribute('data-cycle-state');
+      if (!expiryIso || !stateKey) return;
+      const remaining  = new Date(expiryIso).getTime() - Date.now();
+      el.textContent   = formatDur(remaining);
+      // Shrink bar as time remaining decreases
+      const id  = el.id.replace('-timer', '');
+      const bar = document.getElementById(id + '-bar');
+      if (bar) {
+        const durationMs = CYCLE_DUR_MS[stateKey] || 6000000;
+        const pct        = durationMs > 0 ? Math.max(0, Math.min(100, (remaining / durationMs) * 100)) : 0;
+        bar.style.width  = pct.toFixed(1) + '%';
+      }
+    });
+  }
+
+  function loadCetusCycle() {
+    apiFetch(`${API}/cetusCycle${LANG}`)
+      .then(data => {
+        if (!data || !data.expiry) throw new Error('bad payload');
+        const stateKey = data.isDay ? 'day' : 'night';
+        applyCycle('cetus', stateKey, data.expiry);
+        if (!cyclesTickOn) { cyclesTickOn = true; setInterval(tickCycleTimers, 1000); }
+        if (cetusFirstLoad) { cetusFirstLoad = false; liveOk++; checkBadge(); }
+      })
+      .catch(() => {
+        if (cetusFirstLoad) {
+          cetusFirstLoad = false;
+          const el = document.getElementById('cetus-timer');
+          if (el) el.textContent = '—';
+          liveFail++; checkBadge();
+        }
+      });
+  }
+
+  function loadVallisCycle() {
+    apiFetch(`${API}/vallisCycle${LANG}`)
+      .then(data => {
+        if (!data || !data.expiry) throw new Error('bad payload');
+        const stateKey = data.isWarm ? 'warm' : 'cold';
+        applyCycle('vallis', stateKey, data.expiry);
+        if (!cyclesTickOn) { cyclesTickOn = true; setInterval(tickCycleTimers, 1000); }
+        if (vallisFirstLoad) { vallisFirstLoad = false; liveOk++; checkBadge(); }
+      })
+      .catch(() => {
+        if (vallisFirstLoad) {
+          vallisFirstLoad = false;
+          const el = document.getElementById('vallis-timer');
+          if (el) el.textContent = '—';
+          liveFail++; checkBadge();
+        }
+      });
+  }
+
+  function loadCambionCycle() {
+    apiFetch(`${API}/cambionCycle${LANG}`)
+      .then(data => {
+        if (!data || !data.expiry) throw new Error('bad payload');
+        const raw = String(data.state || data.active || '').toLowerCase();
+        const stateKey = raw === 'fass' ? 'fass' : 'vome';
+        applyCycle('cambion', stateKey, data.expiry);
+        if (!cyclesTickOn) { cyclesTickOn = true; setInterval(tickCycleTimers, 1000); }
+        if (cambionFirstLoad) { cambionFirstLoad = false; liveOk++; checkBadge(); }
+      })
+      .catch(() => {
+        if (cambionFirstLoad) {
+          cambionFirstLoad = false;
+          const el = document.getElementById('cambion-timer');
+          if (el) el.textContent = '—';
+          liveFail++; checkBadge();
+        }
+      });
+  }
+
+  loadCetusCycle();
+  loadVallisCycle();
+  loadCambionCycle();
+  setInterval(loadCetusCycle,   CYCLES_POLL_MS);
+  setInterval(loadVallisCycle,  CYCLES_POLL_MS);
+  setInterval(loadCambionCycle, CYCLES_POLL_MS);
 }
 
 init();
