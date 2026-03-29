@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Warframe Endgame Tracker</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d0f14;
+      --bg2:       #13161e;
+      --bg3:       #1a1e2a;
+      --border:    #2a2f3d;
+      --text:      #d4d8e8;
+      --text-dim:  #6b7494;
+      --text-hint: #3d4460;
+      --accent:    #4fc3f7;
+      --accent2:   #7c6af7;
+      --gold:      #c8a84b;
+      --green:     #4caf82;
+      --red:       #e05c5c;
+      --amber:     #e09c3a;
+      --radius:    10px;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .app { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+      flex-wrap: wrap; gap: 12px;
+    }
+    .header-left h1 { font-size: 20px; font-weight: 600; color: var(--accent); letter-spacing: 0.04em; }
+    .header-left .subtitle { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    .header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .reset-badge {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 14px; text-align: right;
+    }
+    .reset-badge .label { font-size: 11px; color: var(--text-dim); }
+    .reset-badge .countdown { font-size: 15px; font-weight: 600; color: var(--gold); font-variant-numeric: tabular-nums; }
+
+    .data-badge {
+      font-size: 10px; font-weight: 600; padding: 4px 10px;
+      border-radius: 20px; letter-spacing: 0.05em; border: 1px solid;
+    }
+    .data-badge.live    { color: var(--green); border-color: #1a4030; background: #0d2018; }
+    .data-badge.offline { color: var(--amber); border-color: #3a2a10; background: #1a1408; }
+    .data-badge.loading { color: var(--text-dim); border-color: var(--border); background: var(--bg3); }
+
+    .section-title {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--text-dim);
+      margin: 28px 0 12px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+    .card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+      cursor: pointer; transition: border-color 0.15s, background 0.15s; user-select: none;
+    }
+    .card:hover { border-color: #3a4060; background: var(--bg3); }
+    .card.done { opacity: 0.45; border-color: var(--text-hint); }
+    .card.done .card-title { text-decoration: line-through; color: var(--text-dim); }
+    .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+    .card-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .card-check {
+      width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s; margin-top: 1px;
+    }
+    .card.done .card-check { background: var(--green); border-color: var(--green); }
+    .card-check svg { display: none; }
+    .card.done .card-check svg { display: block; }
+    .card-desc { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; line-height: 1.5; }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+    .card-tag { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; }
+    .tag-weekly  { background: #1a2340; color: #6ea8e8; border: 1px solid #243060; }
+    .tag-daily   { background: #1a2b1a; color: #5dc98a; border: 1px solid #245030; }
+    .tag-biweek  { background: #2a1a2a; color: #b87de8; border: 1px solid #4a2060; }
+    .card-reward { font-size: 11px; color: var(--gold); }
+    .card-wiki   { font-size: 10px; color: var(--text-hint); text-decoration: none; margin-left: auto; }
+    .card-wiki:hover { color: var(--accent); }
+    .card-live-info {
+      font-size: 11px; color: var(--accent); margin-top: 6px;
+      padding-top: 6px; border-top: 1px solid var(--border);
+    }
+    .sortie-stages { margin-top: 4px; display: flex; flex-direction: column; gap: 4px; }
+    .sortie-stage { font-size: 11px; color: var(--text-dim); padding: 4px 8px; background: var(--bg); border-radius: 5px; }
+    .sortie-stage strong { color: var(--amber); }
+
+    .pulse-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+    .pulse-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .pulse-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .pulse-sub   { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+    .pulse-count { font-size: 22px; font-weight: 700; color: var(--accent2); }
+    .pulse-count span { font-size: 13px; font-weight: 400; color: var(--text-dim); }
+    .pulse-pips { display: flex; gap: 8px; margin-bottom: 16px; }
+    .pip {
+      flex: 1; height: 36px; border-radius: 8px; border: 2px solid var(--border);
+      background: var(--bg3); cursor: pointer; transition: background 0.15s, border-color 0.15s;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 600; color: var(--text-dim); letter-spacing: 0.05em;
+    }
+    .pip.used { background: #1a1a3a; border-color: var(--accent2); color: var(--accent2); }
+    .pip:hover { border-color: #4a4f70; }
+    .pulse-alloc { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .alloc-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
+    .alloc-name { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
+    .alloc-controls { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .alloc-btn {
+      width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border);
+      background: var(--bg2); color: var(--text); font-size: 14px; line-height: 1; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: background 0.1s;
+    }
+    .alloc-btn:hover { background: var(--bg3); border-color: var(--accent2); color: var(--accent2); }
+    .alloc-val { font-size: 16px; font-weight: 700; color: var(--accent2); min-width: 18px; text-align: center; }
+
+    .nw-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+    .nw-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+    .nw-title { font-size: 14px; font-weight: 600; }
+    .nw-season { font-size: 11px; color: var(--accent); margin-top: 2px; }
+    .nw-standing { font-size: 12px; color: var(--gold); }
+    .nw-bar-bg { height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; margin-bottom: 12px; }
+    .nw-bar-fill { height: 100%; background: linear-gradient(90deg, #6a4fc8, #9c6af7); border-radius: 4px; transition: width 0.4s ease; }
+    .nw-acts { display: flex; flex-direction: column; gap: 6px; }
+    .nw-act {
+      display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+      background: var(--bg3); border-radius: 7px; cursor: pointer; transition: opacity 0.15s;
+    }
+    .nw-act.done { opacity: 0.4; }
+    .nw-act-check {
+      width: 16px; height: 16px; border-radius: 4px; border: 2px solid var(--border);
+      flex-shrink: 0; transition: background 0.15s, border-color 0.15s;
+    }
+    .nw-act.done .nw-act-check { background: var(--accent2); border-color: var(--accent2); }
+    .nw-act-name { flex: 1; font-size: 13px; color: var(--text); }
+    .nw-act.done .nw-act-name { text-decoration: line-through; color: var(--text-dim); }
+    .nw-act-type { font-size: 10px; color: var(--text-hint); margin-right: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .nw-act-pts { font-size: 11px; color: var(--accent2); font-weight: 600; }
+
+    .baro-strip {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+    .baro-left { display: flex; align-items: center; gap: 10px; }
+    .baro-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .baro-dot.present { background: var(--green); }
+    .baro-dot.absent  { background: var(--text-hint); }
+    .baro-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .baro-status { font-size: 12px; color: var(--text-dim); }
+    .baro-timer { font-size: 13px; font-weight: 600; color: var(--gold); font-variant-numeric: tabular-nums; }
+
+    .skeleton { height: 80px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+    .reset-all-btn {
+      background: none; border: 1px solid var(--border); border-radius: 7px;
+      color: var(--text-dim); font-size: 11px; padding: 5px 12px; cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .reset-all-btn:hover { color: var(--red); border-color: var(--red); }
+
+    .support-bar {
+      margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .support-text { font-size: 12px; color: var(--text-dim); }
+    .support-text strong { color: var(--text); font-weight: 500; }
+    .kofi-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: #1a2030; border: 1px solid #2a3550; border-radius: 8px;
+      padding: 8px 14px; color: var(--accent); font-size: 12px; font-weight: 600;
+      text-decoration: none; transition: background 0.15s, border-color 0.15s;
+    }
+    .kofi-btn:hover { background: #1e2840; border-color: var(--accent); }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Warframe Tracker</h1>
+      <div class="subtitle">Endgame weekly loop · All progress saved on your device</div>
+    </div>
+    <div class="header-right">
+      <span class="data-badge loading" id="data-badge">Loading...</span>
+      <div class="reset-badge">
+        <div class="label">Weekly reset in</div>
+        <div class="countdown" id="countdown">--:--:--</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Search Pulse Budget</div>
+  <div class="pulse-box">
+    <div class="pulse-header">
+      <div>
+        <div class="pulse-title">Weekly Search Pulses</div>
+        <div class="pulse-sub">5 total · shared across EDA, Netracells &amp; Temporal Archimedea</div>
+      </div>
+      <div class="pulse-count"><span id="pulses-used">0</span><span> / 5 used</span></div>
+    </div>
+    <div class="pulse-pips" id="pulse-pips">
+      <div class="pip" onclick="togglePip(0)">1</div>
+      <div class="pip" onclick="togglePip(1)">2</div>
+      <div class="pip" onclick="togglePip(2)">3</div>
+      <div class="pip" onclick="togglePip(3)">4</div>
+      <div class="pip" onclick="togglePip(4)">5</div>
+    </div>
+    <div class="pulse-alloc">
+      <div class="alloc-item">
+        <div class="alloc-name">Deep Archimedea</div>
+        <div class="alloc-controls">
+          <button class="alloc-btn" onclick="adjustAlloc('eda',-1)">−</button>
+          <div class="alloc-val" id="alloc-eda">0</div>
+          <button class="alloc-btn" onclick="adjustAlloc('eda',1)">+</button>
+        </div>
+      </div>
+      <div class="alloc-item">
+        <div class="alloc-name">Netracells</div>
+        <div class="alloc-controls">
+          <button class="alloc-btn" onclick="adjustAlloc('net',-1)">−</button>
+          <div class="alloc-val" id="alloc-net">0</div>
+          <button class="alloc-btn" onclick="adjustAlloc('net',1)">+</button>
+        </div>
+      </div>
+      <div class="alloc-item">
+        <div class="alloc-name">Temporal Arch.</div>
+        <div class="alloc-controls">
+          <button class="alloc-btn" onclick="adjustAlloc('tmp',-1)">−</button>
+          <div class="alloc-val" id="alloc-tmp">0</div>
+          <button class="alloc-btn" onclick="adjustAlloc('tmp',1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Void Trader</div>
+  <div class="baro-strip">
+    <div class="baro-left">
+      <div class="baro-dot absent" id="baro-dot"></div>
+      <div>
+        <div class="baro-name">Baro Ki'Teer</div>
+        <div class="baro-status" id="baro-status">Fetching status...</div>
+      </div>
+    </div>
+    <div class="baro-timer" id="baro-timer">—</div>
+  </div>
+
+  <div class="section-title">
+    <span>Weekly Activities</span>
+    <button class="reset-all-btn" onclick="resetAll()">Reset all</button>
+  </div>
+  <div class="cards" id="weekly-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
+
+  <div class="section-title">Nightwave Acts</div>
+  <div class="nw-box">
+    <div class="nw-header">
+      <div>
+        <div class="nw-title">Nightwave</div>
+        <div class="nw-season" id="nw-season">Loading current acts...</div>
+      </div>
+      <div class="nw-standing" id="nw-standing">0 standing earned this session</div>
+    </div>
+    <div class="nw-bar-bg"><div class="nw-bar-fill" id="nw-bar" style="width:0%"></div></div>
+    <div class="nw-acts" id="nw-acts"><div class="skeleton"></div></div>
+  </div>
+
+  <div class="section-title">Daily Activities</div>
+  <div class="cards" id="daily-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
+
+  <div class="support-bar">
+    <div class="support-text">
+      <strong>Warframe Tracker</strong> — free, open source, no ads, no accounts.<br>
+      If this saves you time each week, consider supporting its development.
+    </div>
+    <a class="kofi-btn" href="https://ko-fi.com" target="_blank" rel="noopener">☕ Support on Ko-fi</a>
+  </div>
+
+</div>
+<script>
+const API   = 'https://api.warframestat.us/pc';
+const LANG  = '?language=en';
+const TIMEOUT = 8000;
+
+// ── State ──
+function getWeekKey() {
+  const now = new Date();
+  const day = now.getUTCDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  const mon = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + diff));
+  return 'week-' + mon.toISOString().slice(0,10);
+}
+const WEEK_KEY = getWeekKey();
+let state = JSON.parse(localStorage.getItem('wf-tracker-v2') || '{}');
+if (!state[WEEK_KEY]) state[WEEK_KEY] = { tasks:{}, nw:{}, pulses:[false,false,false,false,false], alloc:{eda:0,net:0,tmp:0} };
+const week = state[WEEK_KEY];
+function persist() { localStorage.setItem('wf-tracker-v2', JSON.stringify(state)); }
+
+// ── Fetch with timeout ──
+async function apiFetch(url) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), TIMEOUT);
+  try {
+    const r = await fetch(url, { signal: ctrl.signal });
+    clearTimeout(t);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.json();
+  } catch(e) { clearTimeout(t); throw e; }
+}
+
+// ── Badge ──
+function setBadge(s) {
+  const el = document.getElementById('data-badge');
+  const map = { live:['Live data','live'], partial:['Partial live','offline'], offline:['Offline mode','offline'] };
+  const [txt, cls] = map[s] || ['Loading...','loading'];
+  el.textContent = txt; el.className = 'data-badge ' + cls;
+}
+
+// ── Cards ──
+function checkSVG() {
+  return '<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+function makeCard(t) {
+  const done = !!week.tasks[t.id];
+  const tc = t.tag === 'biweekly' ? 'tag-biweek' : 'tag-' + t.tag;
+  const div = document.createElement('div');
+  div.className = 'card' + (done ? ' done' : '');
+  div.id = 'card-' + t.id;
+  div.innerHTML = `
+    <div class="card-header"><div class="card-title">${t.title}</div><div class="card-check">${checkSVG()}</div></div>
+    <div class="card-desc">${t.desc}</div>
+    ${t.liveInfo ? `<div class="card-live-info">${t.liveInfo}</div>` : ''}
+    <div class="card-footer">
+      <span class="card-tag ${tc}">${t.tag}</span>
+      <span class="card-reward">${t.reward}</span>
+      ${t.wikiUrl ? `<a class="card-wiki" href="${t.wikiUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Wiki ↗</a>` : ''}
+    </div>`;
+  div.onclick = () => { week.tasks[t.id] = !week.tasks[t.id]; div.classList.toggle('done', !!week.tasks[t.id]); persist(); };
+  return div;
+}
+function renderCards(weekly, daily) {
+  const wc = document.getElementById('weekly-cards');
+  const dc = document.getElementById('daily-cards');
+  wc.innerHTML = ''; dc.innerHTML = '';
+  weekly.forEach(t => wc.appendChild(makeCard(t)));
+  daily.forEach(t  => dc.appendChild(makeCard(t)));
+}
+
+// ── Pulses ──
+function renderPulses() {
+  let used = 0;
+  document.querySelectorAll('.pip').forEach((p,i) => { p.classList.toggle('used', week.pulses[i]); if(week.pulses[i]) used++; });
+  document.getElementById('pulses-used').textContent = used;
+  ['eda','net','tmp'].forEach(k => document.getElementById('alloc-'+k).textContent = week.alloc[k]);
+}
+function togglePip(i) { week.pulses[i] = !week.pulses[i]; renderPulses(); persist(); }
+function adjustAlloc(k, d) {
+  if (d > 0 && week.alloc.eda+week.alloc.net+week.alloc.tmp >= 5) return;
+  week.alloc[k] = Math.max(0, week.alloc[k] + d);
+  renderPulses(); persist();
+}
+
+// ── Nightwave ──
+function renderNightwave(acts, season) {
+  const c = document.getElementById('nw-acts');
+  c.innerHTML = '';
+  let earned = 0;
+  const maxPts = acts.reduce((s,a) => s + (a.standing||a.pts||0), 0);
+  if (season) document.getElementById('nw-season').textContent = season;
+  acts.forEach(act => {
+    const id  = act.id || ('nw-' + (act.title||act.name||'').replace(/\s+/g,'-').toLowerCase());
+    const pts = act.standing || act.pts || 0;
+    const done = !!week.nw[id];
+    if (done) earned += pts;
+    const div = document.createElement('div');
+    div.className = 'nw-act' + (done ? ' done' : '');
+    const typeLabel = act.type ? `<span class="nw-act-type">${act.type.replace(/_/g,' ')}</span>` : '';
+    div.innerHTML = `<div class="nw-act-check"></div><div class="nw-act-name">${act.title||act.name||'Act'}</div>${typeLabel}<div class="nw-act-pts">+${pts.toLocaleString()}</div>`;
+    div.onclick = () => { week.nw[id] = !week.nw[id]; renderNightwave(acts, season); persist(); };
+    c.appendChild(div);
+  });
+  document.getElementById('nw-standing').textContent = earned.toLocaleString() + ' standing earned this session';
+  document.getElementById('nw-bar').style.width = maxPts > 0 ? (earned/maxPts*100)+'%' : '0%';
+}
+
+// ── Baro ──
+function formatDur(ms) {
+  if (ms <= 0) return 'soon';
+  const h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000);
+  return h > 24 ? `${Math.floor(h/24)}d ${h%24}h` : `${h}h ${m}m`;
+}
+function renderBaro(b) {
+  if (!b) { document.getElementById('baro-status').textContent = 'Data unavailable'; return; }
+  const dot = document.getElementById('baro-dot');
+  const status = document.getElementById('baro-status');
+  const timer = document.getElementById('baro-timer');
+  if (b.active) {
+    dot.className = 'baro-dot present';
+    status.textContent = 'Present at ' + (b.location || 'Relay');
+    timer.textContent  = 'Leaves in ' + formatDur(new Date(b.expiry) - Date.now());
+  } else {
+    dot.className = 'baro-dot absent';
+    status.textContent = 'Next visit: ' + (b.location || 'Unknown relay');
+    timer.textContent  = b.activation ? 'Arrives in ' + formatDur(new Date(b.activation) - Date.now()) : '—';
+  }
+}
+
+// ── Countdown ──
+function updateCountdown() {
+  const now = new Date();
+  const day = now.getUTCDay();
+  const daysUntil = day === 1 ? 7 : (8 - day) % 7;
+  const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysUntil));
+  const diff = next - now;
+  const h = Math.floor(diff/3600000);
+  const m = Math.floor((diff%3600000)/60000);
+  const s = Math.floor((diff%60000)/1000);
+  document.getElementById('countdown').textContent =
+    `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+// ── Reset ──
+function resetAll() {
+  if (!confirm('Reset all weekly tasks and pulse tracking? This cannot be undone.')) return;
+  week.tasks = {}; week.nw = {};
+  week.pulses = [false,false,false,false,false];
+  week.alloc  = {eda:0,net:0,tmp:0};
+  persist(); location.reload();
+}
+
+// ── Init ──
+async function init() {
+  // 1. Load local fallback data
+  let taskData;
+  try {
+    const r = await fetch('./tasks.json');
+    taskData = await r.json();
+  } catch(e) {
+    taskData = {
+      weekly: [
+        {id:'archon',   title:'Archon Hunt',           desc:'Weekly 3-mission hunt. Rewards Archon Shards for permanent build upgrades.',       tag:'weekly', reward:'Archon Shard',         wikiUrl:'https://warframe.fandom.com/wiki/Archon_Hunt'},
+        {id:'eda',      title:'Deep Archimedea (EDA)', desc:'Endurance with rotating restrictions. Best source of Tauforged Archon Shards.',    tag:'weekly', reward:'Tauforged Shard',       wikiUrl:'https://warframe.fandom.com/wiki/Deep_Archimedea'},
+        {id:'temporal', title:'Temporal Archimedea',   desc:'High-difficulty variant with unique weekly reward pool. Costs a Search Pulse.',     tag:'weekly', reward:'Unique weekly rewards', wikiUrl:'https://warframe.fandom.com/wiki/Temporal_Archimedea'},
+        {id:'circuit',  title:'The Circuit (Duviri)',  desc:'Roguelike endless for Incarnon Genesis adapters. Resets weekly selections.',        tag:'weekly', reward:'Incarnon Genesis',      wikiUrl:'https://warframe.fandom.com/wiki/The_Circuit'},
+        {id:'syndicate',title:'Syndicate Standing Cap','desc':'Hit your weekly cap across chosen syndicates. Use missions or medallions.',       tag:'weekly', reward:'Standing',              wikiUrl:'https://warframe.fandom.com/wiki/Syndicate'},
+      ],
+      daily: [
+        {id:'sortie',    title:'Sortie',              desc:'3-stage daily chain with modifiers. Rewards Rivens, Forma, Exilus adapters.',  tag:'daily', reward:'Riven / Forma',    wikiUrl:'https://warframe.fandom.com/wiki/Sortie'},
+        {id:'netracell', title:'Netracell',            desc:'High-tier assassination using a Search Pulse. Strong shard and mod source.',   tag:'daily', reward:'Archon Shard',    wikiUrl:'https://warframe.fandom.com/wiki/Netracell'},
+        {id:'synddaily', title:'Syndicate Dailies',    desc:'Daily missions to build standing toward your weekly cap.',                     tag:'daily', reward:'Standing',         wikiUrl:'https://warframe.fandom.com/wiki/Syndicate'},
+        {id:'voidfissure','title':'Void Fissures',     desc:'Crack relics for Prime parts. Rotates every few hours.',                      tag:'daily', reward:'Prime parts',      wikiUrl:'https://warframe.fandom.com/wiki/Void_Fissure'},
+      ],
+      nightwave_fallback: [
+        {id:'nw1',title:'Complete a Sortie',          standing:1000,type:'daily'},
+        {id:'nw2',title:'Kill 150 Enemies',           standing:1000,type:'daily'},
+        {id:'nw3',title:'Complete 3 Void Fissures',   standing:1000,type:'daily'},
+        {id:'nw4',title:'Run 5 Syndicate Missions',   standing:1500,type:'weekly'},
+        {id:'nw5',title:'Complete a Nightmare Mission',standing:1500,type:'weekly'},
+        {id:'nw6',title:'Complete an Archon Hunt',    standing:4500,type:'weekly elite'},
+      ]
+    };
+  }
+
+  // 2. Render immediately with local data
+  renderCards(taskData.weekly, taskData.daily);
+  renderPulses();
+  renderNightwave(taskData.nightwave_fallback, 'Loading live Nightwave data...');
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  let live = 0;
+  const needed = 2;
+  function checkBadge() { setBadge(live >= needed ? 'live' : live > 0 ? 'partial' : 'offline'); }
+
+  // 3. Fetch live Nightwave
+  apiFetch(`${API}/nightwave${LANG}`)
+    .then(nw => {
+      if (nw && Array.isArray(nw.activeChallenges) && nw.activeChallenges.length) {
+        const acts = nw.activeChallenges.map(c => ({
+          id:       c.id || c.title,
+          title:    c.title,
+          standing: c.reputation || 0,
+          type:     c.isElite ? 'weekly elite' : c.isDaily ? 'daily' : 'weekly'
+        }));
+        renderNightwave(acts, nw.season ? 'Season ' + nw.season : 'Current season');
+        live++; checkBadge();
+      } else { checkBadge(); }
+    })
+    .catch(() => checkBadge());
+
+  // 4. Fetch live Baro
+  apiFetch(`${API}/voidTrader${LANG}`)
+    .then(b => { renderBaro(b); live++; checkBadge(); })
+    .catch(() => { document.getElementById('baro-status').textContent = 'Could not reach API'; checkBadge(); });
+
+  // 5. Fetch live Sortie to enrich the sortie card
+  apiFetch(`${API}/sortie${LANG}`)
+    .then(s => {
+      const card = document.getElementById('card-sortie');
+      if (!card || !s || !s.variants) return;
+      const old = card.querySelector('.card-live-info');
+      if (old) old.remove();
+      const info = document.createElement('div');
+      info.className = 'card-live-info';
+      info.innerHTML = '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">Today\'s stages:</div>'
+        + '<div class="sortie-stages">'
+        + s.variants.map((v,i) => `<div class="sortie-stage">Stage ${i+1}: <strong>${v.missionType}</strong> — ${v.modifier}</div>`).join('')
+        + '</div>';
+      card.querySelector('.card-footer').before(info);
+    })
+    .catch(() => {});
+}
+
+init();
+</script>
+</body>
+</html>

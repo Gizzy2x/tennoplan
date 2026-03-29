@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "version": "1.0",
+    "notes": "This file is the manual fallback. Live data is fetched from api.warframestat.us first. Edit this file to update content when the API does not cover an activity."
+  },
+
+  "weekly": [
+    {
+      "id": "archon",
+      "title": "Archon Hunt",
+      "desc": "3-mission weekly hunt against a powered Sentient Archon. Rewards Archon Shards used for permanent build upgrades.",
+      "tag": "weekly",
+      "reward": "Archon Shard",
+      "wikiUrl": "https://warframe.fandom.com/wiki/Archon_Hunt"
+    },
+    {
+      "id": "eda",
+      "title": "Deep Archimedea (EDA)",
+      "desc": "Endurance mission with rotating restrictions and modifiers. Highest source of Tauforged Archon Shards in the game.",
+      "tag": "weekly",
+      "reward": "Tauforged Archon Shard",
+      "wikiUrl": "https://warframe.fandom.com/wiki/Deep_Archimedea"
+    },
+    {
+      "id": "temporal",
+      "title": "Temporal Archimedea",
+      "desc": "High-difficulty Archimedea variant with unique weekly reward pool. Uses a Search Pulse to enter.",
+      "tag": "weekly",
+      "reward": "Unique weekly rewards",
+      "wikiUrl": "https://warframe.fandom.com/wiki/Temporal_Archimedea"
+    },
+    {
+      "id": "circuit",
+      "title": "The Circuit (Duviri)",
+      "desc": "Roguelike endless mode set in Duviri. Primary source of Incarnon Genesis adapters for older weapons.",
+      "tag": "weekly",
+      "reward": "Incarnon Genesis",
+      "wikiUrl": "https://warframe.fandom.com/wiki/The_Circuit"
+    },
+    {
+      "id": "syndicate",
+      "title": "Syndicate Standing Cap",
+      "desc": "Hit your weekly standing cap across your chosen syndicates. Run syndicate missions or use medallions.",
+      "tag": "weekly",
+      "reward": "Standing → Syndicate weapons & mods",
+      "wikiUrl": "https://warframe.fandom.com/wiki/Syndicate"
+    }
+  ],
+
+  "daily": [
+    {
+      "id": "sortie",
+      "title": "Sortie",
+      "desc": "3-stage daily mission chain with unique modifiers. Rewards include Rivens, Ayatan sculptures, Forma, and Exilus adapters.",
+      "tag": "daily",
+      "reward": "Riven Mod / Forma / Exilus",
+      "wikiUrl": "https://warframe.fandom.com/wiki/Sortie"
+    },
+    {
+      "id": "netracell",
+      "title": "Netracell",
+      "desc": "High-tier assassination using a Search Pulse. One recommended per day. Strong source of Archon Shards and rare mods.",
+      "tag": "daily",
+      "reward": "Archon Shard / Rare mods",
+      "wikiUrl": "https://warframe.fandom.com/wiki/Netracell"
+    },
+    {
+      "id": "synddaily",
+      "title": "Syndicate Daily Missions",
+      "desc": "Run daily syndicate missions to build standing toward your weekly cap. 5 missions available per syndicate per day.",
+      "tag": "daily",
+      "reward": "Syndicate standing",
+      "wikiUrl": "https://warframe.fandom.com/wiki/Syndicate"
+    },
+    {
+      "id": "voidfissure",
+      "title": "Void Fissures",
+      "desc": "Run fissure missions to crack Void Relics and earn Prime parts. Rotates every few hours.",
+      "tag": "daily",
+      "reward": "Prime parts",
+      "wikiUrl": "https://warframe.fandom.com/wiki/Void_Fissure"
+    }
+  ],
+
+  "nightwave_fallback": [
+    { "id": "nw1", "title": "Complete a Sortie",            "standing": 1000, "type": "daily" },
+    { "id": "nw2", "title": "Kill 150 Enemies",             "standing": 1000, "type": "daily" },
+    { "id": "nw3", "title": "Complete 3 Void Fissures",     "standing": 1000, "type": "daily" },
+    { "id": "nw4", "title": "Run 5 Syndicate Missions",     "standing": 1500, "type": "weekly" },
+    { "id": "nw5", "title": "Complete a Nightmare Mission", "standing": 1500, "type": "weekly" },
+    { "id": "nw6", "title": "Complete an Archon Hunt",      "standing": 4500, "type": "weekly_elite" }
+  ],
+
+  "notes": {
+    "eda_modifiers": "EDA modifiers are not available via API. Check https://warframe.fandom.com/wiki/Deep_Archimedea or the in-game Chrysalith for current week restrictions.",
+    "search_pulses": "5 Search Pulses reset every Monday 00:00 UTC. Split between Netracells, EDA, and Temporal Archimedea.",
+    "baro": "Baro Ki'Teer arrives every two weeks on Friday and leaves Sunday. The API provides live status."
+  }
+}
