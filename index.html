@@ -320,6 +320,86 @@
     }
     .kofi-btn:hover { background: #1e2840; border-color: var(--accent); }
 
+    /* ── World State Cycles ── */
+    .cycles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+    .cycle-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .cycle-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .cycle-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .cycle-state-pill {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid;
+    }
+    .cycle-state-pill.day    { color: #f5c842; background: #2a200a; border-color: #4a3810; }
+    .cycle-state-pill.night  { color: #7cb3f5; background: #0a1428; border-color: #1a2848; }
+    .cycle-state-pill.warm   { color: #f5925a; background: #2a1008; border-color: #4a2010; }
+    .cycle-state-pill.cold   { color: #7ccff5; background: #081a2a; border-color: #102840; }
+    .cycle-state-pill.fass   { color: #e07060; background: #2a0a0a; border-color: #4a1010; }
+    .cycle-state-pill.vome   { color: #70b8e0; background: #08182a; border-color: #102438; }
+    .cycle-bar-bg {
+      height: 6px;
+      background: var(--bg3);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .cycle-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s linear;
+    }
+    .cycle-bar-fill.day   { background: linear-gradient(90deg, #c8a020, #f5c842); }
+    .cycle-bar-fill.night { background: linear-gradient(90deg, #3a6ab0, #7cb3f5); }
+    .cycle-bar-fill.warm  { background: linear-gradient(90deg, #c05020, #f5925a); }
+    .cycle-bar-fill.cold  { background: linear-gradient(90deg, #2880b0, #7ccff5); }
+    .cycle-bar-fill.fass  { background: linear-gradient(90deg, #a03020, #e07060); }
+    .cycle-bar-fill.vome  { background: linear-gradient(90deg, #2070a8, #70b8e0); }
+    .cycle-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cycle-hint {
+      font-size: 11px;
+      color: var(--text-hint);
+    }
+    .cycle-timer {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+    }
+    .cycle-timer-label {
+      font-size: 10px;
+      color: var(--text-dim);
+      text-align: right;
+    }
+
     /* ── Mobile responsiveness ── */
     @media (max-width: 600px) {
       .app { padding: 16px 12px 48px; }
@@ -464,6 +544,58 @@
   </div>
 
   <div class="section-title">
+    World State Cycles
+    <span style="font-size:10px;color:var(--text-hint);font-weight:400;letter-spacing:0;text-transform:none">Live · updates every 30 s</span>
+  </div>
+  <div class="cycles-grid" id="cycles-grid">
+    <!-- Cetus -->
+    <div class="cycle-card" id="cycle-cetus">
+      <div class="cycle-header">
+        <span class="cycle-name">Cetus</span>
+        <span class="cycle-state-pill" id="cetus-pill">—</span>
+      </div>
+      <div class="cycle-bar-bg"><div class="cycle-bar-fill" id="cetus-bar" style="width:0%"></div></div>
+      <div class="cycle-footer">
+        <span class="cycle-hint" id="cetus-hint">Night → Eidolons &amp; fishing</span>
+        <div style="text-align:right">
+          <div class="cycle-timer-label" id="cetus-timer-label">changes in</div>
+          <div class="cycle-timer" id="cetus-timer">—</div>
+        </div>
+      </div>
+    </div>
+    <!-- Orb Vallis -->
+    <div class="cycle-card" id="cycle-vallis">
+      <div class="cycle-header">
+        <span class="cycle-name">Orb Vallis</span>
+        <span class="cycle-state-pill" id="vallis-pill">—</span>
+      </div>
+      <div class="cycle-bar-bg"><div class="cycle-bar-fill" id="vallis-bar" style="width:0%"></div></div>
+      <div class="cycle-footer">
+        <span class="cycle-hint" id="vallis-hint">Cold → fishing &amp; conservation</span>
+        <div style="text-align:right">
+          <div class="cycle-timer-label" id="vallis-timer-label">changes in</div>
+          <div class="cycle-timer" id="vallis-timer">—</div>
+        </div>
+      </div>
+    </div>
+    <!-- Cambion Drift -->
+    <div class="cycle-card" id="cycle-cambion">
+      <div class="cycle-header">
+        <span class="cycle-name">Cambion Drift</span>
+        <span class="cycle-state-pill" id="cambion-pill">—</span>
+      </div>
+      <div class="cycle-bar-bg"><div class="cycle-bar-fill" id="cambion-bar" style="width:0%"></div></div>
+      <div class="cycle-footer">
+        <span class="cycle-hint" id="cambion-hint">Vome → fishing &amp; bounties</span>
+        <div style="text-align:right">
+          <div class="cycle-timer-label" id="cambion-timer-label">changes in</div>
+          <div class="cycle-timer" id="cambion-timer">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">
     <span>Weekly Activities</span>
     <button class="reset-all-btn" onclick="resetAll()">Reset all</button>
   </div>
@@ -505,6 +637,9 @@ const API   = 'https://api.warframestat.us/pc';
 const LANG  = '?language=en';
 const TIMEOUT = 8000;
 let wfFissureTickOn = false;
+let wfCycleTickOn = false;
+// Stores latest cycle payloads for the tick function
+const cycleState = { cetus: null, vallis: null, cambion: null };
 
 // ── State ──
 function getWeekKey() {
