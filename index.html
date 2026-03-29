@@ -505,7 +505,7 @@ async function init() {
   apiFetch(`${API}/voidTrader${LANG}`)
     .then(b => { renderBaro(b); live++; checkBadge(); })
     .catch(() => { document.getElementById('baro-status').textContent = 'Could not reach API'; checkBadge(); });
-    
+
 // Fetch live Void Fissures
 apiFetch(`${API}/fissures${LANG}`)
     .then(fissures => {
@@ -579,14 +579,16 @@ apiFetch(`${API}/arbitration${LANG}`)
 apiFetch(`${API}/archonHunt${LANG}`)
     .then(hunt => {
       const card = document.getElementById('card-archon');
-      if (!card || !hunt || !hunt.variants) return;
+      if (!card || !hunt) return;
+const missions = hunt.missions || hunt.variants || [];
+if (!missions.length) return;
       const old = card.querySelector('.card-live-info');
       if (old) old.remove();
       const info = document.createElement('div');
       info.className = 'card-live-info';
       info.innerHTML = '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">This week\'s missions:</div>'
         + '<div class="sortie-stages">'
-        + hunt.variants.map((v,i) =>
+        + missions.map((v,i) =>
             `<div class="sortie-stage">Stage ${i+1}: <strong>${v.missionType}</strong> — ${v.node}</div>`
           ).join('')
         + '</div>';
