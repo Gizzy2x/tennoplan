@@ -417,16 +417,22 @@ let lastArbitrationPayload = null;
 let wfArbTickOn = false;
 function persist() { localStorage.setItem('wf-tracker-v2', JSON.stringify(state)); }
 
-// ── Fetch with timeout ──
-async function apiFetch(url) {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), TIMEOUT);
-  try {
-    const r = await fetch(url, { signal: ctrl.signal });
-    clearTimeout(t);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    return await r.json();
-  } catch(e) { clearTimeout(t); throw e; }
+// ── Fetch with timeout + retry ──
+async function apiFetch(url, { retries = 3, retryDelay = 2000 } = {}) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), TIMEOUT);
+    try {
+      const r = await fetch(url, { signal: ctrl.signal });
+      clearTimeout(t);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return await r.json();
+    } catch(e) {
+      clearTimeout(t);
+      if (attempt === retries) throw e;
+      await new Promise(res => setTimeout(res, retryDelay));
+    }
+  }
 }
 
 // ── Badge ──
@@ -777,9 +783,16 @@ async function init() {
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  let live = 0;
-  const needed = 1;
-  function checkBadge() { setBadge(live >= needed ? 'live' : live > 0 ? 'partial' : 'offline'); }
+  let liveOk = 0;
+  let liveFail = 0;
+  const TOTAL_ENDPOINTS = 5; // nightwave, baro, sortie, archon, fissures
+  function checkBadge() {
+    const attempted = liveOk + liveFail;
+    if (attempted === 0) { setBadge('loading'); return; }
+    if (liveOk === 0) setBadge('offline');
+    else if (liveOk >= TOTAL_ENDPOINTS) setBadge('live');
+    else setBadge('partial');
+  }
 
   // 3. Fetch live Nightwave
   apiFetch(`${API}/nightwave${LANG}`)
@@ -792,15 +805,22 @@ async function init() {
           type:     c.isElite ? 'weekly elite' : c.isDaily ? 'daily' : 'weekly'
         }));
         renderNightwave(acts, nw.season ? 'Season ' + nw.season : 'Current season');
-        live++; checkBadge();
-      } else { checkBadge(); }
+        liveOk++; checkBadge();
+      } else { liveFail++; checkBadge(); }
     })
-    .catch(() => checkBadge());
+    .catch(() => {
+      document.getElementById('nw-season').textContent = 'Showing cached acts — live data unavailable';
+      liveFail++; checkBadge();
+    });
 
   // 4. Fetch live Baro
   apiFetch(`${API}/voidTrader${LANG}`)
-    .then(b => { renderBaro(b); live++; checkBadge(); })
-    .catch(() => { document.getElementById('baro-status').textContent = 'Could not reach API'; checkBadge(); });
+    .then(b => { renderBaro(b); liveOk++; checkBadge(); })
+    .catch(() => {
+      document.getElementById('baro-status').textContent = 'Live data unavailable — check back soon';
+      document.getElementById('baro-timer').textContent = '—';
+      liveFail++; checkBadge();
+    });
 
   // Void Fissures: same wrapper on every fetch + ticking timers + periodic refetch (list was static after first paint)
   const FISSURES_POLL_MS = 60000;
@@ -894,10 +914,16 @@ async function init() {
     wfFissureTickOn = true;
     setInterval(tickFissureTimers, 1000);
   }
+  let fissuresFirstLoad = true;
   function loadVoidFissures() {
     apiFetch(`${API}/fissures${LANG}`)
-      .then(renderVoidFissures)
-      .catch(() => {});
+      .then(data => {
+        renderVoidFissures(data);
+        if (fissuresFirstLoad) { fissuresFirstLoad = false; liveOk++; checkBadge(); }
+      })
+      .catch(() => {
+        if (fissuresFirstLoad) { fissuresFirstLoad = false; liveFail++; checkBadge(); }
+      });
   }
   loadVoidFissures();
   setInterval(loadVoidFissures, FISSURES_POLL_MS);
@@ -914,9 +940,9 @@ async function init() {
 apiFetch(`${API}/archonHunt${LANG}`)
     .then(hunt => {
       const card = document.getElementById('card-archon');
-      if (!card || !hunt) return;
+      if (!card || !hunt) { liveFail++; checkBadge(); return; }
 const missions = hunt.missions || hunt.variants || [];
-if (!missions.length) return;
+if (!missions.length) { liveFail++; checkBadge(); return; }
       const old = card.querySelector('.card-live-info');
       if (old) old.remove();
       const info = document.createElement('div');
@@ -928,14 +954,15 @@ if (!missions.length) return;
           ).join('')
         + '</div>';
       card.querySelector('.card-footer').before(info);
+      liveOk++; checkBadge();
     })
-    .catch(() => {});
+    .catch(() => { liveFail++; checkBadge(); });
 
   // 5. Fetch live Sortie to enrich the sortie card
   apiFetch(`${API}/sortie${LANG}`)
     .then(s => {
       const card = document.getElementById('card-sortie');
-      if (!card || !s || !s.variants) return;
+      if (!card || !s || !s.variants) { liveFail++; checkBadge(); return; }
       const old = card.querySelector('.card-live-info');
       if (old) old.remove();
       const info = document.createElement('div');
@@ -945,8 +972,9 @@ if (!missions.length) return;
         + s.variants.map((v,i) => `<div class="sortie-stage">Stage ${i+1}: <strong>${v.missionType}</strong> — ${v.modifier}</div>`).join('')
         + '</div>';
       card.querySelector('.card-footer').before(info);
+      liveOk++; checkBadge();
     })
-    .catch(() => {});
+    .catch(() => { liveFail++; checkBadge(); });
 }
 
 init();
