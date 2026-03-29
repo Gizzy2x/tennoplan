@@ -296,6 +296,18 @@
     .inv-offline { font-size: 12px; color: var(--text-dim); padding: 4px 0; }
     .inv-empty   { font-size: 12px; color: var(--text-hint); padding: 4px 0; }
 
+    /* ── Notable Alerts ── */
+    .alerts-list { display: flex; flex-direction: column; gap: 8px; }
+    .alert-row {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 12px 14px; display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .alert-left { flex: 1; min-width: 0; }
+    .alert-reward { font-size: 13px; font-weight: 600; color: var(--gold); }
+    .alert-meta   { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+    .alert-timer  { font-size: 13px; font-weight: 600; color: var(--gold); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+
     .skeleton { height: 80px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); animation: pulse 1.5s ease-in-out infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
@@ -619,6 +631,12 @@
 
   <div class="section-title">Daily Activities</div>
   <div class="cards" id="daily-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
+
+  <!-- Notable Alerts: hidden when no matching alerts are active -->
+  <div id="alerts-section" style="display:none">
+    <div class="section-title">Notable Alerts</div>
+    <div id="alerts-container"></div>
+  </div>
 
   <div class="section-title">
     Invasions
@@ -1571,6 +1589,77 @@ if (!missions.length) { liveFail++; checkBadge(); return; }
   setInterval(loadCetusCycle,   CYCLES_POLL_MS);
   setInterval(loadVallisCycle,  CYCLES_POLL_MS);
   setInterval(loadCambionCycle, CYCLES_POLL_MS);
+
+  // ── Notable Alerts ──
+  // Fetches /alerts and shows only alerts with notable reward types.
+  // Section is hidden entirely when no matching alerts are active.
+  // Not tracked in the live badge — intentionally omitted since the section is often empty.
+  const ALERTS_POLL_MS = 120000;
+  const NOTABLE_TYPES  = ['nitain', 'helm', 'skin', 'vandal', 'wraith', 'weapon'];
+  let alertsTickOn = false;
+
+  function renderAlerts(data) {
+    const section = document.getElementById('alerts-section');
+    if (!section) return;
+
+    // Keep only alerts whose rewardTypes contain a notable keyword
+    const notable = (data || []).filter(a => {
+      const types = (a.rewardTypes || []).map(t => String(t).toLowerCase());
+      return types.some(t => NOTABLE_TYPES.some(n => t.includes(n)));
+    });
+
+    if (!notable.length) { section.style.display = 'none'; return; }
+
+    const container = document.getElementById('alerts-container');
+    const list = document.createElement('div');
+    list.className = 'alerts-list';
+
+    notable.forEach(a => {
+      const mission   = a.mission || {};
+      const reward    = mission.reward || {};
+      const rewardStr = reward.asString || reward.itemString || 'Unknown reward';
+      const node      = mission.node || a.node || 'Unknown';
+      const type      = mission.type || a.type || '';
+      const minLvl    = mission.minEnemyLevel != null ? mission.minEnemyLevel : a.minEnemyLevel;
+      const maxLvl    = mission.maxEnemyLevel != null ? mission.maxEnemyLevel : a.maxEnemyLevel;
+      const levels    = (minLvl != null && maxLvl != null) ? ` · Lvl ${minLvl}–${maxLvl}` : '';
+      const expiry    = a.expiry || '';
+
+      const row = document.createElement('div');
+      row.className = 'alert-row';
+      row.innerHTML = `
+        <div class="alert-left">
+          <div class="alert-reward">${rewardStr}</div>
+          <div class="alert-meta">${node}${type ? ' · ' + type : ''}${levels}</div>
+        </div>
+        <div class="alert-timer"${expiry ? ` data-alert-expiry="${expiry}"` : ''}>${expiry ? formatDur(new Date(expiry) - Date.now()) : '—'}</div>`;
+      list.appendChild(row);
+    });
+
+    container.innerHTML = '';
+    container.appendChild(list);
+    section.style.display = '';
+
+    // Start a single shared tick for all alert countdown timers
+    if (!alertsTickOn) {
+      alertsTickOn = true;
+      setInterval(() => {
+        document.querySelectorAll('[data-alert-expiry]').forEach(el => {
+          const exp = el.getAttribute('data-alert-expiry');
+          if (exp) el.textContent = formatDur(new Date(exp) - Date.now());
+        });
+      }, 1000);
+    }
+  }
+
+  function loadAlerts() {
+    apiFetch(`${API}/alerts${LANG}`)
+      .then(data => renderAlerts(data))
+      .catch(() => {}); // silent fail — section stays hidden
+  }
+
+  loadAlerts();
+  setInterval(loadAlerts, ALERTS_POLL_MS);
 }
 
 init();
