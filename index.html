@@ -672,28 +672,49 @@ function getWeekKey() {
 }
 const WEEK_KEY = getWeekKey();
 let state = JSON.parse(localStorage.getItem('wf-tracker-v2') || '{}');
-if (!state[WEEK_KEY]) state[WEEK_KEY] = { tasks:{}, nw:{}, runs:{ eda:{normal:false,elite:false}, net:[], tmp:{normal:false,elite:false} } };
+const RUNS_DEFAULT = { edaNormal:false, edaElite:false, taNormal:false, taElite:false, net1:false, net2:false, net3:false, net4:false, net5:false };
+if (!state[WEEK_KEY]) state[WEEK_KEY] = { tasks:{}, nw:{}, runs:{ ...RUNS_DEFAULT } };
 if (!state.arb) state.arb = { doneForKey: null };
 const week = state[WEEK_KEY];
+
+// ── Pulse migration ──
+// Converts any prior storage format to the new flat boolean model.
+// v3 (current): flat keys edaNormal, edaElite, taNormal, taElite, net1–net5
+// v2: nested { eda:{normal,elite}, tmp:{normal,elite}, net:[indices] }
+// v1: arrays or alloc/pulses keys
 function migratePulseWeek(w) {
-  // Already in new tiered format
-  if (w.runs && w.runs.eda && !Array.isArray(w.runs.eda) && typeof w.runs.eda.normal !== 'undefined') return false;
-  // Migrate from old array format
-  const oldEda = Array.isArray(w.runs && w.runs.eda) ? w.runs.eda.length > 0 : false;
-  const oldTmp = Array.isArray(w.runs && w.runs.tmp) ? w.runs.tmp.length > 0 : false;
-  const oldNet = (w.runs && Array.isArray(w.runs.net)) ? w.runs.net.slice() : [];
-  if (w.alloc && typeof w.alloc === 'object') {
-    const n = Math.min(5, w.alloc.net | 0);
-    for (let i = 0; i < n; i++) if (!oldNet.includes(i)) oldNet.push(i);
+  if (w.runs && 'edaNormal' in w.runs) return false; // already flat
+  const r = w.runs || {};
+
+  // Read tiered v2 format
+  let edaN = false, edaE = false, taN = false, taE = false;
+  const net = [false, false, false, false, false];
+
+  if (r.eda && typeof r.eda === 'object' && !Array.isArray(r.eda)) {
+    edaN = !!r.eda.normal; edaE = !!r.eda.elite;
+  } else if (Array.isArray(r.eda)) {
+    edaN = r.eda.length > 0;
+  }
+  if (r.tmp && typeof r.tmp === 'object' && !Array.isArray(r.tmp)) {
+    taN = !!r.tmp.normal; taE = !!r.tmp.elite;
+  } else if (Array.isArray(r.tmp)) {
+    taN = r.tmp.length > 0;
+  }
+  if (Array.isArray(r.net)) {
+    r.net.forEach(i => { if (i >= 0 && i < 5) net[i] = true; });
+  }
+
+  // Read v1 formats (alloc / pulses)
+  if (r.alloc && typeof r.alloc === 'object') {
+    const n = Math.min(5, r.alloc.net | 0);
+    for (let i = 0; i < n; i++) net[i] = true;
   } else if (Array.isArray(w.pulses)) {
     const c = w.pulses.filter(Boolean).length;
-    for (let i = 0; i < Math.min(5, c); i++) if (!oldNet.includes(i)) oldNet.push(i);
+    for (let i = 0; i < Math.min(5, c); i++) net[i] = true;
   }
-  w.runs = {
-    eda: { normal: oldEda, elite: false },
-    net: oldNet.slice(0, 5),
-    tmp: { normal: oldTmp, elite: false }
-  };
+
+  w.runs = { edaNormal:edaN, edaElite:edaE, taNormal:taN, taElite:taE,
+             net1:net[0], net2:net[1], net3:net[2], net4:net[3], net5:net[4] };
   delete w.pulses; delete w.alloc;
   return true;
 }
@@ -759,54 +780,50 @@ function renderCards(weekly, daily) {
 }
 
 // ── Pulses ──
+// Each key in week.runs is exactly 1 pulse — count is simply the number of true values.
 function countPulsesUsed() {
-  const r = week.runs;
-  let n = r.net.length;
-  if (r.eda && !Array.isArray(r.eda) && r.eda.normal) n++;
-  if (r.eda && !Array.isArray(r.eda) && r.eda.elite)  n++;
-  if (r.tmp && !Array.isArray(r.tmp) && r.tmp.normal) n++;
-  if (r.tmp && !Array.isArray(r.tmp) && r.tmp.elite)  n++;
-  return n;
+  return Object.values(week.runs).filter(Boolean).length;
 }
 
 // EDA / Temporal: Normal + optional Elite tier
+// Cascade rules: turning Elite ON auto-sets Normal first; turning Normal OFF auto-clears Elite first.
 function toggleTieredRun(mode, tier) {
-  if (!week.runs[mode] || Array.isArray(week.runs[mode])) {
-    week.runs[mode] = { normal: false, elite: false };
-  }
-  const m = week.runs[mode];
+  const nk = mode === 'eda' ? 'edaNormal' : 'taNormal';
+  const ek = mode === 'eda' ? 'edaElite'  : 'taElite';
+  const r  = week.runs;
+
   if (tier === 'elite') {
-    if (m.elite) {
-      m.elite = false; // uncheck elite only
+    if (r[ek]) {
+      r[ek] = false; // turn elite off; normal stays
     } else {
-      const extraCost = m.normal ? 1 : 2;
+      // Cascade: elite on requires normal — cost is 1 if normal already set, 2 if not
+      const extraCost = r[nk] ? 1 : 2;
       if (countPulsesUsed() + extraCost > 5) return;
-      m.normal = true;
-      m.elite  = true;
+      r[nk] = true;
+      r[ek] = true;
     }
-  } else {
-    if (m.normal) {
-      if (m.elite) return; // blocked — must uncheck elite first
-      m.normal = false;
+  } else { // normal tier
+    if (r[nk]) {
+      // Cascade: turning normal off first clears elite, then clears normal
+      r[ek] = false;
+      r[nk] = false;
     } else {
       if (countPulsesUsed() >= 5) return;
-      m.normal = true;
+      r[nk] = true;
     }
   }
   persist();
   renderPulses();
 }
 
-// Netracells: simple index array
+// Netracells: each run is a flat boolean key net1–net5
 function toggleNetRun(idx) {
-  const arr = week.runs.net;
-  const pos = arr.indexOf(idx);
-  if (pos >= 0) {
-    arr.splice(pos, 1);
+  const key = 'net' + (idx + 1);
+  if (week.runs[key]) {
+    week.runs[key] = false;
   } else {
     if (countPulsesUsed() >= 5) return;
-    arr.push(idx);
-    arr.sort((a, b) => a - b);
+    week.runs[key] = true;
   }
   persist();
   renderPulses();
@@ -819,21 +836,18 @@ function renderPulses() {
   if (labelEl) labelEl.textContent = used + ' / 5 pulses used this week';
   if (fillEl)  fillEl.style.width  = (used / 5 * 100) + '%';
 
-  // Tiered modes
-  ['eda','tmp'].forEach(mode => {
-    const m = week.runs[mode];
-    const normalOn = m && !Array.isArray(m) && m.normal;
-    const eliteOn  = m && !Array.isArray(m) && m.elite;
+  // Tiered modes — read flat keys
+  [['eda','edaNormal','edaElite'],['tmp','taNormal','taElite']].forEach(([mode, nk, ek]) => {
     const nEl = document.querySelector('.pulse-run[data-mode="' + mode + '"][data-tier="normal"]');
     const eEl = document.querySelector('.pulse-run[data-mode="' + mode + '"][data-tier="elite"]');
-    if (nEl) nEl.classList.toggle('pulse-run-on', !!normalOn);
-    if (eEl) eEl.classList.toggle('pulse-run-on', !!eliteOn);
+    if (nEl) nEl.classList.toggle('pulse-run-on', !!week.runs[nk]);
+    if (eEl) eEl.classList.toggle('pulse-run-on', !!week.runs[ek]);
   });
 
-  // Netracells
+  // Netracells — read flat keys net1–net5
   document.querySelectorAll('.pulse-run[data-mode="net"]').forEach(el => {
     const idx = +el.getAttribute('data-idx');
-    el.classList.toggle('pulse-run-on', week.runs.net.includes(idx));
+    el.classList.toggle('pulse-run-on', !!week.runs['net' + (idx + 1)]);
   });
 }
 
@@ -1024,7 +1038,7 @@ function updateCountdown() {
 function resetAll() {
   if (!confirm('Reset all weekly tasks and pulse tracking? This cannot be undone.')) return;
   week.tasks = {}; week.nw = {};
-  week.runs = { eda:{normal:false,elite:false}, net:[], tmp:{normal:false,elite:false} };
+  week.runs = { ...RUNS_DEFAULT };
   state.arb = { doneForKey: null };
   persist(); location.reload();
 }
