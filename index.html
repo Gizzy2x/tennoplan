@@ -122,6 +122,16 @@
     }
     .arb-next-cycle-time span[data-arb-until] { color: var(--gold); }
 
+    .wf-fissures-stack { display: flex; flex-direction: column; gap: 14px; }
+    .fissure-tier-block { display: flex; flex-direction: column; gap: 6px; }
+    .fissure-tier-heading {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      margin: 0; padding: 8px 0 4px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .fissure-tier-heading .fissure-tier-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .fissure-tier-empty { font-size: 11px; color: var(--text-hint); padding: 4px 0 2px 2px; }
+
     .pulse-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
     .pulse-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .pulse-title { font-size: 14px; font-weight: 600; color: var(--text); }
@@ -659,14 +669,38 @@ async function init() {
 
   // Void Fissures: same wrapper on every fetch + ticking timers + periodic refetch (list was static after first paint)
   const FISSURES_POLL_MS = 60000;
+  function normalizeFissureTier(raw) {
+    if (raw == null || raw === '') return 'Unknown';
+    const s = String(raw).trim();
+    const lower = s.toLowerCase();
+    const map = { lith: 'Lith', meso: 'Meso', neo: 'Neo', axi: 'Axi', requiem: 'Requiem', omnia: 'Omnia' };
+    if (map[lower]) return map[lower];
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  }
   function renderVoidFissures(fissures) {
     if (!fissures || !fissures.length) return;
-    const tiers = ['Lith','Meso','Neo','Axi','Requiem','Omnia'];
+    const tierOrder = ['Lith', 'Meso', 'Neo', 'Axi', 'Requiem', 'Omnia'];
     const colors = { Lith:'#5dc98a', Meso:'#6ea8e8', Neo:'#c8a84b', Axi:'#b87de8', Requiem:'#e05c5c', Omnia:'#4fc3f7' };
     const filtered = fissures
       .filter(f => !f.isStorm)
-      .sort((a,b) => tiers.indexOf(a.tier) - tiers.indexOf(b.tier));
+      .map(f => ({ ...f, _tier: normalizeFissureTier(f.tier) }))
+      .sort((a, b) => {
+        const ia = tierOrder.indexOf(a._tier), ib = tierOrder.indexOf(b._tier);
+        const sa = ia === -1 ? 999 : ia;
+        const sb = ib === -1 ? 999 : ib;
+        if (sa !== sb) return sa - sb;
+        if (a._tier !== b._tier) return a._tier.localeCompare(b._tier);
+        return new Date(a.expiry || 0) - new Date(b.expiry || 0);
+      });
     if (!filtered.length) return;
+    const byTier = {};
+    filtered.forEach(f => {
+      const t = f._tier;
+      if (!byTier[t]) byTier[t] = [];
+      byTier[t].push(f);
+    });
+    const extraTiers = Object.keys(byTier).filter(t => tierOrder.indexOf(t) === -1).sort();
+    const tiersToShow = tierOrder.concat(extraTiers);
     const daily = document.getElementById('daily-cards');
     if (!daily) return;
     let wrap = document.getElementById('wf-fissures-live');
@@ -681,21 +715,38 @@ async function init() {
     title.style.marginTop = '28px';
     title.innerHTML = 'Void Fissures <span style="font-size:10px;color:var(--green);margin-left:8px">LIVE</span>';
     wrap.appendChild(title);
-    const grid = document.createElement('div');
-    grid.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
-    filtered.slice(0, 8).forEach(f => {
-      const exp = f.expiry || '';
-      const color = colors[f.tier] || '#6b7494';
-      const row = document.createElement('div');
-      row.style.cssText = `display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;border-left:3px solid ${color};`;
-      const t = formatDur(new Date(exp) - Date.now());
-      row.innerHTML = `
-        <div style="font-size:11px;font-weight:700;color:${color};min-width:54px">${f.tier}</div>
-        <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType} — ${f.node}</div>
-        <div class="fissure-time" data-expiry="${exp.replace(/"/g, '')}" style="font-size:11px;color:var(--text-dim)">${t}</div>`;
-      grid.appendChild(row);
+    const stack = document.createElement('div');
+    stack.className = 'wf-fissures-stack';
+    tiersToShow.forEach(tierName => {
+      const list = byTier[tierName] || [];
+      const color = colors[tierName] || '#6b7494';
+      const block = document.createElement('div');
+      block.className = 'fissure-tier-block';
+      const head = document.createElement('div');
+      head.className = 'fissure-tier-heading';
+      head.style.color = color;
+      head.innerHTML = `<span class="fissure-tier-dot" style="background:${color};box-shadow:0 0 8px ${color}55"></span>${tierName} relics`;
+      block.appendChild(head);
+      if (!list.length) {
+        const empty = document.createElement('div');
+        empty.className = 'fissure-tier-empty';
+        empty.textContent = 'No active fissures right now — check again after the next rotation.';
+        block.appendChild(empty);
+      } else {
+        list.forEach(f => {
+          const exp = f.expiry || '';
+          const row = document.createElement('div');
+          row.style.cssText = `display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;border-left:3px solid ${color};`;
+          const t = formatDur(new Date(exp) - Date.now());
+          row.innerHTML = `
+            <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType} — ${f.node}</div>
+            <div class="fissure-time" data-expiry="${exp.replace(/"/g, '')}" style="font-size:11px;color:var(--text-dim);white-space:nowrap">${t}</div>`;
+          block.appendChild(row);
+        });
+      }
+      stack.appendChild(block);
     });
-    wrap.appendChild(grid);
+    wrap.appendChild(stack);
   }
   function tickFissureTimers() {
     document.querySelectorAll('.fissure-time').forEach(el => {
