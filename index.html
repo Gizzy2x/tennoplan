@@ -447,8 +447,7 @@ async function init() {
   // 1. Load local fallback data
   let taskData;
   try {
-    const r = await fetch('./tasks.json');
-    taskData = await r.json();
+    throw new Error('use inline');
   } catch(e) {
     taskData = {
       weekly: [
