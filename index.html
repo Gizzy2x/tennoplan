@@ -22,6 +22,8 @@
       --red:       #e05c5c;
       --amber:     #e09c3a;
       --radius:    10px;
+      --card-bg:   var(--bg2);
+      --pulse-accent: #7c6af7;
     }
 
     html, body {
@@ -132,32 +134,59 @@
     .fissure-tier-heading .fissure-tier-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .fissure-tier-empty { font-size: 11px; color: var(--text-hint); padding: 4px 0 2px 2px; }
 
-    .pulse-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
-    .pulse-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .pulse-title { font-size: 14px; font-weight: 600; color: var(--text); }
-    .pulse-sub   { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
-    .pulse-count { font-size: 22px; font-weight: 700; color: var(--accent2); }
-    .pulse-count span { font-size: 13px; font-weight: 400; color: var(--text-dim); }
-    .pulse-pips { display: flex; gap: 8px; margin-bottom: 16px; }
-    .pip {
-      flex: 1; height: 36px; border-radius: 8px; border: 2px solid var(--border);
-      background: var(--bg3); cursor: pointer; transition: background 0.15s, border-color 0.15s;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 600; color: var(--text-dim); letter-spacing: 0.05em;
+    .pulse-box { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+    .pulse-progress-wrap { margin-bottom: 18px; }
+    .pulse-progress-head { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; }
+    .pulse-progress-head span { color: var(--text); font-weight: 600; }
+    .pulse-progress-bar-bg {
+      height: 10px; background: var(--bg3); border-radius: 6px; overflow: hidden;
+      border: 1px solid var(--border);
     }
-    .pip.used { background: #1a1a3a; border-color: var(--accent2); color: var(--accent2); }
-    .pip:hover { border-color: #4a4f70; }
-    .pulse-alloc { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-    .alloc-item { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px; text-align: center; }
-    .alloc-name { font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
-    .alloc-controls { display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .alloc-btn {
-      width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border);
-      background: var(--bg2); color: var(--text); font-size: 14px; line-height: 1; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; transition: background 0.1s;
+    .pulse-progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #5a4fcf, var(--pulse-accent), #a78bfa);
+      border-radius: 6px;
+      transition: width 0.35s ease;
+      box-shadow: 0 0 12px rgba(124, 106, 247, 0.35);
     }
-    .alloc-btn:hover { background: var(--bg3); border-color: var(--accent2); color: var(--accent2); }
-    .alloc-val { font-size: 16px; font-weight: 700; color: var(--accent2); min-width: 18px; text-align: center; }
+    .pulse-mode-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;
+    }
+    .pulse-mode-card {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 14px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .pulse-mode-head {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+    }
+    .pulse-mode-title { font-size: 13px; font-weight: 600; color: var(--text); flex: 1; min-width: 0; }
+    .pulse-help {
+      width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border);
+      background: var(--bg3); color: var(--text-dim); font-size: 11px; font-weight: 700;
+      line-height: 18px; text-align: center; cursor: help; flex-shrink: 0;
+    }
+    .pulse-cost-pill {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--pulse-accent); border: 1px solid rgba(124, 106, 247, 0.45);
+      background: rgba(124, 106, 247, 0.12); border-radius: 20px; padding: 4px 10px;
+    }
+    .pulse-runs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pulse-run {
+      display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+      padding: 8px 12px; border-radius: 999px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text-dim); font-size: 12px; font-weight: 500;
+      transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+      user-select: none;
+    }
+    .pulse-run:hover { border-color: var(--pulse-accent); color: var(--text); background: var(--bg3); }
+    .pulse-run-on {
+      border-color: var(--pulse-accent); color: var(--text);
+      background: rgba(124, 106, 247, 0.15); box-shadow: 0 0 0 1px rgba(124, 106, 247, 0.25);
+    }
+    .pulse-run-input {
+      width: 16px; height: 16px; margin: 0; flex-shrink: 0;
+      accent-color: var(--pulse-accent); cursor: pointer; pointer-events: none;
+    }
 
     .nw-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
     .nw-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
@@ -237,44 +266,50 @@
   </div>
 
   <div class="section-title">Search Pulse Budget</div>
-  <div class="pulse-box">
-    <div class="pulse-header">
-      <div>
-        <div class="pulse-title">Weekly Search Pulses</div>
-        <div class="pulse-sub">5 total · shared across EDA, Netracells &amp; Temporal Archimedea</div>
-      </div>
-      <div class="pulse-count"><span id="pulses-used">0</span><span> / 5 used</span></div>
+  <div class="pulse-box" id="pulse-budget-box">
+    <div class="pulse-progress-wrap">
+      <div class="pulse-progress-head"><span id="pulses-used-label">0 / 5 pulses used this week</span></div>
+      <div class="pulse-progress-bar-bg"><div class="pulse-progress-bar-fill" id="pulse-progress-fill" style="width:0%"></div></div>
     </div>
-    <div class="pulse-pips" id="pulse-pips">
-      <div class="pip" onclick="togglePip(0)">1</div>
-      <div class="pip" onclick="togglePip(1)">2</div>
-      <div class="pip" onclick="togglePip(2)">3</div>
-      <div class="pip" onclick="togglePip(3)">4</div>
-      <div class="pip" onclick="togglePip(4)">5</div>
-    </div>
-    <div class="pulse-alloc">
-      <div class="alloc-item">
-        <div class="alloc-name">Deep Archimedea</div>
-        <div class="alloc-controls">
-          <button class="alloc-btn" onclick="adjustAlloc('eda',-1)">−</button>
-          <div class="alloc-val" id="alloc-eda">0</div>
-          <button class="alloc-btn" onclick="adjustAlloc('eda',1)">+</button>
+    <div class="pulse-mode-grid">
+      <div class="pulse-mode-card">
+        <div class="pulse-mode-head">
+          <span class="pulse-mode-title">Deep Archimedea</span>
+          <span class="pulse-help" title="Deep Archimedea (EDA): weekly high-difficulty Archimedea endurance. Costs one Search Pulse per run you mark here.">?</span>
+          <span class="pulse-cost-pill">1 pulse</span>
+        </div>
+        <div class="pulse-runs">
+          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('eda', 0);">
+            <input type="checkbox" class="pulse-run-input" data-mode="eda" data-idx="0" tabindex="-1" />
+            <span>Weekly run</span>
+          </label>
         </div>
       </div>
-      <div class="alloc-item">
-        <div class="alloc-name">Netracells</div>
-        <div class="alloc-controls">
-          <button class="alloc-btn" onclick="adjustAlloc('net',-1)">−</button>
-          <div class="alloc-val" id="alloc-net">0</div>
-          <button class="alloc-btn" onclick="adjustAlloc('net',1)">+</button>
+      <div class="pulse-mode-card">
+        <div class="pulse-mode-head">
+          <span class="pulse-mode-title">Netracells</span>
+          <span class="pulse-help" title="Netracells: assassination targets that each consume a Search Pulse. Track up to five runs per week here.">?</span>
+          <span class="pulse-cost-pill">1 pulse each</span>
+        </div>
+        <div class="pulse-runs">
+          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('net', 0);"><input type="checkbox" class="pulse-run-input" data-mode="net" data-idx="0" tabindex="-1" /><span>Run 1</span></label>
+          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('net', 1);"><input type="checkbox" class="pulse-run-input" data-mode="net" data-idx="1" tabindex="-1" /><span>Run 2</span></label>
+          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('net', 2);"><input type="checkbox" class="pulse-run-input" data-mode="net" data-idx="2" tabindex="-1" /><span>Run 3</span></label>
+          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('net', 3);"><input type="checkbox" class="pulse-run-input" data-mode="net" data-idx="3" tabindex="-1" /><span>Run 4</span></label>
+          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('net', 4);"><input type="checkbox" class="pulse-run-input" data-mode="net" data-idx="4" tabindex="-1" /><span>Run 5</span></label>
         </div>
       </div>
-      <div class="alloc-item">
-        <div class="alloc-name">Temporal Arch.</div>
-        <div class="alloc-controls">
-          <button class="alloc-btn" onclick="adjustAlloc('tmp',-1)">−</button>
-          <div class="alloc-val" id="alloc-tmp">0</div>
-          <button class="alloc-btn" onclick="adjustAlloc('tmp',1)">+</button>
+      <div class="pulse-mode-card">
+        <div class="pulse-mode-head">
+          <span class="pulse-mode-title">Temporal Archimedea</span>
+          <span class="pulse-help" title="Temporal Archimedea: weekly variant with its own reward pool. Costs one Search Pulse for the run you mark here.">?</span>
+          <span class="pulse-cost-pill">1 pulse</span>
+        </div>
+        <div class="pulse-runs">
+          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('tmp', 0);">
+            <input type="checkbox" class="pulse-run-input" data-mode="tmp" data-idx="0" tabindex="-1" />
+            <span>Weekly run</span>
+          </label>
         </div>
       </div>
     </div>
@@ -339,9 +374,34 @@ function getWeekKey() {
 }
 const WEEK_KEY = getWeekKey();
 let state = JSON.parse(localStorage.getItem('wf-tracker-v2') || '{}');
-if (!state[WEEK_KEY]) state[WEEK_KEY] = { tasks:{}, nw:{}, pulses:[false,false,false,false,false], alloc:{eda:0,net:0,tmp:0} };
+if (!state[WEEK_KEY]) state[WEEK_KEY] = { tasks:{}, nw:{}, runs:{ eda:[], net:[], tmp:[] } };
 if (!state.arb) state.arb = { doneForKey: null };
 const week = state[WEEK_KEY];
+function migratePulseWeek(w) {
+  if (w.runs && Array.isArray(w.runs.eda) && Array.isArray(w.runs.net) && Array.isArray(w.runs.tmp)) return false;
+  w.runs = { eda: [], net: [], tmp: [] };
+  if (w.alloc && typeof w.alloc === 'object') {
+    if ((w.alloc.eda | 0) > 0) w.runs.eda.push(0);
+    const n = Math.min(5, w.alloc.net | 0);
+    for (let i = 0; i < n; i++) w.runs.net.push(i);
+    if ((w.alloc.tmp | 0) > 0) w.runs.tmp.push(0);
+  } else if (Array.isArray(w.pulses)) {
+    const c = w.pulses.filter(Boolean).length;
+    for (let i = 0; i < Math.min(5, c); i++) w.runs.net.push(i);
+  }
+  let used = w.runs.eda.length + w.runs.net.length + w.runs.tmp.length;
+  while (used > 5) {
+    if (w.runs.net.length) w.runs.net.pop();
+    else if (w.runs.eda.length) w.runs.eda.pop();
+    else if (w.runs.tmp.length) w.runs.tmp.pop();
+    used--;
+  }
+  w.runs.net.sort((a, b) => a - b);
+  delete w.pulses;
+  delete w.alloc;
+  return true;
+}
+if (migratePulseWeek(week)) persist();
 let lastArbitrationPayload = null;
 let wfArbTickOn = false;
 function persist() { localStorage.setItem('wf-tracker-v2', JSON.stringify(state)); }
@@ -397,17 +457,38 @@ function renderCards(weekly, daily) {
 }
 
 // ── Pulses ──
-function renderPulses() {
-  let used = 0;
-  document.querySelectorAll('.pip').forEach((p,i) => { p.classList.toggle('used', week.pulses[i]); if(week.pulses[i]) used++; });
-  document.getElementById('pulses-used').textContent = used;
-  ['eda','net','tmp'].forEach(k => document.getElementById('alloc-'+k).textContent = week.alloc[k]);
+function countPulsesUsed() {
+  return week.runs.eda.length + week.runs.net.length + week.runs.tmp.length;
 }
-function togglePip(i) { week.pulses[i] = !week.pulses[i]; renderPulses(); persist(); }
-function adjustAlloc(k, d) {
-  if (d > 0 && week.alloc.eda+week.alloc.net+week.alloc.tmp >= 5) return;
-  week.alloc[k] = Math.max(0, week.alloc[k] + d);
-  renderPulses(); persist();
+function togglePulseRun(mode, idx) {
+  const r = week.runs[mode];
+  const pos = r.indexOf(idx);
+  if (pos >= 0) r.splice(pos, 1);
+  else {
+    if (countPulsesUsed() >= 5) return;
+    if (mode === 'eda' && r.length >= 1) return;
+    if (mode === 'tmp' && r.length >= 1) return;
+    if (mode === 'net' && r.length >= 5) return;
+    r.push(idx);
+    r.sort((a, b) => a - b);
+  }
+  persist();
+  renderPulses();
+}
+function renderPulses() {
+  const used = countPulsesUsed();
+  const labelEl = document.getElementById('pulses-used-label');
+  const fillEl = document.getElementById('pulse-progress-fill');
+  if (labelEl) labelEl.textContent = used + ' / 5 pulses used this week';
+  if (fillEl) fillEl.style.width = (used / 5 * 100) + '%';
+  document.querySelectorAll('.pulse-run-input').forEach(inp => {
+    const mode = inp.getAttribute('data-mode');
+    const idx = +inp.getAttribute('data-idx');
+    const on = week.runs[mode] && week.runs[mode].includes(idx);
+    inp.checked = on;
+    const lab = inp.closest('.pulse-run');
+    if (lab) lab.classList.toggle('pulse-run-on', on);
+  });
 }
 
 // ── Nightwave ──
@@ -597,8 +678,7 @@ function updateCountdown() {
 function resetAll() {
   if (!confirm('Reset all weekly tasks and pulse tracking? This cannot be undone.')) return;
   week.tasks = {}; week.nw = {};
-  week.pulses = [false,false,false,false,false];
-  week.alloc  = {eda:0,net:0,tmp:0};
+  week.runs = { eda: [], net: [], tmp: [] };
   state.arb = { doneForKey: null };
   persist(); location.reload();
 }
