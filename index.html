@@ -656,7 +656,7 @@
 <script>
 const API   = 'https://api.warframestat.us/pc';
 const LANG  = '?language=en';
-const TIMEOUT = 8000;
+const TIMEOUT = 5000;
 let wfFissureTickOn = false;
 let wfCycleTickOn = false;
 // Stores latest cycle payloads for the tick function
@@ -703,7 +703,7 @@ let wfArbTickOn = false;
 function persist() { localStorage.setItem('wf-tracker-v2', JSON.stringify(state)); }
 
 // ── Fetch with timeout + retry ──
-async function apiFetch(url, { retries = 3, retryDelay = 2000 } = {}) {
+async function apiFetch(url, { retries = 2, retryDelay = 2000 } = {}) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), TIMEOUT);
@@ -1068,18 +1068,25 @@ async function init() {
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  let liveOk = 0;
-  let liveFail = 0;
-  const TOTAL_ENDPOINTS = 10; // nightwave, baro, sortie, archon, fissures, steelPath, invasions, cetusCycle, vallisCycle, cambionCycle
-  function checkBadge() {
-    const attempted = liveOk + liveFail;
-    if (attempted === 0) { setBadge('loading'); return; }
-    if (liveOk === 0) setBadge('offline');
-    else if (liveOk >= TOTAL_ENDPOINTS) setBadge('live');
-    else setBadge('partial');
+  // ── Live badge registry ──
+  // Each tracked endpoint registers as 'pending', then resolves to 'ok' or 'fail'.
+  // updateBadge() derives state from Object.values() — no manual counter or total needed.
+  const _ep = {};
+  function trackEndpoint(name) { _ep[name] = 'pending'; updateBadge(); }
+  function endpointOk(name)    { _ep[name] = 'ok';      updateBadge(); }
+  function endpointFail(name)  { _ep[name] = 'fail';    updateBadge(); }
+  function updateBadge() {
+    const vals = Object.values(_ep);
+    if (!vals.length || vals.some(v => v === 'pending')) { setBadge('loading'); return; }
+    const ok   = vals.filter(v => v === 'ok').length;
+    const fail = vals.filter(v => v === 'fail').length;
+    if (ok === 0)  { setBadge('offline'); return; }
+    if (fail <= 1) { setBadge('live');    return; }
+    setBadge('partial');
   }
 
   // 3. Fetch live Nightwave
+  trackEndpoint('nightwave');
   apiFetch(`${API}/nightwave${LANG}`)
     .then(nw => {
       if (nw && Array.isArray(nw.activeChallenges) && nw.activeChallenges.length) {
@@ -1090,21 +1097,22 @@ async function init() {
           type:     c.isElite ? 'weekly elite' : c.isDaily ? 'daily' : 'weekly'
         }));
         renderNightwave(acts, nw.season ? 'Season ' + nw.season : 'Current season');
-        liveOk++; checkBadge();
-      } else { liveFail++; checkBadge(); }
+        endpointOk('nightwave');
+      } else { endpointFail('nightwave'); }
     })
     .catch(() => {
       document.getElementById('nw-season').textContent = 'Showing cached acts — live data unavailable';
-      liveFail++; checkBadge();
+      endpointFail('nightwave');
     });
 
   // 4. Fetch live Baro
+  trackEndpoint('baro');
   apiFetch(`${API}/voidTrader${LANG}`)
-    .then(b => { renderBaro(b); liveOk++; checkBadge(); })
+    .then(b => { renderBaro(b); endpointOk('baro'); })
     .catch(() => {
       document.getElementById('baro-status').textContent = 'Live data unavailable — check back soon';
       document.getElementById('baro-timer').textContent = '—';
-      liveFail++; checkBadge();
+      endpointFail('baro');
     });
 
   // Void Fissures: same wrapper on every fetch + ticking timers + periodic refetch (list was static after first paint)
@@ -1204,12 +1212,13 @@ async function init() {
     apiFetch(`${API}/fissures${LANG}`)
       .then(data => {
         renderVoidFissures(data);
-        if (fissuresFirstLoad) { fissuresFirstLoad = false; liveOk++; checkBadge(); }
+        if (fissuresFirstLoad) { fissuresFirstLoad = false; endpointOk('fissures'); }
       })
       .catch(() => {
-        if (fissuresFirstLoad) { fissuresFirstLoad = false; liveFail++; checkBadge(); }
+        if (fissuresFirstLoad) { fissuresFirstLoad = false; endpointFail('fissures'); }
       });
   }
+  trackEndpoint('fissures');
   loadVoidFissures();
   setInterval(loadVoidFissures, FISSURES_POLL_MS);
 
@@ -1222,12 +1231,13 @@ async function init() {
   loadArbitrationLive();
   setInterval(loadArbitrationLive, ARB_POLL_MS);
 // Fetch live Archon Hunt
+trackEndpoint('archon');
 apiFetch(`${API}/archonHunt${LANG}`)
     .then(hunt => {
       const card = document.getElementById('card-archon');
-      if (!card || !hunt) { liveFail++; checkBadge(); return; }
+      if (!card || !hunt) { endpointFail('archon'); return; }
 const missions = hunt.missions || hunt.variants || [];
-if (!missions.length) { liveFail++; checkBadge(); return; }
+if (!missions.length) { endpointFail('archon'); return; }
       const old = card.querySelector('.card-live-info');
       if (old) old.remove();
       const info = document.createElement('div');
@@ -1239,15 +1249,16 @@ if (!missions.length) { liveFail++; checkBadge(); return; }
           ).join('')
         + '</div>';
       card.querySelector('.card-footer').before(info);
-      liveOk++; checkBadge();
+      endpointOk('archon');
     })
-    .catch(() => { liveFail++; checkBadge(); });
+    .catch(() => { endpointFail('archon'); });
 
   // 5. Fetch live Sortie to enrich the sortie card
+  trackEndpoint('sortie');
   apiFetch(`${API}/sortie${LANG}`)
     .then(s => {
       const card = document.getElementById('card-sortie');
-      if (!card || !s || !s.variants) { liveFail++; checkBadge(); return; }
+      if (!card || !s || !s.variants) { endpointFail('sortie'); return; }
       const old = card.querySelector('.card-live-info');
       if (old) old.remove();
       const info = document.createElement('div');
@@ -1257,9 +1268,9 @@ if (!missions.length) { liveFail++; checkBadge(); return; }
         + s.variants.map((v,i) => `<div class="sortie-stage">Stage ${i+1}: <strong>${v.missionType}</strong> — ${v.modifier}</div>`).join('')
         + '</div>';
       card.querySelector('.card-footer').before(info);
-      liveOk++; checkBadge();
+      endpointOk('sortie');
     })
-    .catch(() => { liveFail++; checkBadge(); });
+    .catch(() => { endpointFail('sortie'); });
 
   // ── 6. Steel Path Honors — weekly rotating reward from Teshin ──
   // API: /pc/steelPath — returns currentReward{name,cost}, expiry, rotation[{name,cost}], evergreens[{name,cost}]
@@ -1335,9 +1346,10 @@ if (!missions.length) { liveFail++; checkBadge(); return; }
   }
   setInterval(tickSteelPathTimer, 1000);
 
+  trackEndpoint('steelPath');
   apiFetch(`${API}/steelPath${LANG}`)
-    .then(sp => { renderSteelPath(sp, false); liveOk++; checkBadge(); })
-    .catch(() => { renderSteelPath(null, true); liveFail++; checkBadge(); });
+    .then(sp => { renderSteelPath(sp, false); endpointOk('steelPath'); })
+    .catch(() => { renderSteelPath(null, true); endpointFail('steelPath'); });
 
   // ── 7. Invasions — live faction battles with rewards ──
   // API: /pc/invasions — array of invasion objects.
@@ -1443,17 +1455,18 @@ if (!missions.length) { liveFail++; checkBadge(); return; }
     apiFetch(`${API}/invasions${LANG}`)
       .then(data => {
         renderInvasions(data);
-        if (invasionsFirstLoad) { invasionsFirstLoad = false; liveOk++; checkBadge(); }
+        if (invasionsFirstLoad) { invasionsFirstLoad = false; endpointOk('invasions'); }
       })
       .catch(() => {
         if (invasionsFirstLoad) {
           invasionsFirstLoad = false;
           document.getElementById('inv-container').innerHTML =
             '<div class="inv-offline">Invasion data unavailable — check back soon.</div>';
-          liveFail++; checkBadge();
+          endpointFail('invasions');
         }
       });
   }
+  trackEndpoint('invasions');
   loadInvasions();
   setInterval(loadInvasions, INVASIONS_POLL_MS);
 
@@ -1532,14 +1545,14 @@ if (!missions.length) { liveFail++; checkBadge(); return; }
         const stateKey = data.isDay ? 'day' : 'night';
         applyCycle('cetus', stateKey, data.expiry);
         if (!cyclesTickOn) { cyclesTickOn = true; setInterval(tickCycleTimers, 1000); }
-        if (cetusFirstLoad) { cetusFirstLoad = false; liveOk++; checkBadge(); }
+        if (cetusFirstLoad) { cetusFirstLoad = false; endpointOk('cetusCycle'); }
       })
       .catch(() => {
         if (cetusFirstLoad) {
           cetusFirstLoad = false;
           const el = document.getElementById('cetus-timer');
           if (el) el.textContent = '—';
-          liveFail++; checkBadge();
+          endpointFail('cetusCycle');
         }
       });
   }
@@ -1551,14 +1564,14 @@ if (!missions.length) { liveFail++; checkBadge(); return; }
         const stateKey = data.isWarm ? 'warm' : 'cold';
         applyCycle('vallis', stateKey, data.expiry);
         if (!cyclesTickOn) { cyclesTickOn = true; setInterval(tickCycleTimers, 1000); }
-        if (vallisFirstLoad) { vallisFirstLoad = false; liveOk++; checkBadge(); }
+        if (vallisFirstLoad) { vallisFirstLoad = false; endpointOk('vallisCycle'); }
       })
       .catch(() => {
         if (vallisFirstLoad) {
           vallisFirstLoad = false;
           const el = document.getElementById('vallis-timer');
           if (el) el.textContent = '—';
-          liveFail++; checkBadge();
+          endpointFail('vallisCycle');
         }
       });
   }
@@ -1571,18 +1584,21 @@ if (!missions.length) { liveFail++; checkBadge(); return; }
         const stateKey = raw === 'fass' ? 'fass' : 'vome';
         applyCycle('cambion', stateKey, data.expiry);
         if (!cyclesTickOn) { cyclesTickOn = true; setInterval(tickCycleTimers, 1000); }
-        if (cambionFirstLoad) { cambionFirstLoad = false; liveOk++; checkBadge(); }
+        if (cambionFirstLoad) { cambionFirstLoad = false; endpointOk('cambionCycle'); }
       })
       .catch(() => {
         if (cambionFirstLoad) {
           cambionFirstLoad = false;
           const el = document.getElementById('cambion-timer');
           if (el) el.textContent = '—';
-          liveFail++; checkBadge();
+          endpointFail('cambionCycle');
         }
       });
   }
 
+  trackEndpoint('cetusCycle');
+  trackEndpoint('vallisCycle');
+  trackEndpoint('cambionCycle');
   loadCetusCycle();
   loadVallisCycle();
   loadCambionCycle();
