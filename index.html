@@ -505,6 +505,94 @@ async function init() {
   apiFetch(`${API}/voidTrader${LANG}`)
     .then(b => { renderBaro(b); live++; checkBadge(); })
     .catch(() => { document.getElementById('baro-status').textContent = 'Could not reach API'; checkBadge(); });
+    
+// Fetch live Void Fissures
+apiFetch(`${API}/fissures${LANG}`)
+    .then(fissures => {
+      if (!fissures || !fissures.length) return;
+      const tiers = ['Lith','Meso','Neo','Axi','Requiem','Omnia'];
+      const colors = { Lith:'#5dc98a', Meso:'#6ea8e8', Neo:'#c8a84b', Axi:'#b87de8', Requiem:'#e05c5c', Omnia:'#4fc3f7' };
+      const filtered = fissures
+        .filter(f => !f.isStorm)
+        .sort((a,b) => tiers.indexOf(a.tier) - tiers.indexOf(b.tier));
+      if (!filtered.length) return;
+      const section = document.createElement('div');
+      section.innerHTML = `<div class="section-title" style="margin-top:28px">Void Fissures <span style="font-size:10px;color:var(--green);margin-left:8px">LIVE</span></div>`;
+      const grid = document.createElement('div');
+      grid.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+      filtered.slice(0, 8).forEach(f => {
+        const expires = formatDur(new Date(f.expiry) - Date.now());
+        const color = colors[f.tier] || '#6b7494';
+        const row = document.createElement('div');
+        row.style.cssText = `display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;border-left:3px solid ${color};`;
+        row.innerHTML = `
+          <div style="font-size:11px;font-weight:700;color:${color};min-width:54px">${f.tier}</div>
+          <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType} — ${f.node}</div>
+          <div style="font-size:11px;color:var(--text-dim)">${expires}</div>`;
+        grid.appendChild(row);
+      });
+      section.appendChild(grid);
+      const daily = document.getElementById('daily-cards');
+      if (daily) daily.parentNode.insertBefore(section, daily);
+    })
+    .catch(() => {});
+
+// Fetch live Arbitration
+apiFetch(`${API}/arbitration${LANG}`)
+    .then(arb => {
+      if (!arb || !arb.node) return;
+      const dc = document.getElementById('daily-cards');
+      if (!dc) return;
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.id = 'card-arbitration';
+      const done = !!week.tasks['arbitration'];
+      if (done) div.classList.add('done');
+      const expires = arb.expiry ? formatDur(new Date(arb.expiry) - Date.now()) : '—';
+      div.innerHTML = `
+        <div class="card-header">
+          <div class="card-title">Arbitration</div>
+          <div class="card-check">${checkSVG()}</div>
+        </div>
+        <div class="card-desc">Elite endless mission with unique Arbitration mods. Rotates hourly.</div>
+        <div class="card-live-info">
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">Current mission:</div>
+          <div class="sortie-stages">
+            <div class="sortie-stage"><strong>${arb.type}</strong> — ${arb.node}</div>
+            <div class="sortie-stage">Enemy: <strong>${arb.enemy}</strong> · Rotates in ${expires}</div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="card-tag tag-daily">daily</span>
+          <span class="card-reward">Arbitration mods</span>
+          <a class="card-wiki" href="https://warframe.fandom.com/wiki/Arbitrations" target="_blank" rel="noopener" onclick="event.stopPropagation()">Wiki ↗</a>
+        </div>`;
+      div.onclick = () => {
+        week.tasks['arbitration'] = !week.tasks['arbitration'];
+        div.classList.toggle('done', !!week.tasks['arbitration']);
+        persist();
+      };
+      dc.appendChild(div);
+    })
+    .catch(() => {});
+// Fetch live Archon Hunt
+apiFetch(`${API}/archonHunt${LANG}`)
+    .then(hunt => {
+      const card = document.getElementById('card-archon');
+      if (!card || !hunt || !hunt.variants) return;
+      const old = card.querySelector('.card-live-info');
+      if (old) old.remove();
+      const info = document.createElement('div');
+      info.className = 'card-live-info';
+      info.innerHTML = '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">This week\'s missions:</div>'
+        + '<div class="sortie-stages">'
+        + hunt.variants.map((v,i) =>
+            `<div class="sortie-stage">Stage ${i+1}: <strong>${v.missionType}</strong> — ${v.node}</div>`
+          ).join('')
+        + '</div>';
+      card.querySelector('.card-footer').before(info);
+    })
+    .catch(() => {});
 
   // 5. Fetch live Sortie to enrich the sortie card
   apiFetch(`${API}/sortie${LANG}`)
