@@ -1,0 +1,86 @@
+# Tennoplan — Cursor Project Rules
+
+## Project Overview
+Tennoplan is a free, open-source Warframe endgame tracker web app.
+Live at: tennoplan.vercel.app
+GitHub: github.com/[your-username]/tennoplan
+Ko-fi: ko-fi.com/tennoplan
+
+## Current Stack
+- Pure HTML + CSS + JavaScript (single file: index.html)
+- No frameworks, no build tools, no npm packages
+- Data: warframestat.us public API (live) + inline JS fallback data
+- Storage: localStorage only — no backend, no database, no accounts
+- Hosting: Vercel (auto-deploys from GitHub main branch)
+
+## File Structure
+tennoplan/
+├── index.html        # Entire app — HTML, CSS, and JS in one file
+├── tasks.json        # Manual fallback data (mostly unused, inline now)
+├── vercel.json       # Vercel routing config
+├── .cursorrules      # This file
+└── tennoplan-logo.svg
+
+## Architecture Rules
+- Keep everything in index.html until the file exceeds ~1000 lines
+- All task data is defined inline in the JS as const arrays
+- State is saved to localStorage under key 'wf-tracker-v2'
+- Weekly reset key is calculated from UTC Monday 00:00
+- API calls use apiFetch() helper with 8 second timeout and silent fallback
+- Never add npm packages or build steps without discussing first
+
+## API
+Base URL: https://api.warframestat.us/pc
+Language param: ?language=en
+Currently used endpoints:
+- /nightwave — live Nightwave acts
+- /voidTrader — Baro Ki'Teer status
+- /sortie — daily sortie stages
+- /archonHunt — weekly Archon Hunt missions
+- /fissures — active Void Fissures
+- /arbitration — current Arbitration mission
+
+## Coding Style
+- Vanilla JS only — no jQuery, no React, no frameworks
+- Functions are small and single purpose
+- CSS uses custom properties (--bg, --accent, --gold etc)
+- Dark theme only for now
+- All API calls are fire-and-forget with .catch(() => {}) silent fallback
+- No console.log left in production code
+
+## What NOT to do
+- Do not suggest npm install or package.json changes
+- Do not suggest splitting into multiple files yet
+- Do not add TypeScript
+- Do not add a backend or database
+- Do not suggest React or any framework yet
+- Do not add authentication of any kind
+
+## Current Features (already built)
+- Weekly reset countdown timer (UTC Monday)
+- Search Pulse budget planner (5 pulses, allocate across EDA/Netracells/Temporal)
+- Weekly activity cards (Archon Hunt, EDA, Temporal, Circuit, Syndicate)
+- Daily activity cards (Sortie, Netracell, Syndicate Dailies, Void Fissures)
+- Live Nightwave acts with standing tracker and progress bar
+- Live Baro Ki'Teer status and timer
+- Live Sortie stages
+- Live Archon Hunt missions
+- Live Void Fissures by tier with timers
+- Live Arbitration mission
+- Ko-fi support button (ko-fi.com/tennoplan)
+- All progress saved to localStorage, resets weekly automatically
+
+## Next Planned Features
+- Steel Path honors rotation
+- Invasions tracker
+- UI overhaul with tabs/sections
+- Mobile responsiveness polish
+- Eventually: Electron desktop app wrapper
+
+## Context for AI
+When helping with this project:
+- Always give targeted code snippets, never full file rewrites
+- Always specify exactly where in the file to paste code
+- Use Ctrl+F find references to locate insertion points
+- Keep changes minimal and surgical
+- Test suggestions against the existing apiFetch() and renderCards() patterns

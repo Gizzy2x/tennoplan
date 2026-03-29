@@ -295,6 +295,7 @@
 const API   = 'https://api.warframestat.us/pc';
 const LANG  = '?language=en';
 const TIMEOUT = 8000;
+let wfFissureTickOn = false;
 
 // ── State ──
 function getWeekKey() {
@@ -399,9 +400,14 @@ function renderNightwave(acts, season) {
 
 // ── Baro ──
 function formatDur(ms) {
-  if (ms <= 0) return 'soon';
-  const h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000);
-  return h > 24 ? `${Math.floor(h/24)}d ${h%24}h` : `${h}h ${m}m`;
+  if (!Number.isFinite(ms) || ms <= 0) return 'soon';
+  const h = Math.floor(ms/3600000);
+  const m = Math.floor((ms%3600000)/60000);
+  const s = Math.floor((ms%60000)/1000);
+  if (h > 24) return `${Math.floor(h/24)}d ${h%24}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
 }
 function renderBaro(b) {
   if (!b) { document.getElementById('baro-status').textContent = 'Data unavailable'; return; }
@@ -506,36 +512,64 @@ async function init() {
     .then(b => { renderBaro(b); live++; checkBadge(); })
     .catch(() => { document.getElementById('baro-status').textContent = 'Could not reach API'; checkBadge(); });
 
-// Fetch live Void Fissures
-apiFetch(`${API}/fissures${LANG}`)
-    .then(fissures => {
-      if (!fissures || !fissures.length) return;
-      const tiers = ['Lith','Meso','Neo','Axi','Requiem','Omnia'];
-      const colors = { Lith:'#5dc98a', Meso:'#6ea8e8', Neo:'#c8a84b', Axi:'#b87de8', Requiem:'#e05c5c', Omnia:'#4fc3f7' };
-      const filtered = fissures
-        .filter(f => !f.isStorm)
-        .sort((a,b) => tiers.indexOf(a.tier) - tiers.indexOf(b.tier));
-      if (!filtered.length) return;
-      const section = document.createElement('div');
-      section.innerHTML = `<div class="section-title" style="margin-top:28px">Void Fissures <span style="font-size:10px;color:var(--green);margin-left:8px">LIVE</span></div>`;
-      const grid = document.createElement('div');
-      grid.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
-      filtered.slice(0, 8).forEach(f => {
-        const expires = formatDur(new Date(f.expiry) - Date.now());
-        const color = colors[f.tier] || '#6b7494';
-        const row = document.createElement('div');
-        row.style.cssText = `display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;border-left:3px solid ${color};`;
-        row.innerHTML = `
-          <div style="font-size:11px;font-weight:700;color:${color};min-width:54px">${f.tier}</div>
-          <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType} — ${f.node}</div>
-          <div style="font-size:11px;color:var(--text-dim)">${expires}</div>`;
-        grid.appendChild(row);
-      });
-      section.appendChild(grid);
-      const daily = document.getElementById('daily-cards');
-      if (daily) daily.parentNode.insertBefore(section, daily);
-    })
-    .catch(() => {});
+  // Void Fissures: same wrapper on every fetch + ticking timers + periodic refetch (list was static after first paint)
+  const FISSURES_POLL_MS = 60000;
+  function renderVoidFissures(fissures) {
+    if (!fissures || !fissures.length) return;
+    const tiers = ['Lith','Meso','Neo','Axi','Requiem','Omnia'];
+    const colors = { Lith:'#5dc98a', Meso:'#6ea8e8', Neo:'#c8a84b', Axi:'#b87de8', Requiem:'#e05c5c', Omnia:'#4fc3f7' };
+    const filtered = fissures
+      .filter(f => !f.isStorm)
+      .sort((a,b) => tiers.indexOf(a.tier) - tiers.indexOf(b.tier));
+    if (!filtered.length) return;
+    const daily = document.getElementById('daily-cards');
+    if (!daily) return;
+    let wrap = document.getElementById('wf-fissures-live');
+    if (!wrap) {
+      wrap = document.createElement('div');
+      wrap.id = 'wf-fissures-live';
+      daily.parentNode.insertBefore(wrap, daily);
+    }
+    wrap.innerHTML = '';
+    const title = document.createElement('div');
+    title.className = 'section-title';
+    title.style.marginTop = '28px';
+    title.innerHTML = 'Void Fissures <span style="font-size:10px;color:var(--green);margin-left:8px">LIVE</span>';
+    wrap.appendChild(title);
+    const grid = document.createElement('div');
+    grid.style.cssText = 'display:flex;flex-direction:column;gap:6px;';
+    filtered.slice(0, 8).forEach(f => {
+      const exp = f.expiry || '';
+      const color = colors[f.tier] || '#6b7494';
+      const row = document.createElement('div');
+      row.style.cssText = `display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;border-left:3px solid ${color};`;
+      const t = formatDur(new Date(exp) - Date.now());
+      row.innerHTML = `
+        <div style="font-size:11px;font-weight:700;color:${color};min-width:54px">${f.tier}</div>
+        <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType} — ${f.node}</div>
+        <div class="fissure-time" data-expiry="${exp.replace(/"/g, '')}" style="font-size:11px;color:var(--text-dim)">${t}</div>`;
+      grid.appendChild(row);
+    });
+    wrap.appendChild(grid);
+  }
+  function tickFissureTimers() {
+    document.querySelectorAll('.fissure-time').forEach(el => {
+      const exp = el.getAttribute('data-expiry');
+      if (!exp) return;
+      el.textContent = formatDur(new Date(exp) - Date.now());
+    });
+  }
+  if (!wfFissureTickOn) {
+    wfFissureTickOn = true;
+    setInterval(tickFissureTimers, 1000);
+  }
+  function loadVoidFissures() {
+    apiFetch(`${API}/fissures${LANG}`)
+      .then(renderVoidFissures)
+      .catch(() => {});
+  }
+  loadVoidFissures();
+  setInterval(loadVoidFissures, FISSURES_POLL_MS);
 
 // Fetch live Arbitration
 apiFetch(`${API}/arbitration${LANG}`)
