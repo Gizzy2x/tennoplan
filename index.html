@@ -589,7 +589,7 @@ if (!missions.length) return;
       info.innerHTML = '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">This week\'s missions:</div>'
         + '<div class="sortie-stages">'
         + missions.map((v,i) =>
-            `<div class="sortie-stage">Stage ${i+1}: <strong>${v.missionType}</strong> — ${v.node}</div>`
+            `<div class="sortie-stage">Stage ${i+1}: <strong>${v.type || v.missionType || 'Mission'}</strong> — ${v.node || v.nodeName || ''}</div>`
           ).join('')
         + '</div>';
       card.querySelector('.card-footer').before(info);
