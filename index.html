@@ -409,6 +409,7 @@ function formatDur(ms) {
   if (m > 0) return `${m}m ${s}s`;
   return `${s}s`;
 }
+
 function renderBaro(b) {
   if (!b) { document.getElementById('baro-status').textContent = 'Data unavailable'; return; }
   const dot = document.getElementById('baro-dot');
@@ -423,6 +424,18 @@ function renderBaro(b) {
     status.textContent = 'Next visit: ' + (b.location || 'Unknown relay');
     timer.textContent  = b.activation ? 'Arrives in ' + formatDur(new Date(b.activation) - Date.now()) : '—';
   }
+}
+
+// WarframeStat sends placeholder nodes (SolNode000…), Tenno/Unknown, far-future expiry when no Arbitration is active
+function arbitrationPayloadOk(arb) {
+  if (!arb || arb.expired) return false;
+  const nk = String(arb.nodeKey || arb.node || '');
+  if (!nk || /^SolNode0+$/i.test(nk)) return false;
+  const t = new Date(arb.expiry).getTime();
+  if (!Number.isFinite(t)) return false;
+  const rot = t - Date.now();
+  if (rot > 12 * 3600000 || rot < -600000) return false;
+  return true;
 }
 
 // ── Countdown ──
@@ -574,7 +587,7 @@ async function init() {
 // Fetch live Arbitration
 apiFetch(`${API}/arbitration${LANG}`)
     .then(arb => {
-      if (!arb || !arb.node) return;
+      if (!arb) return;
       const dc = document.getElementById('daily-cards');
       if (!dc) return;
       const div = document.createElement('div');
@@ -582,7 +595,12 @@ apiFetch(`${API}/arbitration${LANG}`)
       div.id = 'card-arbitration';
       const done = !!week.tasks['arbitration'];
       if (done) div.classList.add('done');
-      const expires = arb.expiry ? formatDur(new Date(arb.expiry) - Date.now()) : '—';
+      const ok = arbitrationPayloadOk(arb);
+      const expires = ok && arb.expiry ? formatDur(new Date(arb.expiry) - Date.now()) : null;
+      const stages = ok
+        ? `<div class="sortie-stage"><strong>${arb.type}</strong> — ${arb.node}</div>
+            <div class="sortie-stage">Enemy: <strong>${arb.enemy}</strong> · Rotates in ${expires}</div>`
+        : `<div class="sortie-stage">Mission not available from the API right now (often between rotations). Check the in-game Star Chart for the current Arbitration.</div>`;
       div.innerHTML = `
         <div class="card-header">
           <div class="card-title">Arbitration</div>
@@ -590,11 +608,8 @@ apiFetch(`${API}/arbitration${LANG}`)
         </div>
         <div class="card-desc">Elite endless mission with unique Arbitration mods. Rotates hourly.</div>
         <div class="card-live-info">
-          <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">Current mission:</div>
-          <div class="sortie-stages">
-            <div class="sortie-stage"><strong>${arb.type}</strong> — ${arb.node}</div>
-            <div class="sortie-stage">Enemy: <strong>${arb.enemy}</strong> · Rotates in ${expires}</div>
-          </div>
+          <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">${ok ? 'Current mission:' : 'Live details:'}</div>
+          <div class="sortie-stages">${stages}</div>
         </div>
         <div class="card-footer">
           <span class="card-tag tag-daily">daily</span>
