@@ -183,6 +183,10 @@
       border-color: var(--pulse-accent); color: var(--text);
       background: rgba(124, 106, 247, 0.15); box-shadow: 0 0 0 1px rgba(124, 106, 247, 0.25);
     }
+    .pulse-mode-abbr { color: var(--text-dim); font-weight: 400; font-size: 0.9em; }
+    .pulse-run-tier { font-weight: 600; }
+    .pulse-run-cost { font-size: 10px; color: var(--pulse-accent); margin-left: 6px; opacity: 0.8; }
+    .pulse-run-on .pulse-run-cost { opacity: 1; }
     .pulse-run-input {
       width: 16px; height: 16px; margin: 0; flex-shrink: 0;
       accent-color: var(--pulse-accent); cursor: pointer; pointer-events: none;
@@ -272,46 +276,55 @@
       <div class="pulse-progress-bar-bg"><div class="pulse-progress-bar-fill" id="pulse-progress-fill" style="width:0%"></div></div>
     </div>
     <div class="pulse-mode-grid">
+
+      <!-- EDA -->
       <div class="pulse-mode-card">
         <div class="pulse-mode-head">
-          <span class="pulse-mode-title">Deep Archimedea</span>
-          <span class="pulse-help" title="Deep Archimedea (EDA): weekly high-difficulty Archimedea endurance. Costs one Search Pulse per run you mark here.">?</span>
-          <span class="pulse-cost-pill">1 pulse</span>
+          <span class="pulse-mode-title">Deep Archimedea <span class="pulse-mode-abbr">(EDA)</span></span>
+          <span class="pulse-help" title="EDA: weekly high-difficulty endurance run. Normal = 1 pulse. Elite (EEDA) = 2 pulses — selecting Elite auto-marks Normal too. Must uncheck Elite before you can uncheck Normal.">?</span>
         </div>
         <div class="pulse-runs">
-          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('eda', 0);">
-            <input type="checkbox" class="pulse-run-input" data-mode="eda" data-idx="0" tabindex="-1" />
-            <span>Weekly run</span>
+          <label class="pulse-run" data-mode="eda" data-tier="normal" onclick="toggleTieredRun('eda','normal')">
+            <span class="pulse-run-tier">Normal</span><span class="pulse-run-cost">1 pulse</span>
+          </label>
+          <label class="pulse-run" data-mode="eda" data-tier="elite" onclick="toggleTieredRun('eda','elite')">
+            <span class="pulse-run-tier">Elite <span class="pulse-mode-abbr">(EEDA)</span></span><span class="pulse-run-cost">+1 pulse</span>
           </label>
         </div>
       </div>
+
+      <!-- Netracells -->
       <div class="pulse-mode-card">
         <div class="pulse-mode-head">
           <span class="pulse-mode-title">Netracells</span>
-          <span class="pulse-help" title="Netracells: assassination targets that each consume a Search Pulse. Track up to five runs per week here.">?</span>
+          <span class="pulse-help" title="Netracells: assassination targets in Albrecht's Labs. Each run costs 1 Search Pulse. Up to 5 runs per week.">?</span>
           <span class="pulse-cost-pill">1 pulse each</span>
         </div>
         <div class="pulse-runs">
-          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('net', 0);"><input type="checkbox" class="pulse-run-input" data-mode="net" data-idx="0" tabindex="-1" /><span>Run 1</span></label>
-          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('net', 1);"><input type="checkbox" class="pulse-run-input" data-mode="net" data-idx="1" tabindex="-1" /><span>Run 2</span></label>
-          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('net', 2);"><input type="checkbox" class="pulse-run-input" data-mode="net" data-idx="2" tabindex="-1" /><span>Run 3</span></label>
-          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('net', 3);"><input type="checkbox" class="pulse-run-input" data-mode="net" data-idx="3" tabindex="-1" /><span>Run 4</span></label>
-          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('net', 4);"><input type="checkbox" class="pulse-run-input" data-mode="net" data-idx="4" tabindex="-1" /><span>Run 5</span></label>
+          <label class="pulse-run" data-mode="net" data-idx="0" onclick="toggleNetRun(0)"><span>Run 1</span></label>
+          <label class="pulse-run" data-mode="net" data-idx="1" onclick="toggleNetRun(1)"><span>Run 2</span></label>
+          <label class="pulse-run" data-mode="net" data-idx="2" onclick="toggleNetRun(2)"><span>Run 3</span></label>
+          <label class="pulse-run" data-mode="net" data-idx="3" onclick="toggleNetRun(3)"><span>Run 4</span></label>
+          <label class="pulse-run" data-mode="net" data-idx="4" onclick="toggleNetRun(4)"><span>Run 5</span></label>
         </div>
       </div>
+
+      <!-- Temporal -->
       <div class="pulse-mode-card">
         <div class="pulse-mode-head">
-          <span class="pulse-mode-title">Temporal Archimedea</span>
-          <span class="pulse-help" title="Temporal Archimedea: weekly variant with its own reward pool. Costs one Search Pulse for the run you mark here.">?</span>
-          <span class="pulse-cost-pill">1 pulse</span>
+          <span class="pulse-mode-title">Temporal Archimedea <span class="pulse-mode-abbr">(TA)</span></span>
+          <span class="pulse-help" title="TA: weekly variant with its own reward pool. Normal = 1 pulse. Elite (ETA) = 2 pulses — selecting Elite auto-marks Normal too. Must uncheck Elite before you can uncheck Normal.">?</span>
         </div>
         <div class="pulse-runs">
-          <label class="pulse-run" onclick="event.preventDefault(); togglePulseRun('tmp', 0);">
-            <input type="checkbox" class="pulse-run-input" data-mode="tmp" data-idx="0" tabindex="-1" />
-            <span>Weekly run</span>
+          <label class="pulse-run" data-mode="tmp" data-tier="normal" onclick="toggleTieredRun('tmp','normal')">
+            <span class="pulse-run-tier">Normal</span><span class="pulse-run-cost">1 pulse</span>
+          </label>
+          <label class="pulse-run" data-mode="tmp" data-tier="elite" onclick="toggleTieredRun('tmp','elite')">
+            <span class="pulse-run-tier">Elite <span class="pulse-mode-abbr">(ETA)</span></span><span class="pulse-run-cost">+1 pulse</span>
           </label>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -374,31 +387,29 @@ function getWeekKey() {
 }
 const WEEK_KEY = getWeekKey();
 let state = JSON.parse(localStorage.getItem('wf-tracker-v2') || '{}');
-if (!state[WEEK_KEY]) state[WEEK_KEY] = { tasks:{}, nw:{}, runs:{ eda:[], net:[], tmp:[] } };
+if (!state[WEEK_KEY]) state[WEEK_KEY] = { tasks:{}, nw:{}, runs:{ eda:{normal:false,elite:false}, net:[], tmp:{normal:false,elite:false} } };
 if (!state.arb) state.arb = { doneForKey: null };
 const week = state[WEEK_KEY];
 function migratePulseWeek(w) {
-  if (w.runs && Array.isArray(w.runs.eda) && Array.isArray(w.runs.net) && Array.isArray(w.runs.tmp)) return false;
-  w.runs = { eda: [], net: [], tmp: [] };
+  // Already in new tiered format
+  if (w.runs && w.runs.eda && !Array.isArray(w.runs.eda) && typeof w.runs.eda.normal !== 'undefined') return false;
+  // Migrate from old array format
+  const oldEda = Array.isArray(w.runs && w.runs.eda) ? w.runs.eda.length > 0 : false;
+  const oldTmp = Array.isArray(w.runs && w.runs.tmp) ? w.runs.tmp.length > 0 : false;
+  const oldNet = (w.runs && Array.isArray(w.runs.net)) ? w.runs.net.slice() : [];
   if (w.alloc && typeof w.alloc === 'object') {
-    if ((w.alloc.eda | 0) > 0) w.runs.eda.push(0);
     const n = Math.min(5, w.alloc.net | 0);
-    for (let i = 0; i < n; i++) w.runs.net.push(i);
-    if ((w.alloc.tmp | 0) > 0) w.runs.tmp.push(0);
+    for (let i = 0; i < n; i++) if (!oldNet.includes(i)) oldNet.push(i);
   } else if (Array.isArray(w.pulses)) {
     const c = w.pulses.filter(Boolean).length;
-    for (let i = 0; i < Math.min(5, c); i++) w.runs.net.push(i);
+    for (let i = 0; i < Math.min(5, c); i++) if (!oldNet.includes(i)) oldNet.push(i);
   }
-  let used = w.runs.eda.length + w.runs.net.length + w.runs.tmp.length;
-  while (used > 5) {
-    if (w.runs.net.length) w.runs.net.pop();
-    else if (w.runs.eda.length) w.runs.eda.pop();
-    else if (w.runs.tmp.length) w.runs.tmp.pop();
-    used--;
-  }
-  w.runs.net.sort((a, b) => a - b);
-  delete w.pulses;
-  delete w.alloc;
+  w.runs = {
+    eda: { normal: oldEda, elite: false },
+    net: oldNet.slice(0, 5),
+    tmp: { normal: oldTmp, elite: false }
+  };
+  delete w.pulses; delete w.alloc;
   return true;
 }
 if (migratePulseWeek(week)) persist();
@@ -421,7 +432,7 @@ async function apiFetch(url) {
 // ── Badge ──
 function setBadge(s) {
   const el = document.getElementById('data-badge');
-  const map = { live:['Live data','live'], partial:['Partial live','offline'], offline:['Offline mode','offline'] };
+  const map = { live:['Live data','live'], partial:['Partial live','offline'], offline:['Offline — cached data shown','offline'] };
   const [txt, cls] = map[s] || ['Loading...','loading'];
   el.textContent = txt; el.className = 'data-badge ' + cls;
 }
@@ -458,36 +469,80 @@ function renderCards(weekly, daily) {
 
 // ── Pulses ──
 function countPulsesUsed() {
-  return week.runs.eda.length + week.runs.net.length + week.runs.tmp.length;
+  const r = week.runs;
+  let n = r.net.length;
+  if (r.eda && !Array.isArray(r.eda) && r.eda.normal) n++;
+  if (r.eda && !Array.isArray(r.eda) && r.eda.elite)  n++;
+  if (r.tmp && !Array.isArray(r.tmp) && r.tmp.normal) n++;
+  if (r.tmp && !Array.isArray(r.tmp) && r.tmp.elite)  n++;
+  return n;
 }
-function togglePulseRun(mode, idx) {
-  const r = week.runs[mode];
-  const pos = r.indexOf(idx);
-  if (pos >= 0) r.splice(pos, 1);
-  else {
-    if (countPulsesUsed() >= 5) return;
-    if (mode === 'eda' && r.length >= 1) return;
-    if (mode === 'tmp' && r.length >= 1) return;
-    if (mode === 'net' && r.length >= 5) return;
-    r.push(idx);
-    r.sort((a, b) => a - b);
+
+// EDA / Temporal: Normal + optional Elite tier
+function toggleTieredRun(mode, tier) {
+  if (!week.runs[mode] || Array.isArray(week.runs[mode])) {
+    week.runs[mode] = { normal: false, elite: false };
+  }
+  const m = week.runs[mode];
+  if (tier === 'elite') {
+    if (m.elite) {
+      m.elite = false; // uncheck elite only
+    } else {
+      const extraCost = m.normal ? 1 : 2;
+      if (countPulsesUsed() + extraCost > 5) return;
+      m.normal = true;
+      m.elite  = true;
+    }
+  } else {
+    if (m.normal) {
+      if (m.elite) return; // blocked — must uncheck elite first
+      m.normal = false;
+    } else {
+      if (countPulsesUsed() >= 5) return;
+      m.normal = true;
+    }
   }
   persist();
   renderPulses();
 }
+
+// Netracells: simple index array
+function toggleNetRun(idx) {
+  const arr = week.runs.net;
+  const pos = arr.indexOf(idx);
+  if (pos >= 0) {
+    arr.splice(pos, 1);
+  } else {
+    if (countPulsesUsed() >= 5) return;
+    arr.push(idx);
+    arr.sort((a, b) => a - b);
+  }
+  persist();
+  renderPulses();
+}
+
 function renderPulses() {
   const used = countPulsesUsed();
   const labelEl = document.getElementById('pulses-used-label');
-  const fillEl = document.getElementById('pulse-progress-fill');
+  const fillEl  = document.getElementById('pulse-progress-fill');
   if (labelEl) labelEl.textContent = used + ' / 5 pulses used this week';
-  if (fillEl) fillEl.style.width = (used / 5 * 100) + '%';
-  document.querySelectorAll('.pulse-run-input').forEach(inp => {
-    const mode = inp.getAttribute('data-mode');
-    const idx = +inp.getAttribute('data-idx');
-    const on = week.runs[mode] && week.runs[mode].includes(idx);
-    inp.checked = on;
-    const lab = inp.closest('.pulse-run');
-    if (lab) lab.classList.toggle('pulse-run-on', on);
+  if (fillEl)  fillEl.style.width  = (used / 5 * 100) + '%';
+
+  // Tiered modes
+  ['eda','tmp'].forEach(mode => {
+    const m = week.runs[mode];
+    const normalOn = m && !Array.isArray(m) && m.normal;
+    const eliteOn  = m && !Array.isArray(m) && m.elite;
+    const nEl = document.querySelector('.pulse-run[data-mode="' + mode + '"][data-tier="normal"]');
+    const eEl = document.querySelector('.pulse-run[data-mode="' + mode + '"][data-tier="elite"]');
+    if (nEl) nEl.classList.toggle('pulse-run-on', !!normalOn);
+    if (eEl) eEl.classList.toggle('pulse-run-on', !!eliteOn);
+  });
+
+  // Netracells
+  document.querySelectorAll('.pulse-run[data-mode="net"]').forEach(el => {
+    const idx = +el.getAttribute('data-idx');
+    el.classList.toggle('pulse-run-on', week.runs.net.includes(idx));
   });
 }
 
@@ -678,7 +733,7 @@ function updateCountdown() {
 function resetAll() {
   if (!confirm('Reset all weekly tasks and pulse tracking? This cannot be undone.')) return;
   week.tasks = {}; week.nw = {};
-  week.runs = { eda: [], net: [], tmp: [] };
+  week.runs = { eda:{normal:false,elite:false}, net:[], tmp:{normal:false,elite:false} };
   state.arb = { doneForKey: null };
   persist(); location.reload();
 }
@@ -723,7 +778,7 @@ async function init() {
   setInterval(updateCountdown, 1000);
 
   let live = 0;
-  const needed = 2;
+  const needed = 1;
   function checkBadge() { setBadge(live >= needed ? 'live' : live > 0 ? 'partial' : 'offline'); }
 
   // 3. Fetch live Nightwave
