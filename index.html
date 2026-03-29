@@ -72,6 +72,7 @@
     }
     .card:hover { border-color: #3a4060; background: var(--bg3); }
     .card.done { opacity: 0.45; border-color: var(--text-hint); }
+    #card-arbitration.done { opacity: 1; border-color: rgba(200, 168, 75, 0.35); }
     .card.done .card-title { text-decoration: line-through; color: var(--text-dim); }
     .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
     .card-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
@@ -99,6 +100,27 @@
     .sortie-stages { margin-top: 4px; display: flex; flex-direction: column; gap: 4px; }
     .sortie-stage { font-size: 11px; color: var(--text-dim); padding: 4px 8px; background: var(--bg); border-radius: 5px; }
     .sortie-stage strong { color: var(--amber); }
+
+    #card-arbitration .arb-inline-time { color: var(--text-dim); }
+    #card-arbitration .arb-inline-time span[data-arb-until] { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .arb-done-wrap { margin-top: 4px; }
+    .arb-done-msg { font-size: 11px; color: var(--text-dim); margin-bottom: 10px; line-height: 1.4; }
+    .arb-next-cycle {
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(200, 168, 75, 0.55);
+      background: linear-gradient(145deg, rgba(200, 168, 75, 0.14) 0%, rgba(79, 195, 247, 0.08) 100%);
+      box-shadow: 0 0 20px rgba(200, 168, 75, 0.12), inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .arb-next-cycle-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 6px;
+    }
+    .arb-next-cycle-time {
+      font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums;
+      color: var(--gold); line-height: 1.2; letter-spacing: 0.03em;
+    }
+    .arb-next-cycle-time span[data-arb-until] { color: var(--gold); }
 
     .pulse-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
     .pulse-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
@@ -485,23 +507,29 @@ function applyArbitrationCard(arb) {
   const nodeLabel = ok ? arb.node : null;
   const enemyLabel = ok && arb.enemy && arb.enemy !== 'Tenno' ? arb.enemy : null;
   const rotSpan = `<span data-arb-until="${rotIso}">${formatDur(new Date(rotIso) - Date.now())}</span>`;
+  const rotSpanInline = `<span class="arb-inline-time">New mission in about ${rotSpan}</span>`;
   const rotateRow = ok && !done
-    ? `<div class="sortie-stage">Mission rotates in ${rotSpan}</div>`
+    ? `<div class="sortie-stage">${rotSpanInline}</div>`
     : '';
 
   const fallbackExtra = !ok && !done
-    ? `<div class="sortie-stage">Next UTC hour (typical rotation window): ${rotSpan}</div>`
+    ? `<div class="sortie-stage"><span class="arb-inline-time">Roughly hourly rotation — next pick in about ${rotSpan}</span></div>`
     : '';
 
   const missionLines = ok
-    ? `<div class="sortie-stage"><strong>${typ || 'Mission'}</strong> — ${nodeLabel}</div>`
-      + (enemyLabel ? `<div class="sortie-stage">Enemy: <strong>${enemyLabel}</strong></div>` : '')
+    ? `<div class="sortie-stage"><strong>Playing now:</strong> ${typ || 'Arbitration'} — ${nodeLabel}</div>`
+      + (enemyLabel ? `<div class="sortie-stage">Facing <strong>${enemyLabel}</strong></div>` : '')
       + rotateRow
-    : `<div class="sortie-stage">Mission type and node are not in the API snapshot — open <strong>Navigation → Arbitrations</strong> in-game (always available; rotates hourly UTC).</div>`
-      + fallbackExtra;
+    : (done ? '' : `<div class="sortie-stage">Open the <strong>Star Chart</strong> → <strong>Arbitrations</strong> to see this hour’s mission.</div>` + fallbackExtra);
 
   const doneLine = done
-    ? `<div class="sortie-stage arb-done-line">Completed for this Arbitration. New mission in ${rotSpan}</div>`
+    ? `<div class="arb-done-wrap">
+         <p class="arb-done-msg">Marked complete for this hour.</p>
+         <div class="arb-next-cycle">
+           <div class="arb-next-cycle-label">Time until next cycle</div>
+           <div class="arb-next-cycle-time"><span data-arb-until="${rotIso}">${formatDur(new Date(rotIso) - Date.now())}</span></div>
+         </div>
+       </div>`
     : '';
 
   div.className = 'card' + (done ? ' done' : '');
@@ -510,11 +538,10 @@ function applyArbitrationCard(arb) {
       <div class="card-title">Arbitration</div>
       <div class="card-check">${checkSVG()}</div>
     </div>
-    <div class="card-desc">Elite endless mission with unique Arbitration mods. Available from the Star Chart; rotates about every hour.</div>
+    <div class="card-desc">Steel Path endless runs — Vitus Essence and Arbitration-only mods. The Star Chart picks a new mission about every hour.</div>
     <div class="card-live-info">
-      <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">Status</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">What to do next</div>
       <div class="sortie-stages">
-        <div class="sortie-stage" style="color:var(--accent)">Arbitration is available in-game.</div>
         ${missionLines}
         ${doneLine}
       </div>
