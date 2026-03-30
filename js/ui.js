@@ -55,6 +55,13 @@ const CYCLE_HINTS = {
   vome:  'Fishing & bounties',
 };
 
+// Cycle display metadata — id matches DOM ids and API normalizer names
+const CYCLE_META = [
+  { id: 'cetus',   label: 'Cetus',         defaultHint: 'Night → Eidolons & fishing'      },
+  { id: 'vallis',  label: 'Orb Vallis',    defaultHint: 'Cold → fishing & conservation'   },
+  { id: 'cambion', label: 'Cambion Drift', defaultHint: 'Vome → fishing & bounties'       },
+];
+
 const NOTABLE_TYPES = ['nitain', 'helm', 'skin', 'vandal', 'wraith', 'weapon'];
 
 // ── Utility ───────────────────────────────────────────────────────────────────
@@ -754,6 +761,37 @@ export function renderInvasions(data) {
 }
 
 // ── World State Cycles ────────────────────────────────────────────────────────
+
+/**
+ * Build the flexbox cycle cards inside #cycles-grid.
+ * Renders placeholder skeletons immediately so the layout is in place before
+ * any API data arrives. applyCycle() fills in live values as each fetch resolves.
+ */
+export function renderWorldCycles() {
+  const grid = document.getElementById('cycles-grid');
+  if (!grid) return;
+  grid.innerHTML = CYCLE_META.map(({ id, label, defaultHint }) => `
+    <div class="cycle-card" id="cycle-${id}">
+      <div class="cycle-header">
+        <span class="cycle-name">${label}</span>
+        <span class="cycle-state-pill" id="${id}-pill">—</span>
+      </div>
+      <div class="cycle-next" id="${id}-next">Next: —</div>
+      <div class="cycle-bar-label">time remaining</div>
+      <div class="cycle-bar-bg">
+        <div class="cycle-bar-fill" id="${id}-bar" style="width:0%"></div>
+      </div>
+      <div class="cycle-footer">
+        <span class="cycle-hint" id="${id}-hint">${defaultHint}</span>
+        <div class="cycle-timer-wrap">
+          <div class="cycle-timer-label">changes in</div>
+          <div class="cycle-timer" id="${id}-timer">—</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
 // cycle: { current, next, timeLeft, percent, expiry, activation }
 // Produced by normalizeCetusCycle / normalizeVallisCycle / normalizeCambionCycle in api.js.
 export function applyCycle(id, cycle) {
@@ -761,15 +799,19 @@ export function applyCycle(id, cycle) {
   const bar   = document.getElementById(id + '-bar');
   const timer = document.getElementById(id + '-timer');
   const hint  = document.getElementById(id + '-hint');
+  const nextEl = document.getElementById(id + '-next');
   if (!pill || !bar || !timer) return;
   const stateKey = cycle.current.toLowerCase();
+  // Store expiry + activation on the timer element so tickCycleTimers can
+  // recalculate timeLeft and bar width every second without another fetch.
   timer.setAttribute('data-cycle-expiry', cycle.expiry);
   timer.setAttribute('data-cycle-state',  stateKey);
   if (cycle.activation) timer.setAttribute('data-cycle-activation', cycle.activation);
   pill.className    = 'cycle-state-pill ' + stateKey;
   pill.textContent  = cycle.current;
+  if (nextEl) nextEl.textContent = 'Next: ' + cycle.next;
   bar.className     = 'cycle-bar-fill ' + stateKey;
-  bar.style.width   = cycle.percent.toFixed(1) + '%';
+  bar.style.width   = cycle.percent.toFixed(1) + '%'; // percent of phase time remaining
   timer.textContent = formatDur(cycle.timeLeft);
   if (hint) hint.textContent = CYCLE_HINTS[stateKey] || '';
 }
@@ -789,12 +831,12 @@ export function tickCycleTimers() {
     if (bar) {
       let pct;
       if (activationIso) {
-        // Use API-derived activation for accurate bar fill (no hardcoded durations needed)
+        // Use API-derived phase window: percent of time still remaining (bar shrinks to 0)
         const actMs = new Date(activationIso).getTime();
         const total = expMs - actMs;
-        pct = total > 0 ? Math.min(100, Math.max(0, ((now - actMs) / total) * 100)) : 0;
+        pct = total > 0 ? Math.min(100, Math.max(0, (remaining / total) * 100)) : 0;
       } else {
-        // Fallback: known phase durations (used when API omits activation)
+        // Fallback: known phase durations when API omits activation
         const durationMs = CYCLE_DUR_MS[stateKey] || 6000000;
         pct = durationMs > 0 ? Math.max(0, Math.min(100, (remaining / durationMs) * 100)) : 0;
       }

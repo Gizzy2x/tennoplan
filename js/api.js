@@ -24,8 +24,10 @@ function _cycleProgress(raw) {
   const actMs  = raw.activation ? new Date(raw.activation).getTime() : null;
   const timeLeft = Math.max(0, expMs - now);
   const totalMs  = actMs != null ? expMs - actMs : 0;
+  // percent = fraction of the phase still remaining (100 → 0 as the phase runs out)
+  // Drives bar width: full bar at start, empty at transition.
   const percent  = totalMs > 0
-    ? Math.min(100, Math.max(0, ((now - actMs) / totalMs) * 100))
+    ? Math.min(100, Math.max(0, (timeLeft / totalMs) * 100))
     : 0;
   return { timeLeft, percent, expiry: raw.expiry, activation: raw.activation || null };
 }

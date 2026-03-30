@@ -14,7 +14,7 @@ import {
   renderBaro, renderSteelPath,
   renderVoidFissures, tickFissureTimers,
   renderInvasions, renderAlerts,
-  applyCycle, tickCycleTimers,
+  renderWorldCycles, applyCycle, tickCycleTimers,
   tickSteelPathTimer,
   applyArbitrationCard,
   updateCountdown,
@@ -71,6 +71,7 @@ async function init() {
   renderCards(TASK_DATA.weekly, TASK_DATA.daily);
   renderPulses();
   renderNightwave(TASK_DATA.nightwave_fallback, 'Loading live Nightwave data...');
+  renderWorldCycles();   // builds flexbox cycle cards; applyCycle() fills data as fetches resolve
   updateCountdown();
   setInterval(updateCountdown, 1000);
   setInterval(tickSteelPathTimer, 1000);
