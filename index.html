@@ -488,6 +488,11 @@
       .support-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
     }
 
+    .timers-strip { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+    .section-title[id] { cursor: pointer; }
+    .sec-chevron { font-style: normal; line-height: 1; display: inline-block; transition: transform 0.15s; }
+    .sec-collapsed .sec-chevron { transform: rotate(-180deg); }
+
     @media (max-width: 380px) {
       /* Extra tight for very small phones (320–380px) */
       .header-left h1 { font-size: 17px; }
@@ -507,18 +512,36 @@
     </div>
     <div class="header-right">
       <span class="data-badge loading" id="data-badge">Loading...</span>
-      <div class="reset-badge">
-        <div class="label">Weekly reset in</div>
-        <div class="countdown" id="countdown">--:--:--</div>
-      </div>
-      <div class="reset-badge">
-        <div class="label">Daily reset in</div>
-        <div class="countdown" id="countdown-daily">--:--:--</div>
-      </div>
     </div>
   </div>
 
-  <div class="section-title">Search Pulse Budget</div>
+  <div class="timers-strip">
+    <div class="reset-badge">
+      <div class="label">Weekly reset in</div>
+      <div class="countdown" id="timer-weekly">--:--:--</div>
+    </div>
+    <div class="reset-badge">
+      <div class="label">Daily reset in</div>
+      <div class="countdown" id="timer-daily">--:--:--</div>
+    </div>
+  </div>
+
+  <div class="section-title" id="sec-daily">Daily Activities</div>
+  <div class="cards" id="daily-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
+
+  <!-- Notable Alerts: hidden when no matching alerts are active -->
+  <div id="alerts-section" style="display:none">
+    <div class="section-title">Notable Alerts</div>
+    <div id="alerts-container"></div>
+  </div>
+
+  <div class="section-title" id="sec-weekly">
+    <span>Weekly Activities</span>
+    <button class="reset-all-btn" onclick="resetAll()">Reset all</button>
+  </div>
+  <div class="cards" id="weekly-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
+
+  <div class="section-title" id="sec-pulse">Search Pulse Budget</div>
   <div class="pulse-box" id="pulse-budget-box">
     <div class="pulse-progress-wrap">
       <div class="pulse-progress-head"><span id="pulses-used-label">0 / 5 pulses used this week</span></div>
@@ -611,58 +634,7 @@
     </div>
   </div>
 
-  <div class="section-title">
-    <span>Weekly Activities</span>
-    <button class="reset-all-btn" onclick="resetAll()">Reset all</button>
-  </div>
-  <div class="cards" id="weekly-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
-
-  <div class="section-title">Steel Path Honors</div>
-  <div class="sp-box" id="sp-box">
-    <div class="sp-offline">Loading Steel Path Honors...</div>
-  </div>
-
-  <div class="section-title">Nightwave Acts</div>
-  <div class="nw-box">
-    <div class="nw-header">
-      <div>
-        <div class="nw-title">Nightwave</div>
-        <div class="nw-season" id="nw-season">Loading current acts...</div>
-      </div>
-      <div class="nw-standing" id="nw-standing">0 standing earned this session</div>
-    </div>
-    <div class="nw-bar-bg"><div class="nw-bar-fill" id="nw-bar" style="width:0%"></div></div>
-    <div class="nw-acts" id="nw-acts"><div class="skeleton"></div></div>
-  </div>
-
-  <div class="section-title">Daily Activities</div>
-  <div class="cards" id="daily-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
-
-  <!-- Notable Alerts: hidden when no matching alerts are active -->
-  <div id="alerts-section" style="display:none">
-    <div class="section-title">Notable Alerts</div>
-    <div id="alerts-container"></div>
-  </div>
-
-  <div class="section-title">
-    Invasions
-    <span style="font-size:10px;color:var(--green);margin-left:8px" id="inv-live-badge"></span>
-  </div>
-  <div id="inv-container"><div class="inv-offline">Loading invasions...</div></div>
-
-  <div class="section-title">Void Trader</div>
-  <div class="baro-strip">
-    <div class="baro-left">
-      <div class="baro-dot absent" id="baro-dot"></div>
-      <div>
-        <div class="baro-name">Baro Ki'Teer</div>
-        <div class="baro-status" id="baro-status">Fetching status...</div>
-      </div>
-    </div>
-    <div class="baro-timer" id="baro-timer">—</div>
-  </div>
-
-  <div class="section-title">
+  <div class="section-title" id="sec-cycles">
     World State Cycles
     <span style="font-size:10px;color:var(--text-hint);font-weight:400;letter-spacing:0;text-transform:none">Live · updates every 30 s</span>
   </div>
@@ -717,6 +689,42 @@
     </div>
   </div>
 
+  <div class="section-title" id="sec-baro">Void Trader</div>
+  <div class="baro-strip">
+    <div class="baro-left">
+      <div class="baro-dot absent" id="baro-dot"></div>
+      <div>
+        <div class="baro-name">Baro Ki'Teer</div>
+        <div class="baro-status" id="baro-status">Fetching status...</div>
+      </div>
+    </div>
+    <div class="baro-timer" id="baro-timer">—</div>
+  </div>
+
+  <div class="section-title" id="sec-invasions">
+    Invasions
+    <span style="font-size:10px;color:var(--green);margin-left:8px" id="inv-live-badge"></span>
+  </div>
+  <div id="inv-container"><div class="inv-offline">Loading invasions...</div></div>
+
+  <div class="section-title" id="sec-nightwave">Nightwave Acts</div>
+  <div class="nw-box">
+    <div class="nw-header">
+      <div>
+        <div class="nw-title">Nightwave</div>
+        <div class="nw-season" id="nw-season">Loading current acts...</div>
+      </div>
+      <div class="nw-standing" id="nw-standing">0 standing earned this session</div>
+    </div>
+    <div class="nw-bar-bg"><div class="nw-bar-fill" id="nw-bar" style="width:0%"></div></div>
+    <div class="nw-acts" id="nw-acts"><div class="skeleton"></div></div>
+  </div>
+
+  <div class="section-title" id="sec-steelpath">Steel Path Honors</div>
+  <div class="sp-box" id="sp-box">
+    <div class="sp-offline">Loading Steel Path Honors...</div>
+  </div>
+
   <div class="support-bar">
     <div class="support-text">
       <strong>Tennoplan</strong> — free, open source, no ads.<br>
@@ -730,7 +738,7 @@
 <script>
 const API   = 'https://api.warframestat.us/pc';
 const LANG  = '?language=en';
-const TIMEOUT = 5000;
+const TIMEOUT = 8000;
 let wfFissureTickOn  = false;
 let wfCycleTickOn    = false;
 let invasionTimerOn  = false;
@@ -753,6 +761,8 @@ const RUNS_DEFAULT = { edaNormal:false, edaElite:false, taNormal:false, taElite:
 if (!state[WEEK_KEY]) state[WEEK_KEY] = { tasks:{}, nw:{}, runs:{ ...RUNS_DEFAULT } };
 if (!state[DAY_KEY])  state[DAY_KEY]  = { tasks:{} };
 if (!state.arb) state.arb = { doneForKey: null };
+if (!state.ui) state.ui = {};
+if (!state.ui.collapsed) state.ui.collapsed = {};
 const week  = state[WEEK_KEY];
 const today = state[DAY_KEY];
 
@@ -1277,13 +1287,13 @@ function updateCountdown() {
   const wd = nextWeek - now;
   const wh = Math.floor(wd/3600000), wm = Math.floor((wd%3600000)/60000), ws = Math.floor((wd%60000)/1000);
   const weeklyStr = `${String(wh).padStart(2,'0')}:${String(wm).padStart(2,'0')}:${String(ws).padStart(2,'0')}`;
-  document.getElementById('countdown').textContent = weeklyStr;
+  const tw = document.getElementById('timer-weekly'); if (tw) tw.textContent = weeklyStr;
 
   // Daily reset — next UTC midnight
   const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
   const dd = midnight - now;
   const dh = Math.floor(dd/3600000), dm = Math.floor((dd%3600000)/60000), ds = Math.floor((dd%60000)/1000);
-  const td = document.getElementById('countdown-daily');
+  const td = document.getElementById('timer-daily');
   if (td) td.textContent = `${String(dh).padStart(2,'0')}:${String(dm).padStart(2,'0')}:${String(ds).padStart(2,'0')}`;
 }
 
@@ -1297,8 +1307,39 @@ function resetAll() {
   persist(); location.reload();
 }
 
+// ── Section collapse toggles ──
+function initSectionToggles() {
+  document.querySelectorAll('.section-title[id]').forEach(title => {
+    const content = title.nextElementSibling;
+    if (!content) return;
+    const chevron = document.createElement('span');
+    chevron.className = 'sec-chevron';
+    chevron.textContent = '▾';
+    title.appendChild(chevron);
+    const secId = title.id;
+    if (state.ui.collapsed[secId]) {
+      content.style.display = 'none';
+      title.classList.add('sec-collapsed');
+    }
+    title.addEventListener('click', e => {
+      if (e.target.closest('button, a')) return;
+      if (state.ui.collapsed[secId]) {
+        delete state.ui.collapsed[secId];
+        content.style.display = '';
+        title.classList.remove('sec-collapsed');
+      } else {
+        state.ui.collapsed[secId] = true;
+        content.style.display = 'none';
+        title.classList.add('sec-collapsed');
+      }
+      persist();
+    });
+  });
+}
+
 // ── Init ──
 async function init() {
+  initSectionToggles();
   // 1. Load local fallback data
   let taskData;
   try {
