@@ -1,7 +1,10 @@
 // js/main.js — Entry point. Imports all modules, wires them together, runs init().
 // Loaded as <script type="module" src="js/main.js"> in index.html.
 
-import { apiFetch, API, LANG }                    from './api.js';
+import { apiFetch, API, LANG,
+         normalizeCetusCycle,
+         normalizeVallisCycle,
+         normalizeCambionCycle }                   from './api.js';
 import { state, week, today, persist,
          RUNS_DEFAULT, migratePulseWeek,
          loadDropData }                            from './state.js';
@@ -264,8 +267,7 @@ async function init() {
   function loadCetusCycle() {
     apiFetch(`${API}/cetusCycle${LANG}`, { fallback: window.WF_MOCK?.cetusCycle })
       .then(data => {
-        if (!data || !data.expiry) throw new Error('bad payload');
-        applyCycle('cetus', data.isDay ? 'day' : 'night', data.expiry);
+        applyCycle('cetus', normalizeCetusCycle(data));
         startCycleTick();
         if (cetusFirstLoad) { cetusFirstLoad = false; endpointOk('cetusCycle'); }
       })
@@ -283,8 +285,7 @@ async function init() {
   function loadVallisCycle() {
     apiFetch(`${API}/vallisCycle${LANG}`, { fallback: window.WF_MOCK?.vallisCycle })
       .then(data => {
-        if (!data || !data.expiry) throw new Error('bad payload');
-        applyCycle('vallis', data.isWarm ? 'warm' : 'cold', data.expiry);
+        applyCycle('vallis', normalizeVallisCycle(data));
         startCycleTick();
         if (vallisFirstLoad) { vallisFirstLoad = false; endpointOk('vallisCycle'); }
       })
@@ -302,9 +303,7 @@ async function init() {
   function loadCambionCycle() {
     apiFetch(`${API}/cambionCycle${LANG}`, { fallback: window.WF_MOCK?.cambionCycle })
       .then(data => {
-        if (!data || !data.expiry) throw new Error('bad payload');
-        const raw      = String(data.state || data.active || '').toLowerCase();
-        applyCycle('cambion', raw === 'fass' ? 'fass' : 'vome', data.expiry);
+        applyCycle('cambion', normalizeCambionCycle(data));
         startCycleTick();
         if (cambionFirstLoad) { cambionFirstLoad = false; endpointOk('cambionCycle'); }
       })

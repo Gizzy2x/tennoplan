@@ -754,37 +754,50 @@ export function renderInvasions(data) {
 }
 
 // ── World State Cycles ────────────────────────────────────────────────────────
-export function applyCycle(id, stateKey, expiryIso) {
+// cycle: { current, next, timeLeft, percent, expiry, activation }
+// Produced by normalizeCetusCycle / normalizeVallisCycle / normalizeCambionCycle in api.js.
+export function applyCycle(id, cycle) {
   const pill  = document.getElementById(id + '-pill');
   const bar   = document.getElementById(id + '-bar');
   const timer = document.getElementById(id + '-timer');
   const hint  = document.getElementById(id + '-hint');
   if (!pill || !bar || !timer) return;
-  timer.setAttribute('data-cycle-expiry', expiryIso);
+  const stateKey = cycle.current.toLowerCase();
+  timer.setAttribute('data-cycle-expiry', cycle.expiry);
   timer.setAttribute('data-cycle-state',  stateKey);
-  const durationMs = CYCLE_DUR_MS[stateKey] || 6000000;
-  const remaining  = new Date(expiryIso).getTime() - Date.now();
-  const pct        = durationMs > 0 ? Math.max(0, Math.min(100, (remaining / durationMs) * 100)) : 0;
+  if (cycle.activation) timer.setAttribute('data-cycle-activation', cycle.activation);
   pill.className    = 'cycle-state-pill ' + stateKey;
-  pill.textContent  = stateKey.charAt(0).toUpperCase() + stateKey.slice(1);
+  pill.textContent  = cycle.current;
   bar.className     = 'cycle-bar-fill ' + stateKey;
-  bar.style.width   = pct.toFixed(1) + '%';
-  timer.textContent = formatDur(remaining);
+  bar.style.width   = cycle.percent.toFixed(1) + '%';
+  timer.textContent = formatDur(cycle.timeLeft);
   if (hint) hint.textContent = CYCLE_HINTS[stateKey] || '';
 }
 
 export function tickCycleTimers() {
   document.querySelectorAll('[data-cycle-expiry]').forEach(el => {
-    const expiryIso = el.getAttribute('data-cycle-expiry');
-    const stateKey  = el.getAttribute('data-cycle-state');
+    const expiryIso     = el.getAttribute('data-cycle-expiry');
+    const stateKey      = el.getAttribute('data-cycle-state');
+    const activationIso = el.getAttribute('data-cycle-activation');
     if (!expiryIso || !stateKey) return;
-    const remaining = new Date(expiryIso).getTime() - Date.now();
+    const now     = Date.now();
+    const expMs   = new Date(expiryIso).getTime();
+    const remaining = Math.max(0, expMs - now);
     el.textContent  = formatDur(remaining);
     const id  = el.id.replace('-timer', '');
     const bar = document.getElementById(id + '-bar');
     if (bar) {
-      const durationMs = CYCLE_DUR_MS[stateKey] || 6000000;
-      const pct = durationMs > 0 ? Math.max(0, Math.min(100, (remaining / durationMs) * 100)) : 0;
+      let pct;
+      if (activationIso) {
+        // Use API-derived activation for accurate bar fill (no hardcoded durations needed)
+        const actMs = new Date(activationIso).getTime();
+        const total = expMs - actMs;
+        pct = total > 0 ? Math.min(100, Math.max(0, ((now - actMs) / total) * 100)) : 0;
+      } else {
+        // Fallback: known phase durations (used when API omits activation)
+        const durationMs = CYCLE_DUR_MS[stateKey] || 6000000;
+        pct = durationMs > 0 ? Math.max(0, Math.min(100, (remaining / durationMs) * 100)) : 0;
+      }
       bar.style.width = pct.toFixed(1) + '%';
     }
   });

@@ -6,6 +6,55 @@ export const API     = 'https://api.warframestat.us/pc';
 export const LANG    = '?language=en';
 export const TIMEOUT = 5000; // ms before each individual attempt is aborted
 
+// ── Cycle normalisers ─────────────────────────────────────────────────────────
+// Transform raw warframestat.us cycle payloads into a standard shape used by
+// both the initial render (applyCycle) and the per-second tick timer.
+//
+// Return shape: { current, next, timeLeft, percent, expiry, activation }
+//   current    – human label for the active phase  ('Day'/'Night', 'Warm'/'Cold', 'Fass'/'Vome')
+//   next       – label of the upcoming phase
+//   timeLeft   – ms until the phase ends (≥ 0)
+//   percent    – fraction of the phase already elapsed, 0–100 (bar fill)
+//   expiry     – ISO string; stored on DOM element for tick recalculation
+//   activation – ISO string | null; stored on DOM element for accurate bar recalculation
+
+function _cycleProgress(raw) {
+  const now    = Date.now();
+  const expMs  = new Date(raw.expiry).getTime();
+  const actMs  = raw.activation ? new Date(raw.activation).getTime() : null;
+  const timeLeft = Math.max(0, expMs - now);
+  const totalMs  = actMs != null ? expMs - actMs : 0;
+  const percent  = totalMs > 0
+    ? Math.min(100, Math.max(0, ((now - actMs) / totalMs) * 100))
+    : 0;
+  return { timeLeft, percent, expiry: raw.expiry, activation: raw.activation || null };
+}
+
+export function normalizeCetusCycle(raw) {
+  if (!raw || !raw.expiry) throw new Error('invalid cetusCycle payload');
+  const base    = _cycleProgress(raw);
+  const current = raw.isDay ? 'Day' : 'Night';
+  const next    = raw.isDay ? 'Night' : 'Day';
+  return { current, next, ...base };
+}
+
+export function normalizeVallisCycle(raw) {
+  if (!raw || !raw.expiry) throw new Error('invalid vallisCycle payload');
+  const base    = _cycleProgress(raw);
+  const current = raw.isWarm ? 'Warm' : 'Cold';
+  const next    = raw.isWarm ? 'Cold' : 'Warm';
+  return { current, next, ...base };
+}
+
+export function normalizeCambionCycle(raw) {
+  if (!raw || !raw.expiry) throw new Error('invalid cambionCycle payload');
+  const base    = _cycleProgress(raw);
+  const state   = String(raw.state || raw.active || '').toLowerCase();
+  const current = state === 'fass' ? 'Fass' : 'Vome';
+  const next    = state === 'fass' ? 'Vome' : 'Fass';
+  return { current, next, ...base };
+}
+
 /**
  * Fetch a JSON endpoint with automatic retries and exponential backoff.
  * @param {string} url
