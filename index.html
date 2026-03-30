@@ -449,6 +449,38 @@
       color: var(--text-dim);
       text-align: right;
     }
+    .cycle-next-state {
+      font-size: 10px;
+      color: var(--text-dim);
+      text-align: right;
+      margin-bottom: 2px;
+    }
+    .cycle-next-pill {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 1px 6px; border-radius: 20px; border: 1px solid; display: inline-block;
+    }
+    .cycle-next-pill.day   { color: #f5c842; background: #1a1205; border-color: #3a2808; }
+    .cycle-next-pill.night { color: #7cb3f5; background: #050a1a; border-color: #101e3a; }
+    .cycle-next-pill.warm  { color: #f5925a; background: #1a0a05; border-color: #3a1408; }
+    .cycle-next-pill.cold  { color: #7ccff5; background: #05101a; border-color: #081e30; }
+    .cycle-next-pill.fass  { color: #e07060; background: #1a0505; border-color: #3a0c0c; }
+    .cycle-next-pill.vome  { color: #70b8e0; background: #05101a; border-color: #081a2c; }
+
+    /* ── Baro compact pill ── */
+    .baro-pill-wrap { margin: 10px 0 4px; }
+    .baro-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 500;
+      border: 1px solid; transition: box-shadow 0.2s; user-select: none;
+    }
+    .baro-pill.absent  { color: var(--amber); background: rgba(224,156,58,0.08); border-color: rgba(224,156,58,0.3); }
+    .baro-pill.present { color: var(--gold); background: rgba(200,168,75,0.12); border-color: rgba(200,168,75,0.5); box-shadow: 0 0 14px rgba(200,168,75,0.2); }
+    .baro-pill-icon { font-size: 14px; flex-shrink: 0; }
+
+    /* ── Pulse context text ── */
+    .pulse-subtext { font-size: 11px; color: var(--text-hint); margin-top: 5px; }
+    .pulse-mode-desc { font-size: 11px; color: var(--text-dim); margin: -2px 0 6px; line-height: 1.5; }
+    .pulse-mode-note { font-size: 10px; color: var(--text-hint); margin-top: 4px; font-style: italic; }
 
     /* ── Mobile responsiveness ── */
     @media (max-width: 600px) {
@@ -546,6 +578,7 @@
     <div class="pulse-progress-wrap">
       <div class="pulse-progress-head"><span id="pulses-used-label">0 / 5 pulses used this week</span></div>
       <div class="pulse-progress-bar-bg"><div class="pulse-progress-bar-fill" id="pulse-progress-fill" style="width:0%"></div></div>
+      <div class="pulse-subtext">5 Search Pulses reset Monday · each run costs 1 pulse (Elite costs 2)</div>
     </div>
     <div class="pulse-mode-grid">
 
@@ -555,6 +588,7 @@
           <span class="pulse-mode-title">Deep Archimedea <span class="pulse-mode-abbr">(EDA)</span></span>
           <span class="pulse-help" title="EDA: weekly high-difficulty endurance run. Normal = 1 pulse. Elite (EEDA) = 2 pulses — selecting Elite auto-marks Normal too. Must uncheck Elite before you can uncheck Normal.">?</span>
         </div>
+        <div class="pulse-mode-desc">High-difficulty weekly endurance run — best source of Tauforged Archon Shards and Archon Mods.</div>
         <div class="pulse-runs">
           <label class="pulse-run" data-mode="eda" data-tier="normal" onclick="toggleTieredRun('eda','normal')">
             <span class="pulse-run-tier">Normal</span><span class="pulse-run-cost">1 pulse</span>
@@ -563,6 +597,7 @@
             <span class="pulse-run-tier">Elite <span class="pulse-mode-abbr">(EEDA)</span></span><span class="pulse-run-cost">+1 pulse</span>
           </label>
         </div>
+        <div class="pulse-mode-note">Elite includes Normal run · 2 pulses total</div>
         <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-eda',this);event.stopPropagation();return false;">Rewards ↓</a>
         <div class="card-rewards-panel" id="pulse-eda-panel" style="display:none">
           <div class="rewards-header"><span class="rh-item">Item</span></div>
@@ -584,6 +619,7 @@
           <span class="pulse-help" title="Netracells: assassination targets in Albrecht's Labs. Each run costs 1 Search Pulse. Up to 5 runs per week.">?</span>
           <span class="pulse-cost-pill">1 pulse each</span>
         </div>
+        <div class="pulse-mode-desc">Assassination missions in Albrecht's Labs — each run can reward an Archon Shard. Run all 5 for maximum weekly shards.</div>
         <div class="pulse-runs">
           <label class="pulse-run" data-mode="net" data-idx="0" onclick="toggleNetRun(0)"><span>Run 1</span></label>
           <label class="pulse-run" data-mode="net" data-idx="1" onclick="toggleNetRun(1)"><span>Run 2</span></label>
@@ -591,7 +627,7 @@
           <label class="pulse-run" data-mode="net" data-idx="3" onclick="toggleNetRun(3)"><span>Run 4</span></label>
           <label class="pulse-run" data-mode="net" data-idx="4" onclick="toggleNetRun(4)"><span>Run 5</span></label>
         </div>
-        <div style="font-size:11px;color:var(--text-hint)">Each run targets a Netracell assassination in Albrecht's Labs</div>
+        <div class="pulse-mode-note">Max 1 Netracell shard reward per week · 5 runs total</div>
         <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-net',this);event.stopPropagation();return false;">Rewards ↓</a>
         <div class="card-rewards-panel" id="pulse-net-panel" style="display:none">
           <div class="rewards-header"><span class="rh-item">Item</span></div>
@@ -611,6 +647,7 @@
           <span class="pulse-mode-title">Temporal Archimedea <span class="pulse-mode-abbr">(TA)</span></span>
           <span class="pulse-help" title="TA: weekly variant with its own reward pool. Normal = 1 pulse. Elite (ETA) = 2 pulses — selecting Elite auto-marks Normal too. Must uncheck Elite before you can uncheck Normal.">?</span>
         </div>
+        <div class="pulse-mode-desc">A weekly Archimedea variant with a separate rotating reward pool — worth running alongside EDA for extra shards and exclusive items.</div>
         <div class="pulse-runs">
           <label class="pulse-run" data-mode="tmp" data-tier="normal" onclick="toggleTieredRun('tmp','normal')">
             <span class="pulse-run-tier">Normal</span><span class="pulse-run-cost">1 pulse</span>
@@ -619,6 +656,7 @@
             <span class="pulse-run-tier">Elite <span class="pulse-mode-abbr">(ETA)</span></span><span class="pulse-run-cost">+1 pulse</span>
           </label>
         </div>
+        <div class="pulse-mode-note">Elite includes Normal run · 2 pulses total</div>
         <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-tmp',this);event.stopPropagation();return false;">Rewards ↓</a>
         <div class="card-rewards-panel" id="pulse-tmp-panel" style="display:none">
           <div class="rewards-header"><span class="rh-item">Item</span></div>
@@ -648,8 +686,9 @@
       <div style="font-size:10px;color:var(--text-hint);margin-bottom:4px">time remaining</div>
       <div class="cycle-bar-bg"><div class="cycle-bar-fill" id="cetus-bar" style="width:0%"></div></div>
       <div class="cycle-footer">
-        <span class="cycle-hint" id="cetus-hint">Night → Eidolons &amp; fishing</span>
+        <span class="cycle-hint" id="cetus-hint">—</span>
         <div style="text-align:right">
+          <div class="cycle-next-state">→ <span class="cycle-next-pill" id="cetus-next-pill">—</span></div>
           <div class="cycle-timer-label" id="cetus-timer-label">changes in</div>
           <div class="cycle-timer" id="cetus-timer">—</div>
         </div>
@@ -664,8 +703,9 @@
       <div style="font-size:10px;color:var(--text-hint);margin-bottom:4px">time remaining</div>
       <div class="cycle-bar-bg"><div class="cycle-bar-fill" id="vallis-bar" style="width:0%"></div></div>
       <div class="cycle-footer">
-        <span class="cycle-hint" id="vallis-hint">Cold → fishing &amp; conservation</span>
+        <span class="cycle-hint" id="vallis-hint">—</span>
         <div style="text-align:right">
+          <div class="cycle-next-state">→ <span class="cycle-next-pill" id="vallis-next-pill">—</span></div>
           <div class="cycle-timer-label" id="vallis-timer-label">changes in</div>
           <div class="cycle-timer" id="vallis-timer">—</div>
         </div>
@@ -680,8 +720,9 @@
       <div style="font-size:10px;color:var(--text-hint);margin-bottom:4px">time remaining</div>
       <div class="cycle-bar-bg"><div class="cycle-bar-fill" id="cambion-bar" style="width:0%"></div></div>
       <div class="cycle-footer">
-        <span class="cycle-hint" id="cambion-hint">Vome → fishing &amp; bounties</span>
+        <span class="cycle-hint" id="cambion-hint">—</span>
         <div style="text-align:right">
+          <div class="cycle-next-state">→ <span class="cycle-next-pill" id="cambion-next-pill">—</span></div>
           <div class="cycle-timer-label" id="cambion-timer-label">changes in</div>
           <div class="cycle-timer" id="cambion-timer">—</div>
         </div>
@@ -689,16 +730,11 @@
     </div>
   </div>
 
-  <div class="section-title" id="sec-baro" data-target="baro-strip">Void Trader</div>
-  <div class="baro-strip" id="baro-strip">
-    <div class="baro-left">
-      <div class="baro-dot absent" id="baro-dot"></div>
-      <div>
-        <div class="baro-name">Baro Ki'Teer</div>
-        <div class="baro-status" id="baro-status">Fetching status...</div>
-      </div>
+  <div class="baro-pill-wrap">
+    <div class="baro-pill absent" id="baro-pill">
+      <span class="baro-pill-icon">◈</span>
+      <span id="baro-pill-text">Loading Baro Ki'Teer...</span>
     </div>
-    <div class="baro-timer" id="baro-timer">—</div>
   </div>
 
   <div class="section-title" id="sec-invasions" data-target="inv-container">
@@ -1110,18 +1146,18 @@ function formatDur(ms) {
 }
 
 function renderBaro(b) {
-  if (!b) { document.getElementById('baro-status').textContent = 'Data unavailable'; return; }
-  const dot = document.getElementById('baro-dot');
-  const status = document.getElementById('baro-status');
-  const timer = document.getElementById('baro-timer');
+  const pill = document.getElementById('baro-pill');
+  const text = document.getElementById('baro-pill-text');
+  if (!pill || !text) return;
+  if (!b) { text.textContent = 'Baro Ki\'Teer — data unavailable'; return; }
   if (b.active) {
-    dot.className = 'baro-dot present';
-    status.textContent = 'Present at ' + (b.location || 'Relay');
-    timer.textContent  = 'Leaves in ' + formatDur(new Date(b.expiry) - Date.now());
+    pill.className = 'baro-pill present';
+    const loc = b.location || 'Relay';
+    text.textContent = 'Baro is here · ' + loc + ' · leaves in ' + formatDur(new Date(b.expiry) - Date.now());
   } else {
-    dot.className = 'baro-dot absent';
-    status.textContent = 'Next visit: ' + (b.location || 'Unknown relay');
-    timer.textContent  = b.activation ? 'Arrives in ' + formatDur(new Date(b.activation) - Date.now()) : '—';
+    pill.className = 'baro-pill absent';
+    const timeStr = b.activation ? formatDur(new Date(b.activation) - Date.now()) : '—';
+    text.textContent = 'Baro arrives in ' + timeStr;
   }
 }
 
@@ -1285,8 +1321,13 @@ function updateCountdown() {
   const daysUntil = day === 1 ? 7 : (8 - day) % 7;
   const nextWeek = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + daysUntil));
   const wd = nextWeek - now;
-  const wh = Math.floor(wd/3600000), wm = Math.floor((wd%3600000)/60000), ws = Math.floor((wd%60000)/1000);
-  const weeklyStr = `${String(wh).padStart(2,'0')}:${String(wm).padStart(2,'0')}:${String(ws).padStart(2,'0')}`;
+  const wDays = Math.floor(wd / 86400000);
+  const wh    = Math.floor((wd % 86400000) / 3600000);
+  const wm    = Math.floor((wd % 3600000) / 60000);
+  let weeklyStr;
+  if (wDays > 0)   weeklyStr = `${wDays}d ${wh}h ${wm}m`;
+  else if (wh > 0) weeklyStr = `${wh}h ${wm}m`;
+  else             weeklyStr = `${wm}m`;
   const tw = document.getElementById('timer-weekly'); if (tw) tw.textContent = weeklyStr;
 
   // Daily reset — next UTC midnight
@@ -1294,7 +1335,7 @@ function updateCountdown() {
   const dd = midnight - now;
   const dh = Math.floor(dd/3600000), dm = Math.floor((dd%3600000)/60000), ds = Math.floor((dd%60000)/1000);
   const td = document.getElementById('timer-daily');
-  if (td) td.textContent = `${String(dh).padStart(2,'0')}:${String(dm).padStart(2,'0')}:${String(ds).padStart(2,'0')}`;
+  if (td) td.textContent = `${dh}h ${String(dm).padStart(2,'0')}m ${String(ds).padStart(2,'0')}s`;
 }
 
 // ── Reset ──
@@ -1426,8 +1467,8 @@ async function init() {
   apiFetch(`${API}/voidTrader${LANG}`)
     .then(b => { renderBaro(b); endpointOk('baro'); })
     .catch(() => {
-      document.getElementById('baro-status').textContent = 'Live data unavailable — check back soon';
-      document.getElementById('baro-timer').textContent = '—';
+      const t = document.getElementById('baro-pill-text');
+      if (t) t.textContent = 'Baro Ki\'Teer — live data unavailable';
       endpointFail('baro');
     });
 
@@ -1830,11 +1871,28 @@ if (!missions.length) { endpointFail('archon'); return; }
       return REWARD_NAMES[k] || titleCase(key);
     }
 
+    const INVASION_REWARD_LABELS = {
+      'fieldron sample':         'Fieldron Sample (Clan Research)',
+      'detonite injector':       'Detonite Injector (Clan Research)',
+      'mutagen sample':          'Mutagen Sample (Clan Research)',
+      'fieldron':                'Fieldron (Clan Research component)',
+      'detonite':                'Detonite (Clan Research component)',
+      'mutagen':                 'Mutagen (Clan Research component)',
+      'forma blueprint':         'Forma Blueprint',
+      'exilus adapter blueprint':'Exilus Adapter Blueprint',
+      'catalyst blueprint':      'Orokin Catalyst Blueprint (potato)',
+      'reactor blueprint':       'Orokin Reactor Blueprint (potato)',
+      'aura mod':                'Aura Mod',
+    };
+    function clarifyRewardLabel(name) {
+      return INVASION_REWARD_LABELS[name.toLowerCase().trim()] || name;
+    }
+
     active.forEach(inv => {
       // Deduplicate rewardTypes, then resolve each key to a display name
       const rawTypes   = Array.isArray(inv.rewardTypes) ? inv.rewardTypes.filter(Boolean) : [];
       const uniqueKeys = [...new Set(rawTypes.map(r => String(r).toLowerCase()))];
-      const rewards    = uniqueKeys.map(k => resolveRewardName(k, inv));
+      const rewards    = uniqueKeys.map(k => clarifyRewardLabel(resolveRewardName(k, inv)));
 
       // Timer: compute from expiry with formatDur; fall back to inv.eta string
       const expiry   = inv.expiry || '';
@@ -1912,14 +1970,21 @@ if (!missions.length) { endpointFail('archon'); return; }
     fass: 6000000, vome: 6000000
   };
 
-  // Hint text per state
+  // Next state for each current state
+  const CYCLE_NEXT = {
+    day: 'night', night: 'day',
+    warm: 'cold',  cold:  'warm',
+    fass: 'vome',  vome:  'fass'
+  };
+
+  // Hint text describing the INCOMING (next) state — shown while current state is active
   const CYCLE_HINTS = {
-    day:   'Mining & bounties',
-    night: 'Eidolons & fishing',
-    warm:  'Toroid farming',
-    cold:  'Fishing & conservation',
-    fass:  'Rare Vome drops',
-    vome:  'Fishing & bounties'
+    day:   'Next: Night — Eidolons & fishing',
+    night: 'Next: Day — mining & bounties',
+    warm:  'Next: Cold — fishing & conservation',
+    cold:  'Next: Warm — Toroid farming',
+    fass:  'Next: Vome — fishing & bounties',
+    vome:  'Next: Fass — rare drops'
   };
 
   function applyCycle(id, stateKey, expiryIso) {
@@ -1943,6 +2008,12 @@ if (!missions.length) { endpointFail('archon'); return; }
     bar.style.width  = pct.toFixed(1) + '%';
     timer.textContent = formatDur(remaining);
     if (hint) hint.textContent = CYCLE_HINTS[stateKey] || '';
+    const nextPill = document.getElementById(id + '-next-pill');
+    if (nextPill) {
+      const ns = CYCLE_NEXT[stateKey] || '';
+      nextPill.className = 'cycle-next-pill' + (ns ? ' ' + ns : '');
+      nextPill.textContent = ns ? ns.charAt(0).toUpperCase() + ns.slice(1) : '—';
+    }
   }
 
   function tickCycleTimers() {
