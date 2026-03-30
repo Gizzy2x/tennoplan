@@ -320,23 +320,40 @@
       margin-top: 10px;
       padding-top: 10px;
       border-top: 1px solid var(--border);
-      font-size: 11px;
+    }
+    .rewards-header {
       display: flex;
-      flex-direction: column;
-      gap: 6px;
+      gap: 10px;
+      font-size: 10px;
+      color: var(--text-hint);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+    }
+    .rewards-header .rh-item { flex: 1; }
+    .reward-chips { display: flex; flex-wrap: wrap; }
+    .reward-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 12px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--text);
+      margin: 3px 4px 3px 0;
     }
     .reward-row {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 4px 0;
+      gap: 10px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--bg3);
+      font-size: 12px;
     }
     .reward-name { flex: 1; color: var(--text); }
-    .reward-place {
-      font-size: 10px; color: var(--text-dim);
-      white-space: nowrap; overflow: hidden;
-      text-overflow: ellipsis; max-width: 180px;
-    }
     .reward-rarity {
       font-size: 10px; font-weight: 600; padding: 2px 6px;
       border-radius: 20px; white-space: nowrap;
@@ -344,12 +361,14 @@
     .rarity-common   { color: var(--green);   background: rgba(76,175,130,0.1);  border: 1px solid rgba(76,175,130,0.2); }
     .rarity-uncommon { color: var(--gold);     background: rgba(200,168,75,0.1);  border: 1px solid rgba(200,168,75,0.2); }
     .rarity-rare     { color: var(--accent2);  background: rgba(124,106,247,0.1); border: 1px solid rgba(124,106,247,0.2); }
-    .reward-chance { font-size: 10px; color: var(--text-dim); white-space: nowrap; }
+    .reward-chance {
+      color: var(--text-dim); font-size: 11px;
+      white-space: nowrap; font-variant-numeric: tabular-nums;
+    }
     .reward-note {
       font-size: 10px; color: var(--text-hint);
       font-style: italic; margin-top: 4px; line-height: 1.5;
     }
-    .reward-bullet { color: var(--text-hint); }
 
     /* ── World State Cycles ── */
     .cycles-grid {
@@ -517,13 +536,16 @@
             <span class="pulse-run-tier">Elite <span class="pulse-mode-abbr">(EEDA)</span></span><span class="pulse-run-cost">+1 pulse</span>
           </label>
         </div>
-        <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-eda',this);event.stopPropagation();return false;">What you get ↓</a>
+        <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-eda',this);event.stopPropagation();return false;">Rewards ↓</a>
         <div class="card-rewards-panel" id="pulse-eda-panel" style="display:none">
-          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Tauforged Archon Shard</span></div>
-          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Archon Mods</span></div>
-          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Riven Mod</span></div>
-          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Kuva</span></div>
-          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Forma</span></div>
+          <div class="rewards-header"><span class="rh-item">Item</span></div>
+          <div class="reward-chips">
+            <div class="reward-chip"><span class="reward-chip-name">Tauforged Archon Shard</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Archon Mods</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Riven Mod</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Kuva</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Forma</span></div>
+          </div>
           <div class="reward-note">Elite tier rewards an additional Tauforged Shard. Modifiers change weekly.</div>
         </div>
       </div>
@@ -543,12 +565,15 @@
           <label class="pulse-run" data-mode="net" data-idx="4" onclick="toggleNetRun(4)"><span>Run 5</span></label>
         </div>
         <div style="font-size:11px;color:var(--text-hint)">Each run targets a Netracell assassination in Albrecht's Labs</div>
-        <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-net',this);event.stopPropagation();return false;">What you get ↓</a>
+        <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-net',this);event.stopPropagation();return false;">Rewards ↓</a>
         <div class="card-rewards-panel" id="pulse-net-panel" style="display:none">
-          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Archon Shard</span></div>
-          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Tome Mods</span></div>
-          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Rare Mods</span></div>
-          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Kuva</span></div>
+          <div class="rewards-header"><span class="rh-item">Item</span></div>
+          <div class="reward-chips">
+            <div class="reward-chip"><span class="reward-chip-name">Archon Shard</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Tome Mods</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Rare Mods</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Kuva</span></div>
+          </div>
           <div class="reward-note">Each of the 5 weekly runs can reward a shard. Run all 5 for maximum shard income.</div>
         </div>
       </div>
@@ -567,11 +592,14 @@
             <span class="pulse-run-tier">Elite <span class="pulse-mode-abbr">(ETA)</span></span><span class="pulse-run-cost">+1 pulse</span>
           </label>
         </div>
-        <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-tmp',this);event.stopPropagation();return false;">What you get ↓</a>
+        <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-tmp',this);event.stopPropagation();return false;">Rewards ↓</a>
         <div class="card-rewards-panel" id="pulse-tmp-panel" style="display:none">
-          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Temporal Mods</span></div>
-          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Archon Shards</span></div>
-          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Exclusive weekly reward</span></div>
+          <div class="rewards-header"><span class="rh-item">Item</span></div>
+          <div class="reward-chips">
+            <div class="reward-chip"><span class="reward-chip-name">Temporal Mods</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Archon Shards</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Exclusive weekly reward</span></div>
+          </div>
           <div class="reward-note">Reward pool rotates weekly. Elite tier adds bonus rewards.</div>
         </div>
       </div>
@@ -830,8 +858,8 @@ const CARD_REWARDS = {
 function buildRewardPanelHTML(cardId) {
   const def = CARD_REWARDS[cardId];
   if (!def) return '';
-  let rows = '';
   let liveUsed = false;
+  let rows = '';
   if (def.liveQuery) {
     const live = getDropsFor(def.liveQuery);
     const capped = live && live.length ? live.slice(0, def.liveLimit || 8) : null;
@@ -842,19 +870,21 @@ function buildRewardPanelHTML(cardId) {
         const pct = r.chance != null ? r.chance.toFixed(2) + '%' : '';
         rows += `<div class="reward-row">
           <span class="reward-name">${r.item}</span>
-          ${r.place ? `<span class="reward-place">${r.place}</span>` : ''}
-          ${cls    ? `<span class="reward-rarity ${cls}">${r.rarity}</span>` : ''}
-          ${pct    ? `<span class="reward-chance">${pct}</span>` : ''}
+          ${cls ? `<span class="reward-rarity ${cls}">${r.rarity}</span>` : ''}
+          ${pct ? `<span class="reward-chance">${pct}</span>` : ''}
         </div>`;
       }
     }
   }
-  if (!liveUsed) {
-    for (const item of def.items) {
-      rows += `<div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">${item}</span></div>`;
-    }
+  if (liveUsed) {
+    const header = `<div class="rewards-header"><span class="rh-item">Item</span><span>Rarity</span><span>Chance</span></div>`;
+    return header + rows + (def.note ? `<div class="reward-note">${def.note}</div>` : '');
   }
-  return rows + (def.note ? `<div class="reward-note">${def.note}</div>` : '');
+  const chips = def.items.map(item =>
+    `<div class="reward-chip"><span class="reward-chip-name">${item}</span></div>`
+  ).join('');
+  return `<div class="rewards-header"><span class="rh-item">Item</span></div><div class="reward-chips">${chips}</div>`
+    + (def.note ? `<div class="reward-note">${def.note}</div>` : '');
 }
 
 // Toggle reward panel on pulse budget cards (called from inline onclick in HTML)
@@ -864,11 +894,11 @@ function togglePulseRewardPanel(key, btn) {
   if (openRewardPanels.has(key)) {
     openRewardPanels.delete(key);
     panel.style.display = 'none';
-    btn.textContent = 'What you get ↓';
+    btn.textContent = 'Rewards ↓';
   } else {
     openRewardPanels.add(key);
     panel.style.display = '';
-    btn.textContent = 'What you get ↑';
+    btn.textContent = 'Rewards ↑';
   }
 }
 
