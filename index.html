@@ -672,11 +672,15 @@ function getWeekKey() {
   return 'week-' + mon.toISOString().slice(0,10);
 }
 const WEEK_KEY = getWeekKey();
+// DAY_KEY resets automatically at UTC midnight — no manual clear needed
+const DAY_KEY  = 'day-' + new Date().toISOString().slice(0, 10);
 let state = JSON.parse(localStorage.getItem('wf-tracker-v2') || '{}');
 const RUNS_DEFAULT = { edaNormal:false, edaElite:false, taNormal:false, taElite:false, net1:false, net2:false, net3:false, net4:false, net5:false };
 if (!state[WEEK_KEY]) state[WEEK_KEY] = { tasks:{}, nw:{}, runs:{ ...RUNS_DEFAULT } };
+if (!state[DAY_KEY])  state[DAY_KEY]  = { tasks:{} };
 if (!state.arb) state.arb = { doneForKey: null };
-const week = state[WEEK_KEY];
+const week  = state[WEEK_KEY];
+const today = state[DAY_KEY];
 
 // ── Pulse migration ──
 // Converts any prior storage format to the new flat boolean model.
@@ -754,8 +758,9 @@ function setBadge(s) {
 function checkSVG() {
   return '<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 }
-function makeCard(t) {
-  const done = !!week.tasks[t.id];
+function makeCard(t, taskStore) {
+  const store = taskStore || week.tasks;
+  const done = !!store[t.id];
   const tc = t.tag === 'biweekly' ? 'tag-biweek' : 'tag-' + t.tag;
   const div = document.createElement('div');
   div.className = 'card' + (done ? ' done' : '');
@@ -769,15 +774,15 @@ function makeCard(t) {
       <span class="card-reward">${t.reward}</span>
       ${t.wikiUrl ? `<a class="card-wiki" href="${t.wikiUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Wiki ↗</a>` : ''}
     </div>`;
-  div.onclick = () => { week.tasks[t.id] = !week.tasks[t.id]; div.classList.toggle('done', !!week.tasks[t.id]); persist(); };
+  div.onclick = () => { store[t.id] = !store[t.id]; div.classList.toggle('done', !!store[t.id]); persist(); };
   return div;
 }
 function renderCards(weekly, daily) {
   const wc = document.getElementById('weekly-cards');
   const dc = document.getElementById('daily-cards');
   wc.innerHTML = ''; dc.innerHTML = '';
-  weekly.forEach(t => wc.appendChild(makeCard(t)));
-  daily.forEach(t  => dc.appendChild(makeCard(t)));
+  weekly.forEach(t => wc.appendChild(makeCard(t, week.tasks)));
+  daily.forEach(t  => dc.appendChild(makeCard(t, today.tasks)));
 }
 
 // ── Pulses ──
@@ -1040,6 +1045,7 @@ function resetAll() {
   if (!confirm('Reset all weekly tasks and pulse tracking? This cannot be undone.')) return;
   week.tasks = {}; week.nw = {};
   week.runs = { ...RUNS_DEFAULT };
+  today.tasks = {};
   state.arb = { doneForKey: null };
   persist(); location.reload();
 }
