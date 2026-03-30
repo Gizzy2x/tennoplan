@@ -83,6 +83,8 @@ async function init() {
     const ok   = vals.filter(v => v === 'ok').length;
     const fail = vals.filter(v => v === 'fail').length;
     if (ok === 0)  { setBadge('offline');  return; }
+    // Up to 1 endpoint failure still counts as Live — e.g. Invasions down alone
+    // won't degrade the badge. 2+ failures = Partial. All fail = Offline.
     if (fail <= 1) { setBadge('live');     return; }
     setBadge('partial');
   }
@@ -96,7 +98,7 @@ async function init() {
       fn(src);
       usingLive ? endpointOk(epName) : endpointFail(epName);
     } catch (err) {
-      console.warn('[Tennoplan]', epName, 'render error — falling back to mock:', err.message);
+      console.error('[Tennoplan]', epName, 'render error — falling back to mock:', err.message);
       try { fn(mockData); } catch { /* mock also failed — section stays in loading state */ }
       endpointFail(epName);
     }
@@ -207,7 +209,8 @@ async function init() {
         if (!fissureTickStarted) { fissureTickStarted = true; setInterval(tickFissureTimers, 1000); }
         if (fissuresFirstLoad)   { fissuresFirstLoad  = false; endpointOk('fissures'); }
       })
-      .catch(() => {
+      .catch(err => {
+        console.error('[Tennoplan] fissures fetch failed:', err?.message ?? err);
         if (fissuresFirstLoad) { fissuresFirstLoad = false; endpointFail('fissures'); }
       });
   }
@@ -219,7 +222,9 @@ async function init() {
   function loadArbitrationLive() {
     apiFetch(`${API}/arbitration${LANG}`, { fallback: window.WF_MOCK?.arbitration })
       .then(arb => { if (arb) applyArbitrationCard(arb); })
-      .catch(() => {});
+      .catch(err => {
+        console.error('[Tennoplan] arbitration fetch failed:', err?.message ?? err);
+      });
   }
   loadArbitrationLive();
   setInterval(loadArbitrationLive, ARB_POLL_MS);
@@ -232,7 +237,8 @@ async function init() {
         renderInvasions(data);
         if (invasionsFirstLoad) { invasionsFirstLoad = false; endpointOk('invasions'); }
       })
-      .catch(() => {
+      .catch(err => {
+        console.error('[Tennoplan] invasions fetch failed:', err?.message ?? err);
         if (invasionsFirstLoad) {
           invasionsFirstLoad = false;
           const c = document.getElementById('inv-container');
@@ -263,7 +269,8 @@ async function init() {
         startCycleTick();
         if (cetusFirstLoad) { cetusFirstLoad = false; endpointOk('cetusCycle'); }
       })
-      .catch(() => {
+      .catch(err => {
+        console.error('[Tennoplan] cetusCycle fetch failed:', err?.message ?? err);
         if (cetusFirstLoad) {
           cetusFirstLoad = false;
           const el = document.getElementById('cetus-timer');
@@ -281,7 +288,8 @@ async function init() {
         startCycleTick();
         if (vallisFirstLoad) { vallisFirstLoad = false; endpointOk('vallisCycle'); }
       })
-      .catch(() => {
+      .catch(err => {
+        console.error('[Tennoplan] vallisCycle fetch failed:', err?.message ?? err);
         if (vallisFirstLoad) {
           vallisFirstLoad = false;
           const el = document.getElementById('vallis-timer');
@@ -300,7 +308,8 @@ async function init() {
         startCycleTick();
         if (cambionFirstLoad) { cambionFirstLoad = false; endpointOk('cambionCycle'); }
       })
-      .catch(() => {
+      .catch(err => {
+        console.error('[Tennoplan] cambionCycle fetch failed:', err?.message ?? err);
         if (cambionFirstLoad) {
           cambionFirstLoad = false;
           const el = document.getElementById('cambion-timer');
@@ -324,7 +333,9 @@ async function init() {
   function loadAlerts() {
     apiFetch(`${API}/alerts${LANG}`, { fallback: window.WF_MOCK?.alerts })
       .then(data => renderAlerts(data))
-      .catch(() => {});
+      .catch(err => {
+        console.error('[Tennoplan] alerts fetch failed:', err?.message ?? err);
+      });
   }
   loadAlerts();
   setInterval(loadAlerts, ALERTS_POLL_MS);
