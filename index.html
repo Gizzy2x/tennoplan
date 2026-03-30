@@ -1395,11 +1395,38 @@ if (!missions.length) { endpointFail('archon'); return; }
     const list = document.createElement('div');
     list.className = 'inv-list';
 
-    active.forEach(inv => {
-      // rewardTypes is the canonical reward array (e.g. ["fieldron", "mutagen"])
-      const rewardTypes = Array.isArray(inv.rewardTypes) ? inv.rewardTypes.filter(Boolean) : [];
+    // Display name map for known rewardType keys
+    const REWARD_NAMES = {
+      catalyst:  'Orokin Catalyst',
+      reactor:   'Orokin Reactor',
+      fieldron:  'Fieldron',
+      forma:     'Forma',
+      exilus:    'Exilus Adapter',
+      mutalist:  'Nav Coordinate',
+    };
+    function titleCase(s) {
+      return s.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+    }
+    // Resolve a rewardType key to a display name.
+    // Priority: countedItems[].type (full API name) → map → title-case fallback.
+    function resolveRewardName(key, inv) {
+      const k = String(key).toLowerCase();
+      // Check attacker countedItems for a matching type name
+      const items = (inv.attacker && inv.attacker.reward && Array.isArray(inv.attacker.reward.countedItems))
+        ? inv.attacker.reward.countedItems : [];
+      const found = items.find(ci => ci && String(ci.type || '').toLowerCase().includes(k));
+      if (found && found.type) return found.type;
+      // Fall back to map, then title-case
+      return REWARD_NAMES[k] || titleCase(key);
+    }
 
-      // Timer: prefer inv.eta (pre-formatted string from API) over computing from expiry
+    active.forEach(inv => {
+      // Deduplicate rewardTypes, then resolve each key to a display name
+      const rawTypes   = Array.isArray(inv.rewardTypes) ? inv.rewardTypes.filter(Boolean) : [];
+      const uniqueKeys = [...new Set(rawTypes.map(r => String(r).toLowerCase()))];
+      const rewards    = uniqueKeys.map(k => resolveRewardName(k, inv));
+
+      // Timer: compute from expiry with formatDur; fall back to inv.eta string
       const expiry   = inv.expiry || '';
       const timeLeft = expiry ? formatDur(new Date(expiry) - Date.now()) : (inv.eta || '—');
       const node     = inv.node || '';
@@ -1410,11 +1437,11 @@ if (!missions.length) { endpointFail('archon'); return; }
       row.innerHTML = `
         ${node ? `<div class="inv-node">${node}</div>` : ''}
         ${desc ? `<div class="inv-missions" style="margin-top:-2px">${desc}</div>` : ''}
-        ${rewardTypes.length ? `
+        ${rewards.length ? `
         <div style="margin-top:4px">
           <div class="inv-rewards-label">Possible rewards</div>
           <div class="inv-reward-pills">
-            ${rewardTypes.map(r => `<span class="inv-reward-pill">${r}</span>`).join('')}
+            ${rewards.map(r => `<span class="inv-reward-pill">${r}</span>`).join('')}
           </div>
         </div>` : ''}
         <div class="inv-footer">
