@@ -264,48 +264,19 @@
     .inv-list { display: flex; flex-direction: column; gap: 10px; }
     .inv-row {
       background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;
+      padding: 14px 16px; display: flex; flex-direction: column; gap: 6px;
     }
-    /* Infestation rows get a green-tinted border to signal "no choice" */
-    .inv-row-infest { border-color: #1e3820; background: #0c160c; }
-    .inv-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-    .inv-node { font-size: 12px; font-weight: 600; color: var(--text); }
-    .inv-desc { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
-    .inv-pct  { font-size: 11px; font-variant-numeric: tabular-nums; flex-shrink: 0; color: var(--text-dim); }
-    /* Two-sided reward layout for normal invasions */
-    .inv-sides { display: flex; align-items: flex-start; gap: 6px; }
-    .inv-side  { flex: 1; min-width: 0; }
-    .inv-side-right { text-align: right; }
-    .inv-vs {
-      font-size: 10px; font-weight: 700; color: var(--text-hint); letter-spacing: 0.06em;
-      flex-shrink: 0; align-self: center; padding: 0 2px;
+    .inv-rewards-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-hint); margin-bottom: 2px; }
+    .inv-reward-name   { font-size: 15px; font-weight: 700; color: var(--gold); line-height: 1.35; }
+    .inv-footer {
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;
+      flex-wrap: wrap; margin-top: 4px;
     }
-    /* Reward name is the visual headline */
-    .inv-reward-name { font-size: 14px; font-weight: 700; color: var(--gold); line-height: 1.3; margin-bottom: 3px; }
-    .inv-faction     { font-size: 11px; font-weight: 600; margin-bottom: 2px; }
-    .inv-earn-hint   { font-size: 10px; color: var(--text-hint); }
-    /* Progress bar */
-    .inv-bar-bg {
-      height: 6px; background: var(--bg3); border-radius: 4px; overflow: hidden;
-      border: 1px solid var(--border); position: relative;
-    }
-    .inv-bar-atk { height: 100%; border-radius: 4px 0 0 4px; position: absolute; left: 0; top: 0; transition: width 0.4s ease; }
-    .inv-bar-def { height: 100%; border-radius: 0 4px 4px 0; position: absolute; right: 0; top: 0; transition: width 0.4s ease; }
-    /* Faction colours */
-    .fc-grineer  { color: #e0763a; }
-    .fc-corpus   { color: #4fc3f7; }
-    .fc-infested { color: #5dc98a; }
-    .fc-other    { color: var(--text-dim); }
-    .bg-grineer  { background: #e0763a; }
-    .bg-corpus   { background: #4fc3f7; }
-    .bg-infested { background: #5dc98a; }
-    .bg-other    { background: var(--text-dim); }
-    .inv-infestation-badge {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
-      padding: 3px 8px; border-radius: 20px; border: 1px solid #1a3a1a; background: #0d1f0d; color: #5dc98a;
-    }
-    .inv-offline { font-size: 12px; color: var(--text-dim); padding: 4px 0; }
-    .inv-empty   { font-size: 12px; color: var(--text-hint); padding: 4px 0; }
+    .inv-node     { font-size: 12px; color: var(--text-dim); }
+    .inv-missions { font-size: 11px; color: var(--text-hint); margin-top: 1px; }
+    .inv-timer    { font-size: 12px; font-weight: 600; color: var(--gold); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+    .inv-offline  { font-size: 12px; color: var(--text-dim); padding: 4px 0; }
+    .inv-empty    { font-size: 12px; color: var(--text-hint); padding: 4px 0; }
 
     /* ── Notable Alerts ── */
     .alerts-list { display: flex; flex-direction: column; gap: 8px; }
@@ -456,11 +427,6 @@
       /* Nightwave acts: tighten up */
       .nw-act { padding: 7px 8px; }
       .nw-act-type { display: none; } /* hide type label on tiny screens to save space */
-
-      /* Invasion sides: stack vertically on small screens */
-      .inv-sides { flex-direction: column; gap: 10px; }
-      .inv-side-right { text-align: left; }
-      .inv-vs { align-self: flex-start; }
 
       /* Support bar: stack */
       .support-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
@@ -671,8 +637,9 @@
 const API   = 'https://api.warframestat.us/pc';
 const LANG  = '?language=en';
 const TIMEOUT = 5000;
-let wfFissureTickOn = false;
-let wfCycleTickOn = false;
+let wfFissureTickOn  = false;
+let wfCycleTickOn    = false;
+let invasionTimerOn  = false;
 // Stores latest cycle payloads for the tick function
 const cycleState = { cetus: null, vallis: null, cambion: null };
 
@@ -1421,88 +1388,47 @@ if (!missions.length) { endpointFail('archon'); return; }
 
     if (badge) badge.textContent = 'LIVE';
 
-    // Sort: battles closest to 100% (most contested / nearly decided) first
-    active.sort((a, b) => Math.abs(50 - (b.completion || 0)) - Math.abs(50 - (a.completion || 0)));
+    // Sort by soonest expiry — most urgent invasions first
+    active.sort((a, b) => new Date(a.expiry || 0) - new Date(b.expiry || 0));
 
     const list = document.createElement('div');
     list.className = 'inv-list';
 
     active.forEach(inv => {
-      const pct         = Math.max(0, Math.min(100, inv.completion || 0));
-      const isInfest    = !!inv.vsInfestation;
+      // Collect non-empty rewards from both sides
+      const atkReward = (inv.attacker && inv.attacker.reward && inv.attacker.reward.itemString) || '';
+      const defReward = (inv.defender && inv.defender.reward && inv.defender.reward.itemString) || '';
+      const rewards   = [atkReward, defReward].filter(Boolean);
 
-      // Attacker side (always present)
-      const atkFaction  = (inv.attacker && inv.attacker.faction)  || (inv.attackingFaction) || 'Unknown';
-      const atkKey      = (inv.attacker && inv.attacker.factionKey) || atkFaction;
-      const atkReward   = (inv.attacker && inv.attacker.reward && inv.attacker.reward.itemString) || '';
-      const atkCls      = factionClass(atkKey);
-
-      // Defender side (absent for infested invasions — no reward offered)
-      const defFaction  = (inv.defender && inv.defender.faction)  || (inv.defendingFaction) || 'Unknown';
-      const defKey      = (inv.defender && inv.defender.factionKey) || defFaction;
-      const defReward   = (inv.defender && inv.defender.reward && inv.defender.reward.itemString) || '';
-      const defCls      = factionClass(defKey);
-
-      // Progress bar: attacker fills from left, defender from right
-      // completion% represents attacker's progress toward winning
-      const atkPct = pct.toFixed(0);
-      const defPct = (100 - pct).toFixed(0);
+      const expiry   = inv.expiry || '';
+      const timeLeft = expiry ? formatDur(new Date(expiry) - Date.now()) : '—';
+      const node     = inv.node || '';
 
       const row = document.createElement('div');
-      row.className = 'inv-row' + (isInfest ? ' inv-row-infest' : '');
-
-      if (isInfest) {
-        // ── Infestation: single reward, no side choice ──
-        const reward  = atkReward || defReward || 'Reward unknown';
-        const faction = atkReward ? atkFaction : defFaction;
-        const fCls    = atkReward ? atkCls     : defCls;
-        row.innerHTML = `
-          <div class="inv-top">
-            <div>
-              <div class="inv-node">${inv.node || 'Unknown node'}</div>
-              ${inv.desc ? `<div class="inv-desc">${inv.desc}</div>` : ''}
-            </div>
-            <span class="inv-infestation-badge">Infestation</span>
-          </div>
+      row.className = 'inv-row';
+      row.innerHTML = `
+        <div class="inv-rewards-label">Possible rewards</div>
+        ${rewards.map(r => `<div class="inv-reward-name">${r}</div>`).join('')}
+        <div class="inv-footer">
           <div>
-            <div class="inv-reward-name">${reward}</div>
-            <div class="inv-faction fc-${fCls}">${faction}</div>
-            <div class="inv-earn-hint">Complete 3 missions for ${faction} to earn this.</div>
+            ${node ? `<div class="inv-node">${node}</div>` : ''}
+            <div class="inv-missions">3 missions to complete</div>
           </div>
-          <div class="inv-bar-bg">
-            <div class="inv-bar-atk bg-infested" style="width:${atkPct}%"></div>
-          </div>`;
-      } else {
-        // ── Normal invasion: two sides, reward is the headline ──
-        row.innerHTML = `
-          <div class="inv-top">
-            <div>
-              <div class="inv-node">${inv.node || 'Unknown node'}</div>
-              ${inv.desc ? `<div class="inv-desc">${inv.desc}</div>` : ''}
-            </div>
-            <span class="inv-pct">${atkPct}%</span>
-          </div>
-          <div class="inv-sides">
-            <div class="inv-side">
-              <div class="inv-reward-name">${atkReward || '—'}</div>
-              <div class="inv-faction fc-${atkCls}">${atkFaction}</div>
-              <div class="inv-earn-hint">Complete 3 missions for ${atkFaction} to earn this.</div>
-            </div>
-            <div class="inv-vs">VS</div>
-            <div class="inv-side inv-side-right">
-              <div class="inv-reward-name">${defReward || '—'}</div>
-              <div class="inv-faction fc-${defCls}">${defFaction}</div>
-              <div class="inv-earn-hint">Complete 3 missions for ${defFaction} to earn this.</div>
-            </div>
-          </div>
-          <div class="inv-bar-bg">
-            <div class="inv-bar-atk bg-${atkCls}" style="width:${atkPct}%"></div>
-            <div class="inv-bar-def bg-${defCls}" style="width:${defPct}%"></div>
-          </div>`;
-      }
-
+          <div class="inv-timer"${expiry ? ` data-inv-expiry="${expiry}"` : ''}>${timeLeft}</div>
+        </div>`;
       list.appendChild(row);
     });
+
+    // Start a shared tick for invasion countdown timers (minute precision is enough)
+    if (!invasionTimerOn) {
+      invasionTimerOn = true;
+      setInterval(() => {
+        document.querySelectorAll('[data-inv-expiry]').forEach(el => {
+          const exp = el.getAttribute('data-inv-expiry');
+          if (exp) el.textContent = formatDur(new Date(exp) - Date.now());
+        });
+      }, 60000);
+    }
 
     container.innerHTML = '';
     container.appendChild(list);
