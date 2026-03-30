@@ -96,7 +96,7 @@ window.addEventListener('unhandledrejection', function(e) {
 //   retryDelay  – ms between attempts (default 2000)
 //   fallback    – value returned instead of throwing on final failure;
 //                 pass WF_MOCK.<endpoint> so the UI always gets a safe shape
-async function apiFetch(url, { retries = 2, retryDelay = 2000, fallback = undefined } = {}) {
+async function apiFetch(url, { retries = 3, retryDelay = 1000, fallback = undefined } = {}) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), TIMEOUT);
@@ -108,13 +108,14 @@ async function apiFetch(url, { retries = 2, retryDelay = 2000, fallback = undefi
     } catch(e) {
       clearTimeout(t);
       if (attempt === retries) {
-        // Return the mock fallback if one was supplied; otherwise propagate so
-        // the caller's .catch() handler can still update the badge / show an
-        // "unavailable" message.
+        // All retries exhausted — return mock fallback if supplied so the UI
+        // always gets a safe data shape; otherwise propagate so the caller's
+        // .catch() can update the badge and show an "unavailable" message.
         if (fallback !== undefined) return fallback;
         throw e;
       }
-      await new Promise(res => setTimeout(res, retryDelay));
+      // Exponential backoff: 1 s → 2 s → 4 s
+      await new Promise(res => setTimeout(res, retryDelay * 2 ** (attempt - 1)));
     }
   }
 }
@@ -678,11 +679,40 @@ async function init() {
     setBadge('partial');
   }
 
-  // 3. Fetch live Nightwave
-  trackEndpoint('nightwave');
-  apiFetch(`${API}/nightwave${LANG}`, { fallback: window.WF_MOCK?.nightwave })
-    .then(nw => {
-      if (nw && Array.isArray(nw.activeChallenges) && nw.activeChallenges.length) {
+  // ── One-time live fetches — all fired simultaneously ─────────────────────────
+  // Promise.allSettled guarantees no single slow / failed endpoint blocks another.
+  // safeRender: if fn throws due to an unexpected data shape, it retries with the
+  // WF_MOCK entry for that section only — every other live section is unaffected.
+  ['nightwave', 'baro', 'archon', 'sortie', 'steelPath'].forEach(trackEndpoint);
+
+  function safeRender(epName, liveData, mockData, fn) {
+    const usingLive = liveData != null;
+    const src       = usingLive ? liveData : mockData;
+    try {
+      fn(src);
+      usingLive ? endpointOk(epName) : endpointFail(epName);
+    } catch(err) {
+      console.warn('[Tennoplan]', epName, 'render error — falling back to mock:', err.message);
+      try { fn(mockData); } catch(_) {}
+      endpointFail(epName);
+    }
+  }
+
+  Promise.allSettled([
+    apiFetch(`${API}/nightwave${LANG}`),
+    apiFetch(`${API}/voidTrader${LANG}`),
+    apiFetch(`${API}/archonHunt${LANG}`),
+    apiFetch(`${API}/sortie${LANG}`),
+    apiFetch(`${API}/steelPath${LANG}`),
+  ]).then(([nwR, baroR, archonR, sortieR, spR]) => {
+
+    // Nightwave — throw on invalid shape so safeRender falls back to mock
+    safeRender('nightwave',
+      nwR.status === 'fulfilled' ? nwR.value : null,
+      window.WF_MOCK?.nightwave,
+      nw => {
+        if (!nw || !Array.isArray(nw.activeChallenges) || !nw.activeChallenges.length)
+          throw new Error('invalid payload');
         const acts = nw.activeChallenges.filter(Boolean).map(c => ({
           id:       c.id || c.title || 'nw-act',
           title:    c.title || 'Unknown Act',
@@ -690,23 +720,75 @@ async function init() {
           type:     c.isElite ? 'weekly elite' : c.isDaily ? 'daily' : 'weekly'
         }));
         renderNightwave(acts, nw.season ? 'Season ' + nw.season : 'Current season');
-        endpointOk('nightwave');
-      } else { endpointFail('nightwave'); }
-    })
-    .catch(() => {
-      document.getElementById('nw-season').textContent = 'Showing cached acts — live data unavailable';
-      endpointFail('nightwave');
-    });
+      }
+    );
 
-  // 4. Fetch live Baro
-  trackEndpoint('baro');
-  apiFetch(`${API}/voidTrader${LANG}`, { fallback: window.WF_MOCK?.voidTrader })
-    .then(b => { renderBaro(b); endpointOk('baro'); })
-    .catch(() => {
-      document.getElementById('baro-status').textContent = 'Live data unavailable — check back soon';
-      document.getElementById('baro-timer').textContent = '—';
-      endpointFail('baro');
-    });
+    // Baro Ki'Teer
+    safeRender('baro',
+      baroR.status === 'fulfilled' ? baroR.value : null,
+      window.WF_MOCK?.voidTrader,
+      b => {
+        if (!b) throw new Error('no payload');
+        renderBaro(b);
+      }
+    );
+
+    // Archon Hunt (renderSteelPath is defined later in init() but accessible via
+    // closure — this .then() callback runs after all sync init() code has executed)
+    safeRender('archon',
+      archonR.status === 'fulfilled' ? archonR.value : null,
+      window.WF_MOCK?.archonHunt,
+      hunt => {
+        const card = document.getElementById('card-archon');
+        if (!card || !hunt) throw new Error('no card or payload');
+        const missions = hunt.missions || hunt.variants || [];
+        if (!missions.length) throw new Error('empty missions');
+        const old = card.querySelector('.card-live-info');
+        if (old) old.remove();
+        const info = document.createElement('div');
+        info.className = 'card-live-info';
+        info.innerHTML = '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">This week\'s missions:</div>'
+          + '<div class="sortie-stages">'
+          + missions.map((v,i) =>
+              `<div class="sortie-stage">Stage ${i+1}: <strong>${(v && (v.type || v.missionType)) || 'N/A'}</strong> — ${(v && (v.node || v.nodeName)) || 'N/A'}</div>`
+            ).join('')
+          + '</div>';
+        const archonFooter = card.querySelector('.card-footer');
+        if (archonFooter) archonFooter.before(info); else card.appendChild(info);
+      }
+    );
+
+    // Sortie
+    safeRender('sortie',
+      sortieR.status === 'fulfilled' ? sortieR.value : null,
+      window.WF_MOCK?.sortie,
+      s => {
+        const card = document.getElementById('card-sortie');
+        if (!card || !s || !Array.isArray(s.variants)) throw new Error('no card or variants');
+        const old = card.querySelector('.card-live-info');
+        if (old) old.remove();
+        const info = document.createElement('div');
+        info.className = 'card-live-info';
+        info.innerHTML = '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">Today\'s stages:</div>'
+          + '<div class="sortie-stages">'
+          + s.variants.map((v,i) =>
+              `<div class="sortie-stage">Stage ${i+1}: <strong>${(v && v.missionType) || 'N/A'}</strong> — ${(v && v.modifier) || 'N/A'}</div>`
+            ).join('')
+          + '</div>';
+        const sortieFooter = card.querySelector('.card-footer');
+        if (sortieFooter) sortieFooter.before(info); else card.appendChild(info);
+      }
+    );
+
+    // Steel Path Honors (renderSteelPath defined later in init() — closure access)
+    safeRender('steelPath',
+      spR.status === 'fulfilled' ? spR.value : null,
+      window.WF_MOCK?.steelPath,
+      sp => renderSteelPath(sp, !sp)
+    );
+  });
+
+  // Baro, Archon, Sortie, and Steel Path are handled in the Promise.allSettled block above.
 
   // Void Fissures: same wrapper on every fetch + ticking timers + periodic refetch (list was static after first paint)
   const FISSURES_POLL_MS = 60000;
@@ -920,49 +1002,9 @@ async function init() {
   loadArbitrationLive();
   setInterval(loadArbitrationLive, ARB_POLL_MS);
 
-  // Fetch live Archon Hunt
-  trackEndpoint('archon');
-  apiFetch(`${API}/archonHunt${LANG}`, { fallback: window.WF_MOCK?.archonHunt })
-    .then(hunt => {
-      const card = document.getElementById('card-archon');
-      if (!card || !hunt) { endpointFail('archon'); return; }
-      const missions = hunt.missions || hunt.variants || [];
-      if (!missions.length) { endpointFail('archon'); return; }
-      const old = card.querySelector('.card-live-info');
-      if (old) old.remove();
-      const info = document.createElement('div');
-      info.className = 'card-live-info';
-      info.innerHTML = '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">This week\'s missions:</div>'
-        + '<div class="sortie-stages">'
-        + missions.map((v,i) =>
-            `<div class="sortie-stage">Stage ${i+1}: <strong>${(v && (v.type || v.missionType)) || 'N/A'}</strong> — ${(v && (v.node || v.nodeName)) || 'N/A'}</div>`
-          ).join('')
-        + '</div>';
-      const archonFooter = card.querySelector('.card-footer');
-      if (archonFooter) archonFooter.before(info); else card.appendChild(info);
-      endpointOk('archon');
-    })
-    .catch(() => { endpointFail('archon'); });
+  // Archon Hunt handled in the Promise.allSettled block above.
 
-  // 5. Fetch live Sortie to enrich the sortie card
-  trackEndpoint('sortie');
-  apiFetch(`${API}/sortie${LANG}`, { fallback: window.WF_MOCK?.sortie })
-    .then(s => {
-      const card = document.getElementById('card-sortie');
-      if (!card || !s || !s.variants) { endpointFail('sortie'); return; }
-      const old = card.querySelector('.card-live-info');
-      if (old) old.remove();
-      const info = document.createElement('div');
-      info.className = 'card-live-info';
-      info.innerHTML = '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">Today\'s stages:</div>'
-        + '<div class="sortie-stages">'
-        + s.variants.map((v,i) => `<div class="sortie-stage">Stage ${i+1}: <strong>${(v && v.missionType) || 'N/A'}</strong> — ${(v && v.modifier) || 'N/A'}</div>`).join('')
-        + '</div>';
-      const sortieFooter = card.querySelector('.card-footer');
-      if (sortieFooter) sortieFooter.before(info); else card.appendChild(info);
-      endpointOk('sortie');
-    })
-    .catch(() => { endpointFail('sortie'); });
+  // Sortie handled in the Promise.allSettled block above.
 
   // ── 6. Steel Path Honors — weekly rotating reward from Teshin ──
   // API: /pc/steelPath — returns currentReward{name,cost}, expiry, rotation[{name,cost}], evergreens[{name,cost}]
@@ -1038,10 +1080,7 @@ async function init() {
   }
   setInterval(tickSteelPathTimer, 1000);
 
-  trackEndpoint('steelPath');
-  apiFetch(`${API}/steelPath${LANG}`, { fallback: window.WF_MOCK?.steelPath })
-    .then(sp => { renderSteelPath(sp, false); endpointOk('steelPath'); })
-    .catch(() => { renderSteelPath(null, true); endpointFail('steelPath'); });
+  // Steel Path handled in the Promise.allSettled block above.
 
   // ── 7. Invasions — live faction battles with rewards ──
   const INVASIONS_POLL_MS = 120000;
