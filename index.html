@@ -488,37 +488,6 @@
       .support-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
     }
 
-    /* ── Reset Timers Strip ── */
-    .timers-strip {
-      display: flex; flex-wrap: wrap; gap: 10px;
-      margin-bottom: 20px;
-    }
-    .timer-pill {
-      flex: 1; min-width: 140px;
-      background: var(--bg2); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 10px 14px;
-      display: flex; flex-direction: column; gap: 4px;
-    }
-    .timer-pill-label {
-      font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
-      text-transform: uppercase; color: var(--text-dim);
-    }
-    .timer-pill-count {
-      font-size: 19px; font-weight: 700; color: var(--gold);
-      font-variant-numeric: tabular-nums; line-height: 1.1;
-    }
-    .timer-pill-tags {
-      display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px;
-    }
-    .timer-pill-tag {
-      font-size: 10px; color: var(--text-hint);
-      background: var(--bg3); border-radius: 4px; padding: 1px 5px;
-    }
-
-    @media (max-width: 600px) {
-      .timers-strip { display: grid; grid-template-columns: 1fr 1fr; }
-    }
-
     @media (max-width: 380px) {
       /* Extra tight for very small phones (320–380px) */
       .header-left h1 { font-size: 17px; }
@@ -542,34 +511,9 @@
         <div class="label">Weekly reset in</div>
         <div class="countdown" id="countdown">--:--:--</div>
       </div>
-    </div>
-  </div>
-
-  <div class="timers-strip">
-    <div class="timer-pill">
-      <div class="timer-pill-label">Weekly Reset</div>
-      <div class="timer-pill-count" id="timer-weekly">--:--:--</div>
-      <div class="timer-pill-tags">
-        <span class="timer-pill-tag">Archon Hunt</span>
-        <span class="timer-pill-tag">Circuit</span>
-        <span class="timer-pill-tag">Syndicate cap</span>
-        <span class="timer-pill-tag">Steel Path</span>
-      </div>
-    </div>
-    <div class="timer-pill">
-      <div class="timer-pill-label">Daily Reset</div>
-      <div class="timer-pill-count" id="timer-daily">--:--:--</div>
-      <div class="timer-pill-tags">
-        <span class="timer-pill-tag">Sortie</span>
-        <span class="timer-pill-tag">Netracell</span>
-        <span class="timer-pill-tag">Syndicate dailies</span>
-      </div>
-    </div>
-    <div class="timer-pill">
-      <div class="timer-pill-label">Arbitration</div>
-      <div class="timer-pill-count" id="timer-arb">--:--:--</div>
-      <div class="timer-pill-tags">
-        <span class="timer-pill-tag">~hourly rotation</span>
+      <div class="reset-badge">
+        <div class="label">Daily reset in</div>
+        <div class="countdown" id="countdown-daily">--:--:--</div>
       </div>
     </div>
   </div>
@@ -1334,19 +1278,13 @@ function updateCountdown() {
   const wh = Math.floor(wd/3600000), wm = Math.floor((wd%3600000)/60000), ws = Math.floor((wd%60000)/1000);
   const weeklyStr = `${String(wh).padStart(2,'0')}:${String(wm).padStart(2,'0')}:${String(ws).padStart(2,'0')}`;
   document.getElementById('countdown').textContent = weeklyStr;
-  const tw = document.getElementById('timer-weekly');
-  if (tw) tw.textContent = weeklyStr;
 
   // Daily reset — next UTC midnight
   const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
   const dd = midnight - now;
   const dh = Math.floor(dd/3600000), dm = Math.floor((dd%3600000)/60000), ds = Math.floor((dd%60000)/1000);
-  const td = document.getElementById('timer-daily');
+  const td = document.getElementById('countdown-daily');
   if (td) td.textContent = `${String(dh).padStart(2,'0')}:${String(dm).padStart(2,'0')}:${String(ds).padStart(2,'0')}`;
-
-  // Arbitration — next UTC hour boundary
-  const ta = document.getElementById('timer-arb');
-  if (ta) ta.textContent = formatDur(nextUtcHourMs() - Date.now());
 }
 
 // ── Reset ──
