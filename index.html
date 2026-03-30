@@ -315,6 +315,42 @@
     }
     .kofi-btn:hover { background: #1e2840; border-color: var(--accent); }
 
+    /* ── Reward panels ── */
+    .card-rewards-panel {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .reward-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+    }
+    .reward-name { flex: 1; color: var(--text); }
+    .reward-place {
+      font-size: 10px; color: var(--text-dim);
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; max-width: 180px;
+    }
+    .reward-rarity {
+      font-size: 10px; font-weight: 600; padding: 2px 6px;
+      border-radius: 20px; white-space: nowrap;
+    }
+    .rarity-common   { color: var(--green);   background: rgba(76,175,130,0.1);  border: 1px solid rgba(76,175,130,0.2); }
+    .rarity-uncommon { color: var(--gold);     background: rgba(200,168,75,0.1);  border: 1px solid rgba(200,168,75,0.2); }
+    .rarity-rare     { color: var(--accent2);  background: rgba(124,106,247,0.1); border: 1px solid rgba(124,106,247,0.2); }
+    .reward-chance { font-size: 10px; color: var(--text-dim); white-space: nowrap; }
+    .reward-note {
+      font-size: 10px; color: var(--text-hint);
+      font-style: italic; margin-top: 4px; line-height: 1.5;
+    }
+    .reward-bullet { color: var(--text-hint); }
+
     /* ── World State Cycles ── */
     .cycles-grid {
       display: grid;
@@ -481,6 +517,15 @@
             <span class="pulse-run-tier">Elite <span class="pulse-mode-abbr">(EEDA)</span></span><span class="pulse-run-cost">+1 pulse</span>
           </label>
         </div>
+        <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-eda',this);event.stopPropagation();return false;">What you get ↓</a>
+        <div class="card-rewards-panel" id="pulse-eda-panel" style="display:none">
+          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Tauforged Archon Shard</span></div>
+          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Archon Mods</span></div>
+          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Riven Mod</span></div>
+          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Kuva</span></div>
+          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Forma</span></div>
+          <div class="reward-note">Elite tier rewards an additional Tauforged Shard. Modifiers change weekly.</div>
+        </div>
       </div>
 
       <!-- Netracells -->
@@ -498,6 +543,14 @@
           <label class="pulse-run" data-mode="net" data-idx="4" onclick="toggleNetRun(4)"><span>Run 5</span></label>
         </div>
         <div style="font-size:11px;color:var(--text-hint)">Each run targets a Netracell assassination in Albrecht's Labs</div>
+        <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-net',this);event.stopPropagation();return false;">What you get ↓</a>
+        <div class="card-rewards-panel" id="pulse-net-panel" style="display:none">
+          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Archon Shard</span></div>
+          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Tome Mods</span></div>
+          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Rare Mods</span></div>
+          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Kuva</span></div>
+          <div class="reward-note">Each of the 5 weekly runs can reward a shard. Run all 5 for maximum shard income.</div>
+        </div>
       </div>
 
       <!-- Temporal -->
@@ -513,6 +566,13 @@
           <label class="pulse-run" data-mode="tmp" data-tier="elite" onclick="toggleTieredRun('tmp','elite')">
             <span class="pulse-run-tier">Elite <span class="pulse-mode-abbr">(ETA)</span></span><span class="pulse-run-cost">+1 pulse</span>
           </label>
+        </div>
+        <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-tmp',this);event.stopPropagation();return false;">What you get ↓</a>
+        <div class="card-rewards-panel" id="pulse-tmp-panel" style="display:none">
+          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Temporal Mods</span></div>
+          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Archon Shards</span></div>
+          <div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">Exclusive weekly reward</span></div>
+          <div class="reward-note">Reward pool rotates weekly. Elite tier adds bonus rewards.</div>
         </div>
       </div>
 
@@ -708,6 +768,7 @@ function migratePulseWeek(w) {
 if (migratePulseWeek(week)) persist();
 let lastArbitrationPayload = null;
 let dropData = null;
+const openRewardPanels = new Set(); // card/pulse ids whose reward panel is currently open
 let wfArbTickOn = false;
 function persist() { localStorage.setItem('wf-tracker-v2', JSON.stringify(state)); }
 
@@ -737,6 +798,80 @@ function setBadge(s) {
   el.textContent = txt; el.className = 'data-badge ' + cls;
 }
 
+// ── Reward panel data ──
+// Hardcoded reward lists per card id. sortie also tries getDropsFor() live (capped at 8).
+const CARD_REWARDS = {
+  archon: {
+    items: ['Archon Shard', 'Archon Mod (week-specific)', 'Forma', 'Kuva'],
+    note: "Shard colour and mod set change each week — check the in-game mission screen for this week's specifics."
+  },
+  circuit: {
+    items: ['Incarnon Genesis Adapter', 'Pathos Clamps', 'Duviri Resources', 'Drifter Intrinsics'],
+    note: "Incarnon selection rotates weekly — check the Duviri spiral for this week's available weapons."
+  },
+  syndicate: {
+    items: ['Syndicate Standing', 'Augment Mods', 'Syndicate Weapons', 'Syndicate Sigils'],
+    note: 'Rewards depend on your chosen syndicates.'
+  },
+  sortie: {
+    items: ['Riven Mod', 'Ayatan Sculpture', 'Exilus Adapter', 'Forma Bundle', 'Weapon Cosmetic', '60,000 Credits'],
+    liveQuery: 'Sortie', liveLimit: 8
+  },
+  arbitration: {
+    items: ['Vitus Essence', 'Arbitration Mods', 'Ayatan Sculptures', 'Endo'],
+    note: 'Spend Vitus Essence at the Arbitrations vendor in any Relay to buy exclusive mods.'
+  },
+  synddaily: {
+    items: ['Syndicate Standing', 'Syndicate Medallions'],
+    note: 'Standing counts toward your weekly syndicate cap.'
+  }
+};
+
+function buildRewardPanelHTML(cardId) {
+  const def = CARD_REWARDS[cardId];
+  if (!def) return '';
+  let rows = '';
+  let liveUsed = false;
+  if (def.liveQuery) {
+    const live = getDropsFor(def.liveQuery);
+    const capped = live && live.length ? live.slice(0, def.liveLimit || 8) : null;
+    if (capped && capped.length) {
+      liveUsed = true;
+      for (const r of capped) {
+        const cls = r.rarity ? 'rarity-' + r.rarity.toLowerCase() : '';
+        const pct = r.chance != null ? r.chance.toFixed(2) + '%' : '';
+        rows += `<div class="reward-row">
+          <span class="reward-name">${r.item}</span>
+          ${r.place ? `<span class="reward-place">${r.place}</span>` : ''}
+          ${cls    ? `<span class="reward-rarity ${cls}">${r.rarity}</span>` : ''}
+          ${pct    ? `<span class="reward-chance">${pct}</span>` : ''}
+        </div>`;
+      }
+    }
+  }
+  if (!liveUsed) {
+    for (const item of def.items) {
+      rows += `<div class="reward-row"><span class="reward-bullet">·</span><span class="reward-name">${item}</span></div>`;
+    }
+  }
+  return rows + (def.note ? `<div class="reward-note">${def.note}</div>` : '');
+}
+
+// Toggle reward panel on pulse budget cards (called from inline onclick in HTML)
+function togglePulseRewardPanel(key, btn) {
+  const panel = document.getElementById(key + '-panel');
+  if (!panel) return;
+  if (openRewardPanels.has(key)) {
+    openRewardPanels.delete(key);
+    panel.style.display = 'none';
+    btn.textContent = 'What you get ↓';
+  } else {
+    openRewardPanels.add(key);
+    panel.style.display = '';
+    btn.textContent = 'What you get ↑';
+  }
+}
+
 // ── Cards ──
 function checkSVG() {
   return '<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -745,6 +880,7 @@ function makeCard(t, taskStore) {
   const store = taskStore || week.tasks;
   const done = !!store[t.id];
   const tc = t.tag === 'biweekly' ? 'tag-biweek' : 'tag-' + t.tag;
+  const hasRewards = !!CARD_REWARDS[t.id];
   const div = document.createElement('div');
   div.className = 'card' + (done ? ' done' : '');
   div.id = 'card-' + t.id;
@@ -755,8 +891,39 @@ function makeCard(t, taskStore) {
     <div class="card-footer">
       <span class="card-tag ${tc}">${t.tag}</span>
       <span class="card-reward">${t.reward}</span>
+      ${hasRewards ? `<a class="card-wiki card-rewards-toggle" href="#">Rewards ↓</a>` : ''}
       ${t.wikiUrl ? `<a class="card-wiki" href="${t.wikiUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Wiki ↗</a>` : ''}
     </div>`;
+  if (hasRewards) {
+    const toggle = div.querySelector('.card-rewards-toggle');
+    toggle.addEventListener('click', e => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (openRewardPanels.has(t.id)) {
+        openRewardPanels.delete(t.id);
+        const panel = div.querySelector('.card-rewards-panel');
+        if (panel) panel.remove();
+        toggle.textContent = 'Rewards ↓';
+      } else {
+        openRewardPanels.add(t.id);
+        const panel = document.createElement('div');
+        panel.className = 'card-rewards-panel';
+        panel.innerHTML = buildRewardPanelHTML(t.id);
+        panel.addEventListener('click', e => e.stopPropagation());
+        div.appendChild(panel);
+        toggle.textContent = 'Rewards ↑';
+      }
+    });
+    // Restore panel if it was open before card was re-rendered
+    if (openRewardPanels.has(t.id)) {
+      const panel = document.createElement('div');
+      panel.className = 'card-rewards-panel';
+      panel.innerHTML = buildRewardPanelHTML(t.id);
+      panel.addEventListener('click', e => e.stopPropagation());
+      div.appendChild(panel);
+      toggle.textContent = 'Rewards ↑';
+    }
+  }
   div.onclick = () => { store[t.id] = !store[t.id]; div.classList.toggle('done', !!store[t.id]); persist(); };
   return div;
 }
@@ -1012,6 +1179,7 @@ function applyArbitrationCard(arb) {
     <div class="card-footer">
       <span class="card-tag tag-daily">daily</span>
       <span class="card-reward">Arbitration mods</span>
+      <a class="card-wiki card-rewards-toggle-arb" href="#">Rewards ↓</a>
       <a class="card-wiki" href="https://warframe.fandom.com/wiki/Arbitrations" target="_blank" rel="noopener" onclick="event.stopPropagation()">Wiki ↗</a>
     </div>`;
 
@@ -1024,6 +1192,38 @@ function applyArbitrationCard(arb) {
     persist();
     applyArbitrationCard(a);
   };
+
+  // Wire up arbitration rewards toggle (re-wired on every re-render)
+  const arbToggle = div.querySelector('.card-rewards-toggle-arb');
+  if (arbToggle) {
+    arbToggle.addEventListener('click', e => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (openRewardPanels.has('arbitration')) {
+        openRewardPanels.delete('arbitration');
+        const panel = div.querySelector('.card-rewards-panel');
+        if (panel) panel.remove();
+        arbToggle.textContent = 'Rewards ↓';
+      } else {
+        openRewardPanels.add('arbitration');
+        const panel = document.createElement('div');
+        panel.className = 'card-rewards-panel';
+        panel.innerHTML = buildRewardPanelHTML('arbitration');
+        panel.addEventListener('click', e => e.stopPropagation());
+        div.appendChild(panel);
+        arbToggle.textContent = 'Rewards ↑';
+      }
+    });
+    // Restore panel if it was open before re-render
+    if (openRewardPanels.has('arbitration')) {
+      const panel = document.createElement('div');
+      panel.className = 'card-rewards-panel';
+      panel.innerHTML = buildRewardPanelHTML('arbitration');
+      panel.addEventListener('click', e => e.stopPropagation());
+      div.appendChild(panel);
+      arbToggle.textContent = 'Rewards ↑';
+    }
+  }
 
   if (!wfArbTickOn) {
     wfArbTickOn = true;
