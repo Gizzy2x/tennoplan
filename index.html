@@ -706,6 +706,7 @@ function migratePulseWeek(w) {
 }
 if (migratePulseWeek(week)) persist();
 let lastArbitrationPayload = null;
+let dropData = null;
 let wfArbTickOn = false;
 function persist() { localStorage.setItem('wf-tracker-v2', JSON.stringify(state)); }
 
@@ -859,6 +860,30 @@ function renderNightwave(acts, season) {
   });
   document.getElementById('nw-standing').textContent = earned.toLocaleString() + ' standing earned this session';
   document.getElementById('nw-bar').style.width = maxPts > 0 ? (earned/maxPts*100)+'%' : '0%';
+}
+
+// ── Drop data ──
+// dropData is populated lazily by loadDropData() (called non-blocking from init).
+// Cache: localStorage keys 'wf-drops-cache' (JSON) + 'wf-drops-cache-ts' (ms timestamp), TTL 24h.
+// Query interface: getDropsFor(itemName) — returns [{source,node,planet,rotation,chance}] or null.
+function getDropsFor(itemName) {
+  if (!dropData) return null;
+  const needle = String(itemName).toLowerCase();
+  const results = [];
+  for (const entry of dropData) {
+    if (results.length >= 20) break;
+    const name = String(entry.item || entry.name || '').toLowerCase();
+    if (name.includes(needle)) {
+      results.push({
+        source:   entry.source   || '',
+        node:     entry.node     || '',
+        planet:   entry.planet   || '',
+        rotation: entry.rotation || '',
+        chance:   entry.chance   ?? entry.rarity ?? null,
+      });
+    }
+  }
+  return results;
 }
 
 // ── Baro ──
@@ -1691,6 +1716,36 @@ if (!missions.length) { endpointFail('archon'); return; }
 
   loadAlerts();
   setInterval(loadAlerts, ALERTS_POLL_MS);
+
+  // Load drop data non-blocking — never touches badge or blocks init.
+  async function loadDropData() {
+    const CACHE_KEY    = 'wf-drops-cache';
+    const CACHE_TS_KEY = 'wf-drops-cache-ts';
+    const TTL          = 24 * 60 * 60 * 1000;
+    try {
+      const ts = Number(localStorage.getItem(CACHE_TS_KEY) || 0);
+      if (dropData === null && ts && Date.now() - ts < TTL) {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (raw) { dropData = JSON.parse(raw); return; }
+      }
+      const data = await apiFetch('https://drops.warframestat.us/data/all.slim.json');
+      if (!data) return;
+      // Flatten all drop tables into a single array of entries
+      const flat = [];
+      for (const [source, entries] of Object.entries(data)) {
+        if (!Array.isArray(entries)) continue;
+        for (const e of entries) {
+          flat.push({ source, node: e.place || e.node || '', planet: e.planet || '', item: e.item || e.name || '', rotation: e.rotation || '', chance: e.chance ?? null });
+        }
+      }
+      dropData = flat;
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(flat));
+        localStorage.setItem(CACHE_TS_KEY, String(Date.now()));
+      } catch (_) { /* storage full — cached in memory only */ }
+    } catch (_) { /* silent fail — drop data is optional */ }
+  }
+  loadDropData();
 }
 
 init();
