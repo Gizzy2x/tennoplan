@@ -18,7 +18,9 @@ function getWeekKey() {
 const WEEK_KEY = getWeekKey();
 // DAY_KEY resets automatically at UTC midnight — no manual clear needed
 const DAY_KEY  = 'day-' + new Date().toISOString().slice(0, 10);
-let state = JSON.parse(localStorage.getItem('wf-tracker-v2') || '{}');
+let state;
+try { state = JSON.parse(localStorage.getItem('wf-tracker-v2') || '{}'); }
+catch(_) { localStorage.removeItem('wf-tracker-v2'); state = {}; }
 const RUNS_DEFAULT = { edaNormal:false, edaElite:false, taNormal:false, taElite:false, net1:false, net2:false, net3:false, net4:false, net5:false };
 if (!state[WEEK_KEY]) state[WEEK_KEY] = { tasks:{}, nw:{}, runs:{ ...RUNS_DEFAULT } };
 if (!state[DAY_KEY])  state[DAY_KEY]  = { tasks:{} };
@@ -74,10 +76,27 @@ let lastArbitrationPayload = null;
 let dropData = null;
 const openRewardPanels = new Set(); // card/pulse ids whose reward panel is currently open
 let wfArbTickOn = false;
-function persist() { localStorage.setItem('wf-tracker-v2', JSON.stringify(state)); }
+function persist() {
+  try { localStorage.setItem('wf-tracker-v2', JSON.stringify(state)); }
+  catch(_) { /* storage full or unavailable — skip persist */ }
+}
+
+// ── Global error handlers ──
+window.addEventListener('error', function(e) {
+  console.error('[Tennoplan] Unhandled error:', e.message, e.filename + ':' + e.lineno);
+});
+window.addEventListener('unhandledrejection', function(e) {
+  console.error('[Tennoplan] Unhandled promise rejection:', e.reason);
+  e.preventDefault();
+});
 
 // ── Fetch with timeout + retry ──
-async function apiFetch(url, { retries = 2, retryDelay = 2000 } = {}) {
+// Options:
+//   retries     – total attempts before giving up (default 2)
+//   retryDelay  – ms between attempts (default 2000)
+//   fallback    – value returned instead of throwing on final failure;
+//                 pass WF_MOCK.<endpoint> so the UI always gets a safe shape
+async function apiFetch(url, { retries = 2, retryDelay = 2000, fallback = undefined } = {}) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     const ctrl = new AbortController();
     const t = setTimeout(() => ctrl.abort(), TIMEOUT);
@@ -88,7 +107,13 @@ async function apiFetch(url, { retries = 2, retryDelay = 2000 } = {}) {
       return await r.json();
     } catch(e) {
       clearTimeout(t);
-      if (attempt === retries) throw e;
+      if (attempt === retries) {
+        // Return the mock fallback if one was supplied; otherwise propagate so
+        // the caller's .catch() handler can still update the badge / show an
+        // "unavailable" message.
+        if (fallback !== undefined) return fallback;
+        throw e;
+      }
       await new Promise(res => setTimeout(res, retryDelay));
     }
   }
@@ -655,12 +680,12 @@ async function init() {
 
   // 3. Fetch live Nightwave
   trackEndpoint('nightwave');
-  apiFetch(`${API}/nightwave${LANG}`)
+  apiFetch(`${API}/nightwave${LANG}`, { fallback: window.WF_MOCK?.nightwave })
     .then(nw => {
       if (nw && Array.isArray(nw.activeChallenges) && nw.activeChallenges.length) {
-        const acts = nw.activeChallenges.map(c => ({
-          id:       c.id || c.title,
-          title:    c.title,
+        const acts = nw.activeChallenges.filter(Boolean).map(c => ({
+          id:       c.id || c.title || 'nw-act',
+          title:    c.title || 'Unknown Act',
           standing: c.reputation || 0,
           type:     c.isElite ? 'weekly elite' : c.isDaily ? 'daily' : 'weekly'
         }));
@@ -675,7 +700,7 @@ async function init() {
 
   // 4. Fetch live Baro
   trackEndpoint('baro');
-  apiFetch(`${API}/voidTrader${LANG}`)
+  apiFetch(`${API}/voidTrader${LANG}`, { fallback: window.WF_MOCK?.voidTrader })
     .then(b => { renderBaro(b); endpointOk('baro'); })
     .catch(() => {
       document.getElementById('baro-status').textContent = 'Live data unavailable — check back soon';
@@ -781,7 +806,7 @@ async function init() {
             ? `<span style="font-size:10px;font-weight:600;letter-spacing:0.05em;padding:2px 7px;border-radius:20px;color:#4fc3f7;background:rgba(79,195,247,0.1);border:1px solid rgba(79,195,247,0.3);white-space:nowrap">Steel Path</span>`
             : `<span style="font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;color:var(--text-hint);white-space:nowrap">Normal</span>`;
           row.innerHTML = `
-            <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType} — ${f.node}</div>
+            <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType || 'N/A'} — ${f.node || 'N/A'}</div>
             ${badge}
             <div class="fissure-time" data-expiry="${exp.replace(/"/g, '')}" style="font-size:11px;color:var(--text-dim);white-space:nowrap">${t}</div>`;
           block.appendChild(row);
@@ -849,7 +874,7 @@ async function init() {
             ? `<span style="font-size:10px;font-weight:600;letter-spacing:0.05em;padding:2px 7px;border-radius:20px;color:#4fc3f7;background:rgba(79,195,247,0.1);border:1px solid rgba(79,195,247,0.3);white-space:nowrap">Steel Path</span>`
             : `<span style="font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;color:var(--text-hint);white-space:nowrap">Normal</span>`;
           row.innerHTML = `
-            <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType} — ${f.node}</div>
+            <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType || 'N/A'} — ${f.node || 'N/A'}</div>
             ${badge}
             <div class="fissure-time" data-expiry="${exp.replace(/"/g, '')}" style="font-size:11px;color:var(--text-dim);white-space:nowrap">${t}</div>`;
           block.appendChild(row);
@@ -873,7 +898,7 @@ async function init() {
   }
   let fissuresFirstLoad = true;
   function loadVoidFissures() {
-    apiFetch(`${API}/fissures${LANG}`)
+    apiFetch(`${API}/fissures${LANG}`, { fallback: window.WF_MOCK?.fissures })
       .then(data => {
         renderVoidFissures(data);
         if (fissuresFirstLoad) { fissuresFirstLoad = false; endpointOk('fissures'); }
@@ -888,7 +913,7 @@ async function init() {
 
   const ARB_POLL_MS = 60000;
   function loadArbitrationLive() {
-    apiFetch(`${API}/arbitration${LANG}`)
+    apiFetch(`${API}/arbitration${LANG}`, { fallback: window.WF_MOCK?.arbitration })
       .then(arb => { if (arb) applyArbitrationCard(arb); })
       .catch(() => {});
   }
@@ -897,7 +922,7 @@ async function init() {
 
   // Fetch live Archon Hunt
   trackEndpoint('archon');
-  apiFetch(`${API}/archonHunt${LANG}`)
+  apiFetch(`${API}/archonHunt${LANG}`, { fallback: window.WF_MOCK?.archonHunt })
     .then(hunt => {
       const card = document.getElementById('card-archon');
       if (!card || !hunt) { endpointFail('archon'); return; }
@@ -910,17 +935,18 @@ async function init() {
       info.innerHTML = '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">This week\'s missions:</div>'
         + '<div class="sortie-stages">'
         + missions.map((v,i) =>
-            `<div class="sortie-stage">Stage ${i+1}: <strong>${v.type || v.missionType || 'Mission'}</strong> — ${v.node || v.nodeName || ''}</div>`
+            `<div class="sortie-stage">Stage ${i+1}: <strong>${(v && (v.type || v.missionType)) || 'N/A'}</strong> — ${(v && (v.node || v.nodeName)) || 'N/A'}</div>`
           ).join('')
         + '</div>';
-      card.querySelector('.card-footer').before(info);
+      const archonFooter = card.querySelector('.card-footer');
+      if (archonFooter) archonFooter.before(info); else card.appendChild(info);
       endpointOk('archon');
     })
     .catch(() => { endpointFail('archon'); });
 
   // 5. Fetch live Sortie to enrich the sortie card
   trackEndpoint('sortie');
-  apiFetch(`${API}/sortie${LANG}`)
+  apiFetch(`${API}/sortie${LANG}`, { fallback: window.WF_MOCK?.sortie })
     .then(s => {
       const card = document.getElementById('card-sortie');
       if (!card || !s || !s.variants) { endpointFail('sortie'); return; }
@@ -930,9 +956,10 @@ async function init() {
       info.className = 'card-live-info';
       info.innerHTML = '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">Today\'s stages:</div>'
         + '<div class="sortie-stages">'
-        + s.variants.map((v,i) => `<div class="sortie-stage">Stage ${i+1}: <strong>${v.missionType}</strong> — ${v.modifier}</div>`).join('')
+        + s.variants.map((v,i) => `<div class="sortie-stage">Stage ${i+1}: <strong>${(v && v.missionType) || 'N/A'}</strong> — ${(v && v.modifier) || 'N/A'}</div>`).join('')
         + '</div>';
-      card.querySelector('.card-footer').before(info);
+      const sortieFooter = card.querySelector('.card-footer');
+      if (sortieFooter) sortieFooter.before(info); else card.appendChild(info);
       endpointOk('sortie');
     })
     .catch(() => { endpointFail('sortie'); });
@@ -1012,7 +1039,7 @@ async function init() {
   setInterval(tickSteelPathTimer, 1000);
 
   trackEndpoint('steelPath');
-  apiFetch(`${API}/steelPath${LANG}`)
+  apiFetch(`${API}/steelPath${LANG}`, { fallback: window.WF_MOCK?.steelPath })
     .then(sp => { renderSteelPath(sp, false); endpointOk('steelPath'); })
     .catch(() => { renderSteelPath(null, true); endpointFail('steelPath'); });
 
@@ -1118,7 +1145,7 @@ async function init() {
   }
 
   function loadInvasions() {
-    apiFetch(`${API}/invasions${LANG}`)
+    apiFetch(`${API}/invasions${LANG}`, { fallback: window.WF_MOCK?.invasions })
       .then(data => {
         renderInvasions(data);
         if (invasionsFirstLoad) { invasionsFirstLoad = false; endpointOk('invasions'); }
@@ -1202,7 +1229,7 @@ async function init() {
   }
 
   function loadCetusCycle() {
-    apiFetch(`${API}/cetusCycle${LANG}`)
+    apiFetch(`${API}/cetusCycle${LANG}`, { fallback: window.WF_MOCK?.cetusCycle })
       .then(data => {
         if (!data || !data.expiry) throw new Error('bad payload');
         const stateKey = data.isDay ? 'day' : 'night';
@@ -1221,7 +1248,7 @@ async function init() {
   }
 
   function loadVallisCycle() {
-    apiFetch(`${API}/vallisCycle${LANG}`)
+    apiFetch(`${API}/vallisCycle${LANG}`, { fallback: window.WF_MOCK?.vallisCycle })
       .then(data => {
         if (!data || !data.expiry) throw new Error('bad payload');
         const stateKey = data.isWarm ? 'warm' : 'cold';
@@ -1240,7 +1267,7 @@ async function init() {
   }
 
   function loadCambionCycle() {
-    apiFetch(`${API}/cambionCycle${LANG}`)
+    apiFetch(`${API}/cambionCycle${LANG}`, { fallback: window.WF_MOCK?.cambionCycle })
       .then(data => {
         if (!data || !data.expiry) throw new Error('bad payload');
         const raw = String(data.state || data.active || '').toLowerCase();
@@ -1332,7 +1359,7 @@ async function init() {
   }
 
   function loadAlerts() {
-    apiFetch(`${API}/alerts${LANG}`)
+    apiFetch(`${API}/alerts${LANG}`, { fallback: window.WF_MOCK?.alerts })
       .then(data => renderAlerts(data))
       .catch(() => {}); // silent fail — section stays hidden
   }
