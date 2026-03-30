@@ -266,8 +266,9 @@
       background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 14px 16px; display: flex; flex-direction: column; gap: 6px;
     }
-    .inv-rewards-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-hint); margin-bottom: 2px; }
-    .inv-reward-name   { font-size: 15px; font-weight: 700; color: var(--gold); line-height: 1.35; }
+    .inv-rewards-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-hint); margin-bottom: 4px; }
+    .inv-reward-pills  { display: flex; flex-wrap: wrap; gap: 6px; }
+    .inv-reward-pill   { font-size: 12px; font-weight: 600; color: var(--gold); background: rgba(200,168,75,0.12); border: 1px solid rgba(200,168,75,0.3); border-radius: 20px; padding: 3px 10px; }
     .inv-footer {
       display: flex; align-items: flex-end; justify-content: space-between; gap: 12px;
       flex-wrap: wrap; margin-top: 4px;
@@ -1395,31 +1396,35 @@ if (!missions.length) { endpointFail('archon'); return; }
     list.className = 'inv-list';
 
     active.forEach(inv => {
-      // Collect non-empty rewards from both sides
-      const atkReward = (inv.attacker && inv.attacker.reward && inv.attacker.reward.itemString) || '';
-      const defReward = (inv.defender && inv.defender.reward && inv.defender.reward.itemString) || '';
-      const rewards   = [atkReward, defReward].filter(Boolean);
+      // rewardTypes is the canonical reward array (e.g. ["fieldron", "mutagen"])
+      const rewardTypes = Array.isArray(inv.rewardTypes) ? inv.rewardTypes.filter(Boolean) : [];
 
+      // Timer: prefer inv.eta (pre-formatted string from API) over computing from expiry
       const expiry   = inv.expiry || '';
-      const timeLeft = expiry ? formatDur(new Date(expiry) - Date.now()) : '—';
+      const timeLeft = expiry ? formatDur(new Date(expiry) - Date.now()) : (inv.eta || '—');
       const node     = inv.node || '';
+      const desc     = inv.desc || '';
 
       const row = document.createElement('div');
       row.className = 'inv-row';
       row.innerHTML = `
-        <div class="inv-rewards-label">Possible rewards</div>
-        ${rewards.map(r => `<div class="inv-reward-name">${r}</div>`).join('')}
-        <div class="inv-footer">
-          <div>
-            ${node ? `<div class="inv-node">${node}</div>` : ''}
-            <div class="inv-missions">3 missions to complete</div>
+        ${node ? `<div class="inv-node">${node}</div>` : ''}
+        ${desc ? `<div class="inv-missions" style="margin-top:-2px">${desc}</div>` : ''}
+        ${rewardTypes.length ? `
+        <div style="margin-top:4px">
+          <div class="inv-rewards-label">Possible rewards</div>
+          <div class="inv-reward-pills">
+            ${rewardTypes.map(r => `<span class="inv-reward-pill">${r}</span>`).join('')}
           </div>
+        </div>` : ''}
+        <div class="inv-footer">
+          <div class="inv-missions">3 missions to complete</div>
           <div class="inv-timer"${expiry ? ` data-inv-expiry="${expiry}"` : ''}>${timeLeft}</div>
         </div>`;
       list.appendChild(row);
     });
 
-    // Start a shared tick for invasion countdown timers (minute precision is enough)
+    // Shared tick for invasion countdown timers
     if (!invasionTimerOn) {
       invasionTimerOn = true;
       setInterval(() => {
@@ -1427,7 +1432,7 @@ if (!missions.length) { endpointFail('archon'); return; }
           const exp = el.getAttribute('data-inv-expiry');
           if (exp) el.textContent = formatDur(new Date(exp) - Date.now());
         });
-      }, 60000);
+      }, 1000);
     }
 
     container.innerHTML = '';
