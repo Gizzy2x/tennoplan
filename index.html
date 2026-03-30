@@ -865,21 +865,20 @@ function renderNightwave(acts, season) {
 // ── Drop data ──
 // dropData is populated lazily by loadDropData() (called non-blocking from init).
 // Cache: localStorage keys 'wf-drops-cache' (JSON) + 'wf-drops-cache-ts' (ms timestamp), TTL 24h.
-// Query interface: getDropsFor(itemName) — returns [{source,node,planet,rotation,chance}] or null.
+// Data shape: flat array of {place, item, rarity, chance} — ~40 000 entries.
+// Query interface: getDropsFor(itemName) — returns [{place,item,rarity,chance}] or null.
 function getDropsFor(itemName) {
   if (!dropData) return null;
   const needle = String(itemName).toLowerCase();
   const results = [];
   for (const entry of dropData) {
     if (results.length >= 20) break;
-    const name = String(entry.item || entry.name || '').toLowerCase();
-    if (name.includes(needle)) {
+    if (String(entry.item || '').toLowerCase().includes(needle)) {
       results.push({
-        source:   entry.source   || '',
-        node:     entry.node     || '',
-        planet:   entry.planet   || '',
-        rotation: entry.rotation || '',
-        chance:   entry.chance   ?? entry.rarity ?? null,
+        place:  (entry.place || '').replace(/<[^>]+>/g, ''),
+        item:   entry.item   || '',
+        rarity: entry.rarity || '',
+        chance: entry.chance ?? null,
       });
     }
   }
@@ -1723,24 +1722,21 @@ if (!missions.length) { endpointFail('archon'); return; }
     const CACHE_TS_KEY = 'wf-drops-cache-ts';
     const TTL          = 24 * 60 * 60 * 1000;
     try {
+      // Clear a broken empty-array cache so it re-fetches fresh
+      if (localStorage.getItem(CACHE_KEY) === '[]') {
+        localStorage.removeItem(CACHE_KEY);
+        localStorage.removeItem(CACHE_TS_KEY);
+      }
       const ts = Number(localStorage.getItem(CACHE_TS_KEY) || 0);
       if (dropData === null && ts && Date.now() - ts < TTL) {
         const raw = localStorage.getItem(CACHE_KEY);
         if (raw) { dropData = JSON.parse(raw); return; }
       }
       const data = await apiFetch('https://drops.warframestat.us/data/all.slim.json');
-      if (!data) return;
-      // Flatten all drop tables into a single array of entries
-      const flat = [];
-      for (const [source, entries] of Object.entries(data)) {
-        if (!Array.isArray(entries)) continue;
-        for (const e of entries) {
-          flat.push({ source, node: e.place || e.node || '', planet: e.planet || '', item: e.item || e.name || '', rotation: e.rotation || '', chance: e.chance ?? null });
-        }
-      }
-      dropData = flat;
+      if (!Array.isArray(data)) return;
+      dropData = data;
       try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify(flat));
+        localStorage.setItem(CACHE_KEY, JSON.stringify(data));
         localStorage.setItem(CACHE_TS_KEY, String(Date.now()));
       } catch (_) { /* storage full — cached in memory only */ }
     } catch (_) { /* silent fail — drop data is optional */ }
