@@ -489,7 +489,7 @@
     }
 
     .timers-strip { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
-    .section-title[id] { cursor: pointer; }
+    .section-title[id] { cursor: pointer; padding: 6px 0; }
     .sec-chevron { font-style: normal; line-height: 1; display: inline-block; transition: transform 0.15s; }
     .sec-collapsed .sec-chevron { transform: rotate(-180deg); }
 
@@ -526,7 +526,7 @@
     </div>
   </div>
 
-  <div class="section-title" id="sec-daily">Daily Activities</div>
+  <div class="section-title" id="sec-daily" data-target="daily-cards">Daily Activities</div>
   <div class="cards" id="daily-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
 
   <!-- Notable Alerts: hidden when no matching alerts are active -->
@@ -535,13 +535,13 @@
     <div id="alerts-container"></div>
   </div>
 
-  <div class="section-title" id="sec-weekly">
+  <div class="section-title" id="sec-weekly" data-target="weekly-cards">
     <span>Weekly Activities</span>
     <button class="reset-all-btn" onclick="resetAll()">Reset all</button>
   </div>
   <div class="cards" id="weekly-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
 
-  <div class="section-title" id="sec-pulse">Search Pulse Budget</div>
+  <div class="section-title" id="sec-pulse" data-target="pulse-budget-box">Search Pulse Budget</div>
   <div class="pulse-box" id="pulse-budget-box">
     <div class="pulse-progress-wrap">
       <div class="pulse-progress-head"><span id="pulses-used-label">0 / 5 pulses used this week</span></div>
@@ -634,7 +634,7 @@
     </div>
   </div>
 
-  <div class="section-title" id="sec-cycles">
+  <div class="section-title" id="sec-cycles" data-target="cycles-grid">
     World State Cycles
     <span style="font-size:10px;color:var(--text-hint);font-weight:400;letter-spacing:0;text-transform:none">Live · updates every 30 s</span>
   </div>
@@ -689,8 +689,8 @@
     </div>
   </div>
 
-  <div class="section-title" id="sec-baro">Void Trader</div>
-  <div class="baro-strip">
+  <div class="section-title" id="sec-baro" data-target="baro-strip">Void Trader</div>
+  <div class="baro-strip" id="baro-strip">
     <div class="baro-left">
       <div class="baro-dot absent" id="baro-dot"></div>
       <div>
@@ -701,14 +701,14 @@
     <div class="baro-timer" id="baro-timer">—</div>
   </div>
 
-  <div class="section-title" id="sec-invasions">
+  <div class="section-title" id="sec-invasions" data-target="inv-container">
     Invasions
     <span style="font-size:10px;color:var(--green);margin-left:8px" id="inv-live-badge"></span>
   </div>
   <div id="inv-container"><div class="inv-offline">Loading invasions...</div></div>
 
-  <div class="section-title" id="sec-nightwave">Nightwave Acts</div>
-  <div class="nw-box">
+  <div class="section-title" id="sec-nightwave" data-target="nw-box">Nightwave Acts</div>
+  <div class="nw-box" id="nw-box">
     <div class="nw-header">
       <div>
         <div class="nw-title">Nightwave</div>
@@ -720,7 +720,7 @@
     <div class="nw-acts" id="nw-acts"><div class="skeleton"></div></div>
   </div>
 
-  <div class="section-title" id="sec-steelpath">Steel Path Honors</div>
+  <div class="section-title" id="sec-steelpath" data-target="sp-box">Steel Path Honors</div>
   <div class="sp-box" id="sp-box">
     <div class="sp-offline">Loading Steel Path Honors...</div>
   </div>
@@ -1309,29 +1309,39 @@ function resetAll() {
 
 // ── Section collapse toggles ──
 function initSectionToggles() {
-  document.querySelectorAll('.section-title[id]').forEach(title => {
-    const content = title.nextElementSibling;
+  document.querySelectorAll('.section-title[data-target]').forEach(title => {
+    const targetId = title.dataset.target;
+    const content = document.getElementById(targetId);
     if (!content) return;
+    const secId = title.id;
+
     const chevron = document.createElement('span');
     chevron.className = 'sec-chevron';
     chevron.textContent = '▾';
     title.appendChild(chevron);
-    const secId = title.id;
-    if (state.ui.collapsed[secId]) {
-      content.style.display = 'none';
-      title.classList.add('sec-collapsed');
-    }
-    title.addEventListener('click', e => {
-      if (e.target.closest('button, a')) return;
-      if (state.ui.collapsed[secId]) {
-        delete state.ui.collapsed[secId];
-        content.style.display = '';
-        title.classList.remove('sec-collapsed');
-      } else {
-        state.ui.collapsed[secId] = true;
-        content.style.display = 'none';
-        title.classList.add('sec-collapsed');
+
+    function setCollapsed(collapse) {
+      content.style.display = collapse ? 'none' : '';
+      // sec-daily: the fissures block sits between the title and daily-cards
+      // and must be toggled together so the section visibly collapses.
+      if (secId === 'sec-daily') {
+        const fis = document.getElementById('wf-fissures-live');
+        if (fis) fis.style.display = collapse ? 'none' : '';
       }
+      title.classList.toggle('sec-collapsed', collapse);
+      if (collapse) {
+        state.ui.collapsed[secId] = true;
+      } else {
+        delete state.ui.collapsed[secId];
+      }
+    }
+
+    // Restore saved state
+    if (state.ui.collapsed[secId]) setCollapsed(true);
+
+    title.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      setCollapsed(!state.ui.collapsed[secId]);
       persist();
     });
   });
