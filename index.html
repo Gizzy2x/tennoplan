@@ -497,6 +497,7 @@
           <label class="pulse-run" data-mode="net" data-idx="3" onclick="toggleNetRun(3)"><span>Run 4</span></label>
           <label class="pulse-run" data-mode="net" data-idx="4" onclick="toggleNetRun(4)"><span>Run 5</span></label>
         </div>
+        <div style="font-size:11px;color:var(--text-hint)">Each run targets a Netracell assassination in Albrecht's Labs</div>
       </div>
 
       <!-- Temporal -->
@@ -518,6 +519,45 @@
     </div>
   </div>
 
+  <div class="section-title">
+    <span>Weekly Activities</span>
+    <button class="reset-all-btn" onclick="resetAll()">Reset all</button>
+  </div>
+  <div class="cards" id="weekly-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
+
+  <div class="section-title">Steel Path Honors</div>
+  <div class="sp-box" id="sp-box">
+    <div class="sp-offline">Loading Steel Path Honors...</div>
+  </div>
+
+  <div class="section-title">Nightwave Acts</div>
+  <div class="nw-box">
+    <div class="nw-header">
+      <div>
+        <div class="nw-title">Nightwave</div>
+        <div class="nw-season" id="nw-season">Loading current acts...</div>
+      </div>
+      <div class="nw-standing" id="nw-standing">0 standing earned this session</div>
+    </div>
+    <div class="nw-bar-bg"><div class="nw-bar-fill" id="nw-bar" style="width:0%"></div></div>
+    <div class="nw-acts" id="nw-acts"><div class="skeleton"></div></div>
+  </div>
+
+  <div class="section-title">Daily Activities</div>
+  <div class="cards" id="daily-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
+
+  <!-- Notable Alerts: hidden when no matching alerts are active -->
+  <div id="alerts-section" style="display:none">
+    <div class="section-title">Notable Alerts</div>
+    <div id="alerts-container"></div>
+  </div>
+
+  <div class="section-title">
+    Invasions
+    <span style="font-size:10px;color:var(--green);margin-left:8px" id="inv-live-badge"></span>
+  </div>
+  <div id="inv-container"><div class="inv-offline">Loading invasions...</div></div>
+
   <div class="section-title">Void Trader</div>
   <div class="baro-strip">
     <div class="baro-left">
@@ -528,11 +568,6 @@
       </div>
     </div>
     <div class="baro-timer" id="baro-timer">—</div>
-  </div>
-
-  <div class="section-title">Steel Path Honors</div>
-  <div class="sp-box" id="sp-box">
-    <div class="sp-offline">Loading Steel Path Honors...</div>
   </div>
 
   <div class="section-title">
@@ -589,40 +624,6 @@
       </div>
     </div>
   </div>
-
-  <div class="section-title">
-    <span>Weekly Activities</span>
-    <button class="reset-all-btn" onclick="resetAll()">Reset all</button>
-  </div>
-  <div class="cards" id="weekly-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
-
-  <div class="section-title">Nightwave Acts</div>
-  <div class="nw-box">
-    <div class="nw-header">
-      <div>
-        <div class="nw-title">Nightwave</div>
-        <div class="nw-season" id="nw-season">Loading current acts...</div>
-      </div>
-      <div class="nw-standing" id="nw-standing">0 standing earned this session</div>
-    </div>
-    <div class="nw-bar-bg"><div class="nw-bar-fill" id="nw-bar" style="width:0%"></div></div>
-    <div class="nw-acts" id="nw-acts"><div class="skeleton"></div></div>
-  </div>
-
-  <div class="section-title">Daily Activities</div>
-  <div class="cards" id="daily-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
-
-  <!-- Notable Alerts: hidden when no matching alerts are active -->
-  <div id="alerts-section" style="display:none">
-    <div class="section-title">Notable Alerts</div>
-    <div id="alerts-container"></div>
-  </div>
-
-  <div class="section-title">
-    Invasions
-    <span style="font-size:10px;color:var(--green);margin-left:8px" id="inv-live-badge"></span>
-  </div>
-  <div id="inv-container"><div class="inv-offline">Loading invasions...</div></div>
 
   <div class="support-bar">
     <div class="support-text">
@@ -1064,17 +1065,13 @@ async function init() {
   } catch(e) {
     taskData = {
       weekly: [
-        {id:'archon',   title:'Archon Hunt',           desc:'Weekly 3-mission hunt. Rewards Archon Shards for permanent build upgrades.',       tag:'weekly', reward:'Archon Shard',         wikiUrl:'https://warframe.fandom.com/wiki/Archon_Hunt'},
-        {id:'eda',      title:'Deep Archimedea (EDA)', desc:'Endurance with rotating restrictions. Best source of Tauforged Archon Shards.',    tag:'weekly', reward:'Tauforged Shard',       wikiUrl:'https://warframe.fandom.com/wiki/Deep_Archimedea'},
-        {id:'temporal', title:'Temporal Archimedea',   desc:'High-difficulty variant with unique weekly reward pool. Costs a Search Pulse.',     tag:'weekly', reward:'Unique weekly rewards', wikiUrl:'https://warframe.fandom.com/wiki/Temporal_Archimedea'},
-        {id:'circuit',  title:'The Circuit (Duviri)',  desc:'Roguelike endless for Incarnon Genesis adapters. Resets weekly selections.',        tag:'weekly', reward:'Incarnon Genesis',      wikiUrl:'https://warframe.fandom.com/wiki/The_Circuit'},
-        {id:'syndicate',title:'Syndicate Standing Cap','desc':'Hit your weekly cap across chosen syndicates. Use missions or medallions.',       tag:'weekly', reward:'Standing',              wikiUrl:'https://warframe.fandom.com/wiki/Syndicate'},
+        {id:'archon',   title:'Archon Hunt',           desc:'Weekly 3-mission hunt. Rewards Archon Shards for permanent build upgrades.',       tag:'weekly', reward:'Archon Shard',    wikiUrl:'https://warframe.fandom.com/wiki/Archon_Hunt'},
+        {id:'circuit',  title:'The Circuit (Duviri)',  desc:'Roguelike endless for Incarnon Genesis adapters. Resets weekly selections.',        tag:'weekly', reward:'Incarnon Genesis', wikiUrl:'https://warframe.fandom.com/wiki/The_Circuit'},
+        {id:'syndicate',title:'Syndicate Standing Cap','desc':'Hit your weekly cap across chosen syndicates. Use missions or medallions.',       tag:'weekly', reward:'Standing',         wikiUrl:'https://warframe.fandom.com/wiki/Syndicate'},
       ],
       daily: [
-        {id:'sortie',    title:'Sortie',              desc:'3-stage daily chain with modifiers. Rewards Rivens, Forma, Exilus adapters.',  tag:'daily', reward:'Riven / Forma',    wikiUrl:'https://warframe.fandom.com/wiki/Sortie'},
-        {id:'netracell', title:'Netracell',            desc:'High-tier assassination using a Search Pulse. Strong shard and mod source.',   tag:'daily', reward:'Archon Shard',    wikiUrl:'https://warframe.fandom.com/wiki/Netracell'},
-        {id:'synddaily', title:'Syndicate Dailies',    desc:'Daily missions to build standing toward your weekly cap.',                     tag:'daily', reward:'Standing',         wikiUrl:'https://warframe.fandom.com/wiki/Syndicate'},
-        {id:'voidfissure','title':'Void Fissures',     desc:'Crack relics for Prime parts. Rotates every few hours.',                      tag:'daily', reward:'Prime parts',      wikiUrl:'https://warframe.fandom.com/wiki/Void_Fissure'},
+        {id:'sortie',    title:'Sortie',           desc:'3-stage daily chain with modifiers. Rewards Rivens, Forma, Exilus adapters.',  tag:'daily', reward:'Riven / Forma', wikiUrl:'https://warframe.fandom.com/wiki/Sortie'},
+        {id:'synddaily', title:'Syndicate Dailies', desc:'Daily missions to build standing toward your weekly cap.',                     tag:'daily', reward:'Standing',       wikiUrl:'https://warframe.fandom.com/wiki/Syndicate'},
       ],
       nightwave_fallback: [
         {id:'nw1',title:'Complete a Sortie',          standing:1000,type:'daily'},
