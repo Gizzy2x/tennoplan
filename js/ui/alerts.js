@@ -43,7 +43,7 @@ export function renderAlerts(data) {
   container.innerHTML = '';
   container.appendChild(list);
   section.style.display = '';
-  if (!alertsTickOn) {
+  if (typeof window !== 'undefined' && !alertsTickOn) {
     alertsTickOn = true;
     setInterval(() => {
       document.querySelectorAll('[data-alert-expiry]').forEach(el => {

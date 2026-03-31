@@ -1,7 +1,9 @@
 // js/ui/index.js — Barrel re-export for all ui/* modules.
 // main.js imports everything from here so it only needs one import line.
 
-export { formatDur, setBadge, resetAll, initSectionToggles } from './layout.js';
+export { formatDur, setBadge, resetAll, initSectionToggles, checkSVG } from './layout.js';
+
+export { CARD_REWARDS, buildRewardPanelHTML } from './rewards.js';
 
 export { renderCards, togglePulseRewardPanel } from './cards.js';
 

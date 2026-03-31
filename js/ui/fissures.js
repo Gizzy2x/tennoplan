@@ -43,13 +43,13 @@ export function renderVoidFissures(fissures) {
   const extraTiers  = Object.keys(byTier).filter(t => tierOrder.indexOf(t) === -1).sort();
   const tiersToShow = tierOrder.concat(extraTiers).filter(t => byTier[t]?.length);
 
-  const daily = document.getElementById('daily-cards');
-  if (!daily) return;
+  const anchor = document.getElementById('fissures-anchor');
+  if (!anchor) return;
   let wrap = document.getElementById('wf-fissures-live');
   if (!wrap) {
     wrap = document.createElement('div');
     wrap.id = 'wf-fissures-live';
-    daily.parentNode.insertBefore(wrap, daily);
+    anchor.parentNode.insertBefore(wrap, anchor);
   }
   wrap.innerHTML = '';
 

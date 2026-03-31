@@ -1,12 +1,8 @@
 // js/ui/arbitration.js — applyArbitrationCard(), tickArbitrationTimers(), and helpers.
-//
-// Cross-module note: imports buildRewardPanelHTML from ./cards.js because the
-// arbitration card uses the same reward-panel markup as static cards. This is
-// the one intentional cross-ui/* import in the codebase — kept flat (no chains).
 
 import { state, persist } from '../state.js';
-import { formatDur } from './layout.js';
-import { buildRewardPanelHTML } from './cards.js';
+import { formatDur, checkSVG } from './layout.js';
+import { buildRewardPanelHTML } from './rewards.js';
 
 // ── Module-level state ────────────────────────────────────────────────────────
 let lastArbitrationPayload = null;
@@ -17,10 +13,6 @@ let wfArbTickOn            = false;
 let arbRewardPanelOpen     = false;
 
 // ── Private helpers ───────────────────────────────────────────────────────────
-function checkSVG() {
-  return '<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-}
-
 function arbitrationPayloadOk(arb) {
   if (!arb || arb.expired) return false;
   const nk = String(arb.nodeKey || arb.node || '');
@@ -157,7 +149,7 @@ export function applyArbitrationCard(arb) {
     }
   }
 
-  if (!wfArbTickOn) {
+  if (typeof window !== 'undefined' && !wfArbTickOn) {
     wfArbTickOn = true;
     setInterval(tickArbitrationTimers, 1000);
   }

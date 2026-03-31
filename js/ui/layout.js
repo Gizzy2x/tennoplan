@@ -36,6 +36,10 @@ export function resetAll() {
   location.reload();
 }
 
+export function checkSVG() {
+  return '<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
 export function initSectionToggles() {
   document.querySelectorAll('.section-title[id]').forEach(title => {
     const content = title.nextElementSibling;

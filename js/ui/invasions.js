@@ -60,7 +60,7 @@ export function renderInvasions(data) {
     list.appendChild(row);
   });
 
-  if (!invasionTimerOn) {
+  if (typeof window !== 'undefined' && !invasionTimerOn) {
     invasionTimerOn = true;
     setInterval(() => {
       document.querySelectorAll('[data-inv-expiry]').forEach(el => {
