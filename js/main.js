@@ -20,7 +20,7 @@ import {
   updateCountdown,
   resetAll, initSectionToggles,
   toggleTieredRun, toggleNetRun, togglePulseRewardPanel,
-} from './ui.js';
+} from './ui/index.js';
 
 // ── Global error handlers ─────────────────────────────────────────────────────
 window.addEventListener('error', e => {
