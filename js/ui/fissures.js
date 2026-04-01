@@ -1,7 +1,7 @@
 // js/ui/fissures.js — renderVoidFissures(), tickFissureTimers(), normalizeFissureTier().
 
 import { formatDur } from './layout.js';
-import { buildFissurePanel, attachExpand } from './knowMore.js';
+import { buildFissurePanel } from './knowMore.js';
 
 // ── Module-level state ────────────────────────────────────────────────────────
 let lastFissureData = null;
@@ -106,18 +106,43 @@ export function renderVoidFissures(fissures) {
           <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType || 'N/A'} — ${f.node || 'N/A'}</div>
           ${badge}
           <div class="fissure-time" data-expiry="${exp.replace(/"/g,'')}" style="font-size:11px;color:var(--text-dim);white-space:nowrap">${t}</div>`;
-        // Add Know More expand
-        const missionType = f.missionType || '';
-        const faction     = f.faction || f.enemy || '';
-        const panelHTML   = buildFissurePanel(missionType, faction, f._tier);
-        if (panelHTML) {
-          row.classList.add('fissure-row-expandable');
-          const knowBtn = document.createElement('button');
-          knowBtn.className = 'km-toggle-btn';
-          knowBtn.textContent = 'Know more ↓';
-          row.appendChild(knowBtn);
-          attachExpand(row, panelHTML);
-        }
+        // Know More — lazy attach on first click so wikiContent has time to load
+        row.classList.add('fissure-row-expandable');
+        const knowBtn = document.createElement('button');
+        knowBtn.className = 'km-toggle-btn';
+        knowBtn.textContent = 'Know more ↓';
+        row.appendChild(knowBtn);
+
+        row.dataset.missionType = f.missionType || '';
+        row.dataset.faction     = f.faction || f.enemy || '';
+        row.dataset.tier        = f._tier || '';
+
+        let expandWrapper = null;
+        let expandOpen    = false;
+
+        knowBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          if (!expandWrapper) {
+            const panelHTML = buildFissurePanel(
+              row.dataset.missionType,
+              row.dataset.faction,
+              row.dataset.tier
+            );
+            expandWrapper = document.createElement('div');
+            expandWrapper.className = 'km-collapsible';
+            const inner = document.createElement('div');
+            inner.className = 'km-inner';
+            const panel = document.createElement('div');
+            panel.className = 'km-panel';
+            panel.innerHTML = panelHTML;
+            inner.appendChild(panel);
+            expandWrapper.appendChild(inner);
+            row.after(expandWrapper);
+          }
+          expandOpen = !expandOpen;
+          expandWrapper.classList.toggle('km-open', expandOpen);
+          knowBtn.textContent = expandOpen ? 'Less ↑' : 'Know more ↓';
+        });
         block.appendChild(row);
       });
       stack.appendChild(block);
@@ -183,18 +208,43 @@ export function renderVoidFissures(fissures) {
           <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType || 'N/A'} — ${f.node || 'N/A'}</div>
           ${badge}
           <div class="fissure-time" data-expiry="${exp.replace(/"/g,'')}" style="font-size:11px;color:var(--text-dim);white-space:nowrap">${t}</div>`;
-        // Add Know More expand
-        const missionType = f.missionType || '';
-        const faction     = f.faction || f.enemy || '';
-        const panelHTML   = buildFissurePanel(missionType, faction, f._tier);
-        if (panelHTML) {
-          row.classList.add('fissure-row-expandable');
-          const knowBtn = document.createElement('button');
-          knowBtn.className = 'km-toggle-btn';
-          knowBtn.textContent = 'Know more ↓';
-          row.appendChild(knowBtn);
-          attachExpand(row, panelHTML);
-        }
+        // Know More — lazy attach on first click so wikiContent has time to load
+        row.classList.add('fissure-row-expandable');
+        const knowBtn = document.createElement('button');
+        knowBtn.className = 'km-toggle-btn';
+        knowBtn.textContent = 'Know more ↓';
+        row.appendChild(knowBtn);
+
+        row.dataset.missionType = f.missionType || '';
+        row.dataset.faction     = f.faction || f.enemy || '';
+        row.dataset.tier        = f._tier || '';
+
+        let expandWrapper = null;
+        let expandOpen    = false;
+
+        knowBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          if (!expandWrapper) {
+            const panelHTML = buildFissurePanel(
+              row.dataset.missionType,
+              row.dataset.faction,
+              row.dataset.tier
+            );
+            expandWrapper = document.createElement('div');
+            expandWrapper.className = 'km-collapsible';
+            const inner = document.createElement('div');
+            inner.className = 'km-inner';
+            const panel = document.createElement('div');
+            panel.className = 'km-panel';
+            panel.innerHTML = panelHTML;
+            inner.appendChild(panel);
+            expandWrapper.appendChild(inner);
+            row.after(expandWrapper);
+          }
+          expandOpen = !expandOpen;
+          expandWrapper.classList.toggle('km-open', expandOpen);
+          knowBtn.textContent = expandOpen ? 'Less ↑' : 'Know more ↓';
+        });
         block.appendChild(row);
       });
       stormStack.appendChild(block);
