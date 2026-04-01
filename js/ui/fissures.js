@@ -4,8 +4,9 @@ import { formatDur } from './layout.js';
 import { buildFissurePanel } from './knowMore.js';
 
 // ── Module-level state ────────────────────────────────────────────────────────
-let lastFissureData = null;
-let fissureFilter   = 'all'; // 'all' | 'normal' | 'steelpath'
+let lastFissureData  = null;
+let fissureFilter    = 'all'; // 'all' | 'normal' | 'steelpath'
+let openKnowMoreKeys = new Set();
 
 // ── Private helpers ───────────────────────────────────────────────────────────
 function normalizeFissureTier(raw) {
@@ -117,8 +118,31 @@ export function renderVoidFissures(fissures) {
         row.dataset.faction     = f.faction || f.enemy || '';
         row.dataset.tier        = f._tier || '';
 
+        const rowKey = `${f._tier}|${f.missionType}|${f.node}`;
+        row.dataset.kmKey = rowKey;
+
         let expandWrapper = null;
         let expandOpen    = false;
+
+        if (openKnowMoreKeys.has(rowKey)) {
+          const panelHTML = buildFissurePanel(
+            row.dataset.missionType,
+            row.dataset.faction,
+            row.dataset.tier
+          );
+          expandWrapper = document.createElement('div');
+          expandWrapper.className = 'km-collapsible';
+          const inner = document.createElement('div');
+          inner.className = 'km-inner';
+          const panel = document.createElement('div');
+          panel.className = 'km-panel';
+          panel.innerHTML = panelHTML;
+          inner.appendChild(panel);
+          expandWrapper.appendChild(inner);
+          expandOpen = true;
+          expandWrapper.classList.add('km-open');
+          knowBtn.textContent = 'Less ↑';
+        }
 
         knowBtn.addEventListener('click', e => {
           e.stopPropagation();
@@ -142,8 +166,11 @@ export function renderVoidFissures(fissures) {
           expandOpen = !expandOpen;
           expandWrapper.classList.toggle('km-open', expandOpen);
           knowBtn.textContent = expandOpen ? 'Less ↑' : 'Know more ↓';
+          if (expandOpen) openKnowMoreKeys.add(rowKey);
+          else openKnowMoreKeys.delete(rowKey);
         });
         block.appendChild(row);
+        if (expandWrapper) row.after(expandWrapper);
       });
       stack.appendChild(block);
     });
@@ -219,8 +246,31 @@ export function renderVoidFissures(fissures) {
         row.dataset.faction     = f.faction || f.enemy || '';
         row.dataset.tier        = f._tier || '';
 
+        const rowKey = `${f._tier}|${f.missionType}|${f.node}`;
+        row.dataset.kmKey = rowKey;
+
         let expandWrapper = null;
         let expandOpen    = false;
+
+        if (openKnowMoreKeys.has(rowKey)) {
+          const panelHTML = buildFissurePanel(
+            row.dataset.missionType,
+            row.dataset.faction,
+            row.dataset.tier
+          );
+          expandWrapper = document.createElement('div');
+          expandWrapper.className = 'km-collapsible';
+          const inner = document.createElement('div');
+          inner.className = 'km-inner';
+          const panel = document.createElement('div');
+          panel.className = 'km-panel';
+          panel.innerHTML = panelHTML;
+          inner.appendChild(panel);
+          expandWrapper.appendChild(inner);
+          expandOpen = true;
+          expandWrapper.classList.add('km-open');
+          knowBtn.textContent = 'Less ↑';
+        }
 
         knowBtn.addEventListener('click', e => {
           e.stopPropagation();
@@ -244,8 +294,11 @@ export function renderVoidFissures(fissures) {
           expandOpen = !expandOpen;
           expandWrapper.classList.toggle('km-open', expandOpen);
           knowBtn.textContent = expandOpen ? 'Less ↑' : 'Know more ↓';
+          if (expandOpen) openKnowMoreKeys.add(rowKey);
+          else openKnowMoreKeys.delete(rowKey);
         });
         block.appendChild(row);
+        if (expandWrapper) row.after(expandWrapper);
       });
       stormStack.appendChild(block);
     });

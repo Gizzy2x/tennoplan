@@ -4,6 +4,9 @@
 import { formatDur } from './layout.js';
 import { buildCyclePanel } from './knowMore.js';
 
+// ── Module-level state ────────────────────────────────────────────────────────
+let openCycleKnowMore = new Set();
+
 // ── Constants ─────────────────────────────────────────────────────────────────
 export const CYCLE_DUR_MS = {
   day: 6000000, night: 3000000,
@@ -99,6 +102,23 @@ export function applyCycle(id, cycle) {
     let cycleExpandWrapper = null;
     let cycleExpandOpen    = false;
 
+    if (openCycleKnowMore.has(id)) {
+      const panelHTML = buildCyclePanel(id, stateKey);
+      cycleExpandWrapper = document.createElement('div');
+      cycleExpandWrapper.className = 'km-collapsible';
+      const inner = document.createElement('div');
+      inner.className = 'km-inner';
+      const panel = document.createElement('div');
+      panel.className = 'km-panel';
+      panel.innerHTML = panelHTML;
+      inner.appendChild(panel);
+      cycleExpandWrapper.appendChild(inner);
+      cycleExpandOpen = true;
+      cycleExpandWrapper.classList.add('km-open');
+      cycleKnowBtn.textContent = 'Less ↑';
+      card.appendChild(cycleExpandWrapper);
+    }
+
     cycleKnowBtn.addEventListener('click', e => {
       e.stopPropagation();
       if (!cycleExpandWrapper) {
@@ -117,6 +137,8 @@ export function applyCycle(id, cycle) {
       cycleExpandOpen = !cycleExpandOpen;
       cycleExpandWrapper.classList.toggle('km-open', cycleExpandOpen);
       cycleKnowBtn.textContent = cycleExpandOpen ? 'Less ↑' : 'Know more ↓';
+      if (cycleExpandOpen) openCycleKnowMore.add(id);
+      else openCycleKnowMore.delete(id);
     });
   }
 }
