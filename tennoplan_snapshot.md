@@ -1,5 +1,5 @@
 # Tennoplan — Project Snapshot
-Generated: Wed Apr  1 07:23:32 SAST 2026
+Generated: Wed Apr  1 20:14:29 SAST 2026
 
 ## Structure
 ./js/api.js
@@ -981,7 +981,7 @@ export function updateCountdown() {
 //                   CYCLE_DUR_MS, CYCLE_HINTS, CYCLE_META.
 
 import { formatDur } from './layout.js';
-import { buildCyclePanel, attachExpand } from './knowMore.js';
+import { buildCyclePanel } from './knowMore.js';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 export const CYCLE_DUR_MS = {
@@ -1064,11 +1064,39 @@ export function applyCycle(id, cycle) {
   // Attach or refresh Know More expand for this cycle card
   const card = document.getElementById('cycle-' + id);
   if (card) {
-    // Remove any existing expand panel so we don't duplicate on refresh
+    // Remove old expand wrapper and button on cycle refresh
     card.querySelectorAll('.km-collapsible').forEach(el => el.remove());
-    const stateKey2  = cycle.current.toLowerCase(); // 'day','night','warm','cold','fass','vome'
-    const panelHTML  = buildCyclePanel(id, stateKey2);
-    attachExpand(card, panelHTML);
+    card.querySelectorAll('.km-toggle-btn').forEach(el => el.remove());
+
+    const cycleKnowBtn = document.createElement('button');
+    cycleKnowBtn.className   = 'km-toggle-btn';
+    cycleKnowBtn.textContent = 'Know more ↓';
+    const footer = card.querySelector('.cycle-footer');
+    if (footer) footer.appendChild(cycleKnowBtn);
+    else card.appendChild(cycleKnowBtn);
+
+    let cycleExpandWrapper = null;
+    let cycleExpandOpen    = false;
+
+    cycleKnowBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (!cycleExpandWrapper) {
+        const panelHTML = buildCyclePanel(id, stateKey);
+        cycleExpandWrapper = document.createElement('div');
+        cycleExpandWrapper.className = 'km-collapsible';
+        const inner = document.createElement('div');
+        inner.className = 'km-inner';
+        const panel = document.createElement('div');
+        panel.className = 'km-panel';
+        panel.innerHTML = panelHTML;
+        inner.appendChild(panel);
+        cycleExpandWrapper.appendChild(inner);
+        card.appendChild(cycleExpandWrapper);
+      }
+      cycleExpandOpen = !cycleExpandOpen;
+      cycleExpandWrapper.classList.toggle('km-open', cycleExpandOpen);
+      cycleKnowBtn.textContent = cycleExpandOpen ? 'Less ↑' : 'Know more ↓';
+    });
   }
 }
 
@@ -1107,7 +1135,7 @@ export function tickCycleTimers() {
 // js/ui/fissures.js — renderVoidFissures(), tickFissureTimers(), normalizeFissureTier().
 
 import { formatDur } from './layout.js';
-import { buildFissurePanel, attachExpand } from './knowMore.js';
+import { buildFissurePanel } from './knowMore.js';
 
 // ── Module-level state ────────────────────────────────────────────────────────
 let lastFissureData = null;
@@ -1212,18 +1240,43 @@ export function renderVoidFissures(fissures) {
           <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType || 'N/A'} — ${f.node || 'N/A'}</div>
           ${badge}
           <div class="fissure-time" data-expiry="${exp.replace(/"/g,'')}" style="font-size:11px;color:var(--text-dim);white-space:nowrap">${t}</div>`;
-        // Add Know More expand
-        const missionType = f.missionType || '';
-        const faction     = f.faction || f.enemy || '';
-        const panelHTML   = buildFissurePanel(missionType, faction, f._tier);
-        if (panelHTML) {
-          row.classList.add('fissure-row-expandable');
-          const knowBtn = document.createElement('button');
-          knowBtn.className = 'km-toggle-btn';
-          knowBtn.textContent = 'Know more ↓';
-          row.appendChild(knowBtn);
-          attachExpand(row, panelHTML);
-        }
+        // Know More — lazy attach on first click so wikiContent has time to load
+        row.classList.add('fissure-row-expandable');
+        const knowBtn = document.createElement('button');
+        knowBtn.className = 'km-toggle-btn';
+        knowBtn.textContent = 'Know more ↓';
+        row.appendChild(knowBtn);
+
+        row.dataset.missionType = f.missionType || '';
+        row.dataset.faction     = f.faction || f.enemy || '';
+        row.dataset.tier        = f._tier || '';
+
+        let expandWrapper = null;
+        let expandOpen    = false;
+
+        knowBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          if (!expandWrapper) {
+            const panelHTML = buildFissurePanel(
+              row.dataset.missionType,
+              row.dataset.faction,
+              row.dataset.tier
+            );
+            expandWrapper = document.createElement('div');
+            expandWrapper.className = 'km-collapsible';
+            const inner = document.createElement('div');
+            inner.className = 'km-inner';
+            const panel = document.createElement('div');
+            panel.className = 'km-panel';
+            panel.innerHTML = panelHTML;
+            inner.appendChild(panel);
+            expandWrapper.appendChild(inner);
+            row.after(expandWrapper);
+          }
+          expandOpen = !expandOpen;
+          expandWrapper.classList.toggle('km-open', expandOpen);
+          knowBtn.textContent = expandOpen ? 'Less ↑' : 'Know more ↓';
+        });
         block.appendChild(row);
       });
       stack.appendChild(block);
@@ -1289,18 +1342,43 @@ export function renderVoidFissures(fissures) {
           <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType || 'N/A'} — ${f.node || 'N/A'}</div>
           ${badge}
           <div class="fissure-time" data-expiry="${exp.replace(/"/g,'')}" style="font-size:11px;color:var(--text-dim);white-space:nowrap">${t}</div>`;
-        // Add Know More expand
-        const missionType = f.missionType || '';
-        const faction     = f.faction || f.enemy || '';
-        const panelHTML   = buildFissurePanel(missionType, faction, f._tier);
-        if (panelHTML) {
-          row.classList.add('fissure-row-expandable');
-          const knowBtn = document.createElement('button');
-          knowBtn.className = 'km-toggle-btn';
-          knowBtn.textContent = 'Know more ↓';
-          row.appendChild(knowBtn);
-          attachExpand(row, panelHTML);
-        }
+        // Know More — lazy attach on first click so wikiContent has time to load
+        row.classList.add('fissure-row-expandable');
+        const knowBtn = document.createElement('button');
+        knowBtn.className = 'km-toggle-btn';
+        knowBtn.textContent = 'Know more ↓';
+        row.appendChild(knowBtn);
+
+        row.dataset.missionType = f.missionType || '';
+        row.dataset.faction     = f.faction || f.enemy || '';
+        row.dataset.tier        = f._tier || '';
+
+        let expandWrapper = null;
+        let expandOpen    = false;
+
+        knowBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          if (!expandWrapper) {
+            const panelHTML = buildFissurePanel(
+              row.dataset.missionType,
+              row.dataset.faction,
+              row.dataset.tier
+            );
+            expandWrapper = document.createElement('div');
+            expandWrapper.className = 'km-collapsible';
+            const inner = document.createElement('div');
+            inner.className = 'km-inner';
+            const panel = document.createElement('div');
+            panel.className = 'km-panel';
+            panel.innerHTML = panelHTML;
+            inner.appendChild(panel);
+            expandWrapper.appendChild(inner);
+            row.after(expandWrapper);
+          }
+          expandOpen = !expandOpen;
+          expandWrapper.classList.toggle('km-open', expandOpen);
+          knowBtn.textContent = expandOpen ? 'Less ↑' : 'Know more ↓';
+        });
         block.appendChild(row);
       });
       stormStack.appendChild(block);
@@ -1717,7 +1795,7 @@ export function initSectionToggles() {
 // js/ui/nightwave.js — renderNightwave().
 
 import { week, persist } from '../state.js';
-import { buildNightwavePanel, attachExpand } from './knowMore.js';
+import { buildNightwavePanel } from './knowMore.js';
 
 export function renderNightwave(acts, season) {
   const c = document.getElementById('nw-acts');
@@ -1734,16 +1812,39 @@ export function renderNightwave(acts, season) {
     div.className = 'nw-act' + (done ? ' done' : '');
     const typeLabel = act.type ? `<span class="nw-act-type">${act.type.replace(/_/g, ' ')}</span>` : '';
     div.innerHTML = `<div class="nw-act-check"></div><div class="nw-act-name">${act.title || act.name || 'Act'}</div>${typeLabel}<div class="nw-act-pts">+${pts.toLocaleString()}</div>`;
-    div.onclick = () => { week.nw[id] = !week.nw[id]; renderNightwave(acts, season); persist(); };
-    // Add Know More expand
-    const panelHTML = buildNightwavePanel(act.type, act.title || act.name || '');
-    if (panelHTML) {
-      const knowBtn = document.createElement('button');
-      knowBtn.className = 'km-toggle-btn';
-      knowBtn.textContent = 'Know more ↓';
-      div.appendChild(knowBtn);
-      attachExpand(div, panelHTML);
-    }
+    div.addEventListener('click', e => {
+      if (e.target.closest('button, a')) return;
+      week.nw[id] = !week.nw[id];
+      renderNightwave(acts, season);
+      persist();
+    });
+    const knowBtn = document.createElement('button');
+    knowBtn.className = 'km-toggle-btn';
+    knowBtn.textContent = 'Know more ↓';
+    div.appendChild(knowBtn);
+
+    let nwExpandWrapper = null;
+    let nwExpandOpen    = false;
+
+    knowBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (!nwExpandWrapper) {
+        const panelHTML = buildNightwavePanel(act.type, act.title || act.name || '');
+        nwExpandWrapper = document.createElement('div');
+        nwExpandWrapper.className = 'km-collapsible';
+        const inner = document.createElement('div');
+        inner.className = 'km-inner';
+        const panel = document.createElement('div');
+        panel.className = 'km-panel';
+        panel.innerHTML = panelHTML;
+        inner.appendChild(panel);
+        nwExpandWrapper.appendChild(inner);
+        div.after(nwExpandWrapper);
+      }
+      nwExpandOpen = !nwExpandOpen;
+      nwExpandWrapper.classList.toggle('km-open', nwExpandOpen);
+      knowBtn.textContent = nwExpandOpen ? 'Less ↑' : 'Know more ↓';
+    });
     c.appendChild(div);
   });
   document.getElementById('nw-standing').textContent = earned.toLocaleString() + ' standing earned this session';
