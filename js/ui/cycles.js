@@ -2,6 +2,7 @@
 //                   CYCLE_DUR_MS, CYCLE_HINTS, CYCLE_META.
 
 import { formatDur } from './layout.js';
+import { buildCyclePanel, attachExpand } from './knowMore.js';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 export const CYCLE_DUR_MS = {
@@ -80,6 +81,16 @@ export function applyCycle(id, cycle) {
   bar.style.width   = cycle.percent.toFixed(1) + '%'; // percent of phase time remaining
   timer.textContent = formatDur(cycle.timeLeft);
   if (hint) hint.textContent = CYCLE_HINTS[stateKey] || '';
+
+  // Attach or refresh Know More expand for this cycle card
+  const card = document.getElementById('cycle-' + id);
+  if (card) {
+    // Remove any existing expand panel so we don't duplicate on refresh
+    card.querySelectorAll('.km-collapsible').forEach(el => el.remove());
+    const stateKey2  = cycle.current.toLowerCase(); // 'day','night','warm','cold','fass','vome'
+    const panelHTML  = buildCyclePanel(id, stateKey2);
+    attachExpand(card, panelHTML);
+  }
 }
 
 export function tickCycleTimers() {

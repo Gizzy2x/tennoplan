@@ -492,3 +492,191 @@ html, body {
   .pulse-runs { gap: 6px; }
   .sp-claimed-btn { width: 100%; }
 }
+
+/* ── Know More Expand System ─────────────────────────────────────── */
+
+/* Grid-based expand — animates height without JS height calculation */
+.km-collapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.32s ease;
+}
+.km-collapsible.km-open {
+  grid-template-rows: 1fr;
+}
+.km-collapsible > .km-inner {
+  overflow: hidden;
+}
+
+/* Expand panel content */
+.km-panel {
+  padding: 12px 14px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
+.km-panel-summary {
+  color: var(--text);
+  font-size: 12px;
+  margin-bottom: 10px;
+  line-height: 1.55;
+}
+
+.km-section {
+  margin-top: 10px;
+}
+
+.km-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-hint);
+  margin-bottom: 5px;
+}
+
+.km-tips {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.km-tips li {
+  padding-left: 12px;
+  position: relative;
+  color: var(--text-dim);
+  font-size: 11.5px;
+}
+
+.km-tips li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
+
+.km-frames {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.km-frame-pill {
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(79,195,247,0.08);
+  border: 1px solid rgba(79,195,247,0.2);
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.km-frame-pill.km-live {
+  background: rgba(93,201,138,0.1);
+  border-color: rgba(93,201,138,0.3);
+  color: var(--green);
+}
+
+.km-live-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--green);
+  background: rgba(93,201,138,0.1);
+  border: 1px solid rgba(93,201,138,0.25);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.km-weaknesses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.km-weakness-pill {
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(224,92,92,0.08);
+  border: 1px solid rgba(224,92,92,0.2);
+  color: #e07c7c;
+  white-space: nowrap;
+}
+
+.km-activities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.km-activity-pill {
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.km-toggle-btn {
+  font-size: 10px;
+  color: var(--text-hint);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: auto;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  transition: color 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.km-toggle-btn:hover {
+  color: var(--accent);
+}
+
+/* Fissure row — make it look clickable when expand is available */
+.fissure-row-expandable {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.fissure-row-expandable:hover {
+  background: var(--bg) !important;
+}
+
+/* Speed rating dots */
+.km-speed {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 2px;
+}
+.km-speed-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+}
+.km-speed-dot.active {
+  background: var(--accent);
+}
+.km-speed-label {
+  font-size: 10px;
+  color: var(--text-hint);
+  margin-left: 4px;
+  text-transform: capitalize;
+}

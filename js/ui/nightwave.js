@@ -1,6 +1,7 @@
 // js/ui/nightwave.js — renderNightwave().
 
 import { week, persist } from '../state.js';
+import { buildNightwavePanel, attachExpand } from './knowMore.js';
 
 export function renderNightwave(acts, season) {
   const c = document.getElementById('nw-acts');
@@ -18,6 +19,15 @@ export function renderNightwave(acts, season) {
     const typeLabel = act.type ? `<span class="nw-act-type">${act.type.replace(/_/g, ' ')}</span>` : '';
     div.innerHTML = `<div class="nw-act-check"></div><div class="nw-act-name">${act.title || act.name || 'Act'}</div>${typeLabel}<div class="nw-act-pts">+${pts.toLocaleString()}</div>`;
     div.onclick = () => { week.nw[id] = !week.nw[id]; renderNightwave(acts, season); persist(); };
+    // Add Know More expand
+    const panelHTML = buildNightwavePanel(act.type, act.title || act.name || '');
+    if (panelHTML) {
+      const knowBtn = document.createElement('button');
+      knowBtn.className = 'km-toggle-btn';
+      knowBtn.textContent = 'Know more ↓';
+      div.appendChild(knowBtn);
+      attachExpand(div, panelHTML);
+    }
     c.appendChild(div);
   });
   document.getElementById('nw-standing').textContent = earned.toLocaleString() + ' standing earned this session';

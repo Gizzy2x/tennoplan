@@ -1,6 +1,7 @@
 // js/ui/fissures.js — renderVoidFissures(), tickFissureTimers(), normalizeFissureTier().
 
 import { formatDur } from './layout.js';
+import { buildFissurePanel, attachExpand } from './knowMore.js';
 
 // ── Module-level state ────────────────────────────────────────────────────────
 let lastFissureData = null;
@@ -105,6 +106,18 @@ export function renderVoidFissures(fissures) {
           <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType || 'N/A'} — ${f.node || 'N/A'}</div>
           ${badge}
           <div class="fissure-time" data-expiry="${exp.replace(/"/g,'')}" style="font-size:11px;color:var(--text-dim);white-space:nowrap">${t}</div>`;
+        // Add Know More expand
+        const missionType = f.missionType || '';
+        const faction     = f.faction || f.enemy || '';
+        const panelHTML   = buildFissurePanel(missionType, faction, f._tier);
+        if (panelHTML) {
+          row.classList.add('fissure-row-expandable');
+          const knowBtn = document.createElement('button');
+          knowBtn.className = 'km-toggle-btn';
+          knowBtn.textContent = 'Know more ↓';
+          row.appendChild(knowBtn);
+          attachExpand(row, panelHTML);
+        }
         block.appendChild(row);
       });
       stack.appendChild(block);
@@ -170,6 +183,18 @@ export function renderVoidFissures(fissures) {
           <div style="flex:1;font-size:12px;color:var(--text)">${f.missionType || 'N/A'} — ${f.node || 'N/A'}</div>
           ${badge}
           <div class="fissure-time" data-expiry="${exp.replace(/"/g,'')}" style="font-size:11px;color:var(--text-dim);white-space:nowrap">${t}</div>`;
+        // Add Know More expand
+        const missionType = f.missionType || '';
+        const faction     = f.faction || f.enemy || '';
+        const panelHTML   = buildFissurePanel(missionType, faction, f._tier);
+        if (panelHTML) {
+          row.classList.add('fissure-row-expandable');
+          const knowBtn = document.createElement('button');
+          knowBtn.className = 'km-toggle-btn';
+          knowBtn.textContent = 'Know more ↓';
+          row.appendChild(knowBtn);
+          attachExpand(row, panelHTML);
+        }
         block.appendChild(row);
       });
       stormStack.appendChild(block);
