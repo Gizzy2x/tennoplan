@@ -2,7 +2,7 @@
 //                   CYCLE_DUR_MS, CYCLE_HINTS, CYCLE_META.
 
 import { formatDur } from './layout.js';
-import { buildCyclePanel, attachExpand } from './knowMore.js';
+import { buildCyclePanel } from './knowMore.js';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 export const CYCLE_DUR_MS = {
@@ -85,11 +85,39 @@ export function applyCycle(id, cycle) {
   // Attach or refresh Know More expand for this cycle card
   const card = document.getElementById('cycle-' + id);
   if (card) {
-    // Remove any existing expand panel so we don't duplicate on refresh
+    // Remove old expand wrapper and button on cycle refresh
     card.querySelectorAll('.km-collapsible').forEach(el => el.remove());
-    const stateKey2  = cycle.current.toLowerCase(); // 'day','night','warm','cold','fass','vome'
-    const panelHTML  = buildCyclePanel(id, stateKey2);
-    attachExpand(card, panelHTML);
+    card.querySelectorAll('.km-toggle-btn').forEach(el => el.remove());
+
+    const cycleKnowBtn = document.createElement('button');
+    cycleKnowBtn.className   = 'km-toggle-btn';
+    cycleKnowBtn.textContent = 'Know more ↓';
+    const footer = card.querySelector('.cycle-footer');
+    if (footer) footer.appendChild(cycleKnowBtn);
+    else card.appendChild(cycleKnowBtn);
+
+    let cycleExpandWrapper = null;
+    let cycleExpandOpen    = false;
+
+    cycleKnowBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (!cycleExpandWrapper) {
+        const panelHTML = buildCyclePanel(id, stateKey);
+        cycleExpandWrapper = document.createElement('div');
+        cycleExpandWrapper.className = 'km-collapsible';
+        const inner = document.createElement('div');
+        inner.className = 'km-inner';
+        const panel = document.createElement('div');
+        panel.className = 'km-panel';
+        panel.innerHTML = panelHTML;
+        inner.appendChild(panel);
+        cycleExpandWrapper.appendChild(inner);
+        card.appendChild(cycleExpandWrapper);
+      }
+      cycleExpandOpen = !cycleExpandOpen;
+      cycleExpandWrapper.classList.toggle('km-open', cycleExpandOpen);
+      cycleKnowBtn.textContent = cycleExpandOpen ? 'Less ↑' : 'Know more ↓';
+    });
   }
 }
 
