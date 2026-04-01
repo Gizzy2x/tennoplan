@@ -684,6 +684,40 @@
           "Exocrine resource drops are consistent in both cycles."
         ]
       }
+    },
+    "zariman": {
+      "corpus": {
+        "label": "Corpus",
+        "summary": "Corpus units control the Zariman. Cavalero's shop carries Corpus-aligned weapons. Void Cascade, Void Flood, and Void Armageddon are all available regardless of cycle.",
+        "activities": ["Void Cascade", "Void Flood", "Void Armageddon", "Cavalero Corpus weapon stock", "Chrysalith bounties"],
+        "notAvailable": ["Grineer faction bonuses"],
+        "tips": [
+          "Corpus enemies here carry disruption-style tech — bringing a Nullifier counter (Mag, Limbo) helps.",
+          "Cavalero's rotating stock changes with the cycle — check it before it flips.",
+          "Void Angel encounters are available in both cycles — bring an Amp and Void Sling gear."
+        ],
+        "recommendedFrames": {
+          "general": ["Mag", "Limbo", "Wisp", "Volt"],
+          "reason": "Corpus Nullifiers and tech units punish energy-heavy builds. Mag strips shields and handles bubbles. Limbo and Wisp provide sustain and utility.",
+          "liveOverride": null
+        }
+      },
+      "grineer": {
+        "label": "Grineer",
+        "summary": "Grineer units control the Zariman. Cavalero's shop carries Grineer-aligned weapons. All mission types remain available.",
+        "activities": ["Void Cascade", "Void Flood", "Void Armageddon", "Cavalero Grineer weapon stock", "Chrysalith bounties"],
+        "notAvailable": ["Corpus faction bonuses"],
+        "tips": [
+          "Grineer units are heavily armoured — bring Corrosive or Heat damage to strip armour fast.",
+          "Heavy Gunners and Bombards are the main threats — CC or burst them down before they ramp up.",
+          "Cavalero's rotating stock changes with the cycle — check it before it flips."
+        ],
+        "recommendedFrames": {
+          "general": ["Saryn", "Chroma", "Valkyr", "Rhino"],
+          "reason": "Grineer rely on armour and staying power. Corrosive AoE (Saryn) or damage-amp builds (Chroma) strip them fastest. Rhino and Valkyr handle the close-quarters pressure.",
+          "liveOverride": null
+        }
+      }
     }
   },
 

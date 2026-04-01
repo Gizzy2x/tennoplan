@@ -74,7 +74,8 @@
     // Expiry is 1 h from load; timers will tick down correctly until data refreshes.
     cetusCycle:   { isDay:  true,  expiry: _1h },
     vallisCycle:  { isWarm: false, expiry: _1h },
-    cambionCycle: { state: 'vome', expiry: _1h },
+    cambionCycle: { state: 'vome',    expiry: _1h },
+    zarimanCycle: { state: 'grineer', expiry: _1h },
 
     // ── Alerts ─────────────────────────────────────────────────────────────────
     // Empty array — renderAlerts([]) hides the section entirely.

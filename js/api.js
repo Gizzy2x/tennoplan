@@ -57,6 +57,15 @@ export function normalizeCambionCycle(raw) {
   return { current, next, ...base };
 }
 
+export function normalizeZarimanCycle(raw) {
+  if (!raw || !raw.expiry) throw new Error('invalid zarimanCycle payload');
+  const base    = _cycleProgress(raw);
+  const state   = String(raw.state || '').toLowerCase();
+  const current = state === 'corpus' ? 'Corpus' : 'Grineer';
+  const next    = state === 'corpus' ? 'Grineer' : 'Corpus';
+  return { current, next, ...base };
+}
+
 /**
  * Fetch a JSON endpoint with automatic retries and exponential backoff.
  * @param {string} url
