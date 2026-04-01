@@ -1,6 +1,7 @@
 // js/main.js — Entry point. Imports all modules, wires them together, runs init().
 // Loaded as <script type="module" src="js/main.js"> in index.html.
 
+import { loadWikiContent } from './wikiContent.js';
 import { apiFetch, API, LANG,
          normalizeCetusCycle,
          normalizeVallisCycle,
@@ -62,6 +63,8 @@ const TASK_DATA = {
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
+  loadWikiContent(); // fire-and-forget — populates cache in background
+
   // Run storage migration before touching any UI
   if (migratePulseWeek(week)) persist();
 

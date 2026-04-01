@@ -26,3 +26,6 @@ export { renderAlerts } from './alerts.js';
 export { renderWorldCycles, applyCycle, tickCycleTimers, CYCLE_DUR_MS, CYCLE_HINTS, CYCLE_META } from './cycles.js';
 
 export { updateCountdown } from './countdown.js';
+
+// Other modules import wiki lookups directly:
+// import { getMissionType, getFaction } from '../wikiContent.js';
