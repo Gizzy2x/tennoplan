@@ -50,6 +50,7 @@ html, body {
 }
 .data-badge.live    { color: var(--green); border-color: #1a4030; background: #0d2018; }
 .data-badge.offline { color: var(--amber); border-color: #3a2a10; background: #1a1408; }
+.data-badge.partial { color: #f0a830; border-color: #3a3010; background: #1a1600; }
 .data-badge.loading { color: var(--text-dim); border-color: var(--border); background: var(--bg3); }
 
 .section-title {

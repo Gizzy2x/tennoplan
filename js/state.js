@@ -106,6 +106,7 @@ export function getDropsFor(itemName) {
 }
 
 export async function loadDropData() {
+  if (dropData !== null) return; // already loaded — don't re-fetch
   const CACHE_KEY    = 'wf-drops-cache';
   const CACHE_TS_KEY = 'wf-drops-cache-ts';
   const TTL          = 24 * 60 * 60 * 1000;

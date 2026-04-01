@@ -19,7 +19,9 @@ function normalizeFissureTier(raw) {
 
 // ── Exports ───────────────────────────────────────────────────────────────────
 export function renderVoidFissures(fissures) {
-  if (!fissures || !fissures.length) return;
+  // Accept empty arrays — we still need to render the section with the filter bar
+  // and an empty-state message. Only hard-bail on a null/undefined payload.
+  if (fissures == null) return;
   lastFissureData = fissures;
   const tierOrder = ['Lith','Meso','Neo','Axi','Requiem','Omnia'];
   const colors    = { Lith:'#5dc98a', Meso:'#6ea8e8', Neo:'#c8a84b', Axi:'#b87de8', Requiem:'#e05c5c', Omnia:'#4fc3f7' };

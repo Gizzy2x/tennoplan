@@ -17,7 +17,7 @@ export function setBadge(s) {
   const el  = document.getElementById('data-badge');
   const map = {
     live:    ['Live data',                  'live'],
-    partial: ['Partial live',               'offline'],
+    partial: ['Partial live',               'partial'],
     offline: ['Offline — cached data shown','offline'],
   };
   const [txt, cls] = map[s] || ['Loading...', 'loading'];

@@ -9,25 +9,31 @@ let openCycleKnowMore = new Set();
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 export const CYCLE_DUR_MS = {
-  day: 6000000, night: 3000000,
-  warm:  400000, cold:   800000,
-  fass: 6000000, vome:  6000000,
+  day: 6000000,   night:   3000000,
+  warm:  400000,  cold:     800000,
+  fass: 6000000,  vome:    6000000,
+  // Zariman alternates ~8 h per faction — API always provides activation so this
+  // fallback only kicks in if activation is missing from the payload.
+  corpus: 28800000, grineer: 28800000,
 };
 
 export const CYCLE_HINTS = {
-  day:   'Mining & bounties',
-  night: 'Eidolons & fishing',
-  warm:  'Toroid farming',
-  cold:  'Fishing & conservation',
-  fass:  'Rare Vome drops',
-  vome:  'Fishing & bounties',
+  day:     'Mining & bounties',
+  night:   'Eidolons & fishing',
+  warm:    'Toroid farming',
+  cold:    'Fishing & conservation',
+  fass:    'Rare Vome drops',
+  vome:    'Fishing & bounties',
+  corpus:  'Corpus units — Cavalero stocks Corpus weapons',
+  grineer: 'Grineer units — Cavalero stocks Grineer weapons',
 };
 
 // Cycle display metadata — id matches DOM ids and API normalizer names
 export const CYCLE_META = [
-  { id: 'cetus',   label: 'Cetus',         defaultHint: 'Night → Eidolons & fishing'      },
-  { id: 'vallis',  label: 'Orb Vallis',    defaultHint: 'Cold → fishing & conservation'   },
-  { id: 'cambion', label: 'Cambion Drift', defaultHint: 'Vome → fishing & bounties'       },
+  { id: 'cetus',   label: 'Cetus',           defaultHint: 'Night → Eidolons & fishing'         },
+  { id: 'vallis',  label: 'Orb Vallis',      defaultHint: 'Cold → fishing & conservation'      },
+  { id: 'cambion', label: 'Cambion Drift',   defaultHint: 'Vome → fishing & bounties'          },
+  { id: 'zariman', label: 'Zariman Ten Zero', defaultHint: 'Grineer → Grineer enemies active'  },
 ];
 
 // ── Exports ───────────────────────────────────────────────────────────────────

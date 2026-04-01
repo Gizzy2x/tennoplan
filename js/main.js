@@ -5,14 +5,15 @@ import { loadWikiContent } from './wikiContent.js';
 import { apiFetch, API, LANG,
          normalizeCetusCycle,
          normalizeVallisCycle,
-         normalizeCambionCycle }                   from './api.js';
+         normalizeCambionCycle,
+         normalizeZarimanCycle }                   from './api.js';
 import { state, week, today, persist,
          RUNS_DEFAULT, migratePulseWeek,
          loadDropData }                            from './state.js';
 import {
   setBadge, formatDur,
   renderCards, renderPulses, renderNightwave,
-  renderBaro, renderSteelPath,
+  renderBaro, tickBaroTimer, renderSteelPath,
   renderVoidFissures, tickFissureTimers,
   renderInvasions, renderAlerts,
   renderWorldCycles, applyCycle, tickCycleTimers,
@@ -78,6 +79,7 @@ async function init() {
   updateCountdown();
   setInterval(updateCountdown, 1000);
   setInterval(tickSteelPathTimer, 1000);
+  setInterval(tickBaroTimer, 1000);
 
   // ── Live badge registry ───────────────────────────────────────────────────
   const _ep = {};
@@ -263,6 +265,7 @@ async function init() {
   let cetusFirstLoad    = true;
   let vallisFirstLoad   = true;
   let cambionFirstLoad  = true;
+  let zarimanFirstLoad  = true;
 
   function startCycleTick() {
     if (!cyclesTickStarted) { cyclesTickStarted = true; setInterval(tickCycleTimers, 1000); }
@@ -322,15 +325,36 @@ async function init() {
       });
   }
 
+  function loadZarimanCycle() {
+    apiFetch(`${API}/zarimanCycle${LANG}`, { fallback: window.WF_MOCK?.zarimanCycle })
+      .then(data => {
+        applyCycle('zariman', normalizeZarimanCycle(data));
+        startCycleTick();
+        if (zarimanFirstLoad) { zarimanFirstLoad = false; endpointOk('zarimanCycle'); }
+      })
+      .catch(err => {
+        console.error('[Tennoplan] zarimanCycle fetch failed:', err?.message ?? err);
+        if (zarimanFirstLoad) {
+          zarimanFirstLoad = false;
+          const el = document.getElementById('zariman-timer');
+          if (el) el.textContent = '—';
+          endpointFail('zarimanCycle');
+        }
+      });
+  }
+
   trackEndpoint('cetusCycle');
   trackEndpoint('vallisCycle');
   trackEndpoint('cambionCycle');
+  trackEndpoint('zarimanCycle');
   loadCetusCycle();
   loadVallisCycle();
   loadCambionCycle();
-  setInterval(loadCetusCycle,   CYCLES_POLL_MS);
-  setInterval(loadVallisCycle,  CYCLES_POLL_MS);
-  setInterval(loadCambionCycle, CYCLES_POLL_MS);
+  loadZarimanCycle();
+  setInterval(loadCetusCycle,    CYCLES_POLL_MS);
+  setInterval(loadVallisCycle,   CYCLES_POLL_MS);
+  setInterval(loadCambionCycle,  CYCLES_POLL_MS);
+  setInterval(loadZarimanCycle,  CYCLES_POLL_MS);
 
   // Notable Alerts (silent fail — section stays hidden)
   function loadAlerts() {

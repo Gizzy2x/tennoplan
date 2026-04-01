@@ -11,7 +11,7 @@ export { renderPulses, toggleTieredRun, toggleNetRun, countPulsesUsed } from './
 
 export { renderNightwave } from './nightwave.js';
 
-export { renderBaro } from './baro.js';
+export { renderBaro, tickBaroTimer } from './baro.js';
 
 export { applyArbitrationCard, tickArbitrationTimers } from './arbitration.js';
 
