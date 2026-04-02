@@ -80,6 +80,9 @@ export function useWorldState() {
   const [cycles, setCycles] = useState<CycleData[]>(buildCycles);
   // Resync when API data arrives
   useEffect(() => {
+    if (apiData) {
+      console.log('WorldState Update:', apiData);
+    }
     setCycles(buildCycles());
   }, [apiData, isError]);
   // Tick every second — auto-resync phase at 0
