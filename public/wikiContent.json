@@ -1,0 +1,989 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "description": "Tennoplan static knowledge base. Updated manually or via build script. Powers tooltips, expand panels, and know-more sections across all app modules.",
+    "lastUpdated": "2026-03-31",
+    "note": "recommendedFrames fields use a priority stack: liveOverride (set at runtime by arbitration/buff data) > general (always shown). Add liveOverride logic in wikiContent.js getRecommendedFrame()."
+  },
+
+  "missionTypes": {
+    "Capture": {
+      "summary": "Chase down and capture a target alive. Fastest mission type in the game — usually done in under 90 seconds.",
+      "speed": "very fast",
+      "speedRating": 5,
+      "endless": false,
+      "rewardRotation": null,
+      "tips": [
+        "Don't kill the target — you need them alive to extract.",
+        "High mobility frames dominate here. Get in, subdue, leave.",
+        "Enemies don't need to be cleared. Just grab the target and extract."
+      ],
+      "recommendedFrames": {
+        "general": ["Volt", "Nova", "Gauss", "Wisp"],
+        "reason": "Pure mobility. You want to cross the map fast, subdue the target, and extract without fighting anything.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Capture"
+    },
+    "Exterminate": {
+      "summary": "Clear every enemy in the mission. Straightforward — kill a set number of enemies and extract.",
+      "speed": "fast",
+      "speedRating": 4,
+      "endless": false,
+      "rewardRotation": null,
+      "tips": [
+        "AoE damage frames clear this fastest.",
+        "Check your minimap — stragglers hide in side rooms.",
+        "For fissures, you need 10 reactant before extracting. Kill everything as you go."
+      ],
+      "recommendedFrames": {
+        "general": ["Saryn", "Mesa", "Octavia", "Kullervo"],
+        "reason": "High AoE kill speed. You want the map cleared in one sweep, not hunting stragglers room by room.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Exterminate"
+    },
+    "Survival": {
+      "summary": "Stay alive for as long as possible against escalating enemies. Endless mission — the longer you stay, the better the rewards.",
+      "speed": "slow",
+      "speedRating": 2,
+      "endless": true,
+      "rewardRotation": "AABC",
+      "tips": [
+        "Rotation C (20 min+) is where the good rewards are. Commit to at least 20 minutes.",
+        "Life Support modules drop from enemies — kill constantly to keep oxygen up.",
+        "Bring a group. Solo survival is rough past 20 minutes.",
+        "For fissures, reactant drops constantly from enemies — easy to collect here."
+      ],
+      "recommendedFrames": {
+        "general": ["Hildryn", "Revenant", "Nekros", "Trinity", "Protea"],
+        "reason": "Sustain and team support. Nekros keeps life support up via desecrate. Trinity keeps the team alive. Revenant just doesn't die.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Survival"
+    },
+    "Defense": {
+      "summary": "Protect an objective through waves of enemies. Endless — rewards come every 5 waves.",
+      "speed": "slow",
+      "speedRating": 2,
+      "endless": true,
+      "rewardRotation": "AABC",
+      "tips": [
+        "The objective has health — don't let enemies touch it.",
+        "Crowd control frames are extremely effective here.",
+        "Rotation C starts at wave 20. Most groups leave at wave 20 for the C reward.",
+        "Frames with area denial (Frost, Gara) are top tier here."
+      ],
+      "recommendedFrames": {
+        "general": ["Frost", "Gara", "Octavia", "Limbo", "Nova"],
+        "reason": "Objective protection and area denial. Frost globe and Gara wall let your team fight freely without worrying about the objective.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Defense"
+    },
+    "Disruption": {
+      "summary": "Retrieve and protect conduits while Demolysts try to destroy them. Challenging and chaotic — one of the harder mission types.",
+      "speed": "medium",
+      "speedRating": 3,
+      "endless": true,
+      "rewardRotation": "ABCCCC",
+      "tips": [
+        "Demolysts are the priority — they move fast and have huge HP.",
+        "You need to kill the Demolyst before it reaches the conduit.",
+        "Each round has 4 conduits. You don't need to complete all 4.",
+        "High single-target burst damage is more useful than AoE here.",
+        "Demolysts are immune to most crowd control — you need raw damage."
+      ],
+      "recommendedFrames": {
+        "general": ["Wisp", "Protea", "Grendel", "Volt", "Mirage"],
+        "reason": "Disruption rewards speed and burst damage on Demolysts. Wisp buffs help the team. Volt and Mirage amplify weapon damage for fast kills.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Disruption"
+    },
+    "Interception": {
+      "summary": "Capture and hold 4 towers against enemy takeover. Percentage-based — hold more towers than the enemy to drain their score.",
+      "speed": "medium",
+      "speedRating": 3,
+      "endless": true,
+      "rewardRotation": "AABC",
+      "tips": [
+        "You need to hold 3+ towers to actually reduce enemy score.",
+        "Spread out — solo players can't cover all 4 towers effectively.",
+        "Crowd control frames that can hold an area are excellent here.",
+        "Enemy capture speed increases over time — early rotations are easier."
+      ],
+      "recommendedFrames": {
+        "general": ["Limbo", "Khora", "Nova", "Vauban"],
+        "reason": "Area lockdown. Limbo's rift makes a tower completely uncappable while you hold others. Vauban's traps cluster enemies before they can flip a tower.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Interception"
+    },
+    "Excavation": {
+      "summary": "Protect excavators while they dig for resources. Endless — each excavator takes 100 seconds and needs power cells to run.",
+      "speed": "slow",
+      "speedRating": 2,
+      "endless": true,
+      "rewardRotation": "AABC",
+      "tips": [
+        "Power Carriers (special enemies) drop the cells you need — prioritise them.",
+        "Excavators have limited HP — protect them from enemies at all costs.",
+        "Frost globe completely covers an excavator — the gold standard for this mission type.",
+        "Each excavator gives one reward. Rotation C starts at excavator 8."
+      ],
+      "recommendedFrames": {
+        "general": ["Frost", "Gara", "Hildryn", "Trinity"],
+        "reason": "Objective protection. Frost snow globe is arguably the best single ability for Excavation — it makes the excavator nearly untouchable.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Excavation"
+    },
+    "Spy": {
+      "summary": "Break into 3 data vaults and steal intel without triggering alarms. Stealth-based — alarms mean mission failure for certain rewards.",
+      "speed": "medium",
+      "speedRating": 3,
+      "endless": false,
+      "rewardRotation": null,
+      "tips": [
+        "Each vault has a separate alarm — one failed vault doesn't ruin the others.",
+        "Hacking the console and getting out undetected gives bonus rewards.",
+        "Ivara and Loki can bypass almost every trap with abilities.",
+        "Volt's speed helps between vaults but doesn't help with the stealth itself.",
+        "Learn the vault layouts — each tileset has only a few vault designs."
+      ],
+      "recommendedFrames": {
+        "general": ["Ivara", "Loki", "Ash", "Octavia"],
+        "reason": "Stealth and trap bypassing. Ivara's Prowl lets her walk through lasers without triggering them. Loki's invisibility and switch teleport give huge flexibility.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Spy"
+    },
+    "Assassination": {
+      "summary": "Hunt down and kill a specific boss target. Single reward at the end — drop rates vary per boss.",
+      "speed": "fast",
+      "speedRating": 4,
+      "endless": false,
+      "rewardRotation": null,
+      "tips": [
+        "Each boss has specific mechanics — check the wiki for their weak points.",
+        "Some bosses are immune to certain damage types.",
+        "Speed through the tileset — the boss room is always at the end.",
+        "Boss drops are split across multiple parts — you may need multiple runs."
+      ],
+      "recommendedFrames": {
+        "general": ["Mesa", "Saryn", "Kullervo", "Volt"],
+        "reason": "High single-target or multi-target DPS depending on the boss. Mesa's Peacemaker deletes most bosses. Saryn's damage over time stacks on targets that don't move much.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Assassination"
+    },
+    "Mobile Defense": {
+      "summary": "Carry a datamass to 3 terminals and defend each one while it uploads. Fixed duration per terminal.",
+      "speed": "medium",
+      "speedRating": 3,
+      "endless": false,
+      "rewardRotation": null,
+      "tips": [
+        "You must carry the datamass between terminals — you can't use abilities while holding it.",
+        "Enemies focus the terminal, not you — stay close and protect it.",
+        "AoE frames shine here — dense enemy spawns around the terminal.",
+        "Faster than Defense overall since the terminal timer is fixed."
+      ],
+      "recommendedFrames": {
+        "general": ["Frost", "Octavia", "Saryn", "Nova"],
+        "reason": "Area denial around the terminal. Frost globe, Octavia's mallet, or Saryn's spores keep the spawn clear while the hack completes.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Mobile_Defense"
+    },
+    "Rescue": {
+      "summary": "Find and free a hostage before they're executed. The prisoner has a timer — move fast.",
+      "speed": "fast",
+      "speedRating": 4,
+      "endless": false,
+      "rewardRotation": null,
+      "tips": [
+        "The hostage dies if the alarm goes off and you don't reach them in time.",
+        "Stealth or high speed get you to the cell before guards react.",
+        "Once freed, the hostage follows you — protect them on the way out.",
+        "Hek missions count — decent for fissures when Rescue is available."
+      ],
+      "recommendedFrames": {
+        "general": ["Loki", "Ivara", "Volt", "Nova"],
+        "reason": "Speed or stealth. Volt gets you to the cell fast. Loki can go invisible, take out guards silently, and free the hostage without triggering anything.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Rescue"
+    },
+    "Sabotage": {
+      "summary": "Destroy a target structure — reactor, fuel cells, or resource cache. Usually quick.",
+      "speed": "fast",
+      "speedRating": 4,
+      "endless": false,
+      "rewardRotation": null,
+      "tips": [
+        "Find the target, destroy it, extract. Simple.",
+        "Some variants require carrying a fuel cell to the reactor.",
+        "Cache hunting (finding 3 hidden caches) gives bonus rewards if you have time."
+      ],
+      "recommendedFrames": {
+        "general": ["Volt", "Nova", "Gauss"],
+        "reason": "Just move fast and blow things up. No real frame dependency — pick whatever moves quickly.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Sabotage"
+    },
+    "Defection": {
+      "summary": "Escort defecting Grineer soldiers to extraction in groups. They move slowly and die easily — one of the harder mission types.",
+      "speed": "very slow",
+      "speedRating": 1,
+      "endless": true,
+      "rewardRotation": "AABC",
+      "tips": [
+        "The squads follow a fixed path — clear the route ahead of them.",
+        "If a squad dies completely, you fail that wave.",
+        "Trinity is almost mandatory — she can heal the defectors.",
+        "Not recommended for fissures — reactant collection conflicts with escort duty."
+      ],
+      "recommendedFrames": {
+        "general": ["Trinity", "Wisp", "Limbo", "Vauban"],
+        "reason": "Escort and sustain. Trinity's Well of Life can heal the defectors directly. Limbo's rift protects the squad while they move through the corridor.",
+        "liveOverride": null
+      },
+      "wikiUrl": "https://warframe.fandom.com/wiki/Defection"
+    }
+  },
+
+  "fissureTiers": {
+    "Lith": {
+      "summary": "Entry-level relics. Drops Prime components for older, more accessible Warframes and weapons.",
+      "detail": "Lith is the most common fissure tier and the fastest to run — great for bulk cracking when you need specific components or want to sell unneeded Prime parts. Missions are usually short so you cycle through them quickly.",
+      "color": "#5dc98a",
+      "tracesCost": 25,
+      "typicalItems": ["Prime components for older frames and weapons", "Common resources"],
+      "tips": [
+        "Great for farming Void Traces since missions are short.",
+        "Run Capture or Exterminate Lith fissures for the fastest rotations.",
+        "Radiant relics cost 100 Void Traces and dramatically improve rare drop chances."
+      ]
+    },
+    "Meso": {
+      "summary": "Mid-tier relics. Drops components for moderately recent Primes — usually more valuable than Lith.",
+      "detail": "Meso fissures appear less frequently than Lith. The missions themselves are the same speed but the relics are harder to come by, making them worth doing when you find a fast mission type.",
+      "color": "#6ea8e8",
+      "tracesCost": 50,
+      "typicalItems": ["Prime components for mid-generation frames and weapons", "Uncommon parts"],
+      "tips": [
+        "Check for Capture or Exterminate Meso fissures first — they're the fastest.",
+        "Meso relics drop from specific missions — check the Star Chart or wiki for sources.",
+        "Trading Meso parts is usually worthwhile — more in demand than Lith."
+      ]
+    },
+    "Neo": {
+      "summary": "High-tier relics. Drops components for recent Primes — typically higher trade value.",
+      "detail": "Neo fissures are worth prioritising when you're farming recent Prime releases. The relics themselves are harder to acquire than Lith or Meso, so each crack feels more meaningful.",
+      "color": "#c8a84b",
+      "tracesCost": 75,
+      "typicalItems": ["Prime components for recent frames and weapons", "Higher-value parts"],
+      "tips": [
+        "Neo fissures are rarer than Lith — take them when they appear in a good mission type.",
+        "Consider radiant sharing groups for better odds on specific Neo relics.",
+        "Recent Prime releases have Neo relics in high demand — good for trading."
+      ]
+    },
+    "Axi": {
+      "summary": "Top-tier relics. Drops the newest Prime components — often the highest market value.",
+      "detail": "Axi fissures reward the newest content. The relics are earned from higher-level content and the parts drop less frequently, which is why Axi components usually command the best prices on Warframe.market.",
+      "color": "#b87de8",
+      "tracesCost": 100,
+      "typicalItems": ["Newest Prime components", "Rare and valuable parts"],
+      "tips": [
+        "Axi relics primarily come from long endless runs (Rotation C) — harder to stockpile.",
+        "Radiant Axi relics in public squads maximise your chances of getting the rare drop.",
+        "The newest Primes in Axi relics are almost always worth trading."
+      ]
+    },
+    "Requiem": {
+      "summary": "Kuva Lich relics. Only used during Kuva Siphon and Kuva Flood missions to identify and kill your Lich.",
+      "detail": "Requiem relics are completely separate from the normal relic system. You don't crack them for Prime loot — you use them to figure out the correct Requiem sequence to kill your Kuva Lich. You need Murmurs (collected from Kuva missions) to reveal the mods inside.",
+      "color": "#e05c5c",
+      "tracesCost": 0,
+      "typicalItems": ["Requiem Mods (Fass, Vome, Netra, etc.)", "Used to kill Kuva Liches"],
+      "tips": [
+        "You need to collect Murmurs to reveal which Requiem mods are in the relic.",
+        "Three correct Requiem mods in the right order kills your Lich.",
+        "Wrong order still costs a relic — have backups.",
+        "Requiem mods can be traded between players."
+      ]
+    },
+    "Omnia": {
+      "summary": "Special fissure tier introduced with Whispers in the Walls. Can crack any relic of any tier.",
+      "detail": "Omnia fissures are rare and extremely valuable — they let you crack a relic of any tier you choose, meaning you can use your highest-priority relic regardless of what tier fissure is active. When one appears, check what mission type it is before ignoring it.",
+      "color": "#4fc3f7",
+      "tracesCost": 0,
+      "typicalItems": ["Any relic you bring — Lith, Meso, Neo, or Axi"],
+      "tips": [
+        "Always check Omnia fissures — they're universal and rare.",
+        "Bring your highest-priority relic since the tier doesn't matter.",
+        "Omnia fissures in fast mission types (Capture, Exterminate) are jackpots.",
+        "These appear in Albrecht's Laboratories and related content."
+      ]
+    }
+  },
+
+  "factions": {
+    "Grineer": {
+      "summary": "Militaristic clones in heavy armor. High base armor means raw damage is inefficient — you need to strip it.",
+      "detail": "The Grineer are the dominant faction in terms of raw HP and armor. Their soldiers range from standard Lancers to hulking Heavy Gunners. Against them, the wrong damage type feels like shooting a wall. The right one deletes them.",
+      "weaknesses": ["Corrosive (strips armor)", "Radiation (confuses Heavy units)", "Viral + any (halves HP, then kill)"],
+      "resistances": ["Puncture reduces effectiveness of some builds"],
+      "tips": [
+        "Corrosive procs permanently strip armor — stack them early.",
+        "Radiation makes Heavy Gunners and Bombards fight each other.",
+        "Viral is the meta for general Grineer — halves their health so your weapons kill faster.",
+        "Slash procs bypass armor entirely — great for armored targets."
+      ],
+      "color": "#c8562a",
+      "icon": "grineer"
+    },
+    "Corpus": {
+      "summary": "Corporate soldiers and robotic proxies. Shields are their main defense — Magnetic and Toxin shred them.",
+      "detail": "The Corpus split between biological units (shields and moderate armor) and robotic proxies (high shields, some armor). Their shield recharge makes sustained combat punishing if you don't have the right tools.",
+      "weaknesses": ["Magnetic (destroys shields)", "Toxin (bypasses shields entirely)", "Cold (slows shields from recharging)"],
+      "resistances": ["Heat and Electricity do less to shields"],
+      "tips": [
+        "Toxin is the highest-efficiency damage type against Corpus — it bypasses shields and hits HP directly.",
+        "Magnetic primers followed by any secondary damage type is the meta approach.",
+        "Nullifiers are the hard counter to abilities — kill the bubble first, then the unit.",
+        "Oxium Ospreys explode — stay mobile."
+      ],
+      "color": "#3a7fcf",
+      "icon": "corpus"
+    },
+    "Infested": {
+      "summary": "Mutated biological hordes. No shields, no armor — but they swarm in huge numbers and some are immune to crowd control.",
+      "detail": "Infested are the most forgiving faction for builds because almost everything kills them. The danger is volume — they come in large numbers and close fast. Ancient Healers and Disruptors are the real threats, not the rank-and-file swarmers.",
+      "weaknesses": ["Slash (bleeds through their high HP)", "Fire (massive bonus vs Infested)", "Gas (spreads toxin to clustered swarms)"],
+      "resistances": ["Cold and Electricity are less effective"],
+      "tips": [
+        "Fire damage has a built-in bonus against Infested — almost any Fire build works here.",
+        "Ancients are the priority target — Healer Ancients give nearby Infested damage reduction.",
+        "Slash status procs work great against high-HP targets like Ancients.",
+        "Gas procs spread Toxin to clustered groups — excellent for dense swarms."
+      ],
+      "color": "#5a9e3c",
+      "icon": "infested"
+    },
+    "Corrupted": {
+      "summary": "Orokin-controlled versions of other factions. Mix of Grineer and Corpus units — bring a versatile build.",
+      "detail": "Corrupted enemies appear in Void missions and some special content. They're regular faction units under Orokin neural sentry control. Since you'll face both Grineer-type and Corpus-type units, the best approach is a build that handles both rather than specialising.",
+      "weaknesses": ["Corrosive (for Grineer-type Corrupted)", "Magnetic or Viral (for Corpus-type Corrupted)"],
+      "resistances": [],
+      "tips": [
+        "Corrosive + Cold is a classic Void build — handles both armor and shields reasonably well.",
+        "Corrupted Nullifiers exist in some Void missions — same rule as Corpus Nullifiers applies.",
+        "Void Fissure missions always take place against Corrupted enemies in the Void."
+      ],
+      "color": "#c8a84b",
+      "icon": "corrupted"
+    },
+    "Sentient": {
+      "summary": "Ancient enemies from the old war. They adapt to damage types you use repeatedly — the hardest faction to cheese.",
+      "detail": "Sentients are the most mechanically demanding faction. They build resistances to the last damage type that killed them, requiring you to switch damage types mid-fight. High-tier Sentients have enormous HP pools and dangerous abilities.",
+      "weaknesses": ["Void damage bypasses adaptation (Operator amp attacks)", "Radiation ignores adaptations in some cases"],
+      "resistances": ["Adapts to whatever you use — switch often"],
+      "tips": [
+        "Your Operator's Void beam permanently damages Sentients — always use it.",
+        "Switch weapons or damage types regularly to avoid adaptation stacking.",
+        "Eidolons are Sentients — bring an Operator-focused build for hunts.",
+        "Disruption Sentient enemies in Steel Path are a serious threat — have sustain."
+      ],
+      "color": "#9b59b6",
+      "icon": "sentient"
+    },
+    "Murmur": {
+      "summary": "Enemies from the Zariman Ten Zero. Introduced with Angels of the Zariman. Resist standard damage types.",
+      "detail": "Murmur enemies occupy the Zariman missions and Void fissures tied to that content. They have unusual resistance profiles and require Void-based damage to deal with efficiently. Drifter combat shines here.",
+      "weaknesses": ["Void damage", "Operator Amps", "Void-enhanced weapons"],
+      "resistances": ["Many standard damage types are less effective"],
+      "tips": [
+        "Your Operator amp is highly effective against Murmur units.",
+        "Void Strike (Operator school mechanic) amplifies damage significantly.",
+        "Murmur-type missions are tied to the Zariman and related content."
+      ],
+      "color": "#4fc3f7",
+      "icon": "murmur"
+    }
+  },
+
+  "gameModes": {
+    "voidFissures": {
+      "title": "Void Fissures",
+      "summary": "Run missions corrupted by the Void to crack relics and earn Prime components. The fastest way to farm Prime gear.",
+      "howItWorks": "Select a relic before the mission. As you play, collect 10 Void Reactant from glowing enemies (they appear throughout the map). At mission end, you and your squad each pick a reward from the combined pool of all relics opened — so running with good relics in a group dramatically improves your chances.",
+      "whyItMatters": "Prime gear is Warframe's progression currency — better stats, better looks, and very tradeable. Fissures are the only way to crack relics outside of Void missions.",
+      "keyTerms": [
+        { "term": "Void Reactant", "def": "Glowing drops from corrupted enemies. Collect 10 to crack your relic." },
+        { "term": "Radiant relic", "def": "A relic refined with 100 Void Traces — dramatically improves rare drop chance." },
+        { "term": "Radiant sharing", "def": "Everyone brings a radiant version of the same relic — maximises the chance of pulling the rare item." },
+        { "term": "Void Traces", "def": "Currency earned at fissure mission end. Used to refine relics. Capped at 1200." }
+      ],
+      "tips": [
+        "Public squads share relic rewards — always run public unless you have a dedicated group.",
+        "Prioritise fast mission types: Capture, Exterminate, Rescue, Sabotage.",
+        "Radiant relics in squads are the most efficient way to farm specific rare drops.",
+        "Steel Path fissures give the same Prime rewards but drop Steel Essence too."
+      ],
+      "wikiUrl": "https://warframe.fandom.com/wiki/Void_Fissure"
+    },
+    "arbitration": {
+      "title": "Arbitrations",
+      "summary": "High-stakes endless missions with one life, rotating buffs, and exclusive rewards. Only available after completing the full Star Chart.",
+      "howItWorks": "Arbitrations rotate hourly through different mission types and nodes. You get one life — if you die, you're out (your team can continue). Special Arbitration Drones follow certain enemy types and make them immune to abilities — kill the drone first. Rewards come from the Arbitration reward pool, which includes exclusive mods only available here.",
+      "whyItMatters": "Vitus Essence is the exclusive Arbitration currency. Spend it at the Arbitrations vendor in any Relay to buy mods, Kuva, and cosmetics unavailable anywhere else.",
+      "keyTerms": [
+        { "term": "Vitus Essence", "def": "Arbitration-exclusive currency. Earned from reward rotations and as rare drops. Spent at the Arbitration vendor in Relays." },
+        { "term": "Arbitration Drone", "def": "Flying enemy that makes nearby units immune to abilities. Kill it first or your abilities do nothing." },
+        { "term": "Arbitration Shield", "def": "The buff given to the mission's featured Warframe — dramatically increases their effectiveness this run." }
+      ],
+      "tips": [
+        "Kill Arbitration Drones immediately — they make enemies ability-immune.",
+        "The featured Warframe's buff makes them significantly stronger this run — worth using if you have them.",
+        "Staying past 60 minutes significantly improves reward odds but requires strong sustain.",
+        "You need to have completed every node on the Star Chart to unlock Arbitrations."
+      ],
+      "wikiUrl": "https://warframe.fandom.com/wiki/Arbitrations"
+    },
+    "nightwave": {
+      "title": "Nightwave",
+      "summary": "Nora Night's radio-broadcast mission system. Complete acts to earn standing, level up your Nightwave rank, and claim exclusive rewards.",
+      "howItWorks": "Acts refresh on a weekly and daily basis. Each completed act gives you Nightwave Standing, which fills your rank bar. Each rank unlocks a reward — the best ones (exclusive cosmetics, Nitain Extract, Aura Forma) are at higher ranks. Acts range from simple kills to completing specific game modes.",
+      "whyItMatters": "Nightwave is the primary source of Nitain Extract (needed for certain crafting), Aura Forma, Umbral Forma, and exclusive Warframe cosmetics. Missing a season means missing those items until they return.",
+      "keyTerms": [
+        { "term": "Standing", "def": "Points earned from completing acts. Fills your rank bar." },
+        { "term": "Elite Act", "def": "Weekly acts worth the most standing but requiring significant effort. Prioritise these." },
+        { "term": "Nitain Extract", "def": "Crafting material available in the Nightwave reward track. Needed for several Warframes and items." },
+        { "term": "Cred Offering", "def": "Currency earned at each rank milestone. Spend it in the Nightwave store for specific items." }
+      ],
+      "tips": [
+        "Elite acts give 4500 standing each — always do them first.",
+        "Daily acts reset every 24 hours. Don't miss multiple days in a row.",
+        "Some weekly acts chain naturally — 'Complete a Sortie' also helps with 'Complete 3 Void Fissures' type acts if you plan.",
+        "Standing doesn't expire within a season — bank it across weeks."
+      ],
+      "wikiUrl": "https://warframe.fandom.com/wiki/Nightwave"
+    },
+    "steelPath": {
+      "title": "Steel Path",
+      "summary": "Hard mode for the Star Chart. Enemies have dramatically increased stats, but rewards and drop rates are enhanced to match.",
+      "howItWorks": "Steel Path adds 100 levels to every enemy in every mission. Once unlocked by completing the standard Star Chart, you can toggle Steel Path on any node. Acolytes (special assassin enemies) spawn periodically and drop Steel Essence when killed.",
+      "whyItMatters": "Steel Essence is the exclusive currency — spend it at Teshin's shop in any Relay for Kuva, exclusive mods, and rotating weekly items. Steel Path is also the best environment for farming specific resources due to the increased drop rates.",
+      "keyTerms": [
+        { "term": "Steel Essence", "def": "Exclusive Steel Path currency. Dropped by Acolytes and as rare mission drops. Spend at Teshin in any Relay." },
+        { "term": "Acolyte", "def": "Assassin-type enemies that spawn during Steel Path missions. Priority targets — they drop Steel Essence." },
+        { "term": "Honors", "def": "Teshin's Steel Path shop. Rotates a weekly item alongside permanent offerings." }
+      ],
+      "tips": [
+        "Acolytes are your priority — drop what you're doing and kill them for Steel Essence.",
+        "Endless missions (Survival, Defense, Interception) spawn more Acolytes over time.",
+        "Steel Path Fissures give Prime rewards AND Steel Essence — the most efficient use of fissure time for veterans.",
+        "You need to have completed every standard node to unlock Steel Path."
+      ],
+      "wikiUrl": "https://warframe.fandom.com/wiki/The_Steel_Path"
+    },
+    "searchPulses": {
+      "title": "Search Pulses (Deep Archimedea / Netracell)",
+      "summary": "Weekly endgame activities with a shared budget of 5 runs across three mission types. Each run costs a pulse from your weekly allowance.",
+      "howItWorks": "You have 5 Search Pulses per week shared across Elite Deep Archimedea (EDA), Temporal Manipulation Protocol (TMP), and Netracell missions. EDA Normal costs 1 pulse, EDA Elite costs 2 total (1 normal + 1 elite stacked). Netracell costs 1 pulse each, max 3 per week. Plan your 5 runs carefully around what rewards you need most.",
+      "whyItMatters": "EDA and TMP offer Incarnon Genesis adapters and endgame mods unavailable from normal content. Netracells drop Archon Shards and Void Cascade rewards. These are the highest-tier weekly activities in the game.",
+      "keyTerms": [
+        { "term": "Search Pulse", "def": "Your weekly attempt token. 5 total, shared across EDA, TMP, and Netracell." },
+        { "term": "EDA (Elite Deep Archimedea)", "def": "Rotating endgame missions with heavy restrictions. Huge rewards including Incarnon adapters." },
+        { "term": "TMP (Temporal Manipulation Protocol)", "def": "Time-gated mission type in the Zariman. Rotating restrictions and rewards." },
+        { "term": "Netracell", "def": "Void-corrupted missions in the Zariman. Reward Archon Shards on completion." },
+        { "term": "Incarnon Genesis", "def": "Adapter that transforms a standard weapon into a supercharged Incarnon variant. Strongest weapon upgrades in the game." }
+      ],
+      "tips": [
+        "EDA Elite is always worth doing if you can — the reward ceiling is the highest.",
+        "Netracells are easy to clear and cost only 1 pulse — always run all 3 unless you need EDA slots more.",
+        "EDA restrictions change weekly — check what's restricted before committing your loadout.",
+        "If you can't complete EDA Elite, Normal gives partial rewards and only costs 1 pulse."
+      ],
+      "wikiUrl": "https://warframe.fandom.com/wiki/Deep_Archimedea"
+    },
+    "invasions": {
+      "title": "Invasions",
+      "summary": "Factions fight each other for control of nodes. You pick a side and run missions for them in exchange for rewards.",
+      "howItWorks": "When two factions clash over a node, players can fight for either side. Each side offers 3 missions to complete — you get the reward when all 3 are done. Invasions eventually resolve when one side wins. The most valuable rewards to watch for are Orokin Catalysts and Reactors (blueprints that double a Warframe or weapon's mod capacity).",
+      "whyItMatters": "Orokin Catalysts and Reactors are extremely valuable and appear in invasion rewards regularly. These are also available from certain events and Baro, but Invasions are a consistent free source.",
+      "keyTerms": [
+        { "term": "Orokin Catalyst", "def": "Blueprint that doubles a weapon's mod capacity. Referred to as 'Blue Potato' by the community." },
+        { "term": "Orokin Reactor", "def": "Blueprint that doubles a Warframe's mod capacity. Referred to as 'Gold Potato' by the community." },
+        { "term": "Fieldron / Detonite Injector / Mutagen Mass", "def": "Invasion rewards used to craft certain weapons." }
+      ],
+      "tips": [
+        "Always do Catalyst and Reactor invasions — they're the best free sources.",
+        "Invasions expire over time if nobody plays them — check back regularly.",
+        "You can only claim one side's reward per invasion, but you can switch sides between missions.",
+        "Some invasions offer crafting components for Clan weapons — useful early on."
+      ],
+      "wikiUrl": "https://warframe.fandom.com/wiki/Invasion"
+    },
+    "baro": {
+      "title": "Baro Ki'Teer (The Void Trader)",
+      "summary": "A travelling merchant who appears at a Relay every two weeks with exclusive Void-themed weapons, cosmetics, and mods. His stock never repeats — missing an item means waiting potentially years.",
+      "howItWorks": "Baro visits a Relay for approximately 48 hours every two weeks. He sells items for a combination of Credits and Ducats (a currency earned by trading Prime parts at Ducat Kiosks in Relays). His stock rotates and older items take years to cycle back.",
+      "whyItMatters": "Some of the best cosmetics and specific exclusive weapons (like Primed mods) are only available from Baro. Primed mods especially are massive power boosts — missing them can hurt your build potential for a long time.",
+      "keyTerms": [
+        { "term": "Ducats", "def": "Currency for Baro's shop. Earned by trading Prime parts at Ducat Kiosks in Relays. Common parts = 15 Ducats, Uncommon = 45, Rare = 100." },
+        { "term": "Primed Mod", "def": "Upgraded version of a standard mod. Significantly higher stats, often up to rank 10. Only from Baro or trading." },
+        { "term": "Ducat Kiosk", "def": "Found in every Relay. Trade unwanted Prime parts here for Ducats before Baro arrives." }
+      ],
+      "tips": [
+        "Convert unwanted Prime parts to Ducats at the Relay kiosks before Baro leaves.",
+        "Primed mods are the highest priority — check if any appear this visit.",
+        "If you're missing something, you can buy Primed mods from other players on Warframe.market.",
+        "Don't buy cosmetics if you're Ducat-poor — Primed mods and exclusive weapons first."
+      ],
+      "wikiUrl": "https://warframe.fandom.com/wiki/Baro_Ki%27Teer"
+    },
+    "archonHunt": {
+      "title": "Archon Hunt",
+      "summary": "Weekly 3-mission chain culminating in an Archon boss fight. The best source of Archon Shards — permanent stat upgrades for your Warframes.",
+      "howItWorks": "Three sequential missions, each harder than the last, building toward a boss fight against an Archon. The Archon boss has specific mechanics — they regenerate health if you use certain damage types or abilities mid-fight. The reward is an Archon Shard, plus the week-specific Archon mod.",
+      "whyItMatters": "Archon Shards slot directly into Warframe ability nodes and give permanent stat bonuses — ability strength, energy, health, and more. They don't expire and carry across all builds on that frame. The most impactful long-term upgrade in the game.",
+      "keyTerms": [
+        { "term": "Archon Shard", "def": "Permanent upgrade slotted into Warframe nodes. Gives flat stat bonuses. Different Archons drop different shard colours with different bonuses." },
+        { "term": "Tauforged Shard", "def": "Rare golden version of an Archon Shard with 50% stronger bonuses. Low chance of dropping." },
+        { "term": "Archon Mod", "def": "Weekly reward alongside the shard. Unique mods tied to specific Warframe abilities." }
+      ],
+      "tips": [
+        "Archon fights punish specific damage types mid-boss — learn which ones to avoid.",
+        "You can only earn one shard per week — always complete this.",
+        "Tauforged shards are 3x as powerful — prioritise the Archon that drops the shard colour you need most.",
+        "Bring a strong single-target build for the boss phase."
+      ],
+      "wikiUrl": "https://warframe.fandom.com/wiki/Archon_Hunt"
+    },
+    "sortie": {
+      "title": "Sortie",
+      "summary": "Daily 3-stage mission chain with escalating modifiers. Rewards a single randomised item from a large pool.",
+      "howItWorks": "Three missions, each with a specific modifier that restricts or changes gameplay (Eximus Stronghold, Augmented Enemy Armor, weapon restrictions, etc.). The reward is a single roll from the Sortie reward pool — includes Rivens, Forma bundles, Exilus Adapters, and more.",
+      "whyItMatters": "Rivens are the main prize — stat-randomised mods that can dramatically improve a weapon. Exilus Adapters are also valuable for unlocking an extra mod slot on weapons. The daily reset keeps it worth doing.",
+      "keyTerms": [
+        { "term": "Riven Mod", "def": "Highly randomised mod with unique stats tied to a specific weapon. Can make weak weapons excellent or excellent weapons exceptional. High trade value." },
+        { "term": "Exilus Adapter", "def": "Unlocks a bonus mod slot on weapons for utility mods. Permanent upgrade." },
+        { "term": "Eximus Stronghold", "def": "Common Sortie modifier — enemies become Eximus units with overguard. High damage output." }
+      ],
+      "tips": [
+        "Sorties reset at midnight UTC — do them daily for Riven chances.",
+        "Check the modifier before selecting your loadout — weapon restriction modifiers require preparation.",
+        "Riven unveiling requirements sometimes match a Sortie stage — efficient double-dipping.",
+        "Forma Bundle and Ayatan rewards are consolation prizes — don't chase them specifically."
+      ],
+      "wikiUrl": "https://warframe.fandom.com/wiki/Sortie"
+    },
+    "worldCycles": {
+      "title": "World State Cycles",
+      "summary": "Open worlds cycle between states that change what activities and resources are available. Knowing the current cycle tells you exactly what to do when you land.",
+      "howItWorks": "Cetus (Plains of Eidolon), Orb Vallis (Venus), and Cambion Drift (Deimos) each run on timers. The active state determines what enemies spawn, which resources are available, and which time-limited activities you can do. Check the timer before loading in.",
+      "keyTerms": [
+        { "term": "Eidolon", "def": "Giant Sentient boss that spawns on the Plains of Eidolon at night. Hunted for Eidolon Shards used to upgrade Operator Amps." },
+        { "term": "Toroid", "def": "Rare resource that drops during Warm cycle on Orb Vallis. Needed for K-Drive and Moa builds." },
+        { "term": "Fass / Vome", "def": "The two wyrms controlling Cambion Drift's cycle. Fass is active during daytime, Vome at night. Their residue drops are crafting materials." }
+      ],
+      "tips": [
+        "Plan Eidolon hunts around the Night cycle — you get 50 minutes of night.",
+        "Rare fishing spots and fish species change with the cycle.",
+        "Cambion Drift bounties are available in both cycles but certain enemy spawns change."
+      ],
+      "wikiUrl": "https://warframe.fandom.com/wiki/Open_World"
+    }
+  },
+
+  "worldCycles": {
+    "cetus": {
+      "day": {
+        "label": "Day",
+        "summary": "Bounties and mining are fully active. Safe for exploration and resource gathering.",
+        "activities": ["Cetus Bounties", "Mining (Ore and Gems)", "Fishing (common fish)", "General exploration"],
+        "notAvailable": ["Eidolon hunts", "Rare Sentium and Nyth gem nodes"],
+        "tips": [
+          "Knock out Bounties during day — they're accessible and efficient.",
+          "Mine Ferros and Pyrol ore during day cycles.",
+          "Fishing is possible but rare species only appear at night."
+        ]
+      },
+      "night": {
+        "label": "Night",
+        "summary": "Eidolons emerge. The most valuable time to be on the Plains — rare fish, rare gems, and the most challenging hunts.",
+        "activities": ["Eidolon Teralyst / Gantulyst / Hydrolyst hunts", "Rare fish (Murkray, Norg, Glappid)", "Rare gem nodes (Sentirum, Nyth)", "Conservation"],
+        "notAvailable": ["Standard Grineer patrols are replaced by Eidolons"],
+        "tips": [
+          "Bring an Eidolon hunt build — Operator Amp is mandatory.",
+          "Night lasts 50 minutes — enough for 2-3 Eidolon trios with a competent group.",
+          "Rare fish only spawn at night — bring bait and a fishing spear.",
+          "Night ends abruptly — finish your Eidolon before the cycle flips."
+        ],
+        "recommendedFrames": {
+          "general": ["Wisp", "Trinity", "Volt", "Chroma"],
+          "reason": "Eidolon hunts are team content with specific roles. Wisp and Trinity provide buffs and healing. Volt shields the Eidolon lure. Chroma and Volt amplify Amp damage for shield phases.",
+          "liveOverride": null
+        }
+      }
+    },
+    "vallis": {
+      "warm": {
+        "label": "Warm",
+        "summary": "Corpus activity increases, Toroid enemies spawn. Ideal for farming rare resources.",
+        "activities": ["Toroid farming (Corpus base assaults)", "Fishing (Servofish)", "Conservation", "Corpus base bounties"],
+        "notAvailable": ["Some fish species only available in cold"],
+        "tips": [
+          "Toroid farming requires assaulting Corpus bases — bring a strong build.",
+          "Warm cycle is shorter than Cold — prioritise Toroid runs.",
+          "Servofish spawn in different spots during warm — check the fishing spots guide."
+        ],
+        "recommendedFrames": {
+          "general": ["Khora", "Mesa", "Saryn", "Nova"],
+          "reason": "Toroid farming means sustained combat at Corpus bases. High DPS and crowd control keep the fight manageable while loot accumulates.",
+          "liveOverride": null
+        }
+      },
+      "cold": {
+        "label": "Cold",
+        "summary": "Calmer cycle. Best for fishing, conservation, and relaxed exploration of Orb Vallis.",
+        "activities": ["Fishing (common and rare Servofish)", "Conservation (animals are more active)", "Resource gathering", "K-Drive exploration"],
+        "notAvailable": ["Toroid farming is less efficient"],
+        "tips": [
+          "Most Servofish species are more active in cold — bring bait.",
+          "Cold cycle lasts longer than warm — use it for resource gathering.",
+          "Animal conservation targets are easier to find during cold."
+        ]
+      }
+    },
+    "cambion": {
+      "fass": {
+        "label": "Fass",
+        "summary": "The wyrm Fass is dominant. Rare Vome residue drops are unavailable but Fass residue spawns.",
+        "activities": ["Standard Cambion bounties", "Fass residue collection", "Mining", "General combat"],
+        "notAvailable": ["Vome residue farming", "Some rare fish species"],
+        "tips": [
+          "Collect Fass residue — it's a crafting material for Helminth and Deimos weapons.",
+          "Bounties work in both cycles — just check the residue type before farming."
+        ]
+      },
+      "vome": {
+        "label": "Vome",
+        "summary": "The wyrm Vome is dominant. Best for fishing and Vome residue collection.",
+        "activities": ["Fishing (rare Deimos fish)", "Vome residue collection", "Bounties", "Conservation"],
+        "notAvailable": ["Fass residue farming"],
+        "tips": [
+          "Rare Deimos fish are more active during Vome — prime fishing time.",
+          "Vome residue is needed for Helminth infusions and Deimos crafting.",
+          "Exocrine resource drops are consistent in both cycles."
+        ]
+      }
+    },
+    "zariman": {
+      "corpus": {
+        "label": "Corpus",
+        "summary": "Corpus units control the Zariman. Cavalero's shop carries Corpus-aligned weapons. Void Cascade, Void Flood, and Void Armageddon are all available regardless of cycle.",
+        "activities": ["Void Cascade", "Void Flood", "Void Armageddon", "Cavalero Corpus weapon stock", "Chrysalith bounties"],
+        "notAvailable": ["Grineer faction bonuses"],
+        "tips": [
+          "Corpus enemies here carry disruption-style tech — bringing a Nullifier counter (Mag, Limbo) helps.",
+          "Cavalero's rotating stock changes with the cycle — check it before it flips.",
+          "Void Angel encounters are available in both cycles — bring an Amp and Void Sling gear."
+        ],
+        "recommendedFrames": {
+          "general": ["Mag", "Limbo", "Wisp", "Volt"],
+          "reason": "Corpus Nullifiers and tech units punish energy-heavy builds. Mag strips shields and handles bubbles. Limbo and Wisp provide sustain and utility.",
+          "liveOverride": null
+        }
+      },
+      "grineer": {
+        "label": "Grineer",
+        "summary": "Grineer units control the Zariman. Cavalero's shop carries Grineer-aligned weapons. All mission types remain available.",
+        "activities": ["Void Cascade", "Void Flood", "Void Armageddon", "Cavalero Grineer weapon stock", "Chrysalith bounties"],
+        "notAvailable": ["Corpus faction bonuses"],
+        "tips": [
+          "Grineer units are heavily armoured — bring Corrosive or Heat damage to strip armour fast.",
+          "Heavy Gunners and Bombards are the main threats — CC or burst them down before they ramp up.",
+          "Cavalero's rotating stock changes with the cycle — check it before it flips."
+        ],
+        "recommendedFrames": {
+          "general": ["Saryn", "Chroma", "Valkyr", "Rhino"],
+          "reason": "Grineer rely on armour and staying power. Corrosive AoE (Saryn) or damage-amp builds (Chroma) strip them fastest. Rhino and Valkyr handle the close-quarters pressure.",
+          "liveOverride": null
+        }
+      }
+    }
+  },
+
+  "nightwaveActTypes": {
+    "daily": {
+      "label": "Daily",
+      "summary": "Resets every 24 hours at midnight UTC. Usually simple tasks — easy standing you shouldn't skip.",
+      "standingRange": "1000–1500",
+      "tips": ["Check daily acts every morning — they stack up fast if you're consistent."]
+    },
+    "weekly": {
+      "label": "Weekly",
+      "summary": "Resets Monday at midnight UTC. More effort but solid standing. Usually takes 10–30 minutes each.",
+      "standingRange": "1500–3000",
+      "tips": ["Batch weekly acts where possible — some overlap naturally with daily gameplay."]
+    },
+    "weekly elite": {
+      "label": "Elite Weekly",
+      "summary": "The hardest acts. Each one gives 4500 standing — the highest of any act type. Always worth doing first.",
+      "standingRange": "4500",
+      "tips": [
+        "Prioritise Elite acts above everything else.",
+        "They often require completing harder content — check requirements early in the week.",
+        "Two Elite acts completed is already 9000 standing — significant rank progress."
+      ]
+    }
+  },
+
+  "relicRefinement": {
+    "summary": "Spend Void Traces to improve your relic's rare drop chance before running a fissure.",
+    "tiers": {
+      "Intact": { "traceCost": 0, "rarePct": 2, "label": "Intact", "desc": "Default state. Low rare chance but costs nothing." },
+      "Exceptional": { "traceCost": 25, "rarePct": 4, "label": "Exceptional", "desc": "Small improvement. Worthwhile if you have spare Traces." },
+      "Flawless": { "traceCost": 50, "rarePct": 6, "label": "Flawless", "desc": "Good improvement. Recommended for semi-targeted farming." },
+      "Radiant": { "traceCost": 100, "rarePct": 10, "label": "Radiant", "desc": "Maximum rare drop chance. Use when farming a specific rare item or radiant sharing." }
+    },
+    "tips": [
+      "Radiant sharing (everyone brings the same Radiant relic) gives a 40% combined rare chance across the squad.",
+      "Don't waste Traces on common items — only refine relics when chasing a specific rare.",
+      "Void Traces are capped at 1200 — spend them or you lose out on future earnings."
+    ]
+  },
+
+  "resources": {
+    "VoidTraces": {
+      "summary": "Earned at the end of fissure missions. Used to refine relics. Capped at 1200.",
+      "source": "Void Fissure missions",
+      "capNote": "Hard cap at 1200. Run fissures regularly to avoid hitting the cap and wasting traces."
+    },
+    "VitusEssence": {
+      "summary": "Arbitration-exclusive currency. Earn it from reward rotations and rarely from enemies in Arbitration missions.",
+      "source": "Arbitrations",
+      "spentAt": "Arbitration vendor in any Relay"
+    },
+    "SteelEssence": {
+      "summary": "Steel Path currency. Primarily drops from Acolytes. Used at Teshin's Steel Path Honors shop.",
+      "source": "Acolyte kills in Steel Path missions",
+      "spentAt": "Teshin — any Relay"
+    },
+    "Ducats": {
+      "summary": "Baro Ki'Teer's currency. Earned by trading Prime parts at Ducat Kiosks in Relays. Common = 15, Uncommon = 45, Rare = 100.",
+      "source": "Ducat Kiosks in Relays (trade unwanted Prime parts)",
+      "spentAt": "Baro Ki'Teer during his visit"
+    },
+    "ArchonShard": {
+      "summary": "Permanent Warframe upgrade. Slot into your Warframe's ability nodes for flat stat bonuses. Never expires.",
+      "source": "Weekly Archon Hunt",
+      "note": "Each Archon drops a specific shard colour with different bonus types. Plan which Archon to run based on what your build needs."
+    },
+    "NitainExtract": {
+      "summary": "Rare crafting material needed for several Warframes and items. Almost exclusively from Nightwave rewards.",
+      "source": "Nightwave reward track (Cred Offerings)",
+      "note": "Don't waste Cred Offerings on Nitain if you have a stockpile — it's limited per season."
+    }
+  },
+
+  "resources": {
+
+    "Archon Shard": {
+      "type": "Currency",
+      "summary": "A crystallised fragment of an Archon. Slot up to 5 into a Warframe to give it permanent stat bonuses — health, energy, ability strength, range, and more.",
+      "howToGet": "Complete the weekly Archon Hunt. Each successful run rewards one shard. The colour (and bonus type) depends on which Archon was defeated that week.",
+      "howToUse": "Open your Warframe's Arsenal → Upgrade → Archon Shards tab. Slot shards into the shard socket. Bonuses are permanent and stack. You can also Tauforge shards using Tauforged Crystals for doubled stats.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Archon_Shard"
+    },
+
+    "Tauforged Archon Shard": {
+      "type": "Currency",
+      "summary": "An enhanced version of an Archon Shard. Provides double the bonus of a regular shard when slotted. Same slot limit — 5 per frame — but each counts twice as much.",
+      "howToGet": "Run Deep Archimedea (EDA) or Elite EDA. Tauforged shards are the premium reward tier for the week's hardest endgame content.",
+      "howToUse": "Slot into your Warframe's Archon Shard socket via Arsenal → Upgrade. One Tauforged shard is equivalent to two regular shards in bonus value.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Archon_Shard"
+    },
+
+    "Vitus Essence": {
+      "type": "Currency",
+      "summary": "The exclusive currency of Arbitrations. Drops from Arbitration Shield Drones and from rotation C rewards. Spent at the Arbitrations vendor in any Relay.",
+      "howToGet": "Play Arbitrations (Steel Path endless missions). Kill the glowing Arbitration Shield Drones — each one drops 1 Vitus Essence. Also awarded from Rotation C loot tables.",
+      "howToUse": "Go to any Relay and visit the Arbitrations vendor (near the entrance). Spend Vitus Essence on exclusive Arbitration mods, Adaptation, Aerodynamic, Vigorous Swap, and other high-value mods unavailable elsewhere.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Vitus_Essence"
+    },
+
+    "Steel Essence": {
+      "type": "Currency",
+      "summary": "The primary currency of the Steel Path. Drops from Acolytes and is used to buy rewards from Teshin in any Relay.",
+      "howToGet": "Play any Steel Path mission. Acolytes — elite enemies that spawn during missions — drop 3–6 Steel Essence each. Also from Steel Path Incursions (daily missions).",
+      "howToUse": "Visit Teshin in any Relay to access the Steel Path Honors shop. Buy the rotating weekly item, Kuva, Riven Slivers, Arcanes, or exclusive cosmetics.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Steel_Essence"
+    },
+
+    "Incarnon Genesis": {
+      "type": "Upgrade",
+      "summary": "A transformation upgrade that gives a classic weapon an alternate Incarnon fire mode and a stat evolution tree. Permanently changes how the weapon plays.",
+      "howToGet": "Complete The Circuit (Duviri) each week. The Incarnon Genesis adapter pool rotates weekly — check the Duviri spiral for which weapons are available right now.",
+      "howToUse": "Open your Arsenal. On an eligible weapon, select the Incarnon Genesis option. The weapon gains an Incarnon form activated mid-mission by filling an evolution meter. Unlock further bonuses by completing in-mission challenges.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Incarnon"
+    },
+
+    "Riven Mod": {
+      "type": "Mod",
+      "summary": "A randomised mod with unique stat combinations, locked to a specific weapon class. Each Riven is different — stats, number of bonuses, and weapon lock are all random.",
+      "howToGet": "Completing a Sortie rewards one Riven Mod. Also from Nightwave reward track, Arbitrations (rarely), and trading with other players.",
+      "howToUse": "Open Arsenal → Mods. A Riven must be unveiled first by completing its hidden challenge. Once open, it shows its weapon and stats. Slot it like any mod. You can roll (re-randomise) stats using Kuva via a Riven Transmuter.",
+      "tradable": true,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Riven_Mod"
+    },
+
+    "Kuva": {
+      "type": "Resource",
+      "summary": "A mystical red liquid tied to the Orokin Queen's power. The primary resource for rolling Riven Mods and for creating Kuva weapons via Kuva Liches.",
+      "howToGet": "Farm Kuva Siphon or Kuva Flood missions in the Kuva Fortress region. Each run yields 550–1200 Kuva. Also from Sorties, Kuva Lich rewards, Arbitrations, and Simaris standing.",
+      "howToUse": "Spent in the Mod segment of your Orbiter to re-roll a Riven Mod's stats (costs 3000–9000+ Kuva per roll depending on roll count). Also used to spawn Kuva Liches and craft the Kuva Nukor, Kuva Bramma, and other Lich weapons.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Kuva"
+    },
+
+    "Forma": {
+      "type": "Resource",
+      "summary": "Resets a weapon or Warframe to Rank 0 and applies a polarity to one mod slot. Essential for fitting high-cost endgame builds that need multiple forma.",
+      "howToGet": "Sorties (rotation reward), Void Fissure Relic rewards, Nightwave Cred Offerings, Arbitrations, Login Rewards, and Void Relics throughout the starchart.",
+      "howToUse": "Open Arsenal → Upgrade → Actions → Apply Forma. Choose a mod slot to polarise. The item resets to Rank 0 and must be re-levelled. A matching polarity halves the mod capacity cost for mods of that type.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Forma"
+    },
+
+    "Forma Bundle": {
+      "type": "Resource",
+      "summary": "A bundle containing 3 Forma. Same functionality as individual Forma — used to polarise mod slots on weapons and Warframes.",
+      "howToGet": "Sortie rotation reward (uncommon), Nightwave Cred Offerings, market purchases.",
+      "howToUse": "Each Forma in the bundle works identically to a standalone Forma — polarises one mod slot and resets the item to Rank 0.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Forma"
+    },
+
+    "Exilus Adapter": {
+      "type": "Upgrade",
+      "summary": "Unlocks the Exilus slot on a Warframe or weapon, adding an extra mod slot restricted to utility mods (Cunning Drift, Handspring, Rush, etc.).",
+      "howToGet": "Sortie rewards, Nightwave Cred Offerings, Arbitrations, and crafting via the Foundry (requires Orokin Cell + Fieldron Sample + Detonite Injector).",
+      "howToUse": "Open Arsenal → Upgrade → click the Exilus slot (marked with a diamond). Apply the adapter to permanently unlock it. You can then slot any Exilus-compatible utility mod there.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Exilus_Adapter"
+    },
+
+    "Ayatan Sculpture": {
+      "type": "Collectible",
+      "summary": "Decorative sculptures that can be filled with Ayatan Stars for high Endo value, or displayed in your Orbiter. Anasa sculptures are the most valuable.",
+      "howToGet": "Hidden in missions — Maroo's Bazaar weekly mission guarantees one. Also from Arbitration rewards, Sortie rewards, and randomly spawning in standard missions.",
+      "howToUse": "Take sculptures to Maroo's Bazaar (Mars) to exchange for Endo. Fill them with Ayatan Stars first to maximise payout — an Anasa filled with Amber and Cyan Stars gives ~3200 Endo. Or display them as decorations.",
+      "tradable": true,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Ayatan_Sculpture"
+    },
+
+    "Endo": {
+      "type": "Currency",
+      "summary": "Used exclusively to rank up mods. No other use. The endgame mod grind demands tens of thousands of Endo.",
+      "howToGet": "Arbitrations give the highest Endo per hour. Also from Ayatan Sculptures (trade at Maroo's Bazaar), Defection missions, Kuva Fortress missions, and dissolving duplicate mods.",
+      "howToUse": "Open your Mods Collection and select any mod. Click Upgrade and spend Endo to increase the mod's rank. Higher-ranked mods cost exponentially more.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Endo"
+    },
+
+    "Syndicate Standing": {
+      "type": "Currency",
+      "summary": "Reputation points earned with each of the six core Syndicates. Unlocks augment mods, weapons, cosmetics, and medallion items.",
+      "howToGet": "Equip a Syndicate Sigil (from your Warframe's Appearance → Sigil tab) and earn standing by completing missions. Daily missions give bonus standing. Syndicate medallions (hidden in missions) give large standing chunks.",
+      "howToUse": "Go to your chosen Syndicate's agent (on the relevant relay). Spend standing to buy augment mods, signature weapons, Relic packs, or cosmetics. Standing caps weekly at your Mastery Rank × 1000 + 16000.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Syndicate"
+    },
+
+    "Orokin Catalyst": {
+      "type": "Upgrade",
+      "summary": "Doubles the mod capacity of a weapon. Absolutely essential for any weapon you plan to seriously build — without it you'll run out of mod points fast.",
+      "howToGet": "Alert missions (limited-time), Invasion rewards, Operation events, Nightwave Cred Offerings, and rarely from Sortie rewards.",
+      "howToUse": "Open Arsenal → select a weapon → Actions → Apply Orokin Catalyst. Permanently doubles the mod capacity (30 → 60 unranked). One use per weapon.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Orokin_Catalyst"
+    },
+
+    "Orokin Reactor": {
+      "type": "Upgrade",
+      "summary": "Doubles the mod capacity of a Warframe, Companion, or Archwing. Same as a Catalyst but for frames — essential before forma-ing anything.",
+      "howToGet": "Alert missions, Invasion rewards, Operation events, Nightwave Cred Offerings. Often sold via the market for Platinum.",
+      "howToUse": "Open Arsenal → select a Warframe → Actions → Apply Orokin Reactor. Permanently doubles mod capacity (30 → 60 unranked). Install it before applying Forma to avoid wasting capacity.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Orokin_Reactor"
+    },
+
+    "Void Traces": {
+      "type": "Currency",
+      "summary": "Collected during Void Fissure missions. Used to refine Void Relics before cracking them, improving rare reward chances.",
+      "howToGet": "Automatically collected during Void Fissure missions by killing enemies and picking up reactant. More reactant collected = more Traces. Cap at 3600.",
+      "howToUse": "In your Relic selection screen, choose a relic and click Refine. Spend Void Traces to upgrade it from Intact → Exceptional → Flawless → Radiant. Radiant relics have a 10% rare drop chance vs 2% intact.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Void_Traces"
+    },
+
+    "Ducats": {
+      "type": "Currency",
+      "summary": "Baro Ki'Teer's personal currency. Converted from Prime parts — used exclusively to buy Baro's exclusive items during his visits.",
+      "howToGet": "Take Prime parts you don't need to a Ducat Kiosk (found in every Relay). Bronze parts = 15 ducats, Silver = 45, Gold = 100. Farm Void Relics to get Prime parts to convert.",
+      "howToUse": "Only usable during Baro Ki'Teer's visits (every two weeks, 96 hours active). Spend ducats + credits at Baro's vendor for exclusive primed mods, cosmetics, and weapons.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Orokin_Ducats"
+    },
+
+    "Fieldron": {
+      "type": "Resource",
+      "summary": "A Corpus energy source used to craft certain weapons and components. Drops from Corpus Invasion rewards.",
+      "howToGet": "Complete Invasion missions on the Corpus side. Each completed Invasion chain rewards Fieldron. Also craftable in the Foundry.",
+      "howToUse": "Used as a crafting ingredient for specific weapons (Burston Prime parts, Supra, Lanka, and others). Check your Foundry blueprint requirements.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Fieldron"
+    },
+
+    "Arbitration Mods": {
+      "type": "Mod",
+      "summary": "Exclusive mods only available from the Arbitrations vendor. Some are among the most impactful mods in the game — Adaptation, Aerodynamic, Vigorous Swap.",
+      "howToGet": "Earn Vitus Essence from Arbitrations and spend it at the Arbitrations vendor in any Relay. Some high-value ones cost 20–30 Vitus Essence each.",
+      "howToUse": "Slot them like any mod. Adaptation is the most sought-after — it grants stacking damage resistance as you take hits, up to 90%. Aerodynamic and Vigorous Swap both offer strong niche utility.",
+      "tradable": true,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Arbitrations"
+    },
+
+    "Tome Mods": {
+      "type": "Mod",
+      "summary": "A new mod category introduced with Temporal Archimedea. Slotted into Tomes (a new weapon type) to give them unique functionality.",
+      "howToGet": "Temporal Archimedea rewards. Also from Netracell runs and Research in Clan Dojo (Hespazym Alloy research).",
+      "howToUse": "Equip in the Tome weapon's mod slots. Each Tome Mod changes how the Tome functions — they interact with the Temporal mechanics of the TA content.",
+      "tradable": true,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Tome"
+    },
+
+    "Pathos Clamps": {
+      "type": "Resource",
+      "summary": "The primary crafting resource of the Duviri Paradox. Used to build and upgrade gear within Duviri.",
+      "howToGet": "Earned from The Circuit and Duviri Spiral missions. Higher difficulty and longer runs yield more.",
+      "howToUse": "Spent in the Drifter's Camp to upgrade Kaithe (your horse), weapons, and other Duviri-specific gear.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Pathos_Clamp"
+    }
+
+  }
+}

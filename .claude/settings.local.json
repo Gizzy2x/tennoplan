@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(bash snapshot.sh)"
+      "Bash(bash snapshot.sh)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)"
     ]
   }
 }

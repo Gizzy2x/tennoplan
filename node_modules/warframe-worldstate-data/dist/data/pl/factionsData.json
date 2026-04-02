@@ -1,0 +1,32 @@
+{
+  "FC_CORPUS": {
+    "value": "Corpus"
+  },
+  "FC_CORRUPTED": {
+    "value": "Skarzony"
+  },
+  "FC_GRINEER": {
+    "value": "Grineer"
+  },
+  "FC_INFESTATION": {
+    "value": "Plaga"
+  },
+  "FC_OROKIN": {
+    "value": "Orokin"
+  },
+  "FC_SENTIENT": {
+    "value": "Świadomi"
+  },
+  "FC_MITW": {
+    "value": "Man in the Wall"
+  },
+  "FC_NARMER": {
+    "value": "Narmer"
+  },
+  "FC_SCALDRA": {
+    "value": "Scaldra"
+  },
+  "FC_TECHROT": {
+    "value": "Techrot"
+  }
+}
