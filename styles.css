@@ -17,14 +17,37 @@
   --radius:    10px;
   --card-bg:   var(--bg2);
   --pulse-accent: #7c6af7;
+
+  /* Warframe faction colors */
+  --cetus-gold:  #f0ad4e;
+  --vallis-blue: #00ffff;
+  --void-green:  #2ecc71;
+  --deep-bg:     #0a0a0b;
 }
 
 html, body {
-  background: var(--bg);
+  /* Deep Mesh Gradient — layered radial lights over the near-black deep-bg */
+  background-color: var(--deep-bg);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 15% 20%,  rgba(0, 255, 255, 0.045) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 85% 15%,  rgba(46, 204, 113, 0.035) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 55% at 50% 85%,  rgba(124, 106, 247, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 70%,  rgba(240, 173, 78, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 80% at 50% 50%, rgba(13, 15, 20, 0.9) 0%, transparent 100%);
+  background-attachment: fixed;
   color: var(--text);
   font-family: 'Segoe UI', system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.6;
+}
+
+/* Tactical Glassmorphism panel */
+.glass-panel {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius);
 }
 
 .app { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
