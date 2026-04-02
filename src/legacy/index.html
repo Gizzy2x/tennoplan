@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tennoplan — Warframe Endgame Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Tennoplan</h1>
+      <div class="subtitle">Warframe endgame tracker · All progress saved locally.</div>
+    </div>
+    <div class="header-right">
+      <button class="wiki-open-btn" id="wiki-open-btn" title="Search items, frames, missions and more">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="6" cy="6" r="4"/><line x1="9.5" y1="9.5" x2="13" y2="13"/></svg>
+        Wiki
+      </button>
+      <span class="data-badge loading" id="data-badge">Loading...</span>
+    </div>
+  </div>
+
+  <div class="timers-strip">
+    <div class="reset-badge">
+      <div class="label">Weekly reset in</div>
+      <div class="countdown" id="timer-weekly">--:--:--</div>
+    </div>
+    <div class="reset-badge">
+      <div class="label">Daily reset in</div>
+      <div class="countdown" id="timer-daily">--:--:--</div>
+    </div>
+  </div>
+
+  <div class="section-title" id="sec-daily">Daily Activities</div>
+  <div id="sec-daily-content">
+    <div id="fissures-anchor"></div>
+    <div class="cards" id="daily-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
+  </div>
+
+  <!-- Notable Alerts: hidden when no matching alerts are active -->
+  <div id="alerts-section" style="display:none">
+    <div class="section-title">Notable Alerts</div>
+    <div id="alerts-container"></div>
+  </div>
+
+  <div class="section-title" id="sec-weekly">
+    <span>Weekly Activities</span>
+    <button class="reset-all-btn" onclick="resetAll()">Reset all</button>
+  </div>
+  <div class="cards" id="weekly-cards"><div class="skeleton"></div><div class="skeleton"></div></div>
+
+  <div class="section-title" id="sec-pulse">Search Pulse Budget</div>
+  <div class="pulse-box" id="pulse-budget-box">
+    <div class="pulse-progress-wrap">
+      <div class="pulse-progress-head"><span id="pulses-used-label">0 / 5 pulses used this week</span></div>
+      <div class="pulse-progress-bar-bg"><div class="pulse-progress-bar-fill" id="pulse-progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="pulse-mode-grid">
+
+      <!-- EDA -->
+      <div class="pulse-mode-card">
+        <div class="pulse-mode-head">
+          <span class="pulse-mode-title">Deep Archimedea <span class="pulse-mode-abbr">(EDA)</span></span>
+          <span class="pulse-help" title="EDA: weekly high-difficulty endurance run. Normal = 1 pulse. Elite (EEDA) = 2 pulses — selecting Elite auto-marks Normal too. Must uncheck Elite before you can uncheck Normal.">?</span>
+        </div>
+        <div class="pulse-runs">
+          <label class="pulse-run" data-mode="eda" data-tier="normal" onclick="toggleTieredRun('eda','normal')">
+            <span class="pulse-run-tier">Normal</span><span class="pulse-run-cost">1 pulse</span>
+          </label>
+          <label class="pulse-run" data-mode="eda" data-tier="elite" onclick="toggleTieredRun('eda','elite')">
+            <span class="pulse-run-tier">Elite <span class="pulse-mode-abbr">(EEDA)</span></span><span class="pulse-run-cost">+1 pulse</span>
+          </label>
+        </div>
+        <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-eda',this);event.stopPropagation();return false;">Rewards ↓</a>
+        <div class="card-rewards-panel" id="pulse-eda-panel" style="display:none">
+          <div class="rewards-header"><span class="rh-item">Item</span></div>
+          <div class="reward-chips">
+            <div class="reward-chip"><span class="reward-chip-name">Tauforged Archon Shard</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Archon Mods</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Riven Mod</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Kuva</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Forma</span></div>
+          </div>
+          <div class="reward-note">Elite tier rewards an additional Tauforged Shard. Modifiers change weekly.</div>
+        </div>
+      </div>
+
+      <!-- Netracells -->
+      <div class="pulse-mode-card">
+        <div class="pulse-mode-head">
+          <span class="pulse-mode-title">Netracells</span>
+          <span class="pulse-help" title="Netracells: assassination targets in Albrecht's Labs. Each run costs 1 Search Pulse. Up to 5 runs per week.">?</span>
+          <span class="pulse-cost-pill">1 pulse each</span>
+        </div>
+        <div class="pulse-runs">
+          <label class="pulse-run" data-mode="net" data-idx="0" onclick="toggleNetRun(0)"><span>Run 1</span></label>
+          <label class="pulse-run" data-mode="net" data-idx="1" onclick="toggleNetRun(1)"><span>Run 2</span></label>
+          <label class="pulse-run" data-mode="net" data-idx="2" onclick="toggleNetRun(2)"><span>Run 3</span></label>
+          <label class="pulse-run" data-mode="net" data-idx="3" onclick="toggleNetRun(3)"><span>Run 4</span></label>
+          <label class="pulse-run" data-mode="net" data-idx="4" onclick="toggleNetRun(4)"><span>Run 5</span></label>
+        </div>
+        <div style="font-size:11px;color:var(--text-hint)">Each run targets a Netracell assassination in Albrecht's Labs</div>
+        <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-net',this);event.stopPropagation();return false;">Rewards ↓</a>
+        <div class="card-rewards-panel" id="pulse-net-panel" style="display:none">
+          <div class="rewards-header"><span class="rh-item">Item</span></div>
+          <div class="reward-chips">
+            <div class="reward-chip"><span class="reward-chip-name">Archon Shard</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Tome Mods</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Rare Mods</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Kuva</span></div>
+          </div>
+          <div class="reward-note">Each of the 5 weekly runs can reward a shard. Run all 5 for maximum shard income.</div>
+        </div>
+      </div>
+
+      <!-- Temporal -->
+      <div class="pulse-mode-card">
+        <div class="pulse-mode-head">
+          <span class="pulse-mode-title">Temporal Archimedea <span class="pulse-mode-abbr">(TA)</span></span>
+          <span class="pulse-help" title="TA: weekly variant with its own reward pool. Normal = 1 pulse. Elite (ETA) = 2 pulses — selecting Elite auto-marks Normal too. Must uncheck Elite before you can uncheck Normal.">?</span>
+        </div>
+        <div class="pulse-runs">
+          <label class="pulse-run" data-mode="tmp" data-tier="normal" onclick="toggleTieredRun('tmp','normal')">
+            <span class="pulse-run-tier">Normal</span><span class="pulse-run-cost">1 pulse</span>
+          </label>
+          <label class="pulse-run" data-mode="tmp" data-tier="elite" onclick="toggleTieredRun('tmp','elite')">
+            <span class="pulse-run-tier">Elite <span class="pulse-mode-abbr">(ETA)</span></span><span class="pulse-run-cost">+1 pulse</span>
+          </label>
+        </div>
+        <a class="card-wiki" href="#" onclick="togglePulseRewardPanel('pulse-tmp',this);event.stopPropagation();return false;">Rewards ↓</a>
+        <div class="card-rewards-panel" id="pulse-tmp-panel" style="display:none">
+          <div class="rewards-header"><span class="rh-item">Item</span></div>
+          <div class="reward-chips">
+            <div class="reward-chip"><span class="reward-chip-name">Temporal Mods</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Archon Shards</span></div>
+            <div class="reward-chip"><span class="reward-chip-name">Exclusive weekly reward</span></div>
+          </div>
+          <div class="reward-note">Reward pool rotates weekly. Elite tier adds bonus rewards.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section-title" id="sec-cycles">
+    World State Cycles
+    <span style="font-size:10px;color:var(--text-hint);font-weight:400;letter-spacing:0;text-transform:none">Live · updates every 30 s</span>
+  </div>
+  <div class="cycles-grid" id="cycles-grid"></div>
+
+  <div class="section-title" id="sec-baro">Void Trader</div>
+  <div class="baro-strip">
+    <div class="baro-left">
+      <div class="baro-dot absent" id="baro-dot"></div>
+      <div>
+        <div class="baro-name">Baro Ki'Teer</div>
+        <div class="baro-status" id="baro-status">Fetching status...</div>
+      </div>
+    </div>
+    <div class="baro-timer" id="baro-timer">—</div>
+  </div>
+
+  <div class="section-title" id="sec-invasions">
+    Invasions
+    <span style="font-size:10px;color:var(--green);margin-left:8px" id="inv-live-badge"></span>
+  </div>
+  <div id="inv-container"><div class="inv-offline">Loading invasions...</div></div>
+
+  <div class="section-title" id="sec-nightwave">Nightwave Acts</div>
+  <div class="nw-box">
+    <div class="nw-header">
+      <div>
+        <div class="nw-title">Nightwave</div>
+        <div class="nw-season" id="nw-season">Loading current acts...</div>
+      </div>
+      <div class="nw-standing" id="nw-standing">0 standing earned this session</div>
+    </div>
+    <div class="nw-bar-bg"><div class="nw-bar-fill" id="nw-bar" style="width:0%"></div></div>
+    <div class="nw-acts" id="nw-acts"><div class="skeleton"></div></div>
+  </div>
+
+  <div class="section-title" id="sec-steelpath">Steel Path Honors</div>
+  <div class="sp-box" id="sp-box">
+    <div class="sp-offline">Loading Steel Path Honors...</div>
+  </div>
+
+  <div class="support-bar">
+    <div class="support-text">
+      <strong>Tennoplan</strong> — free, open source, no ads.<br>
+      If this saves you time each week, consider supporting its development.
+    </div>
+    <a class="kofi-btn" href="https://github.com/Gizzy2x/tennoplan/issues/new" target="_blank" rel="noopener">💡 Suggest a feature</a>
+    <a class="kofi-btn" href="https://ko-fi.com/tennoplan" target="_blank" rel="noopener">☕ Support on Ko-fi</a>
+  </div>
+
+</div>
+<script src="mockData.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
