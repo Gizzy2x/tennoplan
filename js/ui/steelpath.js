@@ -18,7 +18,7 @@ export function renderSteelPath(sp, offline) {
   const claimKey   = 'sp-' + rewardName.replace(/\s+/g, '-').toLowerCase();
   const isClaimed  = !!week.tasks[claimKey];
   const rotHtml    = rotation.length
-    ? rotation.map(r => `<span class="sp-rotation-item${r.name === rewardName ? ' current' : ''}" title="${r.cost} Steel Essence">${r.name}</span>`).join('')
+    ? rotation.map(r => `<span class="sp-rotation-item${r.name === rewardName ? ' current' : ''}" title="${r.cost} Steel Essence" data-wiki="${r.name}">${r.name}</span>`).join('')
     : '<span style="font-size:11px;color:var(--text-hint)">Rotation data unavailable</span>';
   const timerStr  = expiry ? formatDur(expiry - Date.now()) : '—';
   const expiryIso = expiry ? expiry.toISOString() : '';
@@ -27,7 +27,7 @@ export function renderSteelPath(sp, offline) {
     <div class="sp-main">
       <div class="sp-reward-block">
         <div class="sp-reward-label">This week's rotating item</div>
-        <div class="sp-reward-name">${rewardName}</div>
+        <div class="sp-reward-name" data-wiki="${rewardName}">${rewardName}</div>
         <div class="sp-reward-cost">Costs <strong>${rewardCost} Steel Essence</strong> — visit Teshin in any Relay</div>
         <button class="sp-claimed-btn${isClaimed ? ' claimed' : ''}" id="sp-claimed-btn">
           ${isClaimed ? '✓ Claimed this week' : 'Mark as claimed'}

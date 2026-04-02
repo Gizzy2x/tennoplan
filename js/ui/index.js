@@ -29,5 +29,4 @@ export { updateCountdown } from './countdown.js';
 
 export { buildFissurePanel, buildNightwavePanel, buildCyclePanel, attachExpand } from './knowMore.js';
 
-// Other modules import wiki lookups directly:
-// import { getMissionType, getFaction } from '../wikiContent.js';
+export { initWikiPanel, openWikiPanel, closeWikiPanel, isWikiPanelOpen } from './wikiPanel.js';

@@ -792,5 +792,198 @@
       "source": "Nightwave reward track (Cred Offerings)",
       "note": "Don't waste Cred Offerings on Nitain if you have a stockpile — it's limited per season."
     }
+  },
+
+  "resources": {
+
+    "Archon Shard": {
+      "type": "Currency",
+      "summary": "A crystallised fragment of an Archon. Slot up to 5 into a Warframe to give it permanent stat bonuses — health, energy, ability strength, range, and more.",
+      "howToGet": "Complete the weekly Archon Hunt. Each successful run rewards one shard. The colour (and bonus type) depends on which Archon was defeated that week.",
+      "howToUse": "Open your Warframe's Arsenal → Upgrade → Archon Shards tab. Slot shards into the shard socket. Bonuses are permanent and stack. You can also Tauforge shards using Tauforged Crystals for doubled stats.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Archon_Shard"
+    },
+
+    "Tauforged Archon Shard": {
+      "type": "Currency",
+      "summary": "An enhanced version of an Archon Shard. Provides double the bonus of a regular shard when slotted. Same slot limit — 5 per frame — but each counts twice as much.",
+      "howToGet": "Run Deep Archimedea (EDA) or Elite EDA. Tauforged shards are the premium reward tier for the week's hardest endgame content.",
+      "howToUse": "Slot into your Warframe's Archon Shard socket via Arsenal → Upgrade. One Tauforged shard is equivalent to two regular shards in bonus value.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Archon_Shard"
+    },
+
+    "Vitus Essence": {
+      "type": "Currency",
+      "summary": "The exclusive currency of Arbitrations. Drops from Arbitration Shield Drones and from rotation C rewards. Spent at the Arbitrations vendor in any Relay.",
+      "howToGet": "Play Arbitrations (Steel Path endless missions). Kill the glowing Arbitration Shield Drones — each one drops 1 Vitus Essence. Also awarded from Rotation C loot tables.",
+      "howToUse": "Go to any Relay and visit the Arbitrations vendor (near the entrance). Spend Vitus Essence on exclusive Arbitration mods, Adaptation, Aerodynamic, Vigorous Swap, and other high-value mods unavailable elsewhere.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Vitus_Essence"
+    },
+
+    "Steel Essence": {
+      "type": "Currency",
+      "summary": "The primary currency of the Steel Path. Drops from Acolytes and is used to buy rewards from Teshin in any Relay.",
+      "howToGet": "Play any Steel Path mission. Acolytes — elite enemies that spawn during missions — drop 3–6 Steel Essence each. Also from Steel Path Incursions (daily missions).",
+      "howToUse": "Visit Teshin in any Relay to access the Steel Path Honors shop. Buy the rotating weekly item, Kuva, Riven Slivers, Arcanes, or exclusive cosmetics.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Steel_Essence"
+    },
+
+    "Incarnon Genesis": {
+      "type": "Upgrade",
+      "summary": "A transformation upgrade that gives a classic weapon an alternate Incarnon fire mode and a stat evolution tree. Permanently changes how the weapon plays.",
+      "howToGet": "Complete The Circuit (Duviri) each week. The Incarnon Genesis adapter pool rotates weekly — check the Duviri spiral for which weapons are available right now.",
+      "howToUse": "Open your Arsenal. On an eligible weapon, select the Incarnon Genesis option. The weapon gains an Incarnon form activated mid-mission by filling an evolution meter. Unlock further bonuses by completing in-mission challenges.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Incarnon"
+    },
+
+    "Riven Mod": {
+      "type": "Mod",
+      "summary": "A randomised mod with unique stat combinations, locked to a specific weapon class. Each Riven is different — stats, number of bonuses, and weapon lock are all random.",
+      "howToGet": "Completing a Sortie rewards one Riven Mod. Also from Nightwave reward track, Arbitrations (rarely), and trading with other players.",
+      "howToUse": "Open Arsenal → Mods. A Riven must be unveiled first by completing its hidden challenge. Once open, it shows its weapon and stats. Slot it like any mod. You can roll (re-randomise) stats using Kuva via a Riven Transmuter.",
+      "tradable": true,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Riven_Mod"
+    },
+
+    "Kuva": {
+      "type": "Resource",
+      "summary": "A mystical red liquid tied to the Orokin Queen's power. The primary resource for rolling Riven Mods and for creating Kuva weapons via Kuva Liches.",
+      "howToGet": "Farm Kuva Siphon or Kuva Flood missions in the Kuva Fortress region. Each run yields 550–1200 Kuva. Also from Sorties, Kuva Lich rewards, Arbitrations, and Simaris standing.",
+      "howToUse": "Spent in the Mod segment of your Orbiter to re-roll a Riven Mod's stats (costs 3000–9000+ Kuva per roll depending on roll count). Also used to spawn Kuva Liches and craft the Kuva Nukor, Kuva Bramma, and other Lich weapons.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Kuva"
+    },
+
+    "Forma": {
+      "type": "Resource",
+      "summary": "Resets a weapon or Warframe to Rank 0 and applies a polarity to one mod slot. Essential for fitting high-cost endgame builds that need multiple forma.",
+      "howToGet": "Sorties (rotation reward), Void Fissure Relic rewards, Nightwave Cred Offerings, Arbitrations, Login Rewards, and Void Relics throughout the starchart.",
+      "howToUse": "Open Arsenal → Upgrade → Actions → Apply Forma. Choose a mod slot to polarise. The item resets to Rank 0 and must be re-levelled. A matching polarity halves the mod capacity cost for mods of that type.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Forma"
+    },
+
+    "Forma Bundle": {
+      "type": "Resource",
+      "summary": "A bundle containing 3 Forma. Same functionality as individual Forma — used to polarise mod slots on weapons and Warframes.",
+      "howToGet": "Sortie rotation reward (uncommon), Nightwave Cred Offerings, market purchases.",
+      "howToUse": "Each Forma in the bundle works identically to a standalone Forma — polarises one mod slot and resets the item to Rank 0.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Forma"
+    },
+
+    "Exilus Adapter": {
+      "type": "Upgrade",
+      "summary": "Unlocks the Exilus slot on a Warframe or weapon, adding an extra mod slot restricted to utility mods (Cunning Drift, Handspring, Rush, etc.).",
+      "howToGet": "Sortie rewards, Nightwave Cred Offerings, Arbitrations, and crafting via the Foundry (requires Orokin Cell + Fieldron Sample + Detonite Injector).",
+      "howToUse": "Open Arsenal → Upgrade → click the Exilus slot (marked with a diamond). Apply the adapter to permanently unlock it. You can then slot any Exilus-compatible utility mod there.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Exilus_Adapter"
+    },
+
+    "Ayatan Sculpture": {
+      "type": "Collectible",
+      "summary": "Decorative sculptures that can be filled with Ayatan Stars for high Endo value, or displayed in your Orbiter. Anasa sculptures are the most valuable.",
+      "howToGet": "Hidden in missions — Maroo's Bazaar weekly mission guarantees one. Also from Arbitration rewards, Sortie rewards, and randomly spawning in standard missions.",
+      "howToUse": "Take sculptures to Maroo's Bazaar (Mars) to exchange for Endo. Fill them with Ayatan Stars first to maximise payout — an Anasa filled with Amber and Cyan Stars gives ~3200 Endo. Or display them as decorations.",
+      "tradable": true,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Ayatan_Sculpture"
+    },
+
+    "Endo": {
+      "type": "Currency",
+      "summary": "Used exclusively to rank up mods. No other use. The endgame mod grind demands tens of thousands of Endo.",
+      "howToGet": "Arbitrations give the highest Endo per hour. Also from Ayatan Sculptures (trade at Maroo's Bazaar), Defection missions, Kuva Fortress missions, and dissolving duplicate mods.",
+      "howToUse": "Open your Mods Collection and select any mod. Click Upgrade and spend Endo to increase the mod's rank. Higher-ranked mods cost exponentially more.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Endo"
+    },
+
+    "Syndicate Standing": {
+      "type": "Currency",
+      "summary": "Reputation points earned with each of the six core Syndicates. Unlocks augment mods, weapons, cosmetics, and medallion items.",
+      "howToGet": "Equip a Syndicate Sigil (from your Warframe's Appearance → Sigil tab) and earn standing by completing missions. Daily missions give bonus standing. Syndicate medallions (hidden in missions) give large standing chunks.",
+      "howToUse": "Go to your chosen Syndicate's agent (on the relevant relay). Spend standing to buy augment mods, signature weapons, Relic packs, or cosmetics. Standing caps weekly at your Mastery Rank × 1000 + 16000.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Syndicate"
+    },
+
+    "Orokin Catalyst": {
+      "type": "Upgrade",
+      "summary": "Doubles the mod capacity of a weapon. Absolutely essential for any weapon you plan to seriously build — without it you'll run out of mod points fast.",
+      "howToGet": "Alert missions (limited-time), Invasion rewards, Operation events, Nightwave Cred Offerings, and rarely from Sortie rewards.",
+      "howToUse": "Open Arsenal → select a weapon → Actions → Apply Orokin Catalyst. Permanently doubles the mod capacity (30 → 60 unranked). One use per weapon.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Orokin_Catalyst"
+    },
+
+    "Orokin Reactor": {
+      "type": "Upgrade",
+      "summary": "Doubles the mod capacity of a Warframe, Companion, or Archwing. Same as a Catalyst but for frames — essential before forma-ing anything.",
+      "howToGet": "Alert missions, Invasion rewards, Operation events, Nightwave Cred Offerings. Often sold via the market for Platinum.",
+      "howToUse": "Open Arsenal → select a Warframe → Actions → Apply Orokin Reactor. Permanently doubles mod capacity (30 → 60 unranked). Install it before applying Forma to avoid wasting capacity.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Orokin_Reactor"
+    },
+
+    "Void Traces": {
+      "type": "Currency",
+      "summary": "Collected during Void Fissure missions. Used to refine Void Relics before cracking them, improving rare reward chances.",
+      "howToGet": "Automatically collected during Void Fissure missions by killing enemies and picking up reactant. More reactant collected = more Traces. Cap at 3600.",
+      "howToUse": "In your Relic selection screen, choose a relic and click Refine. Spend Void Traces to upgrade it from Intact → Exceptional → Flawless → Radiant. Radiant relics have a 10% rare drop chance vs 2% intact.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Void_Traces"
+    },
+
+    "Ducats": {
+      "type": "Currency",
+      "summary": "Baro Ki'Teer's personal currency. Converted from Prime parts — used exclusively to buy Baro's exclusive items during his visits.",
+      "howToGet": "Take Prime parts you don't need to a Ducat Kiosk (found in every Relay). Bronze parts = 15 ducats, Silver = 45, Gold = 100. Farm Void Relics to get Prime parts to convert.",
+      "howToUse": "Only usable during Baro Ki'Teer's visits (every two weeks, 96 hours active). Spend ducats + credits at Baro's vendor for exclusive primed mods, cosmetics, and weapons.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Orokin_Ducats"
+    },
+
+    "Fieldron": {
+      "type": "Resource",
+      "summary": "A Corpus energy source used to craft certain weapons and components. Drops from Corpus Invasion rewards.",
+      "howToGet": "Complete Invasion missions on the Corpus side. Each completed Invasion chain rewards Fieldron. Also craftable in the Foundry.",
+      "howToUse": "Used as a crafting ingredient for specific weapons (Burston Prime parts, Supra, Lanka, and others). Check your Foundry blueprint requirements.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Fieldron"
+    },
+
+    "Arbitration Mods": {
+      "type": "Mod",
+      "summary": "Exclusive mods only available from the Arbitrations vendor. Some are among the most impactful mods in the game — Adaptation, Aerodynamic, Vigorous Swap.",
+      "howToGet": "Earn Vitus Essence from Arbitrations and spend it at the Arbitrations vendor in any Relay. Some high-value ones cost 20–30 Vitus Essence each.",
+      "howToUse": "Slot them like any mod. Adaptation is the most sought-after — it grants stacking damage resistance as you take hits, up to 90%. Aerodynamic and Vigorous Swap both offer strong niche utility.",
+      "tradable": true,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Arbitrations"
+    },
+
+    "Tome Mods": {
+      "type": "Mod",
+      "summary": "A new mod category introduced with Temporal Archimedea. Slotted into Tomes (a new weapon type) to give them unique functionality.",
+      "howToGet": "Temporal Archimedea rewards. Also from Netracell runs and Research in Clan Dojo (Hespazym Alloy research).",
+      "howToUse": "Equip in the Tome weapon's mod slots. Each Tome Mod changes how the Tome functions — they interact with the Temporal mechanics of the TA content.",
+      "tradable": true,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Tome"
+    },
+
+    "Pathos Clamps": {
+      "type": "Resource",
+      "summary": "The primary crafting resource of the Duviri Paradox. Used to build and upgrade gear within Duviri.",
+      "howToGet": "Earned from The Circuit and Duviri Spiral missions. Higher difficulty and longer runs yield more.",
+      "howToUse": "Spent in the Drifter's Camp to upgrade Kaithe (your horse), weapons, and other Duviri-specific gear.",
+      "tradable": false,
+      "wikiUrl": "https://warframe.fandom.com/wiki/Pathos_Clamp"
+    }
+
   }
 }

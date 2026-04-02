@@ -45,7 +45,7 @@ export function buildRewardPanelHTML(cardId) {
         const cls = r.rarity ? 'rarity-' + r.rarity.toLowerCase() : '';
         const pct = r.chance != null ? r.chance.toFixed(2) + '%' : '';
         rows += `<div class="reward-row">
-          <span class="reward-name">${r.item}</span>
+          <span class="reward-name" data-wiki="${r.item}">${r.item}</span>
           ${cls ? `<span class="reward-rarity ${cls}">${r.rarity}</span>` : ''}
           ${pct ? `<span class="reward-chance">${pct}</span>`            : ''}
         </div>`;
@@ -58,7 +58,7 @@ export function buildRewardPanelHTML(cardId) {
       + (def.note ? `<div class="reward-note">${def.note}</div>` : '');
   }
   const chips = def.items
-    .map(item => `<div class="reward-chip"><span class="reward-chip-name">${item}</span></div>`)
+    .map(item => `<div class="reward-chip"><span class="reward-chip-name" data-wiki="${item}">${item}</span></div>`)
     .join('');
   return `<div class="rewards-header"><span class="rh-item">Item</span></div><div class="reward-chips">${chips}</div>`
     + (def.note ? `<div class="reward-note">${def.note}</div>` : '');
