@@ -63,6 +63,13 @@ function fromApi(key: CycleType, raw: WorldstateApiResponse): Omit<CycleData, 's
 }
 // ── Hook ──────────────────────────────────────────────────────────────────
 const CYCLE_KEYS: CycleType[] = ['cetus', 'vallis', 'earth', 'zariman'];
+
+const DEFAULT_CYCLES: CycleData[] = CYCLE_KEYS.map(key => ({
+  type: key,
+  ...predictCycle(key),
+  source: 'predictive' as DataSource,
+}));
+
 export function useWorldState() {
   const { data: apiData, isError, isSuccess } = useQuery<WorldstateApiResponse>({
     queryKey: ['worldstate'],
@@ -77,7 +84,7 @@ export function useWorldState() {
       const base = api ?? { type: key, ...predictCycle(key) };
       return { ...base, source };
     });
-  const [cycles, setCycles] = useState<CycleData[]>(buildCycles);
+  const [cycles, setCycles] = useState<CycleData[]>(DEFAULT_CYCLES);
   // Resync when API data arrives
   useEffect(() => {
     if (apiData) {
@@ -85,6 +92,10 @@ export function useWorldState() {
     }
     setCycles(buildCycles());
   }, [apiData, isError]);
+  // Debug log whenever cycles update
+  useEffect(() => {
+    console.log('Final Hook Data:', cycles);
+  }, [cycles]);
   // Tick every second — auto-resync phase at 0
   useEffect(() => {
     const id = setInterval(() => {
