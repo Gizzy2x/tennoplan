@@ -22,6 +22,7 @@ import {
   updateCountdown,
   resetAll, initSectionToggles,
   toggleTieredRun, toggleNetRun, togglePulseRewardPanel,
+  initWikiPanel, openWikiPanel, closeWikiPanel,
 } from './ui/index.js';
 
 // ── Global error handlers ─────────────────────────────────────────────────────
@@ -35,10 +36,12 @@ window.addEventListener('unhandledrejection', e => {
 
 // ── Expose functions used by HTML inline onclick attributes ───────────────────
 // type="module" scopes everything to the module, so inline handlers need window.*
-window.toggleTieredRun       = toggleTieredRun;
-window.toggleNetRun          = toggleNetRun;
+window.toggleTieredRun        = toggleTieredRun;
+window.toggleNetRun           = toggleNetRun;
 window.togglePulseRewardPanel = togglePulseRewardPanel;
-window.resetAll              = resetAll;
+window.resetAll               = resetAll;
+window.openWikiPanel          = openWikiPanel;
+window.closeWikiPanel         = closeWikiPanel;
 
 // ── Static task data (weekly/daily cards + nightwave fallback) ────────────────
 const TASK_DATA = {
@@ -70,6 +73,22 @@ async function init() {
   if (migratePulseWeek(week)) persist();
 
   initSectionToggles();
+
+  // ── Wiki panel ────────────────────────────────────────────────────────────
+  initWikiPanel();
+
+  // Wire the header Wiki button
+  document.getElementById('wiki-open-btn')
+    ?.addEventListener('click', () => openWikiPanel());
+
+  // Delegated handler: clicking any [data-wiki] element opens the detail view
+  document.addEventListener('click', e => {
+    const el = e.target.closest('[data-wiki]');
+    if (el && !e.defaultPrevented) {
+      const query = el.getAttribute('data-wiki');
+      if (query) { e.preventDefault(); openWikiPanel(query); }
+    }
+  });
 
   // Render immediately with static data so the page is usable before any fetch
   renderCards(TASK_DATA.weekly, TASK_DATA.daily);

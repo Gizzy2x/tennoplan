@@ -51,7 +51,7 @@ export function renderInvasions(data) {
       ${rewards.length ? `
       <div style="margin-top:4px">
         <div class="inv-rewards-label">Possible rewards</div>
-        <div class="inv-reward-pills">${rewards.map(r => `<span class="inv-reward-pill">${r}</span>`).join('')}</div>
+        <div class="inv-reward-pills">${rewards.map(r => `<span class="inv-reward-pill" data-wiki="${r}">${r}</span>`).join('')}</div>
       </div>` : ''}
       <div class="inv-footer">
         <div class="inv-missions">3 missions to complete</div>
