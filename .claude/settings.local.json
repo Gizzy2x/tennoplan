@@ -4,7 +4,8 @@
       "Bash(bash snapshot.sh)",
       "Bash(npm init:*)",
       "Bash(npm install:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(grep -E \"lock|\\\\.json$\")"
     ]
   }
 }
