@@ -290,8 +290,21 @@ async function init() {
     if (!cyclesTickStarted) { cyclesTickStarted = true; setInterval(tickCycleTimers, 1000); }
   }
 
+  // _cycleFallback: renders mock data into the cycle card on API failure so the
+  // section isn't blank, but does NOT call endpointOk — the badge still reflects
+  // that no live data came through.
+  function _cycleFallback(id, normFn, mockData, timerId) {
+    try {
+      if (mockData) { applyCycle(id, normFn(mockData)); startCycleTick(); }
+      else { const el = document.getElementById(timerId); if (el) el.textContent = '—'; }
+    } catch {
+      const el = document.getElementById(timerId);
+      if (el) el.textContent = '—';
+    }
+  }
+
   function loadCetusCycle() {
-    apiFetch(`${API}/cetusCycle${LANG}`, { fallback: window.WF_MOCK?.cetusCycle })
+    apiFetch(`${API}/cetusCycle${LANG}`)
       .then(data => {
         applyCycle('cetus', normalizeCetusCycle(data));
         startCycleTick();
@@ -299,17 +312,13 @@ async function init() {
       })
       .catch(err => {
         console.error('[Tennoplan] cetusCycle fetch failed:', err?.message ?? err);
-        if (cetusFirstLoad) {
-          cetusFirstLoad = false;
-          const el = document.getElementById('cetus-timer');
-          if (el) el.textContent = '—';
-          endpointFail('cetusCycle');
-        }
+        _cycleFallback('cetus', normalizeCetusCycle, window.WF_MOCK?.cetusCycle, 'cetus-timer');
+        if (cetusFirstLoad) { cetusFirstLoad = false; endpointFail('cetusCycle'); }
       });
   }
 
   function loadVallisCycle() {
-    apiFetch(`${API}/vallisCycle${LANG}`, { fallback: window.WF_MOCK?.vallisCycle })
+    apiFetch(`${API}/vallisCycle${LANG}`)
       .then(data => {
         applyCycle('vallis', normalizeVallisCycle(data));
         startCycleTick();
@@ -317,17 +326,13 @@ async function init() {
       })
       .catch(err => {
         console.error('[Tennoplan] vallisCycle fetch failed:', err?.message ?? err);
-        if (vallisFirstLoad) {
-          vallisFirstLoad = false;
-          const el = document.getElementById('vallis-timer');
-          if (el) el.textContent = '—';
-          endpointFail('vallisCycle');
-        }
+        _cycleFallback('vallis', normalizeVallisCycle, window.WF_MOCK?.vallisCycle, 'vallis-timer');
+        if (vallisFirstLoad) { vallisFirstLoad = false; endpointFail('vallisCycle'); }
       });
   }
 
   function loadCambionCycle() {
-    apiFetch(`${API}/cambionCycle${LANG}`, { fallback: window.WF_MOCK?.cambionCycle })
+    apiFetch(`${API}/cambionCycle${LANG}`)
       .then(data => {
         applyCycle('cambion', normalizeCambionCycle(data));
         startCycleTick();
@@ -335,17 +340,13 @@ async function init() {
       })
       .catch(err => {
         console.error('[Tennoplan] cambionCycle fetch failed:', err?.message ?? err);
-        if (cambionFirstLoad) {
-          cambionFirstLoad = false;
-          const el = document.getElementById('cambion-timer');
-          if (el) el.textContent = '—';
-          endpointFail('cambionCycle');
-        }
+        _cycleFallback('cambion', normalizeCambionCycle, window.WF_MOCK?.cambionCycle, 'cambion-timer');
+        if (cambionFirstLoad) { cambionFirstLoad = false; endpointFail('cambionCycle'); }
       });
   }
 
   function loadZarimanCycle() {
-    apiFetch(`${API}/zarimanCycle${LANG}`, { fallback: window.WF_MOCK?.zarimanCycle })
+    apiFetch(`${API}/zarimanCycle${LANG}`)
       .then(data => {
         applyCycle('zariman', normalizeZarimanCycle(data));
         startCycleTick();
@@ -353,12 +354,8 @@ async function init() {
       })
       .catch(err => {
         console.error('[Tennoplan] zarimanCycle fetch failed:', err?.message ?? err);
-        if (zarimanFirstLoad) {
-          zarimanFirstLoad = false;
-          const el = document.getElementById('zariman-timer');
-          if (el) el.textContent = '—';
-          endpointFail('zarimanCycle');
-        }
+        _cycleFallback('zariman', normalizeZarimanCycle, window.WF_MOCK?.zarimanCycle, 'zariman-timer');
+        if (zarimanFirstLoad) { zarimanFirstLoad = false; endpointFail('zarimanCycle'); }
       });
   }
 
