@@ -52,7 +52,7 @@ function fromApi(key: CycleType, raw: WorldstateApiResponse): Omit<CycleData, 's
   const entry = raw[key];
   if (!entry) return null;
   const secondsRemaining = Math.max(0, Math.floor((new Date(entry.expiry).getTime() - Date.now()) / 1000));
-  const { total, phases: [p1, p2] } = DURATIONS[key];
+  const { phases: [p1, p2] } = DURATIONS[key];
   const phaseDur = PHASE_NAMES[key][0].toLowerCase() === entry.state.toLowerCase() ? p1 : p2;
   return {
     type: key,
