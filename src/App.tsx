@@ -1,19 +1,52 @@
-// App.tsx — Root component.
-// Migration is in progress — vanilla JS logic lives in src/js/ for reference.
-// Build out React components here and import them as the migration proceeds.
+import { useState } from 'react';
+import { Sidebar } from './components/Sidebar';
+import { TopHeader } from './components/TopHeader';
 
 function App() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+
   return (
-    <div className="app">
-      <div className="header">
-        <div className="header-left">
-          <h1>Tennoplan</h1>
-          <div className="subtitle">Warframe endgame tracker · All progress saved locally.</div>
+    <div className="shell">
+      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+
+      <div className="shell-main">
+        <TopHeader apiStatus="loading" />
+
+        <div className="content-scroll">
+          <main className="bento-grid">
+            {/* Placeholder panels — populate with real components as migration proceeds */}
+            <div className="glass-panel panel--wide">
+              <div className="panel-label">Weekly Tasks</div>
+              <p className="panel-placeholder">Dashboard content coming soon…</p>
+            </div>
+
+            <div className="glass-panel">
+              <div className="panel-label">World Cycles</div>
+              <p className="panel-placeholder">Cetus · Vallis · Cambion · Zariman</p>
+            </div>
+
+            <div className="glass-panel">
+              <div className="panel-label">Void Fissures</div>
+              <p className="panel-placeholder">Live fissure list here</p>
+            </div>
+
+            <div className="glass-panel">
+              <div className="panel-label">Nightwave</div>
+              <p className="panel-placeholder">Act checklist here</p>
+            </div>
+
+            <div className="glass-panel">
+              <div className="panel-label">Baro Ki'Teer</div>
+              <p className="panel-placeholder">Trader status &amp; inventory</p>
+            </div>
+
+            <div className="glass-panel">
+              <div className="panel-label">Steel Path</div>
+              <p className="panel-placeholder">Weekly honors here</p>
+            </div>
+          </main>
         </div>
       </div>
-      <p style={{ padding: '2rem', color: 'var(--text-dim)' }}>
-        React scaffold ready. Start building components here.
-      </p>
     </div>
   );
 }
