@@ -28,8 +28,8 @@ function phaseClass(phase: string): string {
   return 'night';
 }
 
-function formatTime(seconds: number): string {
-  if (seconds <= 0) return '0:00';
+function formatTime(seconds: number | undefined): string {
+  if (seconds == null || seconds <= 0) return '0:00';
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
   return `${m}:${String(s).padStart(2, '0')}`;
@@ -42,8 +42,8 @@ type Props = {
 export function CycleCard({ cycle }: Props) {
   if (!cycle) {
     return (
-      <div className="cycle-card">
-        <div className="skeleton" style={{ height: '80px' }} />
+      <div className="cycle-card cycle-card--offline">
+        <div className="cycle-offline-label">SYSTEM OFFLINE</div>
       </div>
     );
   }
