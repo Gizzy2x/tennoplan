@@ -15,14 +15,14 @@ import type { ChallengeKind, ChallengeStatus, SortieStatus, StandingSummary } fr
 // ---------------------------------------------------------------------------
 
 /**
- * Provides live challenge statuses and Sortie for the Ascension Registry tab.
+ * Provides live challenge statuses and Sortie for the Dailies & Weeklies tab.
  *
  * - React Query fetches Nightwave + Sortie (5 min poll), with Dexie fallback.
  * - Local completion state lives in userMarks (Dexie), loaded once on mount.
  *   Optimistic updates via setState so toggles feel instant.
  * - A 1-second interval ticks `now` for daily countdowns without re-fetching.
  */
-export function useAscension() {
+export function useDailiesWeeklies() {
   // ── Nightwave query ────────────────────────────────────────────────────
   const {
     data:          nwData,
