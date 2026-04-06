@@ -68,12 +68,21 @@ export function computeStanding(statuses: ChallengeStatus[]): StandingSummary {
   let earned    = 0;
   let available = 0;
   for (const s of statuses) {
-    available += s.raw.standing;
-    if (s.completed) earned += s.raw.standing;
+    const pts = s.raw.standing ?? 0;
+    available += pts;
+    if (s.completed) earned += pts;
   }
   const pct = available > 0 ? earned / available : 0;
   return { earned, available, pct };
 }
+
+// ---------------------------------------------------------------------------
+// EE.log auto-completion (future)
+// ---------------------------------------------------------------------------
+// TODO: When Tauri FS plugin is available, parse EE.log for entries like
+// "NightwaveChallengeCompleted" and "SortieCompleted" to auto-mark challenges
+// without manual toggle. For now, completion state lives in userMarks (Dexie)
+// and is toggled manually via useAscension.toggleComplete().
 
 // ---------------------------------------------------------------------------
 // Presentation constants (pure — no React)
