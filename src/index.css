@@ -204,3 +204,17 @@ body {
   transform: translateY(-2px);
   background-color: rgba(28, 27, 27, 0.78);
 }
+
+/* Orokin Engraved Metal — mission type labels and tier headers */
+.orokin-etched {
+  text-shadow:
+    0 0 4px rgba(227, 195, 114, 0.5),
+    0 2px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Orokin Urgent Countdown Glow — activates when msRemaining < 10 min */
+.orokin-countdown-glow {
+  text-shadow:
+    0 0 8px rgba(227, 195, 114, 0.6),
+    0 0 16px rgba(227, 195, 114, 0.3);
+}
