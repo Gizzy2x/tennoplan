@@ -1,6 +1,8 @@
 import type {
   NightwaveChallengeRaw,
   SortieRaw,
+  ArchonHuntRaw,
+  ArchonHuntStatus,
   ChallengeKind,
   ChallengeStatus,
   SortieStatus,
@@ -42,6 +44,13 @@ export function computeSortieStatus(raw: SortieRaw, now: number): SortieStatus {
   };
 }
 
+export function computeArchonHuntStatus(raw: ArchonHuntRaw, now: number): ArchonHuntStatus {
+  return {
+    raw,
+    msRemaining: Math.max(0, new Date(raw.expiry).getTime() - now),
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Grouping
 // ---------------------------------------------------------------------------
@@ -71,7 +80,7 @@ export function computeStanding(statuses: ChallengeStatus[]): StandingSummary {
     // Use Number() + || 0 rather than ?? 0 because ?? only guards null/undefined,
     // not NaN. Warframe Nightwave API can return non-numeric standing between
     // seasons or on first load — this ensures the sum never becomes NaN.
-    const pts = Number(s.raw.standing) || 0;
+    const pts = Number(s.raw.reputation) || 0;
     available += pts;
     if (s.completed) earned += pts;
   }

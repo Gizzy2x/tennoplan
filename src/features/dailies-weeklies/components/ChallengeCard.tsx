@@ -105,7 +105,7 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
 
   const showTimer = !raw.isPermanent && msRemaining > 0;
   const isPulsing = raw.isDaily && showTimer && msRemaining < 600_000;
-  const standingK = (Math.max(0, Number(raw.standing) || 0) / 1000).toFixed(0);
+  const standingK = (Math.max(0, Number(raw.reputation) || 0) / 1000).toFixed(0);
 
   return (
     // Outer wrapper: paddingTop creates room for the overhanging kind tag

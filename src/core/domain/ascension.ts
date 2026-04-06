@@ -6,7 +6,7 @@ export interface NightwaveChallengeRaw {
   id:          string;
   title:       string;
   desc:        string;
-  standing:    number;  // NW standing reward
+  reputation:  number;  // NW reputation reward (API field name)
   isDaily:     boolean;
   isElite:     boolean;
   isPermanent: boolean;
@@ -58,6 +58,33 @@ export interface SortieStatus {
   raw:         SortieRaw;
   msRemaining: number;
 }
+
+// ---------------------------------------------------------------------------
+// Archon Hunt — weekly 3-mission event
+// ---------------------------------------------------------------------------
+
+export interface ArchonHuntMission {
+  type: string;
+  node: string;
+}
+
+export interface ArchonHuntRaw {
+  id?:         string;
+  boss:        string;
+  faction:     string;
+  factionKey?: string;
+  expiry:      string;
+  activation?: string;
+  missions:    ArchonHuntMission[];
+  rewardPool?: string;
+}
+
+export interface ArchonHuntStatus {
+  raw:         ArchonHuntRaw;
+  msRemaining: number;
+}
+
+// ---------------------------------------------------------------------------
 
 /** Weekly standing summary for the header metric block. */
 export interface StandingSummary {

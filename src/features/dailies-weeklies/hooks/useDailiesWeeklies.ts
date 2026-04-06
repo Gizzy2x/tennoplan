@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { db } from '@/adapters/storage/db';
-import { fetchNightwave, fetchSortie } from '@/adapters/api/ascensionAdapter';
+import { fetchNightwave, fetchSortie, fetchArchonHunt } from '@/adapters/api/ascensionAdapter';
 import {
   computeChallengeStatus,
   computeSortieStatus,
+  computeArchonHuntStatus,
   groupChallenges,
   computeStanding,
 } from '@/core/services/ascensionService';
-import type { ChallengeKind, ChallengeStatus, SortieStatus, StandingSummary } from '@/core/domain/ascension';
+import type { ChallengeKind, ChallengeStatus, SortieStatus, ArchonHuntStatus, StandingSummary } from '@/core/domain/ascension';
 
 // ---------------------------------------------------------------------------
 // Hook
@@ -49,6 +50,18 @@ export function useDailiesWeeklies() {
     queryFn:         fetchSortie,
     staleTime:       300_000,
     refetchInterval: 300_000,
+    retry:           2,
+    networkMode:     'always',
+  });
+
+  // ── Archon Hunt query ──────────────────────────────────────────────────
+  const {
+    data: archonHuntData,
+  } = useQuery({
+    queryKey:        ['archonHunt'],
+    queryFn:         fetchArchonHunt,
+    staleTime:       3_600_000,
+    refetchInterval: 3_600_000,
     retry:           2,
     networkMode:     'always',
   });
@@ -113,6 +126,7 @@ export function useDailiesWeeklies() {
   const {
     grouped,
     sortieStatus,
+    archonHuntStatus,
     standing,
     totalChallenges,
     completedCount,
@@ -121,6 +135,7 @@ export function useDailiesWeeklies() {
       return {
         grouped:          { daily: [], weekly: [], elite: [] } as Record<ChallengeKind, ChallengeStatus[]>,
         sortieStatus:     null as SortieStatus | null,
+        archonHuntStatus: null as ArchonHuntStatus | null,
         standing:         { earned: 0, available: 0, pct: 0 } as StandingSummary,
         totalChallenges:  0,
         completedCount:   0,
@@ -135,20 +150,26 @@ export function useDailiesWeeklies() {
       ? computeSortieStatus(sortieData, now)
       : null;
 
+    const archonHuntStatus = archonHuntData
+      ? computeArchonHuntStatus(archonHuntData, now)
+      : null;
+
     return {
       grouped:         groupChallenges(statuses),
       sortieStatus,
+      archonHuntStatus,
       standing:        computeStanding(statuses),
       totalChallenges: statuses.length,
       completedCount:  statuses.filter(s => s.completed).length,
     };
-  }, [nwData, sortieData, completedIds, now]);
+  }, [nwData, sortieData, archonHuntData, completedIds, now]);
 
   const lastSync = nwUpdatedAt || sortieUpdatedAt || 0;
 
   return {
     grouped,
     sortieStatus,
+    archonHuntStatus,
     standing,
     totalChallenges,
     completedCount,

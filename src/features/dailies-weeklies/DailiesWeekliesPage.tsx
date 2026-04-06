@@ -1,6 +1,7 @@
 import { useDailiesWeeklies } from './hooks/useDailiesWeeklies';
 import { ChallengeCard } from './components/ChallengeCard';
 import { SortieCard } from './components/SortieCard';
+import { ArchonHuntCard } from './components/ArchonHuntCard';
 import {
   KIND_COLOR,
   KIND_LABEL,
@@ -156,6 +157,7 @@ export function DailiesWeekliesPage() {
   const {
     grouped,
     sortieStatus,
+    archonHuntStatus,
     standing,
     totalChallenges,
     completedCount,
@@ -200,16 +202,14 @@ export function DailiesWeekliesPage() {
           <span className="font-label text-xs uppercase tracking-[0.4em] text-primary mb-4 block">
             Active Protocols
           </span>
-          <div className="flex items-end gap-6">
-            <h2 className="font-headline text-7xl font-black text-on-surface tracking-tighter leading-none">
-              DAILIES &amp;
-              <br />
-              <span className="text-primary italic">WEEKLIES</span>
-            </h2>
-            <span className="font-label text-xs uppercase tracking-[0.3em] text-primary/40 whitespace-nowrap mb-2">
-              — Nightwave &amp; Challenges
-            </span>
-          </div>
+          <h2 className="font-headline text-7xl font-black text-on-surface tracking-tighter leading-none">
+            DAILIES &amp;
+            <br />
+            <span className="text-primary italic">WEEKLIES</span>
+          </h2>
+          <span className="font-label text-xs uppercase tracking-[0.3em] text-primary/40 block mt-3">
+            — Nightwave &amp; Challenges
+          </span>
         </div>
 
         <div className="col-span-4 text-right">
@@ -391,6 +391,55 @@ export function DailiesWeekliesPage() {
           </p>
         </div>
       )}
+
+      {/* ── Archon Hunt section ──────────────────────────────────────── */}
+      {archonHuntStatus && (() => {
+        const huntColor = SORTIE_FACTION_COLOR[archonHuntStatus.raw.faction] ?? '#C6C6C7';
+        return (
+          <section className="mb-10">
+            <div className="flex items-center gap-4 mb-5">
+              <h3 className="font-headline text-2xl font-black text-on-surface tracking-tight leading-none">
+                Weekly <span style={{ color: huntColor }} className="italic">Archon Hunt</span>
+              </h3>
+              <span
+                className="font-label text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 font-bold"
+                style={{
+                  color:           huntColor,
+                  border:          `1px solid ${huntColor}40`,
+                  backgroundColor: `${huntColor}0D`,
+                }}
+              >
+                {archonHuntStatus.raw.faction}
+              </span>
+              <span
+                className="font-label text-[10px] uppercase tracking-[0.2em]"
+                style={{ color: '#C6C6C7', opacity: 0.35 }}
+              >
+                {archonHuntStatus.raw.boss}
+              </span>
+              <div className="flex-1 h-px" style={{ backgroundColor: `${huntColor}20` }} />
+              <span
+                className="font-mono text-[10px] tabular-nums"
+                style={{ color: huntColor, opacity: 0.55 }}
+              >
+                {formatMsHuman(archonHuntStatus.msRemaining)}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-12 gap-5">
+              {archonHuntStatus.raw.missions.map((mission, i) => (
+                <div key={i} className="col-span-4">
+                  <ArchonHuntCard
+                    mission={mission}
+                    index={i}
+                    faction={archonHuntStatus.raw.faction}
+                  />
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+      })()}
 
       {/* ── Sortie section ───────────────────────────────────────────── */}
       {sortieStatus && (
