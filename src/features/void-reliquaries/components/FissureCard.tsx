@@ -65,14 +65,13 @@ export function FissureCard({ status }: FissureCardProps) {
 
   return (
     <div
-      className="glass-panel relative overflow-hidden flex flex-col"
+      className="glass-panel fissure-card-hover relative overflow-hidden flex flex-col p-6 cursor-pointer"
       style={{
-        padding:     '1.25rem',
         borderColor: fissure.isHard
           ? 'rgba(248,113,113,0.35)'
           : `${tierColor}22`,
         boxShadow: fissure.isHard
-          ? '0 0 20px rgba(248,113,113,0.1), 0 0 40px rgba(0,0,0,0.5)'
+          ? '0 0 0 1px rgba(248,113,113,0.2), 0 0 24px rgba(248,113,113,0.12), 0 0 48px rgba(0,0,0,0.6)'
           : '0 0 40px rgba(0,0,0,0.5)',
       }}
     >
@@ -88,12 +87,17 @@ export function FissureCard({ status }: FissureCardProps) {
       {/* ── Top row: icon + mission type + badges ─────────────── */}
       <div className="flex items-start gap-3 mb-3">
 
-        {/* Mission type icon — large, tier-colored */}
-        <div
-          className="flex-shrink-0 mt-0.5"
-          style={{ color: tierColor, opacity: 0.85 }}
-        >
-          <MissionIcon size={28} strokeWidth={1.5} />
+        {/* Mission type icon — gold anchor for shape recognition; tier dot for color signal */}
+        <div className="flex-shrink-0 mt-0.5 relative">
+          <span
+            className="absolute bottom-0 right-0 w-2 h-2 rounded-full"
+            style={{ backgroundColor: tierColor, opacity: 0.9 }}
+          />
+          <MissionIcon
+            size={30}
+            strokeWidth={1.5}
+            style={{ color: '#E3C372', position: 'relative', zIndex: 1 }}
+          />
         </div>
 
         {/* Mission type (headline) + node name */}
@@ -104,7 +108,7 @@ export function FissureCard({ status }: FissureCardProps) {
           >
             {fissure.missionType}
           </p>
-          <p className="font-label text-[10px] truncate leading-tight mt-0.5" style={{ opacity: 0.4, color: '#E5E2E1' }}>
+          <p className="font-label text-xs truncate leading-tight mt-0.5" style={{ opacity: 0.4, color: '#E5E2E1' }}>
             {nodeName}
             {nodeRegion && (
               <span className="ml-1">({nodeRegion})</span>
@@ -177,13 +181,13 @@ export function FissureCard({ status }: FissureCardProps) {
       </p>
 
       {/* ── Progress bar — fills LTR while time remains ───────── */}
-      <div className="w-full h-0.5 bg-surface-container-highest mt-auto relative overflow-hidden">
+      <div className="w-full h-1 bg-surface-container-highest mt-auto relative overflow-hidden">
         <div
           className="absolute inset-y-0 left-0 h-full"
           style={{
             width:           `${(1 - progress) * 100}%`,
-            backgroundColor: isExpired ? 'transparent' : tierColor,
-            boxShadow:       isExpired ? 'none' : `0 0 4px ${tierColor}`,
+            backgroundColor: isExpired ? 'transparent' : '#E3C372',
+            boxShadow:       isExpired ? 'none' : `0 0 6px #E3C37280, 0 0 12px ${tierColor}40`,
             transition:      'width 1s linear',
           }}
         />

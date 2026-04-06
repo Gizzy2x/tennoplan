@@ -27,7 +27,7 @@ function FilterButton({
   return (
     <button
       onClick={onClick}
-      className="font-label text-[10px] uppercase tracking-[0.3em] px-3 py-1 transition-all"
+      className="font-label text-[10px] uppercase tracking-[0.3em] px-3 py-1.5 rounded-sm transition-all"
       style={{
         color:           active ? color : 'rgba(197,192,190,0.3)',
         border:          `1px solid ${active ? `${color}50` : 'rgba(197,192,190,0.08)'}`,
@@ -48,17 +48,17 @@ function TierHeader({ tier, count }: { tier: string; count: number }) {
   return (
     <div className="flex items-center gap-3 mb-4">
       <span
-        className="font-headline text-base font-bold uppercase tracking-[0.2em]"
+        className="font-headline text-xl font-black uppercase tracking-[0.15em]"
         style={{ color }}
       >
         {tier}
       </span>
       <span
-        className="font-mono text-[10px] tabular-nums px-2 py-0.5"
+        className="font-mono text-xs tabular-nums px-2 py-0.5 font-bold"
         style={{
           color,
           border:          `1px solid ${color}40`,
-          backgroundColor: `${color}10`,
+          backgroundColor: `${color}12`,
         }}
       >
         {count}
@@ -146,27 +146,36 @@ export function VoidReliquariesPage() {
 
             {/* Summary stats: Steel Path count + Next to expire */}
             {syncState === 'ONLINE' && (
-              <div className="flex gap-5 mt-4">
-                <div>
+              <div
+                className="flex gap-6 mt-5 pt-4"
+                style={{ borderTop: '1px solid rgba(77,70,56,0.2)' }}
+              >
+                <div className="flex flex-col gap-0.5">
                   <p
-                    className="font-label text-[9px] uppercase tracking-widest"
-                    style={{ color: '#f87171', opacity: 0.6 }}
+                    className="font-label text-[9px] uppercase tracking-[0.3em]"
+                    style={{ color: '#f87171', opacity: 0.55 }}
                   >
                     Steel Path
                   </p>
                   <p
-                    className="font-mono text-lg font-bold tabular-nums leading-tight"
+                    className="font-mono text-xl font-bold tabular-nums leading-none"
                     style={{ color: '#f87171' }}
                   >
                     {String(steelPathCount).padStart(2, '0')}
                   </p>
                 </div>
                 {nextToExpire && (
-                  <div>
-                    <p className="font-label text-[9px] uppercase tracking-widest text-secondary/40">
-                      Next
+                  <div className="flex flex-col gap-0.5">
+                    <p
+                      className="font-label text-[9px] uppercase tracking-[0.3em]"
+                      style={{ color: '#C6C6C7', opacity: 0.4 }}
+                    >
+                      Next Expiry
                     </p>
-                    <p className="font-mono text-lg font-bold tabular-nums text-primary leading-tight">
+                    <p
+                      className="font-mono text-xl font-bold tabular-nums leading-none"
+                      style={{ color: '#E3C372' }}
+                    >
                       {formatMs(nextToExpire.msRemaining)}
                     </p>
                   </div>
@@ -254,7 +263,7 @@ export function VoidReliquariesPage() {
             return (
               <section key={tier}>
                 <TierHeader tier={tier} count={statuses.length} />
-                <div className="grid grid-cols-12 gap-4">
+                <div className="grid grid-cols-12 gap-6">
                   {statuses.map(s => (
                     <div key={s.fissure.id} className="col-span-4">
                       <FissureCard status={s} />
