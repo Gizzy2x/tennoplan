@@ -68,7 +68,10 @@ export function computeStanding(statuses: ChallengeStatus[]): StandingSummary {
   let earned    = 0;
   let available = 0;
   for (const s of statuses) {
-    const pts = s.raw.standing ?? 0;
+    // Use Number() + || 0 rather than ?? 0 because ?? only guards null/undefined,
+    // not NaN. Warframe Nightwave API can return non-numeric standing between
+    // seasons or on first load — this ensures the sum never becomes NaN.
+    const pts = Number(s.raw.standing) || 0;
     available += pts;
     if (s.completed) earned += pts;
   }

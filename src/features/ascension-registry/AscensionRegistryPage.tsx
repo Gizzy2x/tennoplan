@@ -13,6 +13,33 @@ import type { ChallengeKind, ChallengeStatus } from '@/core/domain/ascension';
 // Challenge group section header — overhanging handle tab (matches FissureCard)
 // ---------------------------------------------------------------------------
 
+// Per-kind tag palette — mirrors the tier-tag system from FissureCard
+const KIND_TAG: Record<ChallengeKind, {
+  bg:    string;
+  bord:  string;
+  color: string;
+  topBord: string;
+}> = {
+  daily: {
+    bg:      'rgba(229,226,225,0.92)',
+    bord:    'rgba(227,195,114,0.45)',
+    topBord: 'rgba(227,195,114,0.70)',
+    color:   '#1a1a1a',
+  },
+  weekly: {
+    bg:      'rgba(198,198,199,0.88)',
+    bord:    'rgba(186,195,254,0.40)',
+    topBord: 'rgba(186,195,254,0.65)',
+    color:   '#1a1a1a',
+  },
+  elite: {
+    bg:      'rgba(200,158,8,0.90)',
+    bord:    'rgba(255,220,80,0.55)',
+    topBord: 'rgba(255,220,80,0.80)',
+    color:   '#131313',
+  },
+};
+
 function KindHeader({
   kind,
   statuses,
@@ -24,25 +51,23 @@ function KindHeader({
   const label     = KIND_LABEL[kind];
   const total     = statuses.length;
   const completed = statuses.filter(s => s.completed).length;
-
-  // Handle color: elite → gold, daily/weekly → near-white (matching Normal tag)
-  const handleBg    = kind === 'elite'  ? 'rgba(200,158,8,0.92)'   : 'rgba(229,226,225,0.93)';
-  const handleBord  = kind === 'elite'  ? 'rgba(255,220,80,0.60)'  : 'rgba(227,195,114,0.60)';
-  const handleColor = kind === 'elite'  ? '#131313'                : '#1a1a1a';
+  const tag       = KIND_TAG[kind];
 
   return (
     <div className="flex items-center gap-3 mb-0 pb-3">
-      {/* Overhanging handle tab — same style as fissure-variant-tag */}
+      {/* Handle tab — matches .fissure-variant-tag style: top-rounded, slightly
+          overhangs the row, distinct color per kind */}
       <div
-        className="font-label text-[9px] uppercase tracking-[0.18em] font-bold px-3 py-1 flex-shrink-0"
+        className="fissure-variant-tag flex-shrink-0"
         style={{
-          borderRadius:    '3px 3px 0 0',
-          background:      handleBg,
-          borderTop:       `2px solid ${handleBord}`,
-          borderRight:     `1px solid ${kind === 'elite' ? 'rgba(227,195,114,0.50)' : 'rgba(227,195,114,0.30)'}`,
-          borderBottom:    `1px solid ${kind === 'elite' ? 'rgba(227,195,114,0.55)' : 'rgba(227,195,114,0.45)'}`,
-          borderLeft:      `1px solid ${kind === 'elite' ? 'rgba(227,195,114,0.50)' : 'rgba(227,195,114,0.30)'}`,
-          color:           handleColor,
+          background:  tag.bg,
+          borderTop:   `2px solid ${tag.topBord}`,
+          borderRight: `1px solid ${tag.bord}`,
+          borderBottom:`1px solid ${tag.bord}`,
+          borderLeft:  `1px solid ${tag.bord}`,
+          color:       tag.color,
+          // Thin etched gold line at top gives premium Orokin depth
+          boxShadow:   `0 -2px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.18)`,
         }}
       >
         {label}
@@ -152,7 +177,7 @@ export function AscensionRegistryPage() {
             <p className="font-headline text-3xl font-bold text-primary">
               {syncState === 'SYNCING' || syncState === 'OFFLINE'
                 ? syncState
-                : `${((standing.earned ?? 0) / 1000).toFixed(0)}k / ${((standing.available ?? 0) / 1000).toFixed(0)}k`}
+                : `${(Math.max(0, standing.earned || 0) / 1000).toFixed(0)}k / ${(Math.max(0, standing.available || 0) / 1000).toFixed(0)}k`}
             </p>
             <p className="font-label text-[10px] text-secondary/30 uppercase tracking-widest mt-0.5">
               {syncState === 'ONLINE' ? seasonLabel : lastSync ? `Updated ${lastSyncLabel}` : 'No sync yet'}
@@ -369,7 +394,7 @@ export function AscensionRegistryPage() {
           className="font-label text-[10px] uppercase tracking-widest mt-10"
           style={{ color: '#E3C372', opacity: 0.35 }}
         >
-          {((standingRemaining ?? 0) / 1000).toFixed(0)}k standing remaining this week
+          {(Math.max(0, standingRemaining || 0) / 1000).toFixed(0)}k standing remaining this week
         </p>
       )}
 
