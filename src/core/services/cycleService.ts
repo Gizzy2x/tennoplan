@@ -93,6 +93,20 @@ export function formatMs(ms: number): string {
  * ≥1 hour → "Xh Ym"
  * else    → "Xm"
  */
+/**
+ * Returns the UTC Monday 00:00:00.000 timestamp for the week containing `now`.
+ * Used to bucket Nightwave standing earned across daily challenge rotations.
+ */
+export function getWeekStart(now: number): number {
+  const d = new Date(now);
+  const day = d.getUTCDay(); // 0 = Sun, 1 = Mon … 6 = Sat
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const mon = new Date(d);
+  mon.setUTCDate(d.getUTCDate() + diffToMonday);
+  mon.setUTCHours(0, 0, 0, 0);
+  return mon.getTime();
+}
+
 export function formatMsHuman(ms: number): string {
   const total = Math.max(0, Math.floor(ms / 1000));
   const d = Math.floor(total / 86400);
