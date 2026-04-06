@@ -95,7 +95,13 @@ export function useAscension() {
     }
   }
 
-  // ── 1-second clock for daily countdowns ───────────────────────────────
+  // ── 1-second clock ────────────────────────────────────────────────────
+  // Drives daily countdown timers. Weekly/elite msRemaining is recomputed
+  // each tick but their "Xd Yh" format only changes hourly — imperceptible.
+  //
+  // TODO: EE.log integration — Tauri FS plugin will let us tail EE.log for
+  // "NightwaveChallengeCompleted" / "SortieCompleted" entries, auto-marking
+  // challenges without manual toggle. userMarks (Dexie) stays source of truth.
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {

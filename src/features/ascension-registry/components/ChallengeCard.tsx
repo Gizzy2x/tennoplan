@@ -22,7 +22,7 @@ import {
   Check,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { formatMs } from '@/core/services/cycleService';
+import { formatMsHuman } from '@/core/services/cycleService';
 import { KIND_COLOR, KIND_OVERLAY } from '@/core/services/ascensionService';
 import type { ChallengeStatus } from '@/core/domain/ascension';
 
@@ -68,8 +68,10 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
   const color      = KIND_COLOR[kind];
   const overlay    = KIND_OVERLAY[kind];
   const ChalIcon   = getChallengeIcon(raw.title);
-  const showTimer  = raw.isDaily && !raw.isPermanent && msRemaining > 0;
-  const isPulsing  = showTimer && msRemaining < 600_000;
+  // Daily timers live-tick (1s). Weekly/elite show "Xd Yh" — format won't
+  // visibly change at sub-minute granularity, so they share the same `now`.
+  const showTimer  = !raw.isPermanent && msRemaining > 0;
+  const isPulsing  = raw.isDaily && showTimer && msRemaining < 600_000;
 
   // Subtle right-to-left gradient + completed dim
   const cardBg = completed
@@ -146,7 +148,7 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
             className="font-mono text-xl font-bold tabular-nums leading-none"
             style={{ color: completed ? 'rgba(197,192,190,0.30)' : color }}
           >
-            {(raw.standing / 1000).toFixed(0)}k
+            {((raw.standing ?? 0) / 1000).toFixed(0)}k
           </p>
           <p
             className="font-label text-[8px] uppercase tracking-[0.2em] mt-0.5"
@@ -162,7 +164,7 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
             className={['font-mono text-xs tabular-nums', isPulsing ? 'orokin-countdown-glow' : ''].filter(Boolean).join(' ')}
             style={{ color: isPulsing ? '#E3C372' : 'rgba(197,192,190,0.4)' }}
           >
-            {formatMs(msRemaining)}
+            {formatMsHuman(msRemaining)}
           </p>
         )}
 

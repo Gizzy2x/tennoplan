@@ -6,11 +6,11 @@ import {
   KIND_LABEL,
   SORTIE_FACTION_COLOR,
 } from '@/core/services/ascensionService';
-import { formatMs } from '@/core/services/cycleService';
+import { formatMsHuman } from '@/core/services/cycleService';
 import type { ChallengeKind, ChallengeStatus } from '@/core/domain/ascension';
 
 // ---------------------------------------------------------------------------
-// Challenge group section header
+// Challenge group section header — overhanging handle tab (matches FissureCard)
 // ---------------------------------------------------------------------------
 
 function KindHeader({
@@ -25,14 +25,28 @@ function KindHeader({
   const total     = statuses.length;
   const completed = statuses.filter(s => s.completed).length;
 
+  // Handle color: elite → gold, daily/weekly → near-white (matching Normal tag)
+  const handleBg    = kind === 'elite'  ? 'rgba(200,158,8,0.92)'   : 'rgba(229,226,225,0.93)';
+  const handleBord  = kind === 'elite'  ? 'rgba(255,220,80,0.60)'  : 'rgba(227,195,114,0.60)';
+  const handleColor = kind === 'elite'  ? '#131313'                : '#1a1a1a';
+
   return (
-    <div className="flex items-center gap-3 mb-4">
-      <span
-        className="font-label text-xs uppercase tracking-[0.35em] font-semibold"
-        style={{ color, opacity: 0.65 }}
+    <div className="flex items-center gap-3 mb-0 pb-3">
+      {/* Overhanging handle tab — same style as fissure-variant-tag */}
+      <div
+        className="font-label text-[9px] uppercase tracking-[0.18em] font-bold px-3 py-1 flex-shrink-0"
+        style={{
+          borderRadius:    '3px 3px 0 0',
+          background:      handleBg,
+          borderTop:       `2px solid ${handleBord}`,
+          borderRight:     `1px solid ${kind === 'elite' ? 'rgba(227,195,114,0.50)' : 'rgba(227,195,114,0.30)'}`,
+          borderBottom:    `1px solid ${kind === 'elite' ? 'rgba(227,195,114,0.55)' : 'rgba(227,195,114,0.45)'}`,
+          borderLeft:      `1px solid ${kind === 'elite' ? 'rgba(227,195,114,0.50)' : 'rgba(227,195,114,0.30)'}`,
+          color:           handleColor,
+        }}
       >
         {label}
-      </span>
+      </div>
       {/* Completion fraction */}
       <span
         className="font-mono text-[10px] tabular-nums px-2 py-0.5 font-bold"
@@ -138,7 +152,7 @@ export function AscensionRegistryPage() {
             <p className="font-headline text-3xl font-bold text-primary">
               {syncState === 'SYNCING' || syncState === 'OFFLINE'
                 ? syncState
-                : `${(standing.earned / 1000).toFixed(0)}k / ${(standing.available / 1000).toFixed(0)}k`}
+                : `${((standing.earned ?? 0) / 1000).toFixed(0)}k / ${((standing.available ?? 0) / 1000).toFixed(0)}k`}
             </p>
             <p className="font-label text-[10px] text-secondary/30 uppercase tracking-widest mt-0.5">
               {syncState === 'ONLINE' ? seasonLabel : lastSync ? `Updated ${lastSyncLabel}` : 'No sync yet'}
@@ -178,7 +192,7 @@ export function AscensionRegistryPage() {
                       className="font-mono text-xl font-bold tabular-nums leading-none"
                       style={{ color: sortieColor }}
                     >
-                      {formatMs(sortieStatus.msRemaining)}
+                      {formatMsHuman(sortieStatus.msRemaining)}
                     </p>
                   </div>
                 )}
@@ -217,17 +231,14 @@ export function AscensionRegistryPage() {
       {/* ── Sortie section ───────────────────────────────────────────── */}
       {sortieStatus && (
         <section className="mb-10">
-          {/* Sortie header */}
-          <div className="flex items-center gap-3 mb-5">
-            <span
-              className="font-label text-xs uppercase tracking-[0.35em] font-semibold"
-              style={{ color: sortieColor, opacity: 0.70 }}
-            >
-              Daily Sortie
-            </span>
+          {/* Sortie header with section title */}
+          <div className="flex items-center gap-4 mb-5">
+            <h3 className="font-headline text-2xl font-black text-on-surface tracking-tight leading-none">
+              Daily <span style={{ color: sortieColor }} className="italic">Sortie</span>
+            </h3>
             {/* Faction badge */}
             <span
-              className="font-label text-[8px] uppercase tracking-[0.2em] px-2 py-0.5 font-semibold"
+              className="font-label text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 font-bold"
               style={{
                 color:           sortieColor,
                 border:          `1px solid ${sortieColor}40`,
@@ -264,19 +275,86 @@ export function AscensionRegistryPage() {
       {totalChallenges > 0 && (
         <>
           <div className="somatic-line mb-8" />
-          <div className="space-y-10">
+
+          {/* Nightwave Challenges section title */}
+          <div className="flex items-center gap-4 mb-7">
+            <h3 className="font-headline text-2xl font-black text-on-surface tracking-tight leading-none">
+              Nightwave <span className="text-primary italic">Challenges</span>
+            </h3>
+            {season > 0 && (
+              <span
+                className="font-label text-[9px] uppercase tracking-[0.3em] px-2 py-0.5"
+                style={{
+                  color:           '#E3C372',
+                  border:          '1px solid rgba(227,195,114,0.25)',
+                  backgroundColor: 'rgba(227,195,114,0.06)',
+                }}
+              >
+                Season {season}
+              </span>
+            )}
+          </div>
+
+          <div className="space-y-8">
             {kindOrder.map(kind => {
               const statuses = grouped[kind];
               if (statuses.length === 0) return null;
+              const kColor   = KIND_COLOR[kind];
               return (
-                <section key={kind}>
+                <section key={kind} className="relative" style={{ paddingTop: '2px' }}>
                   <KindHeader kind={kind} statuses={statuses} />
-                  <div className="grid grid-cols-12 gap-4">
-                    {statuses.map(s => (
-                      <div key={s.raw.id} className="col-span-4">
-                        <ChallengeCard status={s} onToggle={toggleComplete} />
+
+                  {/* Two-column: left visual area + right checklist */}
+                  <div className="grid grid-cols-12 gap-5">
+
+                    {/* Left: visual/illustration placeholder — reserved for future Nightwave art */}
+                    <div className="col-span-4">
+                      <div
+                        className="glass-panel h-full flex flex-col items-center justify-center p-6 relative overflow-hidden"
+                        style={{
+                          minHeight:   '160px',
+                          borderColor: `${kColor}18`,
+                          borderTop:   `1px solid ${kColor}25`,
+                        }}
+                      >
+                        {/* Radial glow background */}
+                        <div
+                          className="absolute inset-0 pointer-events-none"
+                          style={{ background: `radial-gradient(ellipse at 50% 60%, ${kColor}2E, transparent 70%)` }}
+                        />
+                        {/* Filigree corners */}
+                        <span
+                          className="absolute top-0 left-0 w-5 h-5 pointer-events-none"
+                          style={{ borderTop: `1px solid ${kColor}35`, borderLeft: `1px solid ${kColor}35` }}
+                        />
+                        <span
+                          className="absolute bottom-0 right-0 w-5 h-5 pointer-events-none"
+                          style={{ borderBottom: `1px solid ${kColor}20`, borderRight: `1px solid ${kColor}20` }}
+                        />
+                        {/* Kind label watermark */}
+                        <p
+                          className="font-headline text-4xl font-black text-center leading-tight select-none"
+                          style={{ color: kColor, opacity: 0.07, letterSpacing: '-0.02em' }}
+                        >
+                          {KIND_LABEL[kind].toUpperCase()}
+                        </p>
+                        {/* Future: Nightwave season illustration */}
+                        <p
+                          className="font-label text-[8px] uppercase tracking-[0.4em] text-center mt-3"
+                          style={{ color: kColor, opacity: 0.22 }}
+                        >
+                          Nora Night
+                        </p>
                       </div>
-                    ))}
+                    </div>
+
+                    {/* Right: vertical checklist */}
+                    <div className="col-span-8 flex flex-col gap-3">
+                      {statuses.map(s => (
+                        <ChallengeCard key={s.raw.id} status={s} onToggle={toggleComplete} />
+                      ))}
+                    </div>
+
                   </div>
                 </section>
               );
@@ -291,7 +369,7 @@ export function AscensionRegistryPage() {
           className="font-label text-[10px] uppercase tracking-widest mt-10"
           style={{ color: '#E3C372', opacity: 0.35 }}
         >
-          {(standingRemaining / 1000).toFixed(0)}k standing remaining this week
+          {((standingRemaining ?? 0) / 1000).toFixed(0)}k standing remaining this week
         </p>
       )}
 

@@ -86,3 +86,19 @@ export function formatMs(ms: number): string {
   const { h, m, s } = formatMsParts(ms);
   return h !== '00' ? `${h}:${m}:${s}` : `${m}:${s}`;
 }
+
+/**
+ * Human-friendly duration without seconds:
+ * ≥1 day  → "Xd Yh"
+ * ≥1 hour → "Xh Ym"
+ * else    → "Xm"
+ */
+export function formatMsHuman(ms: number): string {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(total / 86400);
+  const h = Math.floor((total % 86400) / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
