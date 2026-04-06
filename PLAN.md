@@ -133,11 +133,22 @@ All persistent elements live in **one** `AppShell` component.
 
 ### Phase 1: World Cycles + Fissures (Done)
 
-### Phase 2: Dailies & Weeklies (Killer Feature — Next Priority)
-- Move current ascension-registry content (challenge cards, standing, Nightwave logic) to new `features/dailies-weeklies/` folder.
-- Build rich tracker: Pulse visualizer, Nightwave dailies/weeklies/elite, Netracell, EDA/ETA, auto-reset logic.
-- Persistent top-bar access.
-- All completion state lives here and syncs to Dexie.
+### Phase 2: Dailies & Weeklies (Killer Feature — Complete April 2026)
+- Nightwave challenges (daily/weekly/elite), Archon Hunt, Sortie fully implemented.
+- Challenge completion toggled locally → persisted in Dexie `userMarks`.
+- Weekly standing cap progress tracked across daily rotations.
+- Reset countdowns (daily/weekly), season label, per-kind completion fraction.
+
+**Phase 2 offline hardening (April 2026):**
+- `worldstateCache.ts` — typed Dexie repo with embedded `cachedAt`, `ws:` key namespace.
+- `WorldstateService.ts` — pure `getCacheAgeMs` / `formatCacheAge` / `isNightwaveActive`.
+- `WorldstateAdapter.ts` — `?language=en` endpoints, `WSFetchResult<T>` with `fromStaleCache` flag.
+- `useDailiesData.ts` — TanStack Query v5 `initialData` + `initialDataUpdatedAt` pre-load pattern; queries activate only after Dexie pre-load resolves.
+- Hard-fail "SIGNAL LOST" / "ARCHON HUNT UNAVAILABLE" states eliminated.
+- Graceful first-launch onboarding card (no network + no cache).
+- Subtle "Offline · Cached Xm ago · Local marks persist" banner when serving stale data.
+
+**Remaining for Phase 2+:** Pulse tracker, Netracell, EDA/ETA, top-bar persistent access.
 
 ### Phase 3: Ascension Registry (Mastery & Progression Tracker)
 - MR rank display, item checklist (Warframes, weapons, etc.), mark as owned/mastered.

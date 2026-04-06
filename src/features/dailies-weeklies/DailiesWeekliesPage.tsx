@@ -1,4 +1,5 @@
-import { useDailiesWeeklies } from './hooks/useDailiesWeeklies';
+import { useDailiesData } from './hooks/useDailiesData';
+import { formatCacheAge } from '@/core/services/WorldstateService';
 import { ChallengeCard } from './components/ChallengeCard';
 import { SortieCard } from './components/SortieCard';
 import { ArchonHuntCard } from './components/ArchonHuntCard';
@@ -160,7 +161,6 @@ export function DailiesWeekliesPage() {
     sortieStatus,
     archonHuntStatus,
     archonHuntLoading,
-    archonHuntError,
     weeklyEarned,
     totalChallenges,
     completedCount,
@@ -168,10 +168,13 @@ export function DailiesWeekliesPage() {
     seasonTag,
     isLoading,
     isError,
+    isStale,
+    cacheAgeMs,
+    hasEverLoaded,
     lastSync,
     toggleComplete,
     forceRefetch,
-  } = useDailiesWeeklies();
+  } = useDailiesData();
 
   const lastSyncLabel = lastSync
     ? new Date(lastSync).toLocaleTimeString([], {
@@ -392,15 +395,19 @@ export function DailiesWeekliesPage() {
         </div>
       )}
 
-      {/* ── Hard error (no cache) ────────────────────────────────────── */}
-      {isError && totalChallenges === 0 && (
-        <div className="glass-panel p-8" style={{ borderColor: 'rgba(255,180,171,0.15)' }}>
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-error/60 mb-2">
-            Signal Lost
+      {/* ── First-launch onboarding (no cache, no network) ──────────── */}
+      {!hasEverLoaded && (
+        <div className="glass-panel p-8 flex flex-col gap-4" style={{ borderColor: 'rgba(186,195,254,0.12)' }}>
+          <p className="font-label text-xs uppercase tracking-[0.3em] text-tertiary/60">
+            First Sync Required
           </p>
-          <p className="font-label text-sm text-secondary/40 max-w-lg">
-            No cached Nightwave data found. Establish a network connection to
-            initialize Dailies &amp; Weeklies.
+          <p className="font-label text-sm text-secondary/50 max-w-lg leading-relaxed">
+            Tennoplan needs one network connection to initialize your Dailies &amp; Weeklies.
+            After that, all data persists locally — challenges, standing, and timers work
+            fully offline.
+          </p>
+          <p className="font-label text-[10px] uppercase tracking-[0.28em] text-secondary/25">
+            Connect to a network and this panel will populate automatically.
           </p>
         </div>
       )}
@@ -412,18 +419,6 @@ export function DailiesWeekliesPage() {
             <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
               Loading Archon Hunt…
-            </p>
-          </div>
-        </section>
-      )}
-      {archonHuntError && !archonHuntStatus && (
-        <section className="mb-10">
-          <div className="glass-panel p-6" style={{ borderColor: 'rgba(255,180,171,0.15)' }}>
-            <p className="font-label text-xs uppercase tracking-[0.3em] text-error/60 mb-1">
-              Archon Hunt Unavailable
-            </p>
-            <p className="font-label text-[10px] text-secondary/35">
-              {(archonHuntError as Error).message}
             </p>
           </div>
         </section>
@@ -567,11 +562,20 @@ export function DailiesWeekliesPage() {
         </>
       )}
 
-      {/* ── Offline notice ───────────────────────────────────────────── */}
-      {isError && totalChallenges > 0 && (
-        <p className="font-label text-[10px] uppercase tracking-widest text-secondary/30 mt-6">
-          Offline — displaying cached challenge data. Completion state is local.
-        </p>
+      {/* ── Offline / stale-cache banner ─────────────────────────────── */}
+      {isStale && totalChallenges > 0 && (
+        <div className="flex items-center gap-3 mt-6">
+          <div className="w-1.5 h-1.5 rounded-full bg-error/50" />
+          <p className="font-label text-[10px] uppercase tracking-widest text-secondary/30">
+            Offline · Cached {formatCacheAge(cacheAgeMs)} · Local marks persist
+          </p>
+          <button
+            onClick={forceRefetch}
+            className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/25 hover:text-primary/60 transition-colors ml-auto cursor-pointer"
+          >
+            ↻ Retry
+          </button>
+        </div>
       )}
     </>
   );
