@@ -221,7 +221,7 @@ body {
 
 /* Fissure variant tag — handle that sits above the card top edge */
 .fissure-variant-tag {
-  border-radius: 2px 2px 0 0;
+  border-radius: 3px 3px 0 0;
   font-family: var(--font-label);
   font-size: 10px;
   letter-spacing: 0.14em;
@@ -231,6 +231,7 @@ body {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 4px 10px;
+  padding: 5px 10px;
   white-space: nowrap;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.35);
 }
