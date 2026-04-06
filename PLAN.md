@@ -109,67 +109,55 @@ text
 
 ## 6. Frontend UI Vision (High-Level)
 
-- **AppShell**: Fixed sidebar (nav items with active states), top header (logo, search, user/settings), main content area that swaps via Zustand tab state.
-- **Theme**: Dark Warframe aesthetic (deep blacks, glowing accents, Orokin-inspired UI elements). Exact colors/spacing/typography will be provided by you in Claude prompts using your liked stitch screenshot.
-- **Navigation Tabs** (sidebar order):
-  1. Dashboard (teasers + pulse counter)
-  2. Dailies & Weeklies (unique killer feature)
-  3. World Cycles / Timers
-  4. Fissures / Relics
-  5. Inventory & Foundry
-  6. Market & Trading
-  7. Builds & Theorycraft
-  8. Analytics & Session Logs
-  9. Settings / Overlays
+- **AppShell**: Fixed sidebar + persistent top bar.
+- **Top Bar (persistent on every page)**: Includes a prominent **Dailies & Weeklies** button in the middle. Clicking it switches the main content area (same as sidebar tabs).
+- **Sidebar Navigation Tabs** (order):
+  1. Celestial Pendulum — world cycle timers (simple, glanceable)
+  2. Void Reliquaries — active fissures (simple, glanceable)
+  3. Solar Rail Feed — live events, invasions, alerts
+  4. Ascension Registry — Mastery & Progression Tracker (MR, item unlock/check-off)
+  5. Dailies & Weeklies — **Killer feature** (Nightwave, Pulse, Netracell, EDA/ETA, full checklist). Accessed primarily via top bar.
+  6. Inventory & Foundry
+  7. Market & Trading
+  8. Builds & Theorycraft
+  9. Analytics & Session Logs
+
+**Important Rule:**  
+Side tabs are simple and focused on their core content. They may only include a small "Completed" flag + link that opens the Dailies & Weeklies tab. Completion/tracking state is owned **only** by the Dailies & Weeklies tab (persisted in Dexie).
+
+**Rule:** Simple side tabs (1–3) display only their core data + a small "Completed" flag that links to the Tracking Dashboard. They never own or duplicate completion state.
 
 All persistent elements live in **one** `AppShell` component.
 
-## 7. Implementation Stages (Vertical Slicing + Your Blueprint)
+### Phase 0: Foundation (Done)
 
-Follow this loop for **every** feature:
-1. **Define** — Update PLAN.md with exact goal.
-2. **Scaffold** — UI + lorem data only.
-3. **Validate** — Run `npm run tauri dev`, check layout.
-4. **Hydrate** — Add core logic + storage + API adapter.
-5. **Commit** — Git commit.
-6. **Refactor** — Every 3–4 features: "Refactor for readability and performance without changing functionality."
+### Phase 1: World Cycles + Fissures (Done)
 
-### Phase 0: Foundation (1–2 Claude sessions)
-- Create fresh Tauri + React + TS + Vite project.
-- Add Tailwind + shadcn/ui + Zustand + TanStack Query + Dexie.
-- Build `AppShell` + Sidebar navigation + dark theme.
-- Set up Dexie schema (basic tables: settings, cache, user-marks).
-- Basic sync engine skeleton.
-- Update PLAN.md.
+### Phase 2: Dailies & Weeklies (Killer Feature — Next Priority)
+- Move current ascension-registry content (challenge cards, standing, Nightwave logic) to new `features/dailies-weeklies/` folder.
+- Build rich tracker: Pulse visualizer, Nightwave dailies/weeklies/elite, Netracell, EDA/ETA, auto-reset logic.
+- Persistent top-bar access.
+- All completion state lives here and syncs to Dexie.
 
-### Phase 1: Core Domain + Dashboard (Foundation Slice)
-- Define all shared domain types & services (timers, pulses, etc.).
-- Dashboard: World cycle teasers, active fissures, pulse counter, quick links.
-- Mock data → real API adapter (warframestat.us).
+### Phase 3: Ascension Registry (Mastery & Progression Tracker)
+- MR rank display, item checklist (Warframes, weapons, etc.), mark as owned/mastered.
+- Simple focused view with "Completed" flags linking to Dailies & Weeklies where relevant.
 
-### Phase 2: Dailies & Weeklies (Killer Feature — Priority)
-- Weekly reset banner + pulse visualizer (5/5, history, drag-and-drop spending).
-- Netracell tracker, Elite Deep Archimedea (EDA), Elite Temporal Archimedea (ETA/TA).
-- Nightwave (dailies + weeklies + elite) with checkboxes + standing.
-- Other weeklies (Archon Hunt, Circuit, etc.).
-- Local persistence + auto-reset logic (Monday 00:00 UTC).
-- Core pulse deduction service.
+### Phase 4+: Remaining tabs (Inventory & Foundry, Market, etc.)
 
-### Phase 3: World Cycles / Timers
-- Full live timers (Cetus, Vallis, Cambion, Earth, daily reset, etc.).
-- Offline ticking from local cache.
+### Phase 5: Ascension Registry (Mastery & Progression Tracker)
+- MR rank display, total mastery earned vs. available.
+- Item checklist: Warframes, Primary, Secondary, Melee, Companions, Archwing, etc. (sourced from bundled warframe-items JSON).
+- Mark items as owned/mastered; persist in Dexie userMarks. Filter by category, MR tier, owned/unowned.
 
-### Phase 4: Fissures / Relics
-- Active fissures list, relic planner, reward valuation (plat/ducat using cached market data).
-
-### Phase 5: Inventory & Foundry
-- Owned items, build timers (offline ticking), crafting trees, mastery tracking.
+### Phase 5b: Inventory & Foundry
+- Owned items, build timers (offline ticking), crafting trees.
 
 ### Phase 6: Market & Trading + Rivens
 - Personal orders, market listings, price analytics (rate-limited caching).
 
-### Phase 7: Builds & Theorycraft + Mastery
-- Basic Overframe-style display (static for now; expand later).
+### Phase 7: Builds & Theorycraft
+- Basic Overframe-style loadout display (static for now; expand later).
 
 ### Phase 8: Analytics & Session Logs + Overlays
 - EE.log parser (Rust command) for death causes, mission stats.
