@@ -6,7 +6,8 @@
       "Bash(npm update:*)",
       "Bash(claude mcp:*)",
       "Bash(claude --version)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)"
     ]
   }
 }
