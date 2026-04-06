@@ -2,6 +2,36 @@ import type { Fissure, FissureStatus, FissureTier } from '../domain/relics';
 import { TIER_ORDER } from '../domain/relics';
 
 // ---------------------------------------------------------------------------
+// Stat helpers
+// ---------------------------------------------------------------------------
+
+/** Fissure with the soonest expiry from a flat array. Returns null if empty. */
+export function getNextToExpire(fissures: Fissure[]): Fissure | null {
+  if (fissures.length === 0) return null;
+  return fissures.reduce((a, b) => (a.expiryMs < b.expiryMs ? a : b));
+}
+
+/** Count Steel Path (isHard) fissures in a flat array. */
+export function countSteelPath(fissures: Fissure[]): number {
+  return fissures.filter(f => f.isHard).length;
+}
+
+/**
+ * Returns tier keys ordered by each tier's soonest-expiring fissure.
+ * Tiers with no fissures sort last (Infinity). Input map holds FissureStatus
+ * arrays (already expiry-sorted ascending from groupByTier + computeFissureStatus).
+ */
+export function sortTiersByEarliestExpiry(
+  grouped: Map<FissureTier, FissureStatus[]>,
+): FissureTier[] {
+  return [...TIER_ORDER].sort((a, b) => {
+    const aMin = (grouped.get(a) ?? [])[0]?.fissure.expiryMs ?? Infinity;
+    const bMin = (grouped.get(b) ?? [])[0]?.fissure.expiryMs ?? Infinity;
+    return aMin - bMin;
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Status computation
 // ---------------------------------------------------------------------------
 

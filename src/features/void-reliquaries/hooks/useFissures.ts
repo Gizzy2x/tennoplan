@@ -5,6 +5,8 @@ import {
   computeFissureStatus,
   filterFissures,
   groupByTier,
+  countSteelPath,
+  getNextToExpire,
   type FissureFilters,
 } from '@/core/services/fissureService';
 import type { FissureStatus, FissureTier } from '@/core/domain/relics';
@@ -20,6 +22,9 @@ export const DEFAULT_FILTERS: FissureFilters = {
  *
  * - React Query handles fetching + Dexie cache (via the adapter).
  * - A 1-second interval ticks `now` for countdowns without triggering re-fetches.
+ * - `grouped` contains only active fissures (msRemaining > 0), keyed by tier.
+ * - `expiredStatuses` is a flat list of locally-expired fissures (expired between polls).
+ * - `steelPathCount` and `nextToExpire` power the page header summary stats.
  */
 export function useFissures(filters: FissureFilters = DEFAULT_FILTERS) {
   const {
@@ -44,26 +49,57 @@ export function useFissures(filters: FissureFilters = DEFAULT_FILTERS) {
     return () => clearInterval(id);
   }, []);
 
-  // Apply filters, then compute statuses, then group by tier
-  const grouped = useMemo((): Map<FissureTier, FissureStatus[]> => {
-    if (!data) return new Map();
-    const filtered   = filterFissures(data, filters);
-    const byTier     = groupByTier(filtered);
-    const statusMap  = new Map<FissureTier, FissureStatus[]>();
+  const {
+    grouped,
+    expiredStatuses,
+    totalActive,
+    steelPathCount,
+    nextToExpire,
+  } = useMemo(() => {
+    if (!data) {
+      return {
+        grouped:         new Map<FissureTier, FissureStatus[]>(),
+        expiredStatuses: [] as FissureStatus[],
+        totalActive:     0,
+        steelPathCount:  0,
+        nextToExpire:    null as FissureStatus | null,
+      };
+    }
+
+    const filtered = filterFissures(data, filters);
+
+    // Split locally-active vs locally-expired (between 60s API polls)
+    const activeFissures  = filtered.filter(f => computeFissureStatus(f, now).msRemaining > 0);
+    const expiredFissures = filtered.filter(f => computeFissureStatus(f, now).msRemaining === 0);
+
+    // Group active by tier, compute status for each
+    const byTier    = groupByTier(activeFissures);
+    const statusMap = new Map<FissureTier, FissureStatus[]>();
     for (const [tier, fissures] of byTier) {
       statusMap.set(tier, fissures.map(f => computeFissureStatus(f, now)));
     }
-    return statusMap;
-  }, [data, filters, now]);
 
-  const totalActive = useMemo(
-    () => (data ? filterFissures(data, filters).length : 0),
-    [data, filters]
-  );
+    // Derived stats for page header
+    const expiredStatuses = expiredFissures.map(f => computeFissureStatus(f, now));
+    const steelPathCount  = countSteelPath(activeFissures);
+    const nextFissure     = getNextToExpire(activeFissures);
+    const nextToExpire    = nextFissure ? computeFissureStatus(nextFissure, now) : null;
+
+    return {
+      grouped:    statusMap,
+      expiredStatuses,
+      totalActive: activeFissures.length,
+      steelPathCount,
+      nextToExpire,
+    };
+  }, [data, filters, now]);
 
   return {
     grouped,
+    expiredStatuses,
     totalActive,
+    steelPathCount,
+    nextToExpire,
     isLoading,
     isError:  !!error,
     lastSync: dataUpdatedAt,

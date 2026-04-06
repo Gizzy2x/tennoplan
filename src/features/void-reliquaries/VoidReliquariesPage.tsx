@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { useFissures, DEFAULT_FILTERS } from './hooks/useFissures';
 import { FissureCard } from './components/FissureCard';
-import { TIER_COLOR } from '@/core/services/fissureService';
+import {
+  TIER_COLOR,
+  sortTiersByEarliestExpiry,
+} from '@/core/services/fissureService';
+import { formatMs } from '@/core/services/cycleService';
 import { TIER_ORDER } from '@/core/domain/relics';
 import type { FissureFilters } from '@/core/services/fissureService';
 
@@ -42,20 +46,24 @@ function FilterButton({
 function TierHeader({ tier, count }: { tier: string; count: number }) {
   const color = TIER_COLOR[tier as keyof typeof TIER_COLOR] ?? '#E3C372';
   return (
-    <div className="flex items-center gap-3 mb-3">
+    <div className="flex items-center gap-3 mb-4">
       <span
-        className="font-label text-[10px] uppercase tracking-[0.4em] font-semibold"
+        className="font-headline text-base font-bold uppercase tracking-[0.2em]"
         style={{ color }}
       >
         {tier}
       </span>
-      <div className="flex-1 h-px" style={{ backgroundColor: `${color}20` }} />
       <span
-        className="font-mono text-[10px] tabular-nums"
-        style={{ color, opacity: 0.5 }}
+        className="font-mono text-[10px] tabular-nums px-2 py-0.5"
+        style={{
+          color,
+          border:          `1px solid ${color}40`,
+          backgroundColor: `${color}10`,
+        }}
       >
         {count}
       </span>
+      <div className="flex-1 h-px" style={{ backgroundColor: `${color}20` }} />
     </div>
   );
 }
@@ -65,8 +73,20 @@ function TierHeader({ tier, count }: { tier: string; count: number }) {
 // ---------------------------------------------------------------------------
 
 export function VoidReliquariesPage() {
-  const [filters, setFilters] = useState<FissureFilters>(DEFAULT_FILTERS);
-  const { grouped, totalActive, isLoading, isError, lastSync } = useFissures(filters);
+  const [filters,     setFilters]     = useState<FissureFilters>(DEFAULT_FILTERS);
+  const [showExpired, setShowExpired] = useState(false);
+  const [sortByTime,  setSortByTime]  = useState(false);
+
+  const {
+    grouped,
+    expiredStatuses,
+    totalActive,
+    steelPathCount,
+    nextToExpire,
+    isLoading,
+    isError,
+    lastSync,
+  } = useFissures(filters);
 
   const toggle = (key: keyof FissureFilters) =>
     setFilters(f => ({ ...f, [key]: !f[key] }));
@@ -79,6 +99,9 @@ export function VoidReliquariesPage() {
 
   const syncState = isLoading ? 'SYNCING' : isError ? 'OFFLINE' : 'ONLINE';
   const syncWidth = isLoading ? '45%' : isError ? '12%' : '100%';
+
+  // Tier display order — either canonical or sorted by soonest expiry
+  const tierOrder = sortByTime ? sortTiersByEarliestExpiry(grouped) : TIER_ORDER;
 
   return (
     <>
@@ -101,7 +124,8 @@ export function VoidReliquariesPage() {
         </div>
 
         <div className="col-span-4 text-right">
-          <div className="inline-block p-4 border-l border-primary/20 text-left">
+          <div className="inline-block p-4 border-l border-primary/20 text-left w-full">
+            {/* Active count / sync state */}
             <p className="font-label text-[10px] text-secondary opacity-40 uppercase tracking-widest">
               {syncState === 'SYNCING' ? 'Chronometry Sync' : 'Active Fissures'}
             </p>
@@ -119,6 +143,36 @@ export function VoidReliquariesPage() {
                 style={{ width: syncWidth, transition: 'width 0.5s ease' }}
               />
             </div>
+
+            {/* Summary stats: Steel Path count + Next to expire */}
+            {syncState === 'ONLINE' && (
+              <div className="flex gap-5 mt-4">
+                <div>
+                  <p
+                    className="font-label text-[9px] uppercase tracking-widest"
+                    style={{ color: '#f87171', opacity: 0.6 }}
+                  >
+                    Steel Path
+                  </p>
+                  <p
+                    className="font-mono text-lg font-bold tabular-nums leading-tight"
+                    style={{ color: '#f87171' }}
+                  >
+                    {String(steelPathCount).padStart(2, '0')}
+                  </p>
+                </div>
+                {nextToExpire && (
+                  <div>
+                    <p className="font-label text-[9px] uppercase tracking-widest text-secondary/40">
+                      Next
+                    </p>
+                    <p className="font-mono text-lg font-bold tabular-nums text-primary leading-tight">
+                      {formatMs(nextToExpire.msRemaining)}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -149,6 +203,22 @@ export function VoidReliquariesPage() {
           label="Steel Path"
           onClick={() => toggle('showSteelPath')}
         />
+
+        {/* Push sort + expired toggles to the right */}
+        <div className="flex-1" />
+
+        <FilterButton
+          active={sortByTime}
+          color="#E3C372"
+          label="Shortest First"
+          onClick={() => setSortByTime(v => !v)}
+        />
+        <FilterButton
+          active={showExpired}
+          color="#E3C372"
+          label="Show Expired"
+          onClick={() => setShowExpired(v => !v)}
+        />
       </div>
 
       {/* ── Loading skeleton ───────────────────────────────────────── */}
@@ -174,17 +244,17 @@ export function VoidReliquariesPage() {
         </div>
       )}
 
-      {/* ── Tier grid ─────────────────────────────────────────────── */}
+      {/* ── Active tier grid ───────────────────────────────────────── */}
       {totalActive > 0 && (
         <div className="space-y-8">
-          {TIER_ORDER.map(tier => {
+          {tierOrder.map(tier => {
             const statuses = grouped.get(tier) ?? [];
             if (statuses.length === 0) return null;
 
             return (
               <section key={tier}>
                 <TierHeader tier={tier} count={statuses.length} />
-                <div className="grid grid-cols-12 gap-3">
+                <div className="grid grid-cols-12 gap-4">
                   {statuses.map(s => (
                     <div key={s.fissure.id} className="col-span-4">
                       <FissureCard status={s} />
@@ -204,6 +274,29 @@ export function VoidReliquariesPage() {
             No fissures match active filters
           </p>
         </div>
+      )}
+
+      {/* ── Expired section (off by default) ─────────────────────── */}
+      {showExpired && expiredStatuses.length > 0 && (
+        <section className="mt-12">
+          <div className="somatic-line mb-6" />
+          <div className="flex items-center gap-3 mb-4">
+            <span className="font-label text-[10px] uppercase tracking-[0.4em] text-secondary/30">
+              Expired
+            </span>
+            <div className="flex-1 h-px bg-surface-container-highest" />
+            <span className="font-mono text-[10px] tabular-nums text-secondary/30">
+              {expiredStatuses.length}
+            </span>
+          </div>
+          <div className="grid grid-cols-12 gap-4" style={{ opacity: 0.4 }}>
+            {expiredStatuses.map(s => (
+              <div key={s.fissure.id} className="col-span-4">
+                <FissureCard status={s} />
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       {/* ── Offline notice ────────────────────────────────────────── */}
