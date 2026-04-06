@@ -56,12 +56,12 @@ function getMissionIcon(missionType: string): LucideIcon {
 // ---------------------------------------------------------------------------
 
 const TIER_OVERLAY: Record<string, string> = {
-  Lith:    'rgba(227, 195, 114, 0.13)',  // gold
-  Meso:    'rgba(186, 195, 254, 0.13)',  // violet
-  Neo:     'rgba(103, 232, 249, 0.12)',  // cyan
-  Axi:     'rgba(192, 132, 252, 0.13)',  // purple
-  Requiem: 'rgba(251, 146,  60, 0.12)',  // orange
-  Omnia:   'rgba(248, 113, 113, 0.12)',  // red
+  Lith:    'rgba(227, 195, 114, 0.17)',  // gold
+  Meso:    'rgba(186, 195, 254, 0.17)',  // violet
+  Neo:     'rgba(103, 232, 249, 0.15)',  // cyan
+  Axi:     'rgba(192, 132, 252, 0.17)',  // purple
+  Requiem: 'rgba(251, 146,  60, 0.16)',  // orange
+  Omnia:   'rgba(248, 113, 113, 0.16)',  // red
 };
 
 // ---------------------------------------------------------------------------
@@ -94,12 +94,12 @@ export function FissureCard({ status }: FissureCardProps) {
   // SP adds red zone before the tier color bleeds in at far right.
   const tierOverlayColor = TIER_OVERLAY[fissure.tier] ?? 'rgba(227,195,114,0.10)';
   const tierOverlay = fissure.isHard
-    ? `linear-gradient(to right, transparent 28%, rgba(248,113,113,0.10) 58%, ${tierOverlayColor} 100%)`
-    : `linear-gradient(to right, transparent 30%, ${tierOverlayColor} 100%)`;
+    ? `linear-gradient(to right, transparent 30%, rgba(248,113,113,0.12) 58%, ${tierOverlayColor} 100%)`
+    : `linear-gradient(to right, transparent 42%, ${tierOverlayColor} 100%)`;
 
   return (
     // Wrapper: not overflow-hidden so the variant tag can stick out above
-    <div className="relative" style={{ paddingTop: '10px' }}>
+    <div className="relative" style={{ paddingTop: '12px' }}>
 
       {/* ── Variant Tag — handle above the card top edge ─────── */}
       {fissure.isHard ? (
@@ -109,7 +109,7 @@ export function FissureCard({ status }: FissureCardProps) {
             background:   'rgba(185, 28, 28, 0.97)',
             borderTop:    '2px solid rgba(248,113,113,0.70)',
             borderRight:  '1px solid rgba(239,68,68,0.45)',
-            borderBottom: '1px solid rgba(239,68,68,0.45)',
+            borderBottom: '1px solid rgba(227,195,114,0.45)',
             borderLeft:   '1px solid rgba(239,68,68,0.45)',
             color:        '#ffffff',
           }}
@@ -124,7 +124,7 @@ export function FissureCard({ status }: FissureCardProps) {
             background:   'rgba(200, 158, 8, 0.92)',
             borderTop:    '2px solid rgba(255,220,80,0.60)',
             borderRight:  '1px solid rgba(227,195,114,0.50)',
-            borderBottom: '1px solid rgba(227,195,114,0.50)',
+            borderBottom: '1px solid rgba(227,195,114,0.55)',
             borderLeft:   '1px solid rgba(227,195,114,0.50)',
             color:        '#1a0c00',
           }}
@@ -136,12 +136,12 @@ export function FissureCard({ status }: FissureCardProps) {
         <div
           className="fissure-variant-tag absolute top-0 right-3 z-20"
           style={{
-            background:   'rgba(229, 226, 225, 0.07)',
-            borderTop:    '2px solid rgba(227,195,114,0.25)',
-            borderRight:  '1px solid rgba(227,195,114,0.15)',
-            borderBottom: '1px solid rgba(227,195,114,0.15)',
-            borderLeft:   '1px solid rgba(227,195,114,0.15)',
-            color:        '#C6C6C7',
+            background:   'rgba(229, 226, 225, 0.93)',
+            borderTop:    '2px solid rgba(227,195,114,0.60)',
+            borderRight:  '1px solid rgba(227,195,114,0.30)',
+            borderBottom: '1px solid rgba(227,195,114,0.45)',
+            borderLeft:   '1px solid rgba(227,195,114,0.30)',
+            color:        '#131313',
           }}
         >
           NORMAL
@@ -181,14 +181,14 @@ export function FissureCard({ status }: FissureCardProps) {
         <div className="flex items-start gap-3 mb-3">
 
           {/* Mission type icon — large gold anchor; tier dot signals relic color */}
-          <div className="flex-shrink-0 mt-0.5 relative">
+          <div className="flex-shrink-0 relative">
             <span
-              className="absolute bottom-0 right-0 w-3 h-3 rounded-full"
+              className="absolute bottom-0 right-0 w-4 h-4 rounded-full"
               style={{ backgroundColor: tierColor, opacity: 0.9 }}
             />
             <MissionIcon
-              size={52}
-              strokeWidth={1.25}
+              size={72}
+              strokeWidth={1.1}
               style={{ color: '#E3C372', position: 'relative', zIndex: 1 }}
             />
           </div>
