@@ -63,41 +63,45 @@ export function FissureCard({ status }: FissureCardProps) {
   const nodeName   = nodeMatch ? nodeMatch[1] : fissure.node;
   const nodeRegion = nodeMatch ? nodeMatch[2] : '';
 
-  // Card background — gradient left (transparent/glass) → right (more solid)
-  // Overrides glass-panel's flat background; backdrop-filter still applies from the class.
+  // Base background: fully transparent left → dark semi-opaque right.
+  // Overrides glass-panel's flat fill so the left zone is pure blurred void.
+  // SP gets a warm dark base on the right to blend with the red tint overlay.
   const cardBg = fissure.isHard
-    ? 'linear-gradient(to right, rgba(19,19,19,0.22) 0%, rgba(28,27,27,0.60) 42%, rgba(35,20,20,0.78) 100%)'
-    : 'linear-gradient(to right, rgba(19,19,19,0.22) 0%, rgba(28,27,27,0.55) 42%, rgba(28,27,27,0.70) 100%)';
+    ? 'linear-gradient(to right, transparent 0%, rgba(22,18,18,0.50) 42%, rgba(30,17,17,0.70) 100%)'
+    : 'linear-gradient(to right, transparent 0%, rgba(22,20,20,0.46) 42%, rgba(24,23,23,0.64) 100%)';
+
+  // Tier tint overlay: transparent left → tier color at 10-15% right.
+  // SP adds a faint red undertone that peaks before the tier tint takes over.
+  const tierOverlay = fissure.isHard
+    ? `linear-gradient(to right, transparent 28%, rgba(248,113,113,0.08) 52%, ${tierColor}26 100%)`
+    : `linear-gradient(to right, transparent 30%, ${tierColor}1A 72%, ${tierColor}1E 100%)`;
 
   return (
     <div
       className="glass-panel fissure-card-hover relative overflow-hidden flex flex-col p-6 cursor-pointer"
       style={{
-        background: cardBg,
+        background:    cardBg,
+        backdropFilter: 'blur(16px)',
         borderColor: fissure.isHard
-          ? 'rgba(248,113,113,0.18)'
-          : `${tierColor}22`,
+          ? 'rgba(248,113,113,0.15)'
+          : `${tierColor}1A`,
         boxShadow: fissure.isHard
-          ? '0 0 0 1px rgba(248,113,113,0.10), inset 0 0 24px rgba(248,113,113,0.04), 0 0 40px rgba(0,0,0,0.65)'
+          ? 'inset 0 0 20px rgba(248,113,113,0.03), 0 0 40px rgba(0,0,0,0.65)'
           : '0 0 40px rgba(0,0,0,0.5)',
       }}
     >
+      {/* Tier tint overlay — renders first so everything above it sits on top */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: tierOverlay }}
+      />
+
       {/* Top-left filigree corner */}
       <span
         className="absolute top-0 left-0 w-5 h-5 pointer-events-none"
         style={{
-          borderTop:  `1px solid ${fissure.isHard ? 'rgba(248,113,113,0.35)' : `${tierColor}44`}`,
-          borderLeft: `1px solid ${fissure.isHard ? 'rgba(248,113,113,0.35)' : `${tierColor}44`}`,
-        }}
-      />
-
-      {/* Tier color wash — right-to-left, subliminal on normal, slightly more intense on SP */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: fissure.isHard
-            ? `linear-gradient(to left, rgba(248,113,113,0.10) 0%, ${tierColor}06 50%, transparent 75%)`
-            : `linear-gradient(to left, ${tierColor}09 0%, transparent 55%)`,
+          borderTop:  `1px solid ${fissure.isHard ? 'rgba(248,113,113,0.30)' : `${tierColor}40`}`,
+          borderLeft: `1px solid ${fissure.isHard ? 'rgba(248,113,113,0.30)' : `${tierColor}40`}`,
         }}
       />
 
