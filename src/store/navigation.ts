@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import type { LucideIcon } from "lucide-react";
 import {
-  ListChecks,
   Clock,
   Archive,
   Wrench,
@@ -35,12 +34,6 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  {
-    id: "dailies-weeklies",
-    label: "DAILIES & WEEKLIES",
-    breadcrumb: "DAILIES_WEEKLIES",
-    icon: ListChecks,
-  },
   {
     id: "celestial-pendulum",
     label: "CELESTIAL PENDULUM",
@@ -109,6 +102,6 @@ interface NavigationState {
 }
 
 export const useNavigationStore = create<NavigationState>((set) => ({
-  activeTab: "dailies-weeklies",
+  activeTab: "celestial-pendulum",
   setActiveTab: (tab) => set({ activeTab: tab }),
 }));
