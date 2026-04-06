@@ -1,8 +1,9 @@
-import { Terminal, Search, Bell, Settings, Power } from "lucide-react";
+import { Terminal, Search, Bell, Settings, Power, ListChecks } from "lucide-react";
 import { NAV_ITEMS, useNavigationStore } from "@/store/navigation";
+import { cn } from "@/lib/utils";
 
 export function Header() {
-  const activeTab = useNavigationStore((s) => s.activeTab);
+  const { activeTab, setActiveTab } = useNavigationStore();
   const activeItem = NAV_ITEMS.find((item) => item.id === activeTab);
 
   return (
@@ -17,6 +18,20 @@ export function Header() {
 
       {/* Actions */}
       <div className="flex items-center gap-8">
+        {/* Persistent Dailies & Weeklies quick-access */}
+        <button
+          onClick={() => setActiveTab("dailies-weeklies")}
+          className={cn(
+            "flex items-center gap-1.5 px-3 py-1.5 font-label text-[9px] uppercase tracking-widest border transition-all duration-200 whitespace-nowrap",
+            activeTab === "dailies-weeklies"
+              ? "text-primary border-primary/40 bg-primary/[0.08] shadow-[0_0_10px_rgba(227,195,114,0.15)]"
+              : "text-secondary/40 border-primary/10 hover:text-primary/70 hover:border-primary/25 hover:bg-primary/[0.04]"
+          )}
+        >
+          <ListChecks className="size-3.5" strokeWidth={1.5} />
+          Dailies &amp; Weeklies
+        </button>
+
         {/* Search */}
         <div className="relative flex items-center border-b border-primary/20 pb-1">
           <Search className="size-4 text-primary/40 mr-2" strokeWidth={1.5} />

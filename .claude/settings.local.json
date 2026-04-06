@@ -7,7 +7,15 @@
       "Bash(claude mcp:*)",
       "Bash(claude --version)",
       "Bash(npx tsc:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(find 'C:/Users/Nuclear Spaceship/.claude' -name settings*.json)",
+      "Bash(find 'C:/Users/Nuclear Spaceship/.claude' -name *.json)",
+      "Bash(xargs grep:*)",
+      "Bash(\"C:\\\\Users\\\\Nuclear Spaceship\\\\Documents\\\\GitHub\\\\tennoplan\\\\src\\\\adapters\\\\api\\\\WorldstateAdapter.ts\")",
+      "Bash(\"C:\\\\Users\\\\Nuclear Spaceship\\\\Documents\\\\GitHub\\\\tennoplan\\\\src\\\\features\\\\dailies-weeklies\\\\hooks\\\\useDailiesData.ts\")",
+      "Bash(npx vite:*)",
+      "Bash(\"C:\\\\Users\\\\Nuclear Spaceship\\\\Documents\\\\GitHub\\\\tennoplan\\\\src\\\\adapters\\\\api\\\\dailiesAdapter.ts\")"
     ]
   }
 }

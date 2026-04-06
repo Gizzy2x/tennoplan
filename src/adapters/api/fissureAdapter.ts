@@ -1,12 +1,12 @@
-import { db } from '../storage/db';
+import { getWsCache, setWsCache, WS_CACHE_KEYS } from '../storage/worldstateCache';
 import type { Fissure, FissureEnemy, FissureTier } from '../../core/domain/relics';
+import type { WSFetchResult } from './types';
 
 // ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------
 
-const ENDPOINT = 'https://api.warframestat.us/pc/fissures';
-const CACHE_KEY = 'fissures:all';
+const ENDPOINT     = 'https://api.warframestat.us/pc/fissures?language=en';
 const CACHE_TTL_MS = 60_000; // 60 s — fissures rotate frequently
 
 // ---------------------------------------------------------------------------
@@ -52,44 +52,35 @@ function rawToFissure(raw: RawFissure, fetchedAt: number): Fissure {
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch all active void fissures from the API, with Dexie offline fallback.
- * Expired fissures (raw.expired === true) are dropped at the adapter boundary.
+ * Fetch all active void fissures from the API.
+ * Fallback order:
+ *   1. Fresh Dexie cache  → return immediately, fromStaleCache: false
+ *   2. Live network fetch → store + return,     fromStaleCache: false
+ *   3. Stale Dexie cache  → return,             fromStaleCache: true
+ *   4. No cache at all    → throw (first-launch offline)
  */
-export async function fetchFissures(): Promise<Fissure[]> {
-  const now = Date.now();
+export async function fetchFissures(): Promise<WSFetchResult<Fissure[]>> {
+  const cached = await getWsCache<RawFissure[]>(WS_CACHE_KEYS.fissures);
 
-  // Check cache first
-  const cached = await db.cache.get(CACHE_KEY);
-  if (cached && cached.expiresAt > now) {
-    const raws = cached.data as RawFissure[];
-    return raws
-      .filter(r => !r.expired)
-      .map(r => rawToFissure(r, cached.updatedAt));
+  if (cached && !cached.isExpired) {
+    const data = cached.data.filter(r => !r.expired).map(r => rawToFissure(r, cached.cachedAt));
+    return { data, cachedAt: cached.cachedAt, fromStaleCache: false };
   }
 
-  // Attempt live fetch
   try {
     const res = await fetch(ENDPOINT);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const raws: RawFissure[] = await res.json();
 
-    await db.cache.put({
-      key:       CACHE_KEY,
-      data:      raws,
-      expiresAt: now + CACHE_TTL_MS,
-      updatedAt: now,
-    });
+    await setWsCache(WS_CACHE_KEYS.fissures, raws, CACHE_TTL_MS);
 
-    return raws
-      .filter(r => !r.expired)
-      .map(r => rawToFissure(r, now));
+    const now  = Date.now();
+    const data = raws.filter(r => !r.expired).map(r => rawToFissure(r, now));
+    return { data, cachedAt: now, fromStaleCache: false };
   } catch {
-    // Offline fallback — return cached even if expired
     if (cached) {
-      const raws = cached.data as RawFissure[];
-      return raws
-        .filter(r => !r.expired)
-        .map(r => rawToFissure(r, cached.updatedAt));
+      const data = cached.data.filter(r => !r.expired).map(r => rawToFissure(r, cached.cachedAt));
+      return { data, cachedAt: cached.cachedAt, fromStaleCache: true };
     }
     throw new Error(
       'No fissure data available. Connect to a network to initialize Void Reliquaries.'

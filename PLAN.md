@@ -109,67 +109,87 @@ text
 
 ## 6. Frontend UI Vision (High-Level)
 
-- **AppShell**: Fixed sidebar (nav items with active states), top header (logo, search, user/settings), main content area that swaps via Zustand tab state.
-- **Theme**: Dark Warframe aesthetic (deep blacks, glowing accents, Orokin-inspired UI elements). Exact colors/spacing/typography will be provided by you in Claude prompts using your liked stitch screenshot.
-- **Navigation Tabs** (sidebar order):
-  1. Dashboard (teasers + pulse counter)
-  2. Dailies & Weeklies (unique killer feature)
-  3. World Cycles / Timers
-  4. Fissures / Relics
-  5. Inventory & Foundry
-  6. Market & Trading
-  7. Builds & Theorycraft
-  8. Analytics & Session Logs
-  9. Settings / Overlays
+- **AppShell**: Fixed sidebar + persistent top bar.
+- **Top Bar (persistent on every page)**: Includes a prominent **Dailies & Weeklies** button in the middle. Clicking it switches the main content area (same as sidebar tabs).
+- **Sidebar Navigation Tabs** (order):
+  1. Celestial Pendulum — world cycle timers (simple, glanceable)
+  2. Void Reliquaries — active fissures (simple, glanceable)
+  3. Solar Rail Feed — live events, invasions, alerts
+  4. Ascension Registry — Mastery & Progression Tracker (MR, item unlock/check-off)
+  5. Dailies & Weeklies — **Killer feature** (Nightwave, Pulse, Netracell, EDA/ETA, full checklist). Accessed primarily via top bar.
+  6. Inventory & Foundry
+  7. Market & Trading
+  8. Builds & Theorycraft
+  9. Analytics & Session Logs
+
+**Important Rule:**  
+Side tabs are simple and focused on their core content. They may only include a small "Completed" flag + link that opens the Dailies & Weeklies tab. Completion/tracking state is owned **only** by the Dailies & Weeklies tab (persisted in Dexie).
+
+**Rule:** Simple side tabs (1–3) display only their core data + a small "Completed" flag that links to the Tracking Dashboard. They never own or duplicate completion state.
 
 All persistent elements live in **one** `AppShell` component.
 
-## 7. Implementation Stages (Vertical Slicing + Your Blueprint)
+### Phase 0: Foundation (Done)
 
-Follow this loop for **every** feature:
-1. **Define** — Update PLAN.md with exact goal.
-2. **Scaffold** — UI + lorem data only.
-3. **Validate** — Run `npm run tauri dev`, check layout.
-4. **Hydrate** — Add core logic + storage + API adapter.
-5. **Commit** — Git commit.
-6. **Refactor** — Every 3–4 features: "Refactor for readability and performance without changing functionality."
+### Phase 1: World Cycles + Fissures (Done)
 
-### Phase 0: Foundation (1–2 Claude sessions)
-- Create fresh Tauri + React + TS + Vite project.
-- Add Tailwind + shadcn/ui + Zustand + TanStack Query + Dexie.
-- Build `AppShell` + Sidebar navigation + dark theme.
-- Set up Dexie schema (basic tables: settings, cache, user-marks).
-- Basic sync engine skeleton.
-- Update PLAN.md.
+### Phase 2: Dailies & Weeklies (Killer Feature — Complete April 2026)
+- Nightwave challenges (daily/weekly/elite), Archon Hunt, Sortie fully implemented.
+- Challenge completion toggled locally → persisted in Dexie `userMarks`.
+- Weekly standing cap progress tracked across daily rotations.
+- Reset countdowns (daily/weekly), season label, per-kind completion fraction.
 
-### Phase 1: Core Domain + Dashboard (Foundation Slice)
-- Define all shared domain types & services (timers, pulses, etc.).
-- Dashboard: World cycle teasers, active fissures, pulse counter, quick links.
-- Mock data → real API adapter (warframestat.us).
+**Phase 2 offline hardening (April 2026):**
+- `worldstateCache.ts` — typed Dexie repo with embedded `cachedAt`, `ws:` key namespace.
+- `WorldstateService.ts` — pure `getCacheAgeMs` / `formatCacheAge` / `isNightwaveActive`.
+- `WorldstateAdapter.ts` — `?language=en` endpoints, `WSFetchResult<T>` with `fromStaleCache` flag.
+- `useDailiesData.ts` — TanStack Query v5 `initialData` + `initialDataUpdatedAt` pre-load pattern; queries activate only after Dexie pre-load resolves.
+- Hard-fail "SIGNAL LOST" / "ARCHON HUNT UNAVAILABLE" states eliminated.
+- Graceful first-launch onboarding card (no network + no cache).
+- Subtle "Offline · Cached Xm ago · Local marks persist" banner when serving stale data.
 
-### Phase 2: Dailies & Weeklies (Killer Feature — Priority)
-- Weekly reset banner + pulse visualizer (5/5, history, drag-and-drop spending).
-- Netracell tracker, Elite Deep Archimedea (EDA), Elite Temporal Archimedea (ETA/TA).
-- Nightwave (dailies + weeklies + elite) with checkboxes + standing.
-- Other weeklies (Archon Hunt, Circuit, etc.).
-- Local persistence + auto-reset logic (Monday 00:00 UTC).
-- Core pulse deduction service.
+**Remaining for Phase 2+:** Pulse tracker, Netracell, EDA/ETA, top-bar persistent access.
 
-### Phase 3: World Cycles / Timers
-- Full live timers (Cetus, Vallis, Cambion, Earth, daily reset, etc.).
-- Offline ticking from local cache.
+**Phase 2b: Offline-First Parity (April 2026):**
+- `WSFetchResult<T>` extracted to shared `src/adapters/api/types.ts` (used by all adapters).
+- `worldstateCache.ts` — added `ws:fissures` and `ws:cycle:{id}` cache keys.
+- `WorldstateAdapter.ts` renamed to `cyclesAdapter.ts` (clarity: it only handles world cycles).
+- `fissureAdapter.ts` — migrated from legacy `db.cache` to `worldstateCache.ts`; returns `WSFetchResult<Fissure[]>` with `fromStaleCache` / `cachedAt`.
+- `cyclesAdapter.ts` — migrated from legacy `db.cache` to `worldstateCache.ts`; returns `WSFetchResult<WorldCycle[]>` with aggregate staleness (oldest `cachedAt`, any-stale flag).
+- `useFissures.ts` — added Dexie pre-load phase, `initialData`/`initialDataUpdatedAt`, `isStale`/`cacheAgeMs`/`hasEverLoaded`/`forceRefetch`.
+- `useWorldCycles.ts` — same pre-load + staleness pattern + `forceRefetch`.
+- `VoidReliquariesPage.tsx` — "Signal Lost" replaced with first-sync onboarding card; stale cache banner with `formatCacheAge` + force refresh / retry buttons added.
+- `CelestialPendulumPage.tsx` — same treatment: first-sync card, stale banner, refresh button.
+- `ascensionAdapter.ts` — deprecated (kept for legacy `useDailiesWeeklies.ts` reference only).
+- All 3 data pages now show: sync status indicator (LIVE/STALE), last sync timestamp, force refresh button, graceful first-launch card, stale cache banner with age.
+- Placeholder pages (6) unchanged — no data sources to sync.
 
-### Phase 4: Fissures / Relics
-- Active fissures list, relic planner, reward valuation (plat/ducat using cached market data).
+**Future-proofing pattern for new data pages:**
+1. Adapter: use `worldstateCache.ts` (`getWsCache`/`setWsCache`), return `WSFetchResult<T>`.
+2. Hook: Dexie pre-load → TanStack Query with `initialData`/`initialDataUpdatedAt` → export `isStale`/`cacheAgeMs`/`hasEverLoaded`/`forceRefetch`.
+3. Page: first-sync onboarding card, stale cache banner with `formatCacheAge`, refresh button, LIVE/STALE indicator. No hard-fail "Signal Lost" errors.
+- When `useDailiesWeeklies.ts` is finally removed, also delete `ascensionAdapter.ts` and its legacy cache keys (`nightwave:all`, `sortie:daily`, `archonHunt:weekly`).
+- Consider extracting a `useOfflineFirstQuery<T>` generic hook to DRY the pre-load + TanStack Query boilerplate.
 
-### Phase 5: Inventory & Foundry
-- Owned items, build timers (offline ticking), crafting trees, mastery tracking.
+### Phase 3: Ascension Registry (Mastery & Progression Tracker)
+- MR rank display, item checklist (Warframes, weapons, etc.), mark as owned/mastered.
+- Simple focused view with "Completed" flags linking to Dailies & Weeklies where relevant.
+
+### Phase 4+: Remaining tabs (Inventory & Foundry, Market, etc.)
+
+### Phase 5: Ascension Registry (Mastery & Progression Tracker)
+- MR rank display, total mastery earned vs. available.
+- Item checklist: Warframes, Primary, Secondary, Melee, Companions, Archwing, etc. (sourced from bundled warframe-items JSON).
+- Mark items as owned/mastered; persist in Dexie userMarks. Filter by category, MR tier, owned/unowned.
+
+### Phase 5b: Inventory & Foundry
+- Owned items, build timers (offline ticking), crafting trees.
 
 ### Phase 6: Market & Trading + Rivens
 - Personal orders, market listings, price analytics (rate-limited caching).
 
-### Phase 7: Builds & Theorycraft + Mastery
-- Basic Overframe-style display (static for now; expand later).
+### Phase 7: Builds & Theorycraft
+- Basic Overframe-style loadout display (static for now; expand later).
 
 ### Phase 8: Analytics & Session Logs + Overlays
 - EE.log parser (Rust command) for death causes, mission stats.

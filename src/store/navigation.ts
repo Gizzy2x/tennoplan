@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 export type NavTab =
+  | "dailies-weeklies"
   | "celestial-pendulum"
   | "void-reliquaries"
   | "arsenal-fabrication"
