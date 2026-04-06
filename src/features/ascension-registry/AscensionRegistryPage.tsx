@@ -10,15 +10,58 @@ import { formatMsHuman } from '@/core/services/cycleService';
 import type { ChallengeKind, ChallengeStatus } from '@/core/domain/ascension';
 
 // ---------------------------------------------------------------------------
-// Challenge group section header — overhanging handle tab (matches FissureCard)
+// Reset counter pill
 // ---------------------------------------------------------------------------
 
-// Per-kind tag palette — mirrors the tier-tag system from FissureCard
-const KIND_TAG: Record<ChallengeKind, {
-  bg:    string;
-  bord:  string;
-  color: string;
+function ResetCounter({
+  label,
+  msRemaining,
+  urgentMs,
+}: {
+  label:      string;
+  msRemaining: number;
+  urgentMs:   number;
+}) {
+  const isUrgent   = msRemaining > 0 && msRemaining < urgentMs;
+  const timeColor  = isUrgent ? '#fb923c' : '#E3C372';
+  const timeStr    = msRemaining > 0 ? formatMsHuman(msRemaining) : '—';
+
+  return (
+    <div
+      className="glass-panel px-5 py-3 flex flex-col gap-0.5 relative overflow-hidden"
+      style={{ borderColor: `${timeColor}18` }}
+    >
+      {/* Top accent line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px pointer-events-none"
+        style={{ background: `linear-gradient(90deg, transparent, ${timeColor}40, transparent)` }}
+      />
+      <p className="font-label text-[9px] uppercase tracking-[0.35em] text-secondary/40">
+        {label}
+      </p>
+      <p
+        className={['font-mono text-xl font-bold tabular-nums leading-none', isUrgent ? 'orokin-countdown-glow' : ''].filter(Boolean).join(' ')}
+        style={{ color: timeColor }}
+      >
+        {timeStr}
+      </p>
+      <p className="font-label text-[8px] uppercase tracking-[0.25em] mt-0.5" style={{ color: timeColor, opacity: 0.35 }}>
+        {isUrgent ? 'expires soon' : 'remaining'}
+      </p>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Challenge group section header
+// ---------------------------------------------------------------------------
+
+// Per-kind display config for section headers
+const KIND_SECTION: Record<ChallengeKind, {
+  bg:      string;
+  bord:    string;
   topBord: string;
+  color:   string;
 }> = {
   daily: {
     bg:      'rgba(229,226,225,0.92)',
@@ -47,56 +90,56 @@ function KindHeader({
   kind:     ChallengeKind;
   statuses: ChallengeStatus[];
 }) {
-  const color     = KIND_COLOR[kind];
+  const kColor    = KIND_COLOR[kind];
   const label     = KIND_LABEL[kind];
   const total     = statuses.length;
   const completed = statuses.filter(s => s.completed).length;
-  const tag       = KIND_TAG[kind];
+  const section   = KIND_SECTION[kind];
 
   return (
-    <div className="flex items-center gap-3 mb-0 pb-3">
-      {/* Handle tab — matches .fissure-variant-tag style: top-rounded, slightly
-          overhangs the row, distinct color per kind */}
+    <div className="flex items-center gap-3 mb-5 pb-0" style={{ paddingTop: '2px' }}>
+      {/* Handle tab */}
       <div
         className="fissure-variant-tag flex-shrink-0"
         style={{
-          background:  tag.bg,
-          borderTop:   `2px solid ${tag.topBord}`,
-          borderRight: `1px solid ${tag.bord}`,
-          borderBottom:`1px solid ${tag.bord}`,
-          borderLeft:  `1px solid ${tag.bord}`,
-          color:       tag.color,
-          // Thin etched gold line at top gives premium Orokin depth
-          boxShadow:   `0 -2px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.18)`,
+          background:   section.bg,
+          borderTop:    `2px solid ${section.topBord}`,
+          borderRight:  `1px solid ${section.bord}`,
+          borderBottom: `1px solid ${section.bord}`,
+          borderLeft:   `1px solid ${section.bord}`,
+          color:        section.color,
+          boxShadow:    `0 -2px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.18)`,
         }}
       >
         {label}
       </div>
-      {/* Completion fraction */}
+
+      {/* Completion fraction badge */}
       <span
         className="font-mono text-[10px] tabular-nums px-2 py-0.5 font-bold"
         style={{
-          color,
-          border:          `1px solid ${color}40`,
-          backgroundColor: `${color}10`,
+          color:           kColor,
+          border:          `1px solid ${kColor}40`,
+          backgroundColor: `${kColor}0E`,
         }}
       >
         {completed} / {total}
       </span>
-      <div className="flex-1 h-px" style={{ backgroundColor: `${color}20` }} />
+
+      <div className="flex-1 h-px" style={{ backgroundColor: `${kColor}18` }} />
+
       {/* Mini progress bar */}
       {total > 0 && (
         <div
           className="h-1 overflow-hidden"
-          style={{ width: 64, backgroundColor: 'rgba(197,192,190,0.08)' }}
+          style={{ width: 64, backgroundColor: 'rgba(197,192,190,0.07)' }}
         >
           <div
-            className="h-full"
+            className="h-full transition-all duration-300"
             style={{
               width:           `${(completed / total) * 100}%`,
-              backgroundColor: color,
-              boxShadow:       completed === total ? `0 0 6px ${color}80` : 'none',
-              transition:      'width 0.3s ease',
+              backgroundColor: kColor,
+              boxShadow:       completed === total ? `0 0 6px ${kColor}80` : 'none',
             }}
           />
         </div>
@@ -132,21 +175,21 @@ export function AscensionRegistryPage() {
       })
     : '—';
 
-  const syncState = isLoading ? 'SYNCING' : isError ? 'OFFLINE' : 'ONLINE';
-  const syncWidth = isLoading ? '45%' : isError ? '12%' : '100%';
+  const syncState  = isLoading ? 'SYNCING' : isError ? 'OFFLINE' : 'ONLINE';
+  const syncWidth  = isLoading ? '45%' : isError ? '12%' : '100%';
 
-  const sortieColor = sortieStatus
+  const sortieColor  = sortieStatus
     ? (SORTIE_FACTION_COLOR[sortieStatus.raw.faction] ?? '#C6C6C7')
     : '#C6C6C7';
 
-  // Season display label — strip internal tag prefix if present
-  const seasonLabel = season > 0
-    ? `Season ${season}`
-    : seasonTag || 'Nightwave';
+  const seasonLabel = season > 0 ? `Season ${season}` : seasonTag || 'Nightwave';
 
   const standingRemaining = standing.available - standing.earned;
 
-  // Challenge group render order
+  // Reset countdowns derived from first challenge in each bucket
+  const dailyMs  = grouped.daily[0]?.msRemaining  ?? 0;
+  const weeklyMs = grouped.weekly[0]?.msRemaining ?? grouped.elite[0]?.msRemaining ?? 0;
+
   const kindOrder: ChallengeKind[] = ['daily', 'weekly', 'elite'];
 
   return (
@@ -187,11 +230,14 @@ export function AscensionRegistryPage() {
             <div className="w-full h-px bg-surface-container-highest mt-2 relative overflow-hidden">
               <div
                 className="absolute inset-y-0 left-0 h-full bg-primary shadow-[0_0_8px_#E3C372]"
-                style={{ width: syncState === 'ONLINE' ? `${standing.pct * 100}%` : syncWidth, transition: 'width 0.5s ease' }}
+                style={{
+                  width:      syncState === 'ONLINE' ? `${standing.pct * 100}%` : syncWidth,
+                  transition: 'width 0.5s ease',
+                }}
               />
             </div>
 
-            {/* Challenge completion summary */}
+            {/* Challenge summary row */}
             {syncState === 'ONLINE' && totalChallenges > 0 && (
               <div
                 className="flex gap-6 mt-5 pt-4"
@@ -230,6 +276,99 @@ export function AscensionRegistryPage() {
       {/* Somatic divider */}
       <div className="somatic-line mb-8" />
 
+      {/* ── Reset Counters ───────────────────────────────────────────── */}
+      {totalChallenges > 0 && syncState === 'ONLINE' && (
+        <div className="flex flex-wrap gap-4 mb-6">
+          {dailyMs > 0 && (
+            <ResetCounter label="Daily Reset" msRemaining={dailyMs} urgentMs={6 * 3600_000} />
+          )}
+          {weeklyMs > 0 && (
+            <ResetCounter label="Weekly Reset" msRemaining={weeklyMs} urgentMs={24 * 3600_000} />
+          )}
+
+          {/* Sync status chip */}
+          <div className="ml-auto flex items-center gap-2 self-center">
+            <div className="w-1.5 h-1.5 rounded-full bg-success" />
+            <span className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35">
+              LIVE
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* ── Standing Progress Block ──────────────────────────────────── */}
+      {totalChallenges > 0 && syncState === 'ONLINE' && (
+        <div
+          className="glass-panel relative overflow-hidden mb-9 px-6 py-5"
+          style={{ borderColor: 'rgba(227,195,114,0.12)' }}
+        >
+          {/* Background gold glow */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: 'radial-gradient(ellipse at 30% 50%, rgba(227,195,114,0.04), transparent 70%)' }}
+          />
+
+          <div className="relative flex items-end justify-between gap-8">
+            {/* Left: standing numbers */}
+            <div>
+              <p className="font-label text-[9px] uppercase tracking-[0.35em] text-primary/40 mb-1">
+                Total Potential Standing
+              </p>
+              <div className="flex items-end gap-3">
+                <p className="font-mono font-bold tabular-nums leading-none" style={{ fontSize: '2.4rem', color: '#E3C372' }}>
+                  {(Math.max(0, standing.earned) / 1000).toFixed(0)}k
+                </p>
+                <p className="font-mono text-xl font-bold tabular-nums leading-none mb-0.5" style={{ color: 'rgba(227,195,114,0.40)' }}>
+                  / {(Math.max(0, standing.available) / 1000).toFixed(0)}k
+                </p>
+              </div>
+              <p className="font-label text-[9px] uppercase tracking-[0.25em] mt-1" style={{ color: 'rgba(227,195,114,0.35)' }}>
+                standing earned this week
+              </p>
+            </div>
+
+            {/* Right: challenge completion count + pct */}
+            <div className="text-right flex-shrink-0">
+              <p className="font-label text-[9px] uppercase tracking-[0.35em] text-primary/40 mb-1">
+                Challenges Complete
+              </p>
+              <p className="font-mono text-3xl font-bold tabular-nums leading-none text-primary">
+                {String(completedCount).padStart(2, '0')}
+                <span className="text-xl" style={{ color: 'rgba(227,195,114,0.35)' }}>
+                  &nbsp;/ {String(totalChallenges).padStart(2, '0')}
+                </span>
+              </p>
+              <p className="font-label text-[9px] uppercase tracking-[0.25em] mt-1" style={{ color: 'rgba(227,195,114,0.35)' }}>
+                {Math.round(standing.pct * 100)}% of available standing
+              </p>
+            </div>
+          </div>
+
+          {/* Progress bar — full width, prominent */}
+          <div
+            className="relative mt-5 overflow-hidden"
+            style={{ height: 4, backgroundColor: 'rgba(197,192,190,0.07)' }}
+          >
+            <div
+              className="absolute inset-y-0 left-0 h-full transition-all duration-700"
+              style={{
+                width:      `${standing.pct * 100}%`,
+                background: 'linear-gradient(90deg, rgba(227,195,114,0.7), #E3C372)',
+                boxShadow:  '0 0 10px rgba(227,195,114,0.50)',
+              }}
+            />
+          </div>
+          {standingRemaining > 0 && (
+            <p
+              className="font-label text-[8px] uppercase tracking-[0.28em] mt-2"
+              style={{ color: 'rgba(227,195,114,0.28)' }}
+            >
+              {(Math.max(0, standingRemaining) / 1000).toFixed(0)}k standing remaining this week
+            </p>
+          )}
+        </div>
+      )}
+
       {/* ── Loading skeleton ─────────────────────────────────────────── */}
       {isLoading && totalChallenges === 0 && (
         <div className="glass-panel p-8 flex items-center gap-4">
@@ -256,12 +395,10 @@ export function AscensionRegistryPage() {
       {/* ── Sortie section ───────────────────────────────────────────── */}
       {sortieStatus && (
         <section className="mb-10">
-          {/* Sortie header with section title */}
           <div className="flex items-center gap-4 mb-5">
             <h3 className="font-headline text-2xl font-black text-on-surface tracking-tight leading-none">
               Daily <span style={{ color: sortieColor }} className="italic">Sortie</span>
             </h3>
-            {/* Faction badge */}
             <span
               className="font-label text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 font-bold"
               style={{
@@ -272,7 +409,6 @@ export function AscensionRegistryPage() {
             >
               {sortieStatus.raw.faction}
             </span>
-            {/* Boss name */}
             <span
               className="font-label text-[10px] uppercase tracking-[0.2em]"
               style={{ color: '#C6C6C7', opacity: 0.35 }}
@@ -296,12 +432,12 @@ export function AscensionRegistryPage() {
         </section>
       )}
 
-      {/* ── Challenge sections ───────────────────────────────────────── */}
+      {/* ── Nightwave Challenge Grid ──────────────────────────────────── */}
       {totalChallenges > 0 && (
         <>
           <div className="somatic-line mb-8" />
 
-          {/* Nightwave Challenges section title */}
+          {/* Section title */}
           <div className="flex items-center gap-4 mb-7">
             <h3 className="font-headline text-2xl font-black text-on-surface tracking-tight leading-none">
               Nightwave <span className="text-primary italic">Challenges</span>
@@ -320,82 +456,25 @@ export function AscensionRegistryPage() {
             )}
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-10">
             {kindOrder.map(kind => {
               const statuses = grouped[kind];
               if (statuses.length === 0) return null;
-              const kColor   = KIND_COLOR[kind];
               return (
-                <section key={kind} className="relative" style={{ paddingTop: '2px' }}>
+                <section key={kind}>
                   <KindHeader kind={kind} statuses={statuses} />
 
-                  {/* Two-column: left visual area + right checklist */}
-                  <div className="grid grid-cols-12 gap-5">
-
-                    {/* Left: visual/illustration placeholder — reserved for future Nightwave art */}
-                    <div className="col-span-4">
-                      <div
-                        className="glass-panel h-full flex flex-col items-center justify-center p-6 relative overflow-hidden"
-                        style={{
-                          minHeight:   '160px',
-                          borderColor: `${kColor}18`,
-                          borderTop:   `1px solid ${kColor}25`,
-                        }}
-                      >
-                        {/* Radial glow background */}
-                        <div
-                          className="absolute inset-0 pointer-events-none"
-                          style={{ background: `radial-gradient(ellipse at 50% 60%, ${kColor}2E, transparent 70%)` }}
-                        />
-                        {/* Filigree corners */}
-                        <span
-                          className="absolute top-0 left-0 w-5 h-5 pointer-events-none"
-                          style={{ borderTop: `1px solid ${kColor}35`, borderLeft: `1px solid ${kColor}35` }}
-                        />
-                        <span
-                          className="absolute bottom-0 right-0 w-5 h-5 pointer-events-none"
-                          style={{ borderBottom: `1px solid ${kColor}20`, borderRight: `1px solid ${kColor}20` }}
-                        />
-                        {/* Kind label watermark */}
-                        <p
-                          className="font-headline text-4xl font-black text-center leading-tight select-none"
-                          style={{ color: kColor, opacity: 0.07, letterSpacing: '-0.02em' }}
-                        >
-                          {KIND_LABEL[kind].toUpperCase()}
-                        </p>
-                        {/* Future: Nightwave season illustration */}
-                        <p
-                          className="font-label text-[8px] uppercase tracking-[0.4em] text-center mt-3"
-                          style={{ color: kColor, opacity: 0.22 }}
-                        >
-                          Nora Night
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Right: vertical checklist */}
-                    <div className="col-span-8 flex flex-col gap-3">
-                      {statuses.map(s => (
-                        <ChallengeCard key={s.raw.id} status={s} onToggle={toggleComplete} />
-                      ))}
-                    </div>
-
+                  {/* Responsive challenge card grid */}
+                  <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+                    {statuses.map(s => (
+                      <ChallengeCard key={s.raw.id} status={s} onToggle={toggleComplete} />
+                    ))}
                   </div>
                 </section>
               );
             })}
           </div>
         </>
-      )}
-
-      {/* ── Standing remaining footer ────────────────────────────────── */}
-      {syncState === 'ONLINE' && standingRemaining > 0 && totalChallenges > 0 && (
-        <p
-          className="font-label text-[10px] uppercase tracking-widest mt-10"
-          style={{ color: '#E3C372', opacity: 0.35 }}
-        >
-          {(Math.max(0, standingRemaining || 0) / 1000).toFixed(0)}k standing remaining this week
-        </p>
       )}
 
       {/* ── Offline notice ───────────────────────────────────────────── */}
