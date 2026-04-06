@@ -6,11 +6,16 @@ export function ArsenalFabricationPage() {
           <span className="font-label text-xs uppercase tracking-[0.4em] text-primary mb-4 block">
             Manufacturing Core v4.2
           </span>
-          <h2 className="font-headline text-7xl font-black text-on-surface tracking-tighter leading-none">
-            ARSENAL
-            <br />
-            <span className="text-primary italic">FABRICATION</span>
-          </h2>
+          <div className="flex items-end gap-6">
+            <h2 className="font-headline text-7xl font-black text-on-surface tracking-tighter leading-none">
+              ARSENAL
+              <br />
+              <span className="text-primary italic">FABRICATION</span>
+            </h2>
+            <span className="font-label text-xs uppercase tracking-[0.3em] text-primary/40 whitespace-nowrap mb-2">
+              — Inventory &amp; Foundry
+            </span>
+          </div>
         </div>
         <div className="col-span-4 text-right">
           <div className="inline-block p-4 border-l border-primary/20 text-left">
