@@ -11,7 +11,6 @@ import {
   KeyRound,
   Zap,
   Bomb,
-  FlaskConical,
   Swords,
   Hexagon,
 } from 'lucide-react';
