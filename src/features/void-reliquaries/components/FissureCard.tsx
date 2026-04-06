@@ -124,7 +124,7 @@ export function FissureCard({ status }: FissureCardProps) {
         {/* Mission type (headline) + node name */}
         <div className="flex-1 min-w-0">
           <p
-            className="font-headline text-2xl font-black leading-tight truncate"
+            className="font-headline text-2xl font-black leading-tight truncate orokin-etched"
             style={{ color: tierColor }}
           >
             {fissure.missionType}
@@ -188,7 +188,7 @@ export function FissureCard({ status }: FissureCardProps) {
       <p
         className={[
           'font-mono text-2xl font-bold tabular-nums leading-none mb-3',
-          isPulsing ? 'animate-pulse' : '',
+          isPulsing ? 'orokin-countdown-glow' : '',
         ].filter(Boolean).join(' ')}
         style={{
           color: isExpired
