@@ -1,5 +1,6 @@
-import { db } from '../storage/db';
+import { getWsCache, setWsCache, WS_CACHE_KEYS } from '../storage/worldstateCache';
 import type { WorldCycle, CycleId } from '../../core/domain/cycles';
+import type { WSFetchResult } from './types';
 
 // ---------------------------------------------------------------------------
 // Config
@@ -26,6 +27,14 @@ const META: Record<CycleId, { name: string; location: string }> = {
   earth:   { name: 'Earth',            location: 'Earth Proxima' },
 };
 
+const CYCLE_CACHE_KEY: Record<CycleId, string> = {
+  cetus:   WS_CACHE_KEYS.cycleCetus,
+  vallis:  WS_CACHE_KEYS.cycleVallis,
+  cambion: WS_CACHE_KEYS.cycleCambion,
+  zariman: WS_CACHE_KEYS.cycleZariman,
+  earth:   WS_CACHE_KEYS.cycleEarth,
+};
+
 // ---------------------------------------------------------------------------
 // Raw API shapes (partial — only what we consume)
 // ---------------------------------------------------------------------------
@@ -43,8 +52,10 @@ interface RawCycle {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function cacheKey(id: CycleId): string {
-  return `worldstate:cycle:${id}`;
+interface CycleFetchMeta {
+  cycle:          WorldCycle;
+  cachedAt:       number;
+  fromStaleCache: boolean;
 }
 
 function normalizeState(id: CycleId, raw: RawCycle): string {
@@ -67,36 +78,43 @@ function rawToWorldCycle(id: CycleId, raw: RawCycle, fetchedAt: number): WorldCy
 // Per-cycle fetch (with Dexie offline fallback)
 // ---------------------------------------------------------------------------
 
-async function fetchOneCycle(id: CycleId): Promise<WorldCycle> {
-  const key = cacheKey(id);
-  const now = Date.now();
+async function fetchOneCycle(id: CycleId): Promise<CycleFetchMeta> {
+  const key    = CYCLE_CACHE_KEY[id];
+  const cached = await getWsCache<RawCycle>(key);
 
-  // Check Dexie cache — if still fresh, skip the network call entirely.
-  const cached = await db.cache.get(key);
-  if (cached && cached.expiresAt > now) {
-    return rawToWorldCycle(id, cached.data as RawCycle, cached.updatedAt);
+  // 1. Fresh cache
+  if (cached && !cached.isExpired) {
+    return {
+      cycle:          rawToWorldCycle(id, cached.data, cached.cachedAt),
+      cachedAt:       cached.cachedAt,
+      fromStaleCache: false,
+    };
   }
 
-  // Attempt live fetch.
+  // 2. Live fetch
   try {
     const res = await fetch(ENDPOINT[id]);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const raw: RawCycle = await res.json();
+    const now = Date.now();
 
-    await db.cache.put({
-      key,
-      data:      raw,
-      expiresAt: now + CACHE_TTL_MS,
-      updatedAt: now,
-    });
+    await setWsCache(key, raw, CACHE_TTL_MS);
 
-    return rawToWorldCycle(id, raw, now);
+    return {
+      cycle:          rawToWorldCycle(id, raw, now),
+      cachedAt:       now,
+      fromStaleCache: false,
+    };
   } catch {
-    // Offline or API failure — fall back to any cached record (even expired).
-    // The cycleService.extrapolateCycle will advance it to the current state.
+    // 3. Stale cache
     if (cached) {
-      return rawToWorldCycle(id, cached.data as RawCycle, cached.updatedAt);
+      return {
+        cycle:          rawToWorldCycle(id, cached.data, cached.cachedAt),
+        cachedAt:       cached.cachedAt,
+        fromStaleCache: true,
+      };
     }
+    // 4. No cache at all
     throw new Error(
       `No data for "${id}". Connect to a network to initialize world cycle data.`
     );
@@ -113,11 +131,29 @@ const CYCLE_IDS: CycleId[] = ['cetus', 'vallis', 'cambion', 'zariman', 'earth'];
  * Fetch all five world cycles, returning whichever succeed.
  * Individual failures are silently dropped so a single unavailable endpoint
  * does not break the dashboard.
+ *
+ * Returns aggregate staleness: `cachedAt` is the oldest successful entry,
+ * `fromStaleCache` is true if any cycle was served from expired cache.
  */
-export async function fetchAllCycles(): Promise<WorldCycle[]> {
+export async function fetchAllCycles(): Promise<WSFetchResult<WorldCycle[]>> {
   const results = await Promise.allSettled(CYCLE_IDS.map(fetchOneCycle));
 
-  return results
-    .filter((r): r is PromiseFulfilledResult<WorldCycle> => r.status === 'fulfilled')
+  const metas = results
+    .filter((r): r is PromiseFulfilledResult<CycleFetchMeta> => r.status === 'fulfilled')
     .map(r => r.value);
+
+  if (metas.length === 0) {
+    throw new Error(
+      'No world cycle data available. Connect to a network to initialize the Celestial Pendulum.'
+    );
+  }
+
+  const cachedAt       = Math.min(...metas.map(m => m.cachedAt));
+  const fromStaleCache = metas.some(m => m.fromStaleCache);
+
+  return {
+    data: metas.map(m => m.cycle),
+    cachedAt,
+    fromStaleCache,
+  };
 }

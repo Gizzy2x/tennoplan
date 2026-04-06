@@ -4,6 +4,7 @@ import { Header } from "./Header";
 import { BackgroundDecorations } from "@/components/decorations/BackgroundDecorations";
 import { useNavigationStore, type NavTab } from "@/store/navigation";
 
+import { DailiesWeekliesPage } from "@/features/dailies-weeklies/DailiesWeekliesPage";
 import { CelestialPendulumPage } from "@/features/celestial-pendulum/CelestialPendulumPage";
 import { VoidReliquariesPage } from "@/features/void-reliquaries/VoidReliquariesPage";
 import { ArsenalFabricationPage } from "@/features/arsenal-fabrication/ArsenalFabricationPage";
@@ -16,6 +17,7 @@ import { NeuralArchivePage } from "@/features/neural-archive/NeuralArchivePage";
 import { CephalonWeavePage } from "@/features/cephalon-weave/CephalonWeavePage";
 
 const PAGE_MAP: Record<NavTab, ComponentType> = {
+  "dailies-weeklies": DailiesWeekliesPage,
   "celestial-pendulum": CelestialPendulumPage,
   "void-reliquaries": VoidReliquariesPage,
   "arsenal-fabrication": ArsenalFabricationPage,
