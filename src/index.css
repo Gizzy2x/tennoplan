@@ -218,3 +218,19 @@ body {
     0 0 8px rgba(227, 195, 114, 0.6),
     0 0 16px rgba(227, 195, 114, 0.3);
 }
+
+/* Fissure variant tag — handle that sits above the card top edge */
+.fissure-variant-tag {
+  border-radius: 2px 2px 0 0;
+  font-family: var(--font-label);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
