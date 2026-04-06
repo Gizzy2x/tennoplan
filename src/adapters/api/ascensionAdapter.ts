@@ -16,8 +16,9 @@ const ARCHON_HUNT_TTL_MS    = 3_600_000; // 1 h — weekly event
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch active Nightwave challenges with Dexie offline fallback.
- * Returns an empty array when Nightwave is between seasons.
+ * @deprecated Use `fetchNightwaveWS` from `dailiesAdapter.ts` instead.
+ * This legacy adapter uses direct `db.cache` access. The newer adapter uses
+ * `worldstateCache.ts` with `WSFetchResult<T>` and `fromStaleCache` signals.
  */
 export async function fetchNightwave(): Promise<{ challenges: NightwaveChallengeRaw[]; season: number; tag: string }> {
   const CACHE_KEY = 'nightwave:all';
@@ -69,7 +70,7 @@ export async function fetchNightwave(): Promise<{ challenges: NightwaveChallenge
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch the daily Sortie with Dexie offline fallback.
+ * @deprecated Use `fetchSortieWS` from `dailiesAdapter.ts` instead.
  */
 export async function fetchSortie(): Promise<SortieRaw> {
   const CACHE_KEY = 'sortie:daily';
@@ -106,7 +107,7 @@ export async function fetchSortie(): Promise<SortieRaw> {
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch the weekly Archon Hunt with Dexie offline fallback.
+ * @deprecated Use `fetchArchonHuntWS` from `dailiesAdapter.ts` instead.
  */
 export async function fetchArchonHunt(): Promise<ArchonHuntRaw> {
   const CACHE_KEY = 'archonHunt:weekly';

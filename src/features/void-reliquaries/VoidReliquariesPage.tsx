@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useFissures, DEFAULT_FILTERS } from './hooks/useFissures';
 import { FissureCard } from './components/FissureCard';
+import { formatCacheAge } from '@/core/services/WorldstateService';
 import {
   TIER_COLOR,
   sortTiersByEarliestExpiry,
@@ -85,7 +86,11 @@ export function VoidReliquariesPage() {
     nextToExpire,
     isLoading,
     isError,
+    isStale,
+    cacheAgeMs,
+    hasEverLoaded,
     lastSync,
+    forceRefetch,
   } = useFissures(filters);
 
   const toggle = (key: keyof FissureFilters) =>
@@ -228,6 +233,21 @@ export function VoidReliquariesPage() {
           label="Show Expired"
           onClick={() => setShowExpired(v => !v)}
         />
+
+        {/* Sync status + force refresh */}
+        <div className="flex items-center gap-3 ml-4">
+          <button
+            onClick={forceRefetch}
+            className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35 hover:text-primary/70 transition-colors cursor-pointer"
+            title="Force refresh fissure data"
+          >
+            ↻ Refresh
+          </button>
+          <div className={`w-1.5 h-1.5 rounded-full ${isStale ? 'bg-error/50' : 'bg-success'}`} />
+          <span className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35">
+            {isStale ? 'STALE' : 'LIVE'}
+          </span>
+        </div>
       </div>
 
       {/* ── Loading skeleton ───────────────────────────────────────── */}
@@ -240,15 +260,18 @@ export function VoidReliquariesPage() {
         </div>
       )}
 
-      {/* ── Hard error (no cache) ──────────────────────────────────── */}
-      {isError && totalActive === 0 && (
-        <div className="glass-panel p-8" style={{ borderColor: 'rgba(255,180,171,0.15)' }}>
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-error/60 mb-2">
-            Signal Lost
+      {/* ── First-launch onboarding (no cache, no network) ──────────── */}
+      {!hasEverLoaded && (
+        <div className="glass-panel p-8 flex flex-col gap-4" style={{ borderColor: 'rgba(186,195,254,0.12)' }}>
+          <p className="font-label text-xs uppercase tracking-[0.3em] text-tertiary/60">
+            First Sync Required
           </p>
-          <p className="font-label text-sm text-secondary/40 max-w-lg">
-            No cached fissure data found. Establish a network connection to
-            initialize Void Reliquaries.
+          <p className="font-label text-sm text-secondary/50 max-w-lg leading-relaxed">
+            Tennoplan needs one network connection to initialize Void Reliquaries.
+            After that, all fissure data persists locally and works fully offline.
+          </p>
+          <p className="font-label text-[10px] uppercase tracking-[0.28em] text-secondary/25">
+            Connect to a network and this panel will populate automatically.
           </p>
         </div>
       )}
@@ -277,7 +300,7 @@ export function VoidReliquariesPage() {
       )}
 
       {/* ── Empty state when filters hide everything ──────────────── */}
-      {!isLoading && !isError && totalActive === 0 && (
+      {!isLoading && !isError && totalActive === 0 && hasEverLoaded && (
         <div className="glass-panel p-8 flex items-center justify-center min-h-48">
           <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/30">
             No fissures match active filters
@@ -308,11 +331,20 @@ export function VoidReliquariesPage() {
         </section>
       )}
 
-      {/* ── Offline notice ────────────────────────────────────────── */}
-      {isError && totalActive > 0 && (
-        <p className="font-label text-[10px] uppercase tracking-widest text-secondary/30 mt-6">
-          Offline — displaying cached fissure data. Timings may be stale.
-        </p>
+      {/* ── Offline / stale-cache banner ─────────────────────────── */}
+      {isStale && totalActive > 0 && (
+        <div className="flex items-center gap-3 mt-6">
+          <div className="w-1.5 h-1.5 rounded-full bg-error/50" />
+          <p className="font-label text-[10px] uppercase tracking-widest text-secondary/30">
+            Offline · Cached {formatCacheAge(cacheAgeMs)} · Fissure timings may be stale
+          </p>
+          <button
+            onClick={forceRefetch}
+            className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/25 hover:text-primary/60 transition-colors ml-auto cursor-pointer"
+          >
+            ↻ Retry
+          </button>
+        </div>
       )}
     </>
   );

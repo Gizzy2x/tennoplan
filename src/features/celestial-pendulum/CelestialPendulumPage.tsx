@@ -1,5 +1,6 @@
 import { useWorldCycles } from './hooks/useWorldCycles';
 import { CycleCard } from './components/CycleCard';
+import { formatCacheAge } from '@/core/services/WorldstateService';
 import type { CycleId } from '@/core/domain/cycles';
 
 // Cycle IDs in the order we want them displayed.
@@ -10,7 +11,16 @@ const SECONDARY: CycleId  = 'vallis';
 const TERTIARY: CycleId[] = ['cambion', 'zariman', 'earth'];
 
 export function CelestialPendulumPage() {
-  const { statuses, isLoading, isError, lastSync } = useWorldCycles();
+  const {
+    statuses,
+    isLoading,
+    isError,
+    isStale,
+    cacheAgeMs,
+    hasEverLoaded,
+    lastSync,
+    forceRefetch,
+  } = useWorldCycles();
 
   const byId = Object.fromEntries(statuses.map(s => [s.cycle.id, s]));
 
@@ -65,6 +75,22 @@ export function CelestialPendulumPage() {
       {/* Somatic divider */}
       <div className="somatic-line mb-8" />
 
+      {/* ── Sync status + force refresh ───────────────────────────── */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="flex-1" />
+        <button
+          onClick={forceRefetch}
+          className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35 hover:text-primary/70 transition-colors cursor-pointer"
+          title="Force refresh cycle data"
+        >
+          ↻ Refresh
+        </button>
+        <div className={`w-1.5 h-1.5 rounded-full ${isStale ? 'bg-error/50' : 'bg-success'}`} />
+        <span className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35">
+          {isStale ? 'STALE' : 'LIVE'}
+        </span>
+      </div>
+
       {/* ── Loading skeleton ───────────────────────────────────────── */}
       {isLoading && statuses.length === 0 && (
         <div className="glass-panel p-8 flex items-center gap-4">
@@ -75,15 +101,19 @@ export function CelestialPendulumPage() {
         </div>
       )}
 
-      {/* ── Hard error (no cache) ──────────────────────────────────── */}
-      {isError && statuses.length === 0 && (
-        <div className="glass-panel p-8" style={{ borderColor: 'rgba(255,180,171,0.15)' }}>
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-error/60 mb-2">
-            Signal Lost
+      {/* ── First-launch onboarding (no cache, no network) ──────────── */}
+      {!hasEverLoaded && (
+        <div className="glass-panel p-8 flex flex-col gap-4" style={{ borderColor: 'rgba(186,195,254,0.12)' }}>
+          <p className="font-label text-xs uppercase tracking-[0.3em] text-tertiary/60">
+            First Sync Required
           </p>
-          <p className="font-label text-sm text-secondary/40 max-w-lg">
-            No cached world cycle data found. Establish a network connection
-            to initialize the Celestial Pendulum.
+          <p className="font-label text-sm text-secondary/50 max-w-lg leading-relaxed">
+            Tennoplan needs one network connection to initialize the Celestial Pendulum.
+            After that, all cycle data persists locally — timers extrapolate forward
+            and work fully offline.
+          </p>
+          <p className="font-label text-[10px] uppercase tracking-[0.28em] text-secondary/25">
+            Connect to a network and this panel will populate automatically.
           </p>
         </div>
       )}
@@ -120,11 +150,20 @@ export function CelestialPendulumPage() {
         </div>
       )}
 
-      {/* ── Offline notice when using cached data ─────────────────── */}
-      {isError && statuses.length > 0 && (
-        <p className="font-label text-[10px] uppercase tracking-widest text-secondary/30 mt-6">
-          Offline — displaying extrapolated cycle data. Timings may drift.
-        </p>
+      {/* ── Offline / stale-cache banner ─────────────────────────── */}
+      {isStale && statuses.length > 0 && (
+        <div className="flex items-center gap-3 mt-6">
+          <div className="w-1.5 h-1.5 rounded-full bg-error/50" />
+          <p className="font-label text-[10px] uppercase tracking-widest text-secondary/30">
+            Offline · Cached {formatCacheAge(cacheAgeMs)} · Timers extrapolated
+          </p>
+          <button
+            onClick={forceRefetch}
+            className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/25 hover:text-primary/60 transition-colors ml-auto cursor-pointer"
+          >
+            ↻ Retry
+          </button>
+        </div>
       )}
     </>
   );

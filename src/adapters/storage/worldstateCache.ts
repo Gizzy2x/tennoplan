@@ -25,9 +25,15 @@ export interface WorldstateCacheResult<T> {
 // ---------------------------------------------------------------------------
 
 export const WS_CACHE_KEYS = {
-  nightwave: 'ws:nightwave',
-  sortie:    'ws:sortie',
-  archon:    'ws:archon',
+  nightwave:    'ws:nightwave',
+  sortie:       'ws:sortie',
+  archon:       'ws:archon',
+  fissures:     'ws:fissures',
+  cycleCetus:   'ws:cycle:cetus',
+  cycleVallis:  'ws:cycle:vallis',
+  cycleCambion: 'ws:cycle:cambion',
+  cycleZariman: 'ws:cycle:zariman',
+  cycleEarth:   'ws:cycle:earth',
 } as const;
 
 // ---------------------------------------------------------------------------

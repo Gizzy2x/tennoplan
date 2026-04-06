@@ -1,5 +1,8 @@
 import { getWsCache, setWsCache, WS_CACHE_KEYS } from '../storage/worldstateCache';
 import type { NightwaveChallengeRaw, NightwaveRaw, SortieRaw, ArchonHuntRaw } from '../../core/domain/ascension';
+import type { WSFetchResult } from './types';
+
+export type { WSFetchResult } from './types';
 
 // ---------------------------------------------------------------------------
 // Config
@@ -12,16 +15,6 @@ const ARCHON_ENDPOINT = `${BASE}/archonHunt?language=en`;
 
 const NW_TTL_MS     = 300_000;   // 5 min — daily challenge rotation
 const ARCHON_TTL_MS = 3_600_000; // 1 h  — weekly event
-
-// ---------------------------------------------------------------------------
-// Public result type
-// ---------------------------------------------------------------------------
-
-export interface WSFetchResult<T> {
-  data:           T;
-  cachedAt:       number;  // ms epoch when data was last fetched from the API
-  fromStaleCache: boolean; // true = network failed, serving expired Dexie data
-}
 
 // ---------------------------------------------------------------------------
 // Nightwave

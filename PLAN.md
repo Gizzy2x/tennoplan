@@ -150,6 +150,27 @@ All persistent elements live in **one** `AppShell` component.
 
 **Remaining for Phase 2+:** Pulse tracker, Netracell, EDA/ETA, top-bar persistent access.
 
+**Phase 2b: Offline-First Parity (April 2026):**
+- `WSFetchResult<T>` extracted to shared `src/adapters/api/types.ts` (used by all adapters).
+- `worldstateCache.ts` — added `ws:fissures` and `ws:cycle:{id}` cache keys.
+- `WorldstateAdapter.ts` renamed to `cyclesAdapter.ts` (clarity: it only handles world cycles).
+- `fissureAdapter.ts` — migrated from legacy `db.cache` to `worldstateCache.ts`; returns `WSFetchResult<Fissure[]>` with `fromStaleCache` / `cachedAt`.
+- `cyclesAdapter.ts` — migrated from legacy `db.cache` to `worldstateCache.ts`; returns `WSFetchResult<WorldCycle[]>` with aggregate staleness (oldest `cachedAt`, any-stale flag).
+- `useFissures.ts` — added Dexie pre-load phase, `initialData`/`initialDataUpdatedAt`, `isStale`/`cacheAgeMs`/`hasEverLoaded`/`forceRefetch`.
+- `useWorldCycles.ts` — same pre-load + staleness pattern + `forceRefetch`.
+- `VoidReliquariesPage.tsx` — "Signal Lost" replaced with first-sync onboarding card; stale cache banner with `formatCacheAge` + force refresh / retry buttons added.
+- `CelestialPendulumPage.tsx` — same treatment: first-sync card, stale banner, refresh button.
+- `ascensionAdapter.ts` — deprecated (kept for legacy `useDailiesWeeklies.ts` reference only).
+- All 3 data pages now show: sync status indicator (LIVE/STALE), last sync timestamp, force refresh button, graceful first-launch card, stale cache banner with age.
+- Placeholder pages (6) unchanged — no data sources to sync.
+
+**Future-proofing pattern for new data pages:**
+1. Adapter: use `worldstateCache.ts` (`getWsCache`/`setWsCache`), return `WSFetchResult<T>`.
+2. Hook: Dexie pre-load → TanStack Query with `initialData`/`initialDataUpdatedAt` → export `isStale`/`cacheAgeMs`/`hasEverLoaded`/`forceRefetch`.
+3. Page: first-sync onboarding card, stale cache banner with `formatCacheAge`, refresh button, LIVE/STALE indicator. No hard-fail "Signal Lost" errors.
+- When `useDailiesWeeklies.ts` is finally removed, also delete `ascensionAdapter.ts` and its legacy cache keys (`nightwave:all`, `sortie:daily`, `archonHunt:weekly`).
+- Consider extracting a `useOfflineFirstQuery<T>` generic hook to DRY the pre-load + TanStack Query boilerplate.
+
 ### Phase 3: Ascension Registry (Mastery & Progression Tracker)
 - MR rank display, item checklist (Warframes, weapons, etc.), mark as owned/mastered.
 - Simple focused view with "Completed" flags linking to Dailies & Weeklies where relevant.
