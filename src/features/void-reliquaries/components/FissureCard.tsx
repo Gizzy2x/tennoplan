@@ -105,7 +105,60 @@ export function FissureCard({ status }: FissureCardProps) {
         }}
       />
 
-      {/* ── Top row: icon + mission type + badges ─────────────── */}
+      {/* ── Variant corner tag — primary glance signal ──────────── */}
+      {fissure.isHard ? (
+        <div
+          className="absolute top-0 right-0 flex items-center gap-1 px-2.5 py-1.5 rounded-bl-md z-10"
+          style={{
+            background:   'rgba(120, 15, 15, 0.94)',
+            borderBottom: '1px solid rgba(239,68,68,0.28)',
+            borderLeft:   '1px solid rgba(239,68,68,0.28)',
+          }}
+        >
+          <Skull size={7} strokeWidth={2} style={{ color: '#fca5a5' }} />
+          <span
+            className="font-label text-[8px] uppercase tracking-[0.14em] font-bold"
+            style={{ color: '#fecaca' }}
+          >
+            Steel Path
+          </span>
+        </div>
+      ) : fissure.isStorm ? (
+        <div
+          className="absolute top-0 right-0 flex items-center gap-1 px-2.5 py-1.5 rounded-bl-md z-10"
+          style={{
+            background:   'rgba(172, 118, 10, 0.90)',
+            borderBottom: '1px solid rgba(227,195,114,0.30)',
+            borderLeft:   '1px solid rgba(227,195,114,0.30)',
+          }}
+        >
+          <Zap size={7} strokeWidth={2.5} style={{ color: '#1a0c00' }} />
+          <span
+            className="font-label text-[8px] uppercase tracking-[0.14em] font-bold"
+            style={{ color: '#1a0c00' }}
+          >
+            Storm
+          </span>
+        </div>
+      ) : (
+        <div
+          className="absolute top-0 right-0 px-2.5 py-1.5 rounded-bl-md z-10"
+          style={{
+            background:   'rgba(229, 226, 225, 0.05)',
+            borderBottom: '1px solid rgba(229,226,225,0.09)',
+            borderLeft:   '1px solid rgba(229,226,225,0.09)',
+          }}
+        >
+          <span
+            className="font-label text-[8px] uppercase tracking-[0.14em]"
+            style={{ color: 'rgba(229,226,225,0.32)' }}
+          >
+            Normal
+          </span>
+        </div>
+      )}
+
+      {/* ── Top row: icon + mission type ──────────────────────── */}
       <div className="flex items-start gap-3 mb-3">
 
         {/* Mission type icon — gold anchor for shape recognition; tier dot for color signal */}
@@ -121,8 +174,9 @@ export function FissureCard({ status }: FissureCardProps) {
           />
         </div>
 
-        {/* Mission type (headline) + node name */}
-        <div className="flex-1 min-w-0">
+        {/* Mission type (headline) + node name + tier badge */}
+        {/* pr-16 keeps text clear of the corner tag (~80 px wide at largest) */}
+        <div className="flex-1 min-w-0 pr-16">
           <p
             className="font-headline text-2xl font-black leading-tight truncate orokin-etched"
             style={{ color: tierColor }}
@@ -135,44 +189,17 @@ export function FissureCard({ status }: FissureCardProps) {
               <span className="ml-1">({nodeRegion})</span>
             )}
           </p>
-        </div>
-
-        {/* Badges: Tier + SP + Storm — stacked top-right */}
-        <div className="flex flex-col items-end gap-1 flex-shrink-0">
+          {/* Tier badge — tertiary info, sits below node name */}
           <span
-            className="font-label text-[9px] uppercase tracking-[0.25em] px-1.5 py-0.5 font-semibold"
+            className="inline-block font-label text-[8px] uppercase tracking-[0.2em] px-1.5 py-0.5 mt-1 font-semibold"
             style={{
               color:           tierColor,
-              border:          `1px solid ${tierColor}50`,
-              backgroundColor: `${tierColor}12`,
+              border:          `1px solid ${tierColor}45`,
+              backgroundColor: `${tierColor}0D`,
             }}
           >
             {fissure.tier}
           </span>
-          {fissure.isHard && (
-            <span
-              className="font-label text-[9px] uppercase tracking-widest px-1.5 py-0.5 font-bold"
-              style={{
-                color:           '#f87171',
-                border:          '1px solid rgba(248,113,113,0.55)',
-                backgroundColor: 'rgba(248,113,113,0.14)',
-              }}
-            >
-              SP
-            </span>
-          )}
-          {fissure.isStorm && (
-            <span
-              className="font-label text-[9px] uppercase tracking-widest px-1.5 py-0.5"
-              style={{
-                color:           '#bac3fe',
-                border:          '1px solid rgba(186,195,254,0.45)',
-                backgroundColor: 'rgba(186,195,254,0.08)',
-              }}
-            >
-              STORM
-            </span>
-          )}
         </div>
       </div>
 
