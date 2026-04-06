@@ -161,7 +161,6 @@ export function DailiesWeekliesPage() {
     archonHuntStatus,
     archonHuntLoading,
     archonHuntError,
-    standing,
     weeklyEarned,
     totalChallenges,
     completedCount,
