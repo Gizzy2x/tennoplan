@@ -1,0 +1,93 @@
+import { db } from '../storage/db';
+import type { NightwaveChallengeRaw, NightwaveRaw, SortieRaw } from '../../core/domain/ascension';
+
+// ---------------------------------------------------------------------------
+// Config
+// ---------------------------------------------------------------------------
+
+const NW_ENDPOINT    = 'https://api.warframestat.us/pc/nightwave';
+const SORTIE_ENDPOINT= 'https://api.warframestat.us/pc/sortie';
+const CACHE_TTL_MS   = 300_000; // 5 min — challenges reset daily/weekly
+
+// ---------------------------------------------------------------------------
+// Nightwave
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch active Nightwave challenges with Dexie offline fallback.
+ * Returns an empty array when Nightwave is between seasons.
+ */
+export async function fetchNightwave(): Promise<{ challenges: NightwaveChallengeRaw[]; season: number; tag: string }> {
+  const CACHE_KEY = 'nightwave:all';
+  const now = Date.now();
+
+  const cached = await db.cache.get(CACHE_KEY);
+  if (cached && cached.expiresAt > now) {
+    return cached.data as { challenges: NightwaveChallengeRaw[]; season: number; tag: string };
+  }
+
+  try {
+    const res = await fetch(NW_ENDPOINT);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const raw: NightwaveRaw = await res.json();
+
+    const result = {
+      challenges: raw.activeChallenges ?? [],
+      season:     raw.season ?? 0,
+      tag:        raw.tag ?? '',
+    };
+
+    await db.cache.put({
+      key:       CACHE_KEY,
+      data:      result,
+      expiresAt: now + CACHE_TTL_MS,
+      updatedAt: now,
+    });
+
+    return result;
+  } catch {
+    if (cached) {
+      return cached.data as { challenges: NightwaveChallengeRaw[]; season: number; tag: string };
+    }
+    throw new Error(
+      'No Nightwave data available. Connect to a network to initialize Ascension Registry.'
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Sortie
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch the daily Sortie with Dexie offline fallback.
+ */
+export async function fetchSortie(): Promise<SortieRaw> {
+  const CACHE_KEY = 'sortie:daily';
+  const now = Date.now();
+
+  const cached = await db.cache.get(CACHE_KEY);
+  if (cached && cached.expiresAt > now) {
+    return cached.data as SortieRaw;
+  }
+
+  try {
+    const res = await fetch(SORTIE_ENDPOINT);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const raw: SortieRaw = await res.json();
+
+    await db.cache.put({
+      key:       CACHE_KEY,
+      data:      raw,
+      expiresAt: now + CACHE_TTL_MS,
+      updatedAt: now,
+    });
+
+    return raw;
+  } catch {
+    if (cached) return cached.data as SortieRaw;
+    throw new Error(
+      'No Sortie data available. Connect to a network to initialize Ascension Registry.'
+    );
+  }
+}

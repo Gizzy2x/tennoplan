@@ -1,0 +1,110 @@
+import type {
+  NightwaveChallengeRaw,
+  SortieRaw,
+  ChallengeKind,
+  ChallengeStatus,
+  SortieStatus,
+  StandingSummary,
+} from '../domain/ascension';
+
+// ---------------------------------------------------------------------------
+// Classification
+// ---------------------------------------------------------------------------
+
+export function classifyChallenge(c: NightwaveChallengeRaw): ChallengeKind {
+  if (c.isElite)  return 'elite';
+  if (c.isDaily)  return 'daily';
+  return 'weekly';
+}
+
+// ---------------------------------------------------------------------------
+// Status computation
+// ---------------------------------------------------------------------------
+
+export function computeChallengeStatus(
+  raw:          NightwaveChallengeRaw,
+  completedIds: Set<string>,
+  now:          number,
+): ChallengeStatus {
+  const msRemaining = raw.isPermanent ? 0 : Math.max(0, new Date(raw.expiry).getTime() - now);
+  return {
+    raw,
+    kind:      classifyChallenge(raw),
+    completed: completedIds.has(raw.id),
+    msRemaining,
+  };
+}
+
+export function computeSortieStatus(raw: SortieRaw, now: number): SortieStatus {
+  return {
+    raw,
+    msRemaining: Math.max(0, new Date(raw.expiry).getTime() - now),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Grouping
+// ---------------------------------------------------------------------------
+
+export function groupChallenges(
+  statuses: ChallengeStatus[],
+): Record<ChallengeKind, ChallengeStatus[]> {
+  const result: Record<ChallengeKind, ChallengeStatus[]> = {
+    daily:  [],
+    weekly: [],
+    elite:  [],
+  };
+  for (const s of statuses) {
+    result[s.kind].push(s);
+  }
+  return result;
+}
+
+// ---------------------------------------------------------------------------
+// Standing summary
+// ---------------------------------------------------------------------------
+
+export function computeStanding(statuses: ChallengeStatus[]): StandingSummary {
+  let earned    = 0;
+  let available = 0;
+  for (const s of statuses) {
+    available += s.raw.standing;
+    if (s.completed) earned += s.raw.standing;
+  }
+  const pct = available > 0 ? earned / available : 0;
+  return { earned, available, pct };
+}
+
+// ---------------------------------------------------------------------------
+// Presentation constants (pure — no React)
+// ---------------------------------------------------------------------------
+
+/** Hex color per challenge kind. */
+export const KIND_COLOR: Record<ChallengeKind, string> = {
+  daily:  '#E3C372',  // gold
+  weekly: '#C6C6C7',  // silver
+  elite:  '#c084fc',  // purple
+};
+
+/** Subtle right-to-left overlay color per kind (rgba string). */
+export const KIND_OVERLAY: Record<ChallengeKind, string> = {
+  daily:  'rgba(227, 195, 114, 0.13)',
+  weekly: 'rgba(198, 198, 199, 0.09)',
+  elite:  'rgba(192, 132, 252, 0.14)',
+};
+
+/** Faction color for Sorties — mirrors ENEMY_COLOR in fissureService. */
+export const SORTIE_FACTION_COLOR: Record<string, string> = {
+  Grineer:  '#f87171',
+  Corpus:   '#60a5fa',
+  Infested: '#86efac',
+  Corrupted:'#E3C372',
+  Orokin:   '#E3C372',
+};
+
+/** Human-readable label per kind. */
+export const KIND_LABEL: Record<ChallengeKind, string> = {
+  daily:  'Daily Challenges',
+  weekly: 'Weekly Challenges',
+  elite:  'Elite Weekly',
+};
