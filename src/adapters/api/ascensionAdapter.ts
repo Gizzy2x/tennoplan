@@ -31,10 +31,17 @@ export async function fetchNightwave(): Promise<{ challenges: NightwaveChallenge
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const raw: NightwaveRaw = await res.json();
 
+    // Normalize standing to a safe number on ingestion.
+    // Warframe Nightwave API sometimes omits or returns non-numeric standing
+    // fields between seasons or on first load — Number(undefined) = NaN, so
+    // we coerce with || 0 here so the rest of the pipeline never sees NaN.
     const result = {
-      challenges: raw.activeChallenges ?? [],
-      season:     raw.season ?? 0,
-      tag:        raw.tag ?? '',
+      challenges: (raw.activeChallenges ?? []).map(c => ({
+        ...c,
+        standing: Number(c.standing) || 0,
+      })),
+      season: raw.season ?? 0,
+      tag:    raw.tag ?? '',
     };
 
     await db.cache.put({

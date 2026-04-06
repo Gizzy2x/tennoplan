@@ -148,7 +148,7 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
             className="font-mono text-xl font-bold tabular-nums leading-none"
             style={{ color: completed ? 'rgba(197,192,190,0.30)' : color }}
           >
-            {((raw.standing ?? 0) / 1000).toFixed(0)}k
+            {(Math.max(0, Number(raw.standing) || 0) / 1000).toFixed(0)}k
           </p>
           <p
             className="font-label text-[8px] uppercase tracking-[0.2em] mt-0.5"
