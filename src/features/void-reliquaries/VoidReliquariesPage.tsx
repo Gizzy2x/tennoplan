@@ -1,7 +1,89 @@
+import { useState } from 'react';
+import { useFissures, DEFAULT_FILTERS } from './hooks/useFissures';
+import { FissureCard } from './components/FissureCard';
+import { TIER_COLOR } from '@/core/services/fissureService';
+import { TIER_ORDER } from '@/core/domain/relics';
+import type { FissureFilters } from '@/core/services/fissureService';
+
+// ---------------------------------------------------------------------------
+// Filter toggle button
+// ---------------------------------------------------------------------------
+
+function FilterButton({
+  active,
+  color,
+  label,
+  onClick,
+}: {
+  active:   boolean;
+  color:    string;
+  label:    string;
+  onClick:  () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="font-label text-[10px] uppercase tracking-[0.3em] px-3 py-1 transition-all"
+      style={{
+        color:           active ? color : 'rgba(197,192,190,0.3)',
+        border:          `1px solid ${active ? `${color}50` : 'rgba(197,192,190,0.08)'}`,
+        backgroundColor: active ? `${color}10` : 'transparent',
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Tier section header
+// ---------------------------------------------------------------------------
+
+function TierHeader({ tier, count }: { tier: string; count: number }) {
+  const color = TIER_COLOR[tier as keyof typeof TIER_COLOR] ?? '#E3C372';
+  return (
+    <div className="flex items-center gap-3 mb-3">
+      <span
+        className="font-label text-[10px] uppercase tracking-[0.4em] font-semibold"
+        style={{ color }}
+      >
+        {tier}
+      </span>
+      <div className="flex-1 h-px" style={{ backgroundColor: `${color}20` }} />
+      <span
+        className="font-mono text-[10px] tabular-nums"
+        style={{ color, opacity: 0.5 }}
+      >
+        {count}
+      </span>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Page
+// ---------------------------------------------------------------------------
+
 export function VoidReliquariesPage() {
+  const [filters, setFilters] = useState<FissureFilters>(DEFAULT_FILTERS);
+  const { grouped, totalActive, isLoading, isError, lastSync } = useFissures(filters);
+
+  const toggle = (key: keyof FissureFilters) =>
+    setFilters(f => ({ ...f, [key]: !f[key] }));
+
+  const lastSyncLabel = lastSync
+    ? new Date(lastSync).toLocaleTimeString([], {
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+      })
+    : '—';
+
+  const syncState = isLoading ? 'SYNCING' : isError ? 'OFFLINE' : 'ONLINE';
+  const syncWidth = isLoading ? '45%' : isError ? '12%' : '100%';
+
   return (
     <>
-      <section className="mb-16 grid grid-cols-12 gap-8 items-end">
+      {/* ── Celestial Asymmetry Header ─────────────────────────────── */}
+      <section className="mb-10 grid grid-cols-12 gap-8 items-end">
         <div className="col-span-8">
           <span className="font-label text-xs uppercase tracking-[0.4em] text-primary mb-4 block">
             Manifest Inventory 77.A
@@ -13,31 +95,123 @@ export function VoidReliquariesPage() {
               <span className="text-primary italic">RELIQUARIES</span>
             </h2>
             <span className="font-label text-xs uppercase tracking-[0.3em] text-primary/40 whitespace-nowrap mb-2">
-              — Fissures / Relics
+              — Active Fissure Manifest
             </span>
           </div>
         </div>
+
         <div className="col-span-4 text-right">
           <div className="inline-block p-4 border-l border-primary/20 text-left">
             <p className="font-label text-[10px] text-secondary opacity-40 uppercase tracking-widest">
-              Storage Capacity
+              {syncState === 'SYNCING' ? 'Chronometry Sync' : 'Active Fissures'}
             </p>
             <p className="font-headline text-3xl font-bold text-primary">
-              84% FULL
+              {syncState === 'SYNCING' || syncState === 'OFFLINE'
+                ? syncState
+                : String(totalActive).padStart(2, '0')}
             </p>
-            <div className="w-full h-1 bg-surface-container-highest mt-2 relative overflow-hidden">
-              <div className="absolute inset-y-0 left-0 bg-primary w-4/5 shadow-[0_0_8px_#E3C372]" />
+            <p className="font-label text-[10px] text-secondary/30 uppercase tracking-widest mt-0.5">
+              {lastSync ? `Updated ${lastSyncLabel}` : 'No sync yet'}
+            </p>
+            <div className="w-full h-px bg-surface-container-highest mt-2 relative overflow-hidden">
+              <div
+                className="absolute inset-y-0 left-0 h-full bg-primary shadow-[0_0_8px_#E3C372]"
+                style={{ width: syncWidth, transition: 'width 0.5s ease' }}
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Phase N content will be added here */}
-      <div className="glass-panel p-8 min-h-[400px] flex items-center justify-center">
-        <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
-          Systems initializing...
-        </p>
+      {/* Somatic divider */}
+      <div className="somatic-line mb-6" />
+
+      {/* ── Filter bar ────────────────────────────────────────────── */}
+      <div className="flex items-center gap-2 mb-8">
+        <span className="font-label text-[10px] uppercase tracking-[0.35em] text-secondary/30 mr-2">
+          Filter
+        </span>
+        <FilterButton
+          active={filters.showNormal}
+          color="#E3C372"
+          label="Normal"
+          onClick={() => toggle('showNormal')}
+        />
+        <FilterButton
+          active={filters.showStorm}
+          color="#bac3fe"
+          label="Storm"
+          onClick={() => toggle('showStorm')}
+        />
+        <FilterButton
+          active={filters.showSteelPath}
+          color="#f87171"
+          label="Steel Path"
+          onClick={() => toggle('showSteelPath')}
+        />
       </div>
+
+      {/* ── Loading skeleton ───────────────────────────────────────── */}
+      {isLoading && totalActive === 0 && (
+        <div className="glass-panel p-8 flex items-center gap-4">
+          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
+            Querying void relay — fetching active fissures…
+          </p>
+        </div>
+      )}
+
+      {/* ── Hard error (no cache) ──────────────────────────────────── */}
+      {isError && totalActive === 0 && (
+        <div className="glass-panel p-8" style={{ borderColor: 'rgba(255,180,171,0.15)' }}>
+          <p className="font-label text-xs uppercase tracking-[0.3em] text-error/60 mb-2">
+            Signal Lost
+          </p>
+          <p className="font-label text-sm text-secondary/40 max-w-lg">
+            No cached fissure data found. Establish a network connection to
+            initialize Void Reliquaries.
+          </p>
+        </div>
+      )}
+
+      {/* ── Tier grid ─────────────────────────────────────────────── */}
+      {totalActive > 0 && (
+        <div className="space-y-8">
+          {TIER_ORDER.map(tier => {
+            const statuses = grouped.get(tier) ?? [];
+            if (statuses.length === 0) return null;
+
+            return (
+              <section key={tier}>
+                <TierHeader tier={tier} count={statuses.length} />
+                <div className="grid grid-cols-12 gap-3">
+                  {statuses.map(s => (
+                    <div key={s.fissure.id} className="col-span-4">
+                      <FissureCard status={s} />
+                    </div>
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── Empty state when filters hide everything ──────────────── */}
+      {!isLoading && !isError && totalActive === 0 && (
+        <div className="glass-panel p-8 flex items-center justify-center min-h-48">
+          <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/30">
+            No fissures match active filters
+          </p>
+        </div>
+      )}
+
+      {/* ── Offline notice ────────────────────────────────────────── */}
+      {isError && totalActive > 0 && (
+        <p className="font-label text-[10px] uppercase tracking-widest text-secondary/30 mt-6">
+          Offline — displaying cached fissure data. Timings may be stale.
+        </p>
+      )}
     </>
   );
 }
