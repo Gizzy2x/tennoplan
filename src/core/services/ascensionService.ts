@@ -123,6 +123,10 @@ export const SORTIE_FACTION_COLOR: Record<string, string> = {
   Orokin:   '#E3C372',
 };
 
+/** Warframe's hard weekly standing cap for Nightwave. Used as the denominator
+ *  for the standing progress bar so the tracker stays stable across daily rotations. */
+export const NW_WEEKLY_STANDING_CAP = 40_000;
+
 /** Human-readable label per kind. */
 export const KIND_LABEL: Record<ChallengeKind, string> = {
   daily:  'Daily Challenges',

@@ -6,6 +6,7 @@ import {
   KIND_COLOR,
   KIND_LABEL,
   SORTIE_FACTION_COLOR,
+  NW_WEEKLY_STANDING_CAP,
 } from '@/core/services/ascensionService';
 import { formatMsHuman } from '@/core/services/cycleService';
 import type { ChallengeKind, ChallengeStatus } from '@/core/domain/ascension';
@@ -158,7 +159,10 @@ export function DailiesWeekliesPage() {
     grouped,
     sortieStatus,
     archonHuntStatus,
+    archonHuntLoading,
+    archonHuntError,
     standing,
+    weeklyEarned,
     totalChallenges,
     completedCount,
     season,
@@ -167,6 +171,7 @@ export function DailiesWeekliesPage() {
     isError,
     lastSync,
     toggleComplete,
+    forceRefetch,
   } = useDailiesWeeklies();
 
   const lastSyncLabel = lastSync
@@ -186,7 +191,9 @@ export function DailiesWeekliesPage() {
 
   const seasonLabel = season > 0 ? `Season ${season}` : seasonTag || 'Nightwave';
 
-  const standingRemaining = standing.available - standing.earned;
+  // Weekly standing uses weeklyEarned (persisted across daily rotations) against the cap
+  const weeklyPct       = Math.min(1, weeklyEarned / NW_WEEKLY_STANDING_CAP);
+  const standingRemaining = Math.max(0, NW_WEEKLY_STANDING_CAP - weeklyEarned);
 
   // Reset countdowns derived from first challenge in each bucket
   const dailyMs  = grouped.daily[0]?.msRemaining  ?? 0;
@@ -215,12 +222,12 @@ export function DailiesWeekliesPage() {
         <div className="col-span-4 text-right">
           <div className="inline-block p-4 border-l border-primary/20 text-left w-full">
             <p className="font-label text-[10px] text-secondary opacity-40 uppercase tracking-widest">
-              {syncState === 'SYNCING' ? 'Chronometry Sync' : 'Weekly Standing'}
+              {syncState === 'SYNCING' ? 'Chronometry Sync' : 'Weekly Cap'}
             </p>
             <p className="font-headline text-3xl font-bold text-primary">
               {syncState === 'SYNCING' || syncState === 'OFFLINE'
                 ? syncState
-                : `${(Math.max(0, standing.earned || 0) / 1000).toFixed(0)}k / ${(Math.max(0, standing.available || 0) / 1000).toFixed(0)}k`}
+                : `${(weeklyEarned / 1000).toFixed(0)}k / ${(NW_WEEKLY_STANDING_CAP / 1000).toFixed(0)}k`}
             </p>
             <p className="font-label text-[10px] text-secondary/30 uppercase tracking-widest mt-0.5">
               {syncState === 'ONLINE' ? seasonLabel : lastSync ? `Updated ${lastSyncLabel}` : 'No sync yet'}
@@ -231,7 +238,7 @@ export function DailiesWeekliesPage() {
               <div
                 className="absolute inset-y-0 left-0 h-full bg-primary shadow-[0_0_8px_#E3C372]"
                 style={{
-                  width:      syncState === 'ONLINE' ? `${standing.pct * 100}%` : syncWidth,
+                  width:      syncState === 'ONLINE' ? `${weeklyPct * 100}%` : syncWidth,
                   transition: 'width 0.5s ease',
                 }}
               />
@@ -286,8 +293,15 @@ export function DailiesWeekliesPage() {
             <ResetCounter label="Weekly Reset" msRemaining={weeklyMs} urgentMs={24 * 3600_000} />
           )}
 
-          {/* Sync status chip */}
-          <div className="ml-auto flex items-center gap-2 self-center">
+          {/* Sync status chip + force-refresh button */}
+          <div className="ml-auto flex items-center gap-3 self-center">
+            <button
+              onClick={forceRefetch}
+              className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35 hover:text-primary/70 transition-colors cursor-pointer"
+              title="Force refresh all data"
+            >
+              ↻ Refresh
+            </button>
             <div className="w-1.5 h-1.5 rounded-full bg-success" />
             <span className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35">
               LIVE
@@ -312,18 +326,18 @@ export function DailiesWeekliesPage() {
             {/* Left: standing numbers */}
             <div>
               <p className="font-label text-[9px] uppercase tracking-[0.35em] text-primary/40 mb-1">
-                Total Potential Standing
+                Weekly Standing
               </p>
               <div className="flex items-end gap-3">
                 <p className="font-mono font-bold tabular-nums leading-none" style={{ fontSize: '2.4rem', color: '#E3C372' }}>
-                  {(Math.max(0, standing.earned) / 1000).toFixed(0)}k
+                  {(weeklyEarned / 1000).toFixed(0)}k
                 </p>
                 <p className="font-mono text-xl font-bold tabular-nums leading-none mb-0.5" style={{ color: 'rgba(227,195,114,0.40)' }}>
-                  / {(Math.max(0, standing.available) / 1000).toFixed(0)}k
+                  / {(NW_WEEKLY_STANDING_CAP / 1000).toFixed(0)}k
                 </p>
               </div>
               <p className="font-label text-[9px] uppercase tracking-[0.25em] mt-1" style={{ color: 'rgba(227,195,114,0.35)' }}>
-                standing earned this week
+                earned toward weekly cap
               </p>
             </div>
 
@@ -339,7 +353,7 @@ export function DailiesWeekliesPage() {
                 </span>
               </p>
               <p className="font-label text-[9px] uppercase tracking-[0.25em] mt-1" style={{ color: 'rgba(227,195,114,0.35)' }}>
-                {Math.round(standing.pct * 100)}% of available standing
+                {Math.round(weeklyPct * 100)}% of weekly cap
               </p>
             </div>
           </div>
@@ -352,7 +366,7 @@ export function DailiesWeekliesPage() {
             <div
               className="absolute inset-y-0 left-0 h-full transition-all duration-700"
               style={{
-                width:      `${standing.pct * 100}%`,
+                width:      `${weeklyPct * 100}%`,
                 background: 'linear-gradient(90deg, rgba(227,195,114,0.7), #E3C372)',
                 boxShadow:  '0 0 10px rgba(227,195,114,0.50)',
               }}
@@ -363,7 +377,7 @@ export function DailiesWeekliesPage() {
               className="font-label text-[8px] uppercase tracking-[0.28em] mt-2"
               style={{ color: 'rgba(227,195,114,0.28)' }}
             >
-              {(Math.max(0, standingRemaining) / 1000).toFixed(0)}k standing remaining this week
+              {(standingRemaining / 1000).toFixed(0)}k standing remaining toward cap
             </p>
           )}
         </div>
@@ -390,6 +404,30 @@ export function DailiesWeekliesPage() {
             initialize Dailies &amp; Weeklies.
           </p>
         </div>
+      )}
+
+      {/* ── Archon Hunt loading / error states ──────────────────────── */}
+      {archonHuntLoading && !archonHuntStatus && (
+        <section className="mb-10">
+          <div className="glass-panel p-6 flex items-center gap-3">
+            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
+              Loading Archon Hunt…
+            </p>
+          </div>
+        </section>
+      )}
+      {archonHuntError && !archonHuntStatus && (
+        <section className="mb-10">
+          <div className="glass-panel p-6" style={{ borderColor: 'rgba(255,180,171,0.15)' }}>
+            <p className="font-label text-xs uppercase tracking-[0.3em] text-error/60 mb-1">
+              Archon Hunt Unavailable
+            </p>
+            <p className="font-label text-[10px] text-secondary/35">
+              {(archonHuntError as Error).message}
+            </p>
+          </div>
+        </section>
       )}
 
       {/* ── Archon Hunt section ──────────────────────────────────────── */}
@@ -516,7 +554,11 @@ export function DailiesWeekliesPage() {
                   {/* Responsive challenge card grid */}
                   <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
                     {statuses.map(s => (
-                      <ChallengeCard key={s.raw.id} status={s} onToggle={toggleComplete} />
+                      <ChallengeCard
+                        key={s.raw.id}
+                        status={s}
+                        onToggle={(id) => toggleComplete(id, s.raw.reputation)}
+                      />
                     ))}
                   </div>
                 </section>

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { db } from '@/adapters/storage/db';
 import { fetchNightwave, fetchSortie, fetchArchonHunt } from '@/adapters/api/ascensionAdapter';
 import {
@@ -9,6 +9,7 @@ import {
   groupChallenges,
   computeStanding,
 } from '@/core/services/ascensionService';
+import { getWeekStart } from '@/core/services/cycleService';
 import type { ChallengeKind, ChallengeStatus, SortieStatus, ArchonHuntStatus, StandingSummary } from '@/core/domain/ascension';
 
 // ---------------------------------------------------------------------------
@@ -21,15 +22,20 @@ import type { ChallengeKind, ChallengeStatus, SortieStatus, ArchonHuntStatus, St
  * - React Query fetches Nightwave + Sortie (5 min poll), with Dexie fallback.
  * - Local completion state lives in userMarks (Dexie), loaded once on mount.
  *   Optimistic updates via setState so toggles feel instant.
+ * - `weeklyEarned` sums metadata.reputation from all marks this UTC week,
+ *   so standing stays correct even after daily challenges expire from the API.
  * - A 1-second interval ticks `now` for daily countdowns without re-fetching.
  */
 export function useDailiesWeeklies() {
+  const queryClient = useQueryClient();
+
   // ── Nightwave query ────────────────────────────────────────────────────
   const {
     data:          nwData,
     isLoading:     nwLoading,
     error:         nwError,
     dataUpdatedAt: nwUpdatedAt,
+    refetch:       refetchNW,
   } = useQuery({
     queryKey:        ['nightwave'],
     queryFn:         fetchNightwave,
@@ -45,6 +51,7 @@ export function useDailiesWeeklies() {
     isLoading:     sortieLoading,
     error:         sortieError,
     dataUpdatedAt: sortieUpdatedAt,
+    refetch:       refetchSortie,
   } = useQuery({
     queryKey:        ['sortie'],
     queryFn:         fetchSortie,
@@ -56,7 +63,10 @@ export function useDailiesWeeklies() {
 
   // ── Archon Hunt query ──────────────────────────────────────────────────
   const {
-    data: archonHuntData,
+    data:      archonHuntData,
+    isLoading: archonHuntLoading,
+    error:     archonHuntError,
+    refetch:   refetchArchonHunt,
   } = useQuery({
     queryKey:        ['archonHunt'],
     queryFn:         fetchArchonHunt,
@@ -67,16 +77,25 @@ export function useDailiesWeeklies() {
   });
 
   // ── Local completion state ─────────────────────────────────────────────
-  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [completedIds,  setCompletedIds]  = useState<Set<string>>(new Set());
+  const [weeklyEarned,  setWeeklyEarned]  = useState(0);
 
-  useEffect(() => {
-    db.userMarks
-      .where('type').equals('ascension')
-      .toArray()
-      .then(marks => setCompletedIds(new Set(marks.map(m => m.referenceId))));
-  }, []);
+  async function loadMarks() {
+    const marks = await db.userMarks.where('type').equals('ascension').toArray();
+    setCompletedIds(new Set(marks.map(m => m.referenceId)));
 
-  async function toggleComplete(challengeId: string) {
+    const ws = getWeekStart(Date.now());
+    const earned = marks.reduce((sum, m) => {
+      const meta = m.metadata as { reputation?: number; weekStart?: number } | undefined;
+      if (meta?.weekStart === ws) return sum + (meta.reputation ?? 0);
+      return sum;
+    }, 0);
+    setWeeklyEarned(earned);
+  }
+
+  useEffect(() => { loadMarks(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function toggleComplete(challengeId: string, reputation: number) {
     // Optimistic update first for instant UI response
     setCompletedIds(prev => {
       const next = new Set(prev);
@@ -102,10 +121,27 @@ export function useDailiesWeeklies() {
         type:        'ascension',
         referenceId: challengeId,
         status:      'completed',
+        metadata:    { reputation, weekStart: getWeekStart(now) },
         createdAt:   now,
         updatedAt:   now,
       });
     }
+
+    // Reload to keep weeklyEarned accurate
+    await loadMarks();
+  }
+
+  // ── Force refresh — clears Dexie cache + React Query cache then refetches
+  async function forceRefetch() {
+    await Promise.all([
+      db.cache.delete('nightwave:all'),
+      db.cache.delete('sortie:daily'),
+      db.cache.delete('archonHunt:weekly'),
+    ]);
+    queryClient.removeQueries({ queryKey: ['nightwave'] });
+    queryClient.removeQueries({ queryKey: ['sortie'] });
+    queryClient.removeQueries({ queryKey: ['archonHunt'] });
+    await Promise.all([refetchNW(), refetchSortie(), refetchArchonHunt()]);
   }
 
   // ── 1-second clock ────────────────────────────────────────────────────
@@ -170,7 +206,10 @@ export function useDailiesWeeklies() {
     grouped,
     sortieStatus,
     archonHuntStatus,
+    archonHuntLoading,
+    archonHuntError,
     standing,
+    weeklyEarned,
     totalChallenges,
     completedCount,
     season:       nwData?.season  ?? 0,
@@ -180,5 +219,6 @@ export function useDailiesWeeklies() {
     lastSync,
     now,
     toggleComplete,
+    forceRefetch,
   };
 }
