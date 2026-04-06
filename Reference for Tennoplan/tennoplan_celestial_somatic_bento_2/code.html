@@ -1,0 +1,418 @@
+<html class="dark" lang="en"><head></head><body class="bg-surface-dim text-on-surface font-body selection:bg-primary/30">```html
+
+
+
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700;900&amp;family=Inter:wght@300;400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#131313",
+                      "on-background": "#e5e2e1",
+                      "background": "#131313",
+                      "inverse-primary": "#735b13",
+                      "on-primary-fixed-variant": "#594400",
+                      "on-error-container": "#ffdad6",
+                      "on-secondary-container": "#b4b5b5",
+                      "secondary": "#c6c6c7",
+                      "outline": "#98907f",
+                      "surface-container-low": "#1c1b1b",
+                      "on-surface-variant": "#cfc5b3",
+                      "tertiary-container": "#9aa3dc",
+                      "on-secondary-fixed": "#1a1c1c",
+                      "surface-variant": "#353534",
+                      "surface": "#131313",
+                      "secondary-container": "#454747",
+                      "on-tertiary-container": "#2f386a",
+                      "on-primary-fixed": "#241a00",
+                      "on-tertiary": "#232c5e",
+                      "inverse-on-surface": "#313030",
+                      "tertiary-fixed": "#dee0ff",
+                      "surface-container": "#201f1f",
+                      "surface-container-highest": "#353534",
+                      "on-secondary-fixed-variant": "#454747",
+                      "surface-container-lowest": "#0e0e0e",
+                      "on-secondary": "#2f3131",
+                      "inverse-surface": "#e5e2e1",
+                      "outline-variant": "#4d4638",
+                      "tertiary": "#bac3fe",
+                      "primary-fixed": "#ffdf92",
+                      "on-tertiary-fixed": "#0c1648",
+                      "tertiary-fixed-dim": "#bac3fe",
+                      "primary": "#e3c372",
+                      "surface-container-high": "#2a2a2a",
+                      "on-tertiary-fixed-variant": "#3a4376",
+                      "surface-tint": "#e3c372",
+                      "on-primary": "#3e2e00",
+                      "on-error": "#690005",
+                      "error-container": "#93000a",
+                      "secondary-fixed": "#e2e2e2",
+                      "primary-fixed-dim": "#e3c372",
+                      "secondary-fixed-dim": "#c6c6c7",
+                      "on-primary-container": "#4b3900",
+                      "on-surface": "#e5e2e1",
+                      "primary-container": "#c1a355",
+                      "error": "#ffb4ab",
+                      "surface-bright": "#3a3939"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "fontFamily": {
+                      "headline": ["Noto Serif"],
+                      "body": ["Inter"],
+                      "label": ["Inter"]
+              }
+            },
+          },
+        }
+    </script>
+<style type="text/tailwindcss">
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        .somatic-line {
+            background: linear-gradient(90deg, transparent, #E3C372, transparent);
+            height: 1px;
+            width: 100%;
+            opacity: 0.3;
+        }
+        .filigree-corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-top: 1px solid rgba(227, 195, 114, 0.4);
+            border-left: 1px solid rgba(227, 195, 114, 0.4);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E3C372;
+            border-radius: 2px;
+        }
+        .glass-panel {
+            @apply bg-surface-container-low/40 backdrop-blur-xl border border-outline-variant/20 shadow-2xl;
+        }
+        .timeline-node::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 100%;
+            height: 1px;
+            background: theme('colors.primary/20');
+            z-index: -1;
+        }
+    </style>
+
+
+<aside class="fixed left-0 top-0 h-screen w-[280px] border-r border-[#C1A355]/20 bg-[#131313]/90 backdrop-blur-xl flex flex-col py-8 px-4 z-50 shadow-[0_0_32px_rgba(193,163,85,0.06)]">
+<div class="mb-10 px-4">
+<h1 class="font-headline text-2xl font-black tracking-[0.2em] text-[#E3C372]">TENNOPLAN</h1>
+<p class="font-headline text-[10px] uppercase tracking-[0.1em] text-[#E3C372] opacity-70">SOMATIC LINK ACTIVE</p>
+</div>
+<nav class="flex-1 space-y-1 overflow-y-auto custom-scrollbar">
+<a class="flex items-center px-4 py-3 text-[#E3C372] bg-[#C1A355]/10 border-r-2 border-[#E3C372] shadow-[0_0_15px_rgba(227,195,114,0.3)] transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="schedule">schedule</span>
+<span class="font-label font-light tracking-tighter text-xs">CELESTIAL PENDULUM</span>
+</a>
+<a class="flex items-center px-4 py-3 text-[#C6C6C7] opacity-60 hover:opacity-100 hover:bg-[#C1A355]/5 hover:text-[#F2F2F2] transition-all" href="#">
+<span class="material-symbols-outlined mr-3">inventory_2</span>
+<span class="font-label font-light tracking-tighter text-xs uppercase">Void Reliquaries</span>
+</a>
+<a class="flex items-center px-4 py-3 text-[#C6C6C7] opacity-60 hover:opacity-100 hover:bg-[#C1A355]/5 hover:text-[#F2F2F2] transition-all" href="#">
+<span class="material-symbols-outlined mr-3">build</span>
+<span class="font-label font-light tracking-tighter text-xs uppercase">Arsenal Fabrication</span>
+</a>
+<a class="flex items-center px-4 py-3 text-[#C6C6C7] opacity-60 hover:opacity-100 hover:bg-[#C1A355]/5 hover:text-[#F2F2F2] transition-all" href="#">
+<span class="material-symbols-outlined mr-3">military_tech</span>
+<span class="font-label font-light tracking-tighter text-xs uppercase">Ascension Registry</span>
+</a>
+<a class="flex items-center px-4 py-3 text-[#C6C6C7] opacity-60 hover:opacity-100 hover:bg-[#C1A355]/5 hover:text-[#F2F2F2] transition-all" href="#">
+<span class="material-symbols-outlined mr-3">auto_stories</span>
+<span class="font-label font-light tracking-tighter text-xs uppercase">The Scholar's Arcanum</span>
+</a>
+<a class="flex items-center px-4 py-3 text-[#C6C6C7] opacity-60 hover:opacity-100 hover:bg-[#C1A355]/5 hover:text-[#F2F2F2] transition-all" href="#">
+<span class="material-symbols-outlined mr-3">storefront</span>
+<span class="font-label font-light tracking-tighter text-xs uppercase">Bazaar of the Seven</span>
+</a>
+<a class="flex items-center px-4 py-3 text-[#C6C6C7] opacity-60 hover:opacity-100 hover:bg-[#C1A355]/5 hover:text-[#F2F2F2] transition-all" href="#">
+<span class="material-symbols-outlined mr-3">rss_feed</span>
+<span class="font-label font-light tracking-tighter text-xs uppercase">The Solar Rail Feed</span>
+</a>
+<a class="flex items-center px-4 py-3 text-[#C6C6C7] opacity-60 hover:opacity-100 hover:bg-[#C1A355]/5 hover:text-[#F2F2F2] transition-all" href="#">
+<span class="material-symbols-outlined mr-3">account_balance_wallet</span>
+<span class="font-label font-light tracking-tighter text-xs uppercase">The Platinum Ledger</span>
+</a>
+<a class="flex items-center px-4 py-3 text-[#C6C6C7] opacity-60 hover:opacity-100 hover:bg-[#C1A355]/5 hover:text-[#F2F2F2] transition-all" href="#">
+<span class="material-symbols-outlined mr-3">memory</span>
+<span class="font-label font-light tracking-tighter text-xs uppercase">The Neural Archive</span>
+</a>
+<a class="flex items-center px-4 py-3 text-[#C6C6C7] opacity-60 hover:opacity-100 hover:bg-[#C1A355]/5 hover:text-[#F2F2F2] transition-all" href="#">
+<span class="material-symbols-outlined mr-3">hub</span>
+<span class="font-label font-light tracking-tighter text-xs uppercase">Cephalon Weave</span>
+</a>
+</nav>
+<div class="mt-auto px-4 flex items-center gap-4">
+<div class="w-10 h-10 rounded-sm bg-surface-container-highest border border-primary/20 p-0.5 overflow-hidden">
+<img alt="Operator Avatar" class="w-full h-full object-cover grayscale brightness-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPpVOYcK0XdYpcHPz14NijHiri4qGPu1_Gsgeu8DJ2fNJ-o-7RZMetGV0IRlXRSjEzzW-RUAreZaXUakOowCFSaSVyOSyE3U5PReGB9Ne-7nRB1c9g4iuvaQU_YKSd6PWzGpvwsckBsLt2IrqcdGyd1oTw8ExLoupeJBVhoBBLuCPhpejd-pFt1lKUzWgf1hcZjexK_jKcq0k6wUV7yYoDKG59FIhf0S2y4nBatuNXBCYBQH4UZn2Q_tSGPjski4YSRogPDUPdOQHr"/>
+</div>
+<div>
+<p class="font-label text-[10px] text-primary tracking-widest font-bold">OPERATOR_ID</p>
+<p class="font-label text-[9px] text-secondary opacity-50 uppercase">Synaptic Sync 98%</p>
+</div>
+</div>
+</aside>
+<header class="fixed top-0 right-0 w-[calc(100%-280px)] border-b border-[#C1A355]/20 bg-[#0E0E0E]/80 backdrop-blur-md flex justify-between items-center h-16 px-8 ml-[280px] z-40">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-primary opacity-50">
+<span class="material-symbols-outlined text-sm">terminal</span>
+<span class="font-label text-[10px] uppercase tracking-widest font-bold">ROOT@TENNOPLAN:~/CELESTIAL_PENDULUM</span>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="relative flex items-center border-b border-primary/20 pb-1">
+<span class="material-symbols-outlined text-sm text-primary/40 mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 p-0 text-[10px] font-label uppercase tracking-widest text-primary placeholder:text-primary/20 w-48" placeholder="SEARCH CHRONOS..." type="text"/>
+</div>
+<div class="flex items-center gap-4 text-secondary">
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">settings</span></button>
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">power_settings_new</span></button>
+</div>
+</div>
+</header>
+<main class="ml-[280px] pt-24 pb-12 px-12 min-h-screen relative overflow-hidden">
+<section class="mb-12 grid grid-cols-12 gap-8 items-end">
+<div class="col-span-8">
+<span class="font-label text-xs uppercase tracking-[0.4em] text-primary mb-4 block">Orbital Trajectory 00.12</span>
+<h2 class="font-headline text-7xl font-black text-on-surface tracking-tighter leading-none">CELESTIAL<br/><span class="text-primary italic">PENDULUM</span></h2>
+</div>
+<div class="col-span-4 text-right">
+<div class="inline-block p-4 border-l border-primary/20 text-left">
+<p class="font-label text-[10px] text-secondary opacity-40 uppercase tracking-widest">Chronometry Sync</p>
+<p class="font-headline text-3xl font-bold text-primary">PRECISION</p>
+<div class="w-full h-1 bg-surface-container-highest mt-2 relative overflow-hidden">
+<div class="absolute inset-y-0 left-0 bg-primary w-full shadow-[0_0_8px_#E3C372]"></div>
+</div>
+</div>
+</div>
+</section>
+<div class="grid grid-cols-12 gap-6 items-start relative">
+<div class="absolute top-1/4 left-1/3 somatic-line rotate-12 -z-10 w-64 pointer-events-none"></div>
+<div class="absolute top-1/2 right-1/4 somatic-line -rotate-45 -z-10 w-96 pointer-events-none"></div>
+<div class="col-span-8 group glass-panel p-1 rounded-sm relative overflow-hidden">
+<div class="filigree-corner top-0 left-0"></div>
+<div class="p-8">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h3 class="font-headline text-2xl text-on-surface uppercase tracking-widest">Orbital Mission Stream</h3>
+<p class="text-secondary text-[10px] font-label uppercase tracking-widest opacity-60">Sequence: Origin System | Day 342</p>
+</div>
+<div class="flex gap-4">
+<button class="p-2 border border-primary/20 hover:bg-primary/10 transition-colors"><span class="material-symbols-outlined text-primary">chevron_left</span></button>
+<button class="p-2 border border-primary/20 hover:bg-primary/10 transition-colors"><span class="material-symbols-outlined text-primary">chevron_right</span></button>
+</div>
+</div>
+<div class="relative w-full overflow-x-auto custom-scrollbar pb-8 cursor-grab active:cursor-grabbing">
+<div class="flex gap-16 min-w-[1200px] py-12 relative">
+<div class="absolute top-[4.5rem] left-0 w-full h-[1px] bg-primary/20"></div>
+<div class="relative flex-shrink-0 w-64">
+<div class="absolute top-16 left-0 w-3 h-3 bg-primary rounded-full shadow-[0_0_12px_#E3C372] z-10"></div>
+<div class="pt-24">
+<span class="text-[10px] font-label text-primary uppercase tracking-widest mb-1 block">08:00 GST</span>
+<h4 class="font-headline text-lg text-on-surface mb-2">Void Surge Analysis</h4>
+<p class="text-xs text-secondary leading-relaxed font-light">Decrypting resonance patterns from the Orokin Void pockets near Saturn.</p>
+<div class="mt-4 flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-green-500/50 rounded-full"></span>
+<span class="text-[9px] text-secondary/60 uppercase">Completed</span>
+</div>
+</div>
+</div>
+<div class="relative flex-shrink-0 w-64">
+<div class="absolute top-16 left-0 w-3 h-3 bg-primary rounded-full shadow-[0_0_12px_#E3C372] z-10 ring-4 ring-primary/20"></div>
+<div class="pt-24">
+<span class="text-[10px] font-label text-primary uppercase tracking-widest mb-1 block">14:30 GST (Current)</span>
+<h4 class="font-headline text-lg text-on-surface mb-2">Reliquary Tuning</h4>
+<p class="text-xs text-secondary leading-relaxed font-light">Syncing the Somatic Link with the newly extracted Omega fragments.</p>
+<div class="mt-4 flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+<span class="text-[9px] text-primary uppercase font-bold">Active Protocol</span>
+</div>
+</div>
+</div>
+<div class="relative flex-shrink-0 w-64">
+<div class="absolute top-16 left-0 w-3 h-3 border border-primary/40 rounded-full z-10 bg-surface-dim"></div>
+<div class="pt-24 opacity-50">
+<span class="text-[10px] font-label text-secondary uppercase tracking-widest mb-1 block">19:00 GST</span>
+<h4 class="font-headline text-lg text-on-surface mb-2">Thermal Exchange</h4>
+<p class="text-xs text-secondary leading-relaxed font-light">Orbital radiator maintenance following intense engine utilization.</p>
+<div class="mt-4 flex items-center gap-2">
+<span class="w-1.5 h-1.5 border border-secondary/40 rounded-full"></span>
+<span class="text-[9px] text-secondary/60 uppercase">Scheduled</span>
+</div>
+</div>
+</div>
+<div class="relative flex-shrink-0 w-64">
+<div class="absolute top-16 left-0 w-3 h-3 border border-error/40 rounded-full z-10 bg-surface-dim shadow-[0_0_10px_rgba(255,180,171,0.2)]"></div>
+<div class="pt-24">
+<span class="text-[10px] font-label text-error uppercase tracking-widest mb-1 block">22:15 GST</span>
+<h4 class="font-headline text-lg text-on-surface mb-2">System Breach Audit</h4>
+<p class="text-xs text-secondary leading-relaxed font-light">Investigating anomalous neural feedback from the Cephalon Weave.</p>
+<div class="mt-4 flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-error rounded-full"></span>
+<span class="text-[9px] text-error uppercase font-bold">Critical Alert</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-8 border-t border-outline-variant/10 grid grid-cols-4 gap-6">
+<div class="bg-surface-container-lowest p-4 border border-outline-variant/10">
+<p class="font-label text-[9px] text-secondary uppercase mb-1">Total Objectives</p>
+<p class="font-headline text-xl text-on-surface">18</p>
+</div>
+<div class="bg-surface-container-lowest p-4 border border-outline-variant/10">
+<p class="font-label text-[9px] text-secondary uppercase mb-1">Pending Tasks</p>
+<p class="font-headline text-xl text-primary">04</p>
+</div>
+<div class="bg-surface-container-lowest p-4 border border-outline-variant/10">
+<p class="font-label text-[9px] text-secondary uppercase mb-1">Sync Deviation</p>
+<p class="font-headline text-xl text-on-surface">0.02ms</p>
+</div>
+<div class="bg-surface-container-lowest p-4 border border-outline-variant/10">
+<p class="font-label text-[9px] text-secondary uppercase mb-1">Cycle Health</p>
+<p class="font-headline text-xl text-on-surface">OPTIMAL</p>
+</div>
+</div>
+</div>
+</div>
+<div class="col-span-4 space-y-6">
+<div class="glass-panel p-6 border-l-4 border-l-error">
+<div class="flex items-center justify-between mb-4">
+<h4 class="font-headline text-sm uppercase tracking-widest text-on-surface">Critical Alerts</h4>
+<span class="material-symbols-outlined text-error animate-pulse">report</span>
+</div>
+<div class="space-y-4">
+<div class="bg-error/5 p-3 border border-error/10">
+<p class="font-label text-[10px] text-error uppercase font-bold mb-1">System Overheat</p>
+<p class="text-[11px] text-on-surface opacity-80 italic">Neural buffer saturated in Core-02. Cooling purge required within 12m.</p>
+</div>
+<div class="bg-error/5 p-3 border border-error/10">
+<p class="font-label text-[10px] text-error uppercase font-bold mb-1">Incursion Detected</p>
+<p class="text-[11px] text-on-surface opacity-80 italic">Foreign bio-signature identified in Sub-Level 4. Sending security drones.</p>
+</div>
+</div>
+</div>
+<div class="glass-panel p-6">
+<div class="flex items-center justify-between mb-4">
+<h4 class="font-headline text-sm uppercase tracking-widest text-on-surface">Task Priority</h4>
+<button class="text-primary text-[9px] uppercase font-bold tracking-widest">View All</button>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-4 p-3 hover:bg-primary/5 transition-colors group cursor-pointer border-b border-outline-variant/5">
+<div class="w-5 h-5 border border-primary/40 group-hover:border-primary flex items-center justify-center text-transparent group-hover:text-primary">
+<span class="material-symbols-outlined text-xs">check</span>
+</div>
+<div class="flex-1">
+<p class="text-xs text-on-surface">Recalibrate Trans-Solar Rails</p>
+<p class="text-[9px] text-secondary opacity-50 uppercase tracking-tighter">Est: 15m • High Priority</p>
+</div>
+</div>
+<div class="flex items-center gap-4 p-3 hover:bg-primary/5 transition-colors group cursor-pointer border-b border-outline-variant/5">
+<div class="w-5 h-5 border border-primary/40 group-hover:border-primary flex items-center justify-center text-transparent group-hover:text-primary">
+<span class="material-symbols-outlined text-xs">check</span>
+</div>
+<div class="flex-1">
+<p class="text-xs text-on-surface">Archive Somatic Log #992</p>
+<p class="text-[9px] text-secondary opacity-50 uppercase tracking-tighter">Est: 5m • Medium Priority</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/20 p-6 relative">
+<div class="absolute top-0 right-0 p-3 opacity-5">
+<span class="material-symbols-outlined text-4xl">verified</span>
+</div>
+<h4 class="font-headline text-sm uppercase tracking-widest mb-4 text-on-surface">Sync History</h4>
+<div class="space-y-4">
+<div class="flex items-start gap-3">
+<div class="w-1 h-8 bg-green-500/30"></div>
+<div>
+<p class="text-[10px] text-secondary uppercase tracking-widest mb-0.5">Cycle 341-B</p>
+<p class="text-xs text-on-surface font-light">Orbital Stabilizer Sync Success</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<div class="w-1 h-8 bg-green-500/30"></div>
+<div>
+<p class="text-[10px] text-secondary uppercase tracking-widest mb-0.5">Cycle 341-A</p>
+<p class="text-xs text-on-surface font-light">Fuel Cell Optimization Protocol</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-span-12 mt-6">
+<div class="bg-surface-container-low/60 backdrop-blur-md border border-outline-variant/20 p-8 flex items-center justify-between">
+<div class="flex gap-16">
+<div>
+<p class="font-label text-[10px] text-secondary uppercase tracking-[0.2em] mb-2">Chronos Latency</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-3xl text-on-surface">0.003</span>
+<span class="text-primary font-label text-xs">μS</span>
+</div>
+</div>
+<div>
+<p class="font-label text-[10px] text-secondary uppercase tracking-[0.2em] mb-2">Temporal Stability</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-3xl text-on-surface">99.9</span>
+<span class="text-primary font-label text-xs">%</span>
+</div>
+</div>
+<div>
+<p class="font-label text-[10px] text-secondary uppercase tracking-[0.2em] mb-2">Pendulum Oscillation</p>
+<div class="flex items-baseline gap-2">
+<span class="font-headline text-3xl text-on-surface">1.0</span>
+<span class="text-primary font-label text-xs">HZ</span>
+</div>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="px-8 py-3 bg-transparent border border-outline-variant/30 text-on-surface font-label text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 transition-all">Schedule Recap</button>
+<button class="px-8 py-3 bg-primary-container text-on-primary-container font-label text-[10px] uppercase tracking-[0.2em] font-bold shadow-[0_0_20px_rgba(227,195,114,0.2)] hover:shadow-[0_0_30px_rgba(227,195,114,0.4)] transition-all">Auto-Calibrate</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-8 right-8 z-50">
+<button class="w-16 h-16 bg-primary rounded-full shadow-[0_0_32px_rgba(193,163,85,0.4)] flex items-center justify-center text-on-primary hover:scale-110 transition-transform group">
+<span class="material-symbols-outlined text-3xl" data-icon="more_time">more_time</span>
+<div class="absolute right-20 bg-surface-container-high border border-primary/30 px-4 py-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+<span class="font-label text-[10px] text-primary uppercase tracking-widest">New Mission Event</span>
+</div>
+</button>
+</div>
+<div class="fixed inset-0 pointer-events-none -z-50 overflow-hidden">
+<div class="absolute top-1/4 -right-20 text-[20rem] font-black text-primary opacity-[0.02] rotate-12 select-none leading-none">TIME</div>
+<div class="absolute -top-1/4 -left-1/4 w-full h-full bg-primary/5 blur-[120px] rounded-full"></div>
+<div class="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-primary/5 blur-[120px] rounded-full"></div>
+</div>
+
+```</body></html>
