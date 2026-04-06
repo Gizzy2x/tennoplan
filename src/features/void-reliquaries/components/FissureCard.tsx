@@ -63,15 +63,22 @@ export function FissureCard({ status }: FissureCardProps) {
   const nodeName   = nodeMatch ? nodeMatch[1] : fissure.node;
   const nodeRegion = nodeMatch ? nodeMatch[2] : '';
 
+  // Card background — gradient left (transparent/glass) → right (more solid)
+  // Overrides glass-panel's flat background; backdrop-filter still applies from the class.
+  const cardBg = fissure.isHard
+    ? 'linear-gradient(to right, rgba(19,19,19,0.22) 0%, rgba(28,27,27,0.60) 42%, rgba(35,20,20,0.78) 100%)'
+    : 'linear-gradient(to right, rgba(19,19,19,0.22) 0%, rgba(28,27,27,0.55) 42%, rgba(28,27,27,0.70) 100%)';
+
   return (
     <div
       className="glass-panel fissure-card-hover relative overflow-hidden flex flex-col p-6 cursor-pointer"
       style={{
+        background: cardBg,
         borderColor: fissure.isHard
-          ? 'rgba(248,113,113,0.35)'
+          ? 'rgba(248,113,113,0.18)'
           : `${tierColor}22`,
         boxShadow: fissure.isHard
-          ? '0 0 0 1px rgba(248,113,113,0.2), 0 0 24px rgba(248,113,113,0.12), 0 0 48px rgba(0,0,0,0.6)'
+          ? '0 0 0 1px rgba(248,113,113,0.10), inset 0 0 24px rgba(248,113,113,0.04), 0 0 40px rgba(0,0,0,0.65)'
           : '0 0 40px rgba(0,0,0,0.5)',
       }}
     >
@@ -79,8 +86,18 @@ export function FissureCard({ status }: FissureCardProps) {
       <span
         className="absolute top-0 left-0 w-5 h-5 pointer-events-none"
         style={{
-          borderTop:  `1px solid ${fissure.isHard ? 'rgba(248,113,113,0.5)' : `${tierColor}44`}`,
-          borderLeft: `1px solid ${fissure.isHard ? 'rgba(248,113,113,0.5)' : `${tierColor}44`}`,
+          borderTop:  `1px solid ${fissure.isHard ? 'rgba(248,113,113,0.35)' : `${tierColor}44`}`,
+          borderLeft: `1px solid ${fissure.isHard ? 'rgba(248,113,113,0.35)' : `${tierColor}44`}`,
+        }}
+      />
+
+      {/* Tier color wash — right-to-left, subliminal on normal, slightly more intense on SP */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: fissure.isHard
+            ? `linear-gradient(to left, rgba(248,113,113,0.10) 0%, ${tierColor}06 50%, transparent 75%)`
+            : `linear-gradient(to left, ${tierColor}09 0%, transparent 55%)`,
         }}
       />
 
@@ -103,7 +120,7 @@ export function FissureCard({ status }: FissureCardProps) {
         {/* Mission type (headline) + node name */}
         <div className="flex-1 min-w-0">
           <p
-            className="font-headline text-lg font-bold leading-tight truncate"
+            className="font-headline text-2xl font-black leading-tight truncate"
             style={{ color: tierColor }}
           >
             {fissure.missionType}

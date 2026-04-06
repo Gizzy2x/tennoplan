@@ -48,7 +48,7 @@ function TierHeader({ tier, count }: { tier: string; count: number }) {
   return (
     <div className="flex items-center gap-3 mb-4">
       <span
-        className="font-headline text-xl font-black uppercase tracking-[0.15em]"
+        className="font-headline text-2xl font-black uppercase tracking-[0.15em]"
         style={{ color }}
       >
         {tier}
