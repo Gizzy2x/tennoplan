@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(find . -maxdepth 2 -type f -name README.md -o -name .cursorrules -o -name CLAUDE.md -o -name next.config.* -o -name tsconfig.json)",
-      "Bash(find . -not -path ./.git/* -type d)"
+      "Bash(find . -not -path ./.git/* -type d)",
+      "Bash(npm update:*)",
+      "Bash(claude mcp:*)",
+      "Bash(claude --version)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

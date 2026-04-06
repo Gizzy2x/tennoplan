@@ -6,11 +6,16 @@ export function CephalonWeavePage() {
           <span className="font-label text-xs uppercase tracking-[0.4em] text-primary mb-4 block">
             System Configuration 03.1
           </span>
-          <h2 className="font-headline text-7xl font-black text-on-surface tracking-tighter leading-none">
-            CEPHALON
-            <br />
-            <span className="text-primary italic">WEAVE</span>
-          </h2>
+          <div className="flex items-end gap-6">
+            <h2 className="font-headline text-7xl font-black text-on-surface tracking-tighter leading-none">
+              CEPHALON
+              <br />
+              <span className="text-primary italic">WEAVE</span>
+            </h2>
+            <span className="font-label text-xs uppercase tracking-[0.3em] text-primary/40 whitespace-nowrap mb-2">
+              — Overlays / In-Game Helpers
+            </span>
+          </div>
         </div>
         <div className="col-span-4 text-right">
           <div className="inline-block p-4 border-l border-primary/20 text-left">
