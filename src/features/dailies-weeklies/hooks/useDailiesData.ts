@@ -8,14 +8,10 @@ import {
 } from '@/adapters/storage/worldstateCache';
 import {
   fetchNightwaveWS,
-  fetchSortieWS,
-  fetchArchonHuntWS,
 } from '@/adapters/api/dailiesAdapter';
 import type { NightwavePayload, WSFetchResult } from '@/adapters/api/dailiesAdapter';
 import {
   computeChallengeStatus,
-  computeSortieStatus,
-  computeArchonHuntStatus,
   groupChallenges,
   computeStanding,
 } from '@/core/services/ascensionService';
@@ -24,10 +20,6 @@ import { getWeekStart } from '@/core/services/cycleService';
 import type {
   ChallengeKind,
   ChallengeStatus,
-  SortieRaw,
-  ArchonHuntRaw,
-  SortieStatus,
-  ArchonHuntStatus,
   StandingSummary,
 } from '@/core/domain/ascension';
 
@@ -36,10 +28,8 @@ import type {
 // ---------------------------------------------------------------------------
 
 interface PreloadState {
-  nw:     WSFetchResult<NightwavePayload> | null;
-  sortie: WSFetchResult<SortieRaw>        | null;
-  archon: WSFetchResult<ArchonHuntRaw>    | null;
-  ready:  boolean;
+  nw:    WSFetchResult<NightwavePayload> | null;
+  ready: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -63,21 +53,13 @@ export function useDailiesData() {
   const queryClient = useQueryClient();
 
   // ── Phase 1: async Dexie pre-load ─────────────────────────────────────
-  const [preload, setPreload] = useState<PreloadState>({
-    nw: null, sortie: null, archon: null, ready: false,
-  });
+  const [preload, setPreload] = useState<PreloadState>({ nw: null, ready: false });
 
   useEffect(() => {
-    Promise.all([
-      getWsCache<NightwavePayload>(WS_CACHE_KEYS.nightwave),
-      getWsCache<SortieRaw>(WS_CACHE_KEYS.sortie),
-      getWsCache<ArchonHuntRaw>(WS_CACHE_KEYS.archon),
-    ]).then(([nw, sortie, archon]) => {
+    getWsCache<NightwavePayload>(WS_CACHE_KEYS.nightwave).then(nw => {
       setPreload({
-        nw:     nw     ? { data: nw.data,     cachedAt: nw.cachedAt,     fromStaleCache: nw.isExpired     } : null,
-        sortie: sortie ? { data: sortie.data, cachedAt: sortie.cachedAt, fromStaleCache: sortie.isExpired } : null,
-        archon: archon ? { data: archon.data, cachedAt: archon.cachedAt, fromStaleCache: archon.isExpired } : null,
-        ready:  true,
+        nw: nw ? { data: nw.data, cachedAt: nw.cachedAt, fromStaleCache: nw.isExpired } : null,
+        ready: true,
       });
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -98,41 +80,6 @@ export function useDailiesData() {
     initialDataUpdatedAt: preload.nw?.cachedAt ?? 0,
     staleTime:            300_000,
     refetchInterval:      300_000,
-    retry:                2,
-    networkMode:          'always',
-  });
-
-  const {
-    data:          sortieResult,
-    isLoading:     sortieLoading,
-    error:         sortieError,
-    dataUpdatedAt: sortieUpdatedAt,
-    refetch:       refetchSortie,
-  } = useQuery<WSFetchResult<SortieRaw>>({
-    queryKey:             ['ws:sortie'],
-    queryFn:              fetchSortieWS,
-    enabled:              preload.ready,
-    initialData:          preload.sortie ?? undefined,
-    initialDataUpdatedAt: preload.sortie?.cachedAt ?? 0,
-    staleTime:            300_000,
-    refetchInterval:      300_000,
-    retry:                2,
-    networkMode:          'always',
-  });
-
-  const {
-    data:      archonResult,
-    isLoading: archonLoading,
-    error:     archonError,
-    refetch:   refetchArchon,
-  } = useQuery<WSFetchResult<ArchonHuntRaw>>({
-    queryKey:             ['ws:archon'],
-    queryFn:              fetchArchonHuntWS,
-    enabled:              preload.ready,
-    initialData:          preload.archon ?? undefined,
-    initialDataUpdatedAt: preload.archon?.cachedAt ?? 0,
-    staleTime:            3_600_000,
-    refetchInterval:      3_600_000,
     retry:                2,
     networkMode:          'always',
   });
@@ -187,15 +134,9 @@ export function useDailiesData() {
 
   // ── Force refresh ──────────────────────────────────────────────────────
   async function forceRefetch() {
-    await clearWsCache(
-      WS_CACHE_KEYS.nightwave,
-      WS_CACHE_KEYS.sortie,
-      WS_CACHE_KEYS.archon,
-    );
+    await clearWsCache(WS_CACHE_KEYS.nightwave);
     queryClient.removeQueries({ queryKey: ['ws:nightwave'] });
-    queryClient.removeQueries({ queryKey: ['ws:sortie'] });
-    queryClient.removeQueries({ queryKey: ['ws:archon'] });
-    await Promise.all([refetchNW(), refetchSortie(), refetchArchon()]);
+    await refetchNW();
   }
 
   // ── 1-second clock ─────────────────────────────────────────────────────
@@ -207,26 +148,20 @@ export function useDailiesData() {
   }, []);
 
   // ── Derived state ───────────────────────────────────────────────────────
-  const nwData     = nwResult?.data;
-  const sortieData = sortieResult?.data;
-  const archonData = archonResult?.data;
+  const nwData = nwResult?.data;
 
   const {
     grouped,
-    sortieStatus,
-    archonHuntStatus,
     standing,
     totalChallenges,
     completedCount,
   } = useMemo(() => {
     if (!nwData) {
       return {
-        grouped:          { daily: [], weekly: [], elite: [] } as Record<ChallengeKind, ChallengeStatus[]>,
-        sortieStatus:     null as SortieStatus | null,
-        archonHuntStatus: null as ArchonHuntStatus | null,
-        standing:         { earned: 0, available: 0, pct: 0 } as StandingSummary,
-        totalChallenges:  0,
-        completedCount:   0,
+        grouped:         { daily: [], weekly: [], elite: [] } as Record<ChallengeKind, ChallengeStatus[]>,
+        standing:        { earned: 0, available: 0, pct: 0 } as StandingSummary,
+        totalChallenges: 0,
+        completedCount:  0,
       };
     }
 
@@ -235,54 +170,87 @@ export function useDailiesData() {
     );
 
     return {
-      grouped:          groupChallenges(statuses),
-      sortieStatus:     sortieData ? computeSortieStatus(sortieData, now) : null,
-      archonHuntStatus: archonData ? computeArchonHuntStatus(archonData, now) : null,
-      standing:         computeStanding(statuses),
-      totalChallenges:  statuses.length,
-      completedCount:   statuses.filter(s => s.completed).length,
+      grouped:         groupChallenges(statuses),
+      standing:        computeStanding(statuses),
+      totalChallenges: statuses.length,
+      completedCount:  statuses.filter(s => s.completed).length,
     };
-  }, [nwData, sortieData, archonData, completedIds, now]);
+  }, [nwData, completedIds, now]);
+
+  // ── Sortie / Archon completion toggles (time-keyed, no API needed) ────────
+  const [sortieCompleted,  setSortieCompleted]  = useState(false);
+  const [archonCompleted,  setArchonCompleted]  = useState(false);
+
+  function todayKey(): string {
+    return 'sortie:' + new Date().toISOString().slice(0, 10);
+  }
+  function archonKey(): string {
+    return 'archon:' + getWeekStart(Date.now());
+  }
+
+  async function loadCompletionToggles() {
+    const [sortieRow, archonRow] = await Promise.all([
+      db.userMarks.where('[type+referenceId]').equals(['sortie', todayKey()]).first(),
+      db.userMarks.where('[type+referenceId]').equals(['archon', archonKey()]).first(),
+    ]);
+    setSortieCompleted(!!sortieRow);
+    setArchonCompleted(!!archonRow);
+  }
+
+  useEffect(() => { loadCompletionToggles(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function toggleSortieCompleted() {
+    setSortieCompleted(prev => !prev);
+    const key = todayKey();
+    const existing = await db.userMarks.where('[type+referenceId]').equals(['sortie', key]).first();
+    if (existing?.id != null) {
+      await db.userMarks.delete(existing.id);
+    } else {
+      const ts = Date.now();
+      await db.userMarks.add({ type: 'sortie', referenceId: key, status: 'completed', createdAt: ts, updatedAt: ts });
+    }
+    await loadCompletionToggles();
+  }
+
+  async function toggleArchonCompleted() {
+    setArchonCompleted(prev => !prev);
+    const key = archonKey();
+    const existing = await db.userMarks.where('[type+referenceId]').equals(['archon', key]).first();
+    if (existing?.id != null) {
+      await db.userMarks.delete(existing.id);
+    } else {
+      const ts = Date.now();
+      await db.userMarks.add({ type: 'archon', referenceId: key, status: 'completed', createdAt: ts, updatedAt: ts });
+    }
+    await loadCompletionToggles();
+  }
 
   // ── Offline / staleness signals ─────────────────────────────────────────
-  // isStale: at least one active query is serving expired Dexie data
-  const isStale = !!(
-    nwResult?.fromStaleCache ||
-    sortieResult?.fromStaleCache ||
-    archonResult?.fromStaleCache
-  );
-
-  // cacheAgeMs: age of the oldest cached item being shown (worst case)
-  const cachedAts = [nwResult?.cachedAt, sortieResult?.cachedAt, archonResult?.cachedAt]
-    .filter((t): t is number => t != null);
-  const oldestCachedAt = cachedAts.length > 0 ? Math.min(...cachedAts) : now;
-  const cacheAgeMs = getCacheAgeMs(oldestCachedAt, now);
-
-  // hasEverLoaded: false only on true first launch (no cache, query still pending)
+  const isStale       = !!nwResult?.fromStaleCache;
+  const cacheAgeMs    = getCacheAgeMs(nwResult?.cachedAt ?? now, now);
   const hasEverLoaded = !!(nwData || (!nwLoading && !nwError));
-
-  const lastSync = nwUpdatedAt || sortieUpdatedAt || 0;
+  const lastSync      = nwUpdatedAt || 0;
 
   return {
     grouped,
-    sortieStatus,
-    archonHuntStatus,
-    archonHuntLoading: archonLoading,
-    archonHuntError:   archonError,
     standing,
     weeklyEarned,
     totalChallenges,
     completedCount,
-    season:        nwData?.season  ?? 0,
-    seasonTag:     nwData?.tag     ?? '',
-    isLoading:     !preload.ready || nwLoading || sortieLoading,
-    isError:       !!nwError || !!sortieError,
+    sortieCompleted,
+    archonCompleted,
+    season:    nwData?.season ?? 0,
+    seasonTag: nwData?.tag    ?? '',
+    isLoading:     !preload.ready || nwLoading,
+    isError:       !!nwError,
     isStale,
     cacheAgeMs,
     hasEverLoaded,
     lastSync,
     now,
     toggleComplete,
+    toggleSortieCompleted,
+    toggleArchonCompleted,
     forceRefetch,
   };
 }

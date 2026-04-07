@@ -1,12 +1,10 @@
 import { useDailiesData } from './hooks/useDailiesData';
 import { formatCacheAge } from '@/core/services/WorldstateService';
 import { ChallengeCard } from './components/ChallengeCard';
-import { SortieCard } from './components/SortieCard';
-import { ArchonHuntCard } from './components/ArchonHuntCard';
+import { CompletionToggle } from './components/CompletionToggle';
 import {
   KIND_COLOR,
   KIND_LABEL,
-  SORTIE_FACTION_COLOR,
   NW_WEEKLY_STANDING_CAP,
 } from '@/core/services/ascensionService';
 import { formatMsHuman } from '@/core/services/cycleService';
@@ -158,12 +156,11 @@ function KindHeader({
 export function DailiesWeekliesPage() {
   const {
     grouped,
-    sortieStatus,
-    archonHuntStatus,
-    archonHuntLoading,
     weeklyEarned,
     totalChallenges,
     completedCount,
+    sortieCompleted,
+    archonCompleted,
     season,
     seasonTag,
     isLoading,
@@ -173,6 +170,8 @@ export function DailiesWeekliesPage() {
     hasEverLoaded,
     lastSync,
     toggleComplete,
+    toggleSortieCompleted,
+    toggleArchonCompleted,
     forceRefetch,
   } = useDailiesData();
 
@@ -186,10 +185,6 @@ export function DailiesWeekliesPage() {
 
   const syncState  = isLoading ? 'SYNCING' : isError ? 'OFFLINE' : 'ONLINE';
   const syncWidth  = isLoading ? '45%' : isError ? '12%' : '100%';
-
-  const sortieColor  = sortieStatus
-    ? (SORTIE_FACTION_COLOR[sortieStatus.raw.faction] ?? '#C6C6C7')
-    : '#C6C6C7';
 
   const seasonLabel = season > 0 ? `Season ${season}` : seasonTag || 'Nightwave';
 
@@ -260,22 +255,6 @@ export function DailiesWeekliesPage() {
                     {String(completedCount).padStart(2, '0')} / {String(totalChallenges).padStart(2, '0')}
                   </p>
                 </div>
-                {sortieStatus && (
-                  <div className="flex flex-col gap-0.5">
-                    <p
-                      className="font-label text-[9px] uppercase tracking-[0.3em]"
-                      style={{ color: sortieColor, opacity: 0.55 }}
-                    >
-                      Sortie Reset
-                    </p>
-                    <p
-                      className="font-mono text-xl font-bold tabular-nums leading-none"
-                      style={{ color: sortieColor }}
-                    >
-                      {formatMsHuman(sortieStatus.msRemaining)}
-                    </p>
-                  </div>
-                )}
               </div>
             )}
           </div>
@@ -412,107 +391,6 @@ export function DailiesWeekliesPage() {
         </div>
       )}
 
-      {/* ── Archon Hunt loading / error states ──────────────────────── */}
-      {archonHuntLoading && !archonHuntStatus && (
-        <section className="mb-10">
-          <div className="glass-panel p-6 flex items-center gap-3">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
-              Loading Archon Hunt…
-            </p>
-          </div>
-        </section>
-      )}
-
-      {/* ── Archon Hunt section ──────────────────────────────────────── */}
-      {archonHuntStatus && (() => {
-        const huntColor = SORTIE_FACTION_COLOR[archonHuntStatus.raw.faction] ?? '#C6C6C7';
-        return (
-          <section className="mb-10">
-            <div className="flex items-center gap-4 mb-5">
-              <h3 className="font-headline text-2xl font-black text-on-surface tracking-tight leading-none">
-                Weekly <span style={{ color: huntColor }} className="italic">Archon Hunt</span>
-              </h3>
-              <span
-                className="font-label text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 font-bold"
-                style={{
-                  color:           huntColor,
-                  border:          `1px solid ${huntColor}40`,
-                  backgroundColor: `${huntColor}0D`,
-                }}
-              >
-                {archonHuntStatus.raw.faction}
-              </span>
-              <span
-                className="font-label text-[10px] uppercase tracking-[0.2em]"
-                style={{ color: '#C6C6C7', opacity: 0.35 }}
-              >
-                {archonHuntStatus.raw.boss}
-              </span>
-              <div className="flex-1 h-px" style={{ backgroundColor: `${huntColor}20` }} />
-              <span
-                className="font-mono text-[10px] tabular-nums"
-                style={{ color: huntColor, opacity: 0.55 }}
-              >
-                {formatMsHuman(archonHuntStatus.msRemaining)}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-12 gap-5">
-              {archonHuntStatus.raw.missions.map((mission, i) => (
-                <div key={i} className="col-span-4">
-                  <ArchonHuntCard
-                    mission={mission}
-                    index={i}
-                    faction={archonHuntStatus.raw.faction}
-                  />
-                </div>
-              ))}
-            </div>
-          </section>
-        );
-      })()}
-
-      {/* ── Sortie section ───────────────────────────────────────────── */}
-      {sortieStatus && (
-        <section className="mb-10">
-          <div className="flex items-center gap-4 mb-5">
-            <h3 className="font-headline text-2xl font-black text-on-surface tracking-tight leading-none">
-              Daily <span style={{ color: sortieColor }} className="italic">Sortie</span>
-            </h3>
-            <span
-              className="font-label text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 font-bold"
-              style={{
-                color:           sortieColor,
-                border:          `1px solid ${sortieColor}40`,
-                backgroundColor: `${sortieColor}0D`,
-              }}
-            >
-              {sortieStatus.raw.faction}
-            </span>
-            <span
-              className="font-label text-[10px] uppercase tracking-[0.2em]"
-              style={{ color: '#C6C6C7', opacity: 0.35 }}
-            >
-              {sortieStatus.raw.boss}
-            </span>
-            <div className="flex-1 h-px" style={{ backgroundColor: `${sortieColor}20` }} />
-          </div>
-
-          <div className="grid grid-cols-12 gap-5">
-            {sortieStatus.raw.variants.map((mission, i) => (
-              <div key={i} className="col-span-4">
-                <SortieCard
-                  mission={mission}
-                  index={i}
-                  faction={sortieStatus.raw.faction}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* ── Nightwave Challenge Grid ──────────────────────────────────── */}
       {totalChallenges > 0 && (
         <>
@@ -558,6 +436,24 @@ export function DailiesWeekliesPage() {
                 </section>
               );
             })}
+          </div>
+
+          {/* ── Completion Toggles ─────────────────────────────────────── */}
+          <div className="somatic-line mt-10 mb-6" />
+          <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(227,195,114,0.08)' }}>
+            <CompletionToggle
+              label="Sortie Completed Today"
+              sublabel="Resets daily"
+              checked={sortieCompleted}
+              onToggle={toggleSortieCompleted}
+            />
+            <div style={{ borderTop: '1px solid rgba(197,192,190,0.06)' }} />
+            <CompletionToggle
+              label="Archon Hunt Completed This Week"
+              sublabel="Resets weekly"
+              checked={archonCompleted}
+              onToggle={toggleArchonCompleted}
+            />
           </div>
         </>
       )}
