@@ -31,7 +31,7 @@ Tab Strategy
 Tab,Purpose
 Dailies & Weeklies,"Killer feature — Nightwave challenges, Pulse tracker, Netracell, EDA/ETA, weekly checklist. Persistent top-bar access. All completion state lives here."
 Ascension Registry,"Mastery & Progression Tracker — MR rank, unlock/check off Warframes, weapons, companions, archwings, etc."
-Celestial Pendulum,"Live world cycle timers. Simple focused view + small ""Completed"" flag linking to Dailies & Weeklies."
+Celestial Pendulum,"Cinematic full-bleed world cycle viewer — 2 rows × 3 panels for all 6 worlds (Plains of Eidolon, Orb Vallis, Cambion Drift, Zariman Ten Zero, Duviri, Earth). Atmospheric world backgrounds, massive Noto Serif countdown (7rem), 140px state medallion, Orokin world-selector tabs. Layout breaks out of AppShell padding via -mx-12 -mt-24."
 Void Reliquaries,"Active fissures. Simple focused view + small ""Completed"" flag linking to Dailies & Weeklies."
 Solar Rail Feed,"Invasions, alerts, events. Simple focused view."
 All others,Placeholder or future vertical slices.
@@ -65,7 +65,7 @@ Time + progress bar rightmost.
 Tier gradients: Subtle right-to-left, 10–15% opacity max.
 Implemented Features
 Tab,Status,Notes
-celestial-pendulum,Phase 1 complete,Live timers
+celestial-pendulum,Cinematic overhaul complete,"Full-bleed 2×3 panel layout, massive countdown, world medallions, wiki image backgrounds with gradient fallback"
 void-reliquaries,UI polished,FissureCard with top tags
 ascension-registry,Stub,Mastery & Progression Tracker
 dailies-weeklies,Not started,Killer feature — will receive current challenge cards
