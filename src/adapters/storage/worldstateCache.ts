@@ -34,6 +34,10 @@ export const WS_CACHE_KEYS = {
   cycleCambion:      'ws:cycle:cambion',
   cycleZariman:      'ws:cycle:zariman',
   cycleEarth:        'ws:cycle:earth',
+  cycleDuviri:       'ws:cycle:duviri',
+  // Celestial Pendulum — Syndicate Dispatches & Simaris
+  syndicateMissions: 'ws:syndicateMissions',
+  simaris:           'ws:simaris',
   // Solar Rail Feed
   invasions:         'ws:invasions',
   alerts:            'ws:alerts',

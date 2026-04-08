@@ -26,6 +26,7 @@ const CYCLE_KEYS: { id: CycleId; key: string }[] = [
   { id: 'cambion', key: WS_CACHE_KEYS.cycleCambion },
   { id: 'zariman', key: WS_CACHE_KEYS.cycleZariman },
   { id: 'earth',   key: WS_CACHE_KEYS.cycleEarth },
+  { id: 'duviri',  key: WS_CACHE_KEYS.cycleDuviri },
 ];
 
 // ---------------------------------------------------------------------------
@@ -96,6 +97,7 @@ export function useWorldCycles() {
       WS_CACHE_KEYS.cycleCambion,
       WS_CACHE_KEYS.cycleZariman,
       WS_CACHE_KEYS.cycleEarth,
+      WS_CACHE_KEYS.cycleDuviri,
     );
     queryClient.removeQueries({ queryKey: ['ws:worldCycles'] });
     await refetch();
