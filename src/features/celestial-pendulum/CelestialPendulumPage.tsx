@@ -1,14 +1,10 @@
 import { useWorldCycles } from './hooks/useWorldCycles';
-import { CycleCard } from './components/CycleCard';
-import { SyndicateMissionsPanel } from './components/SyndicateMissionsPanel';
-import { SimarisPanel } from './components/SimarisPanel';
+import { CinematicCyclePanel } from './components/CinematicCyclePanel';
+import { WorldSelectorTabs } from './components/WorldSelectorTabs';
 import { formatCacheAge } from '@/core/services/WorldstateService';
 import type { CycleId } from '@/core/domain/cycles';
 
-// Row 1 — the three main open-world farming cycles (featured, taller cards)
 const ROW_1: CycleId[] = ['cetus', 'vallis', 'cambion'];
-
-// Row 2 — three secondary cycles (standard height)
 const ROW_2: CycleId[] = ['zariman', 'duviri', 'earth'];
 
 export function CelestialPendulumPage() {
@@ -19,156 +15,156 @@ export function CelestialPendulumPage() {
     isStale,
     cacheAgeMs,
     hasEverLoaded,
-    lastSync,
     forceRefetch,
   } = useWorldCycles();
 
   const byId = Object.fromEntries(statuses.map(s => [s.cycle.id, s]));
-
-  const lastSyncLabel = lastSync
-    ? new Date(lastSync).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-    : '—';
-
-  const syncState = isLoading ? 'SYNCING' : isError ? 'OFFLINE' : 'ONLINE';
-  const syncWidth = isLoading ? '45%' : isError ? '12%' : '100%';
+  const row1Statuses = ROW_1.map(id => byId[id]).filter(Boolean);
+  const row2Statuses = ROW_2.map(id => byId[id]).filter(Boolean);
+  const allStatuses  = [...row1Statuses, ...row2Statuses];
 
   return (
-    <>
-      {/* ── Celestial Asymmetry Header ─────────────────────────────── */}
-      <section className="mb-10 grid grid-cols-12 gap-8 items-end">
-        <div className="col-span-8">
-          <span className="font-label text-xs uppercase tracking-[0.4em] text-primary mb-4 block">
-            Orbital Trajectory 00.12
-          </span>
-          <div className="flex items-end gap-6">
-            <h2 className="font-headline text-7xl font-black text-on-surface tracking-tighter leading-none">
-              CELESTIAL
-              <br />
-              <span className="text-primary italic">PENDULUM</span>
-            </h2>
-            <span className="font-label text-xs uppercase tracking-[0.3em] text-primary/40 whitespace-nowrap mb-2">
-              — World Cycle Chronometer
-            </span>
-          </div>
-        </div>
+    // Break out of AppShell's px-12 pt-24 padding for a full-bleed cinematic layout
+    <div className="-mx-12 -mt-24 relative flex flex-col overflow-hidden" style={{ minHeight: '100vh' }}>
 
-        <div className="col-span-4 text-right">
-          <div className="inline-block p-4 border-l border-primary/20 text-left">
-            <p className="font-label text-[10px] text-secondary opacity-40 uppercase tracking-widest">
-              Chronometry Sync
-            </p>
-            <p className="font-headline text-3xl font-bold text-primary">
-              {syncState}
-            </p>
-            <p className="font-label text-[10px] text-secondary/30 uppercase tracking-widest mt-0.5">
-              {lastSync ? `Updated ${lastSyncLabel}` : 'No sync yet'}
-            </p>
-            <div className="w-full h-px bg-surface-container-highest mt-2 relative overflow-hidden">
-              <div
-                className="absolute inset-y-0 left-0 h-full bg-primary shadow-[0_0_8px_#E3C372]"
-                style={{ width: syncWidth, transition: 'width 0.5s ease' }}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Somatic divider */}
-      <div className="somatic-line mb-8" />
-
-      {/* ── Sync status + force refresh ───────────────────────────── */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex-1" />
-        <button
-          onClick={forceRefetch}
-          className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35 hover:text-primary/70 transition-colors cursor-pointer"
-          title="Force refresh cycle data"
+      {/* Giant watermark title — renders behind panels */}
+      <div
+        className="absolute inset-x-0 top-0 overflow-hidden pointer-events-none select-none"
+        style={{ zIndex: 0 }}
+        aria-hidden
+      >
+        <h1
+          className="font-headline font-black leading-none whitespace-nowrap"
+          style={{
+            fontSize:   'clamp(4rem, 12vw, 10rem)',
+            color:      'rgba(242,242,242,0.03)',
+            paddingLeft: '0.5rem',
+          }}
         >
-          ↻ Refresh
-        </button>
-        <div className={`w-1.5 h-1.5 rounded-full ${isStale ? 'bg-error/50' : 'bg-success'}`} />
-        <span className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35">
-          {isStale ? 'STALE' : 'LIVE'}
-        </span>
+          CELESTIAL PENDIUM
+        </h1>
       </div>
 
-      {/* ── Loading skeleton ───────────────────────────────────────── */}
-      {isLoading && statuses.length === 0 && (
-        <div className="glass-panel p-8 flex items-center gap-4">
-          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
-            Establishing somatic link — fetching world states…
-          </p>
-        </div>
-      )}
-
-      {/* ── First-launch onboarding (no cache, no network) ──────────── */}
+      {/* ── First-launch / no-data states ──────────────────────────── */}
       {!hasEverLoaded && (
-        <div className="glass-panel p-8 flex flex-col gap-4" style={{ borderColor: 'rgba(186,195,254,0.12)' }}>
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-tertiary/60">
-            First Sync Required
-          </p>
-          <p className="font-label text-sm text-secondary/50 max-w-lg leading-relaxed">
-            Tennoplan needs one network connection to initialize the Celestial Pendulum.
-            After that, all cycle data persists locally — timers extrapolate forward
-            and work fully offline.
-          </p>
-          <p className="font-label text-[10px] uppercase tracking-[0.28em] text-secondary/25">
-            Connect to a network and this panel will populate automatically.
-          </p>
+        <div className="flex-1 flex items-center justify-center" style={{ zIndex: 5 }}>
+          <div className="glass-panel p-10 max-w-lg text-center flex flex-col gap-4">
+            {isLoading ? (
+              <>
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse mx-auto" />
+                <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
+                  Establishing somatic link — fetching world states…
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-label text-xs uppercase tracking-[0.3em] text-tertiary/60">
+                  First Sync Required
+                </p>
+                <p className="font-label text-sm text-secondary/50 leading-relaxed">
+                  Tennoplan needs one network connection to initialize the Celestial Pendulum.
+                  After that, all cycle data persists locally — timers extrapolate forward
+                  and work fully offline.
+                </p>
+                <button
+                  onClick={forceRefetch}
+                  className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/30 hover:text-primary/70 transition-colors cursor-pointer mx-auto"
+                >
+                  ↻ Retry
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
 
-      {/* ── Section A: World Cycles ────────────────────────────────── */}
+      {/* ── Cinematic panels ────────────────────────────────────────── */}
       {statuses.length > 0 && (
-        <div className="space-y-3">
-
+        <>
           {/* Row 1: Plains of Eidolon | Orb Vallis | Cambion Drift */}
-          <div className="grid grid-cols-3 gap-3">
-            {ROW_1.map(id =>
-              byId[id] ? (
-                <CycleCard key={id} status={byId[id]} featured />
-              ) : null
-            )}
+          <div
+            className="relative flex"
+            style={{ height: '50vh', minHeight: 300, zIndex: 5 }}
+          >
+            {row1Statuses.map(s => (
+              <CinematicCyclePanel key={s.cycle.id} status={s} />
+            ))}
           </div>
 
-          {/* Row 2: Zariman | Duviri | Earth */}
-          <div className="grid grid-cols-3 gap-3">
-            {ROW_2.map(id =>
-              byId[id] ? (
-                <CycleCard key={id} status={byId[id]} />
-              ) : null
-            )}
+          {/* Thin somatic divider between the two rows */}
+          <div
+            style={{
+              height:     1,
+              background: 'linear-gradient(to right, transparent 0%, rgba(227,195,114,0.18) 20%, rgba(227,195,114,0.18) 80%, transparent 100%)',
+              flexShrink: 0,
+              zIndex:     5,
+            }}
+          />
+
+          {/* Row 2: Zariman Ten Zero | Duviri | Earth */}
+          <div
+            className="relative flex"
+            style={{ height: '50vh', minHeight: 280, zIndex: 5 }}
+          >
+            {row2Statuses.map(s => (
+              <CinematicCyclePanel key={s.cycle.id} status={s} />
+            ))}
           </div>
 
-        </div>
+          {/* World selector tabs */}
+          {allStatuses.length > 0 && (
+            <div style={{ zIndex: 5, flexShrink: 0 }}>
+              <WorldSelectorTabs statuses={allStatuses} />
+            </div>
+          )}
+        </>
       )}
 
-      {/* ── Offline / stale-cache banner ─────────────────────────── */}
+      {/* ── Offline / stale-cache banner ────────────────────────────── */}
       {isStale && statuses.length > 0 && (
-        <div className="flex items-center gap-3 mt-6">
-          <div className="w-1.5 h-1.5 rounded-full bg-error/50" />
-          <p className="font-label text-[10px] uppercase tracking-widest text-secondary/30">
+        <div
+          className="flex items-center gap-3 px-8 py-2"
+          style={{
+            zIndex:     6,
+            background: 'rgba(13,13,13,0.85)',
+            borderTop:  '1px solid rgba(255,255,255,0.06)',
+            flexShrink: 0,
+          }}
+        >
+          <div className="w-1.5 h-1.5 rounded-full bg-error/50 flex-shrink-0" />
+          <p className="font-label text-[9px] uppercase tracking-widest text-secondary/30 flex-1">
             Offline · Cached {formatCacheAge(cacheAgeMs)} · Timers extrapolated
           </p>
           <button
             onClick={forceRefetch}
-            className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/25 hover:text-primary/60 transition-colors ml-auto cursor-pointer"
+            className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/25 hover:text-primary/60 transition-colors cursor-pointer"
           >
             ↻ Retry
           </button>
         </div>
       )}
 
-      {/* ── Section B: Syndicate Dispatches ──────────────────────── */}
-      <div className="mt-10">
-        <SyndicateMissionsPanel />
-      </div>
+      {/* ── Corner sync indicator (non-intrusive) ───────────────────── */}
+      {statuses.length > 0 && !isStale && (
+        <div
+          className="absolute top-6 right-6 flex items-center gap-2"
+          style={{ zIndex: 10 }}
+        >
+          {isLoading && (
+            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          )}
+          {!isError && !isLoading && (
+            <button
+              onClick={forceRefetch}
+              title="Force refresh"
+              className="font-label text-[8px] uppercase tracking-[0.3em] text-secondary/20 hover:text-primary/50 transition-colors cursor-pointer"
+            >
+              ↻
+            </button>
+          )}
+        </div>
+      )}
 
-      {/* ── Section C: Simaris Sanctuary ─────────────────────────── */}
-      <div className="mt-10 mb-8">
-        <SimarisPanel />
-      </div>
-    </>
+    </div>
   );
 }

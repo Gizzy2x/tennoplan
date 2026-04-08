@@ -5,59 +5,66 @@ import type { CycleStatus } from '@/core/domain/cycles';
 // State presentation config
 // ---------------------------------------------------------------------------
 
-interface StatePresentation {
+export interface StatePresentation {
   label:     string;  // full state name
   badge:     string;  // short indicator shown in the state pill
   color:     string;  // hex — used for glow, ring, countdown digits
   nextLabel: string;  // what the *next* state is called (shown in transition line)
+  icon:      string;  // unicode symbol for state medallion
 }
 
-const STATE: Record<string, StatePresentation> = {
+export const STATE: Record<string, StatePresentation> = {
   // Cetus / Earth
-  day:     { label: 'DAY CYCLE',          badge: 'DAY',     color: '#E3C372', nextLabel: 'NIGHT'           },
-  night:   { label: 'NIGHT CYCLE',        badge: 'NIGHT',   color: '#bac3fe', nextLabel: 'DAY'             },
+  day:     { label: 'DAY CYCLE',          badge: 'DAY',     color: '#E3C372', nextLabel: 'NIGHT',           icon: '☀' },
+  night:   { label: 'NIGHT CYCLE',        badge: 'NIGHT',   color: '#bac3fe', nextLabel: 'DAY',             icon: '☽' },
   // Orb Vallis
-  warm:    { label: 'THERMAL SURGE',      badge: 'WARM',    color: '#fb923c', nextLabel: 'COLD FRONT'      },
-  cold:    { label: 'COLD FRONT',         badge: 'COLD',    color: '#67e8f9', nextLabel: 'WARM SURGE'      },
+  warm:    { label: 'THERMAL SURGE',      badge: 'WARM',    color: '#fb923c', nextLabel: 'COLD FRONT',      icon: '◎' },
+  cold:    { label: 'COLD FRONT',         badge: 'COLD',    color: '#67e8f9', nextLabel: 'WARM SURGE',      icon: '❄' },
   // Cambion Drift
-  fass:    { label: 'FASS ASCENDANT',     badge: 'FASS',    color: '#fb923c', nextLabel: 'VOME'            },
-  vome:    { label: 'VOME ASCENDANT',     badge: 'VOME',    color: '#c084fc', nextLabel: 'FASS'            },
+  fass:    { label: 'FASS ASCENDANT',     badge: 'FASS',    color: '#fb923c', nextLabel: 'VOME',            icon: '✦' },
+  vome:    { label: 'VOME ASCENDANT',     badge: 'VOME',    color: '#c084fc', nextLabel: 'FASS',            icon: '◈' },
   // Zariman Ten Zero
-  corpus:  { label: 'CORPUS CONTROL',     badge: 'CORPUS',  color: '#60a5fa', nextLabel: 'GRINEER ADV.'    },
-  grineer: { label: 'GRINEER OCCUPATION', badge: 'GRINEER', color: '#f87171', nextLabel: 'CORPUS RET.'     },
+  corpus:  { label: 'CORPUS CONTROL',     badge: 'CORPUS',  color: '#60a5fa', nextLabel: 'GRINEER ADV.',    icon: '⊕' },
+  grineer: { label: 'GRINEER OCCUPATION', badge: 'GRINEER', color: '#f87171', nextLabel: 'CORPUS RET.',     icon: '☠' },
   // Duviri moods
-  joy:     { label: 'JOY',               badge: 'JOY',     color: '#E3C372', nextLabel: 'ANGER APPROACHES' },
-  anger:   { label: 'ANGER',             badge: 'ANGER',   color: '#ef4444', nextLabel: 'ENVY RISES'       },
-  envy:    { label: 'ENVY',              badge: 'ENVY',    color: '#22c55e', nextLabel: 'SORROW FALLS'     },
-  sorrow:  { label: 'SORROW',            badge: 'SORROW',  color: '#60a5fa', nextLabel: 'FEAR COMES'       },
-  fear:    { label: 'FEAR',              badge: 'FEAR',    color: '#a855f7', nextLabel: 'JOY RETURNS'      },
+  joy:     { label: 'JOY',               badge: 'JOY',     color: '#E3C372', nextLabel: 'ANGER APPROACHES', icon: '◌' },
+  anger:   { label: 'ANGER',             badge: 'ANGER',   color: '#ef4444', nextLabel: 'ENVY RISES',       icon: '△' },
+  envy:    { label: 'ENVY',              badge: 'ENVY',    color: '#22c55e', nextLabel: 'SORROW FALLS',     icon: '◆' },
+  sorrow:  { label: 'SORROW',            badge: 'SORROW',  color: '#60a5fa', nextLabel: 'FEAR COMES',       icon: '▽' },
+  fear:    { label: 'FEAR',              badge: 'FEAR',    color: '#a855f7', nextLabel: 'JOY RETURNS',      icon: '◇' },
 };
 
-const FALLBACK: StatePresentation = STATE.day;
+export const FALLBACK: StatePresentation = STATE.day;
 
 // ---------------------------------------------------------------------------
-// World background gradients — atmospheric CSS gradients per world + state
+// World background gradients — rich atmospheric gradients per world + state
 // ---------------------------------------------------------------------------
 
 const CARD_GRADIENT: Record<string, string> = {
-  'cetus-day':       'linear-gradient(135deg, #1a1200 0%, #2a1a06 100%)',
-  'cetus-night':     'linear-gradient(135deg, #060c18 0%, #0d1828 100%)',
-  'vallis-warm':     'linear-gradient(135deg, #1a1200 0%, #2a1508 100%)',
-  'vallis-cold':     'linear-gradient(135deg, #060f1a 0%, #091525 100%)',
-  'cambion-fass':    'linear-gradient(135deg, #150c00 0%, #1a1000 100%)',
-  'cambion-vome':    'linear-gradient(135deg, #060f06 0%, #080d05 100%)',
-  'zariman-grineer': 'linear-gradient(135deg, #150808 0%, #110606 100%)',
-  'zariman-corpus':  'linear-gradient(135deg, #060c18 0%, #080f1f 100%)',
-  'duviri-joy':      'linear-gradient(135deg, #1a1500 0%, #201800 100%)',
-  'duviri-anger':    'linear-gradient(135deg, #1a0600 0%, #180400 100%)',
-  'duviri-envy':     'linear-gradient(135deg, #061a06 0%, #041504 100%)',
-  'duviri-sorrow':   'linear-gradient(135deg, #060f1a 0%, #081525 100%)',
-  'duviri-fear':     'linear-gradient(135deg, #100615 0%, #0d0512 100%)',
-  'earth-day':       'linear-gradient(135deg, #0a1200 0%, #101a05 100%)',
-  'earth-night':     'linear-gradient(135deg, #060812 0%, #0a0c18 100%)',
+  // Plains of Eidolon — warm amber sunset / cold indigo night
+  'cetus-day':       'radial-gradient(ellipse at 30% 85%, #6b3800 0%, #3d1c00 35%, #1a0c00 65%, #0a0800 100%)',
+  'cetus-night':     'radial-gradient(ellipse at 60% 20%, #1a2a5e 0%, #0c1840 35%, #060d2a 65%, #020510 100%)',
+  // Orb Vallis — rust orange heat / icy steel blue
+  'vallis-warm':     'radial-gradient(ellipse at 50% 90%, #5a2800 0%, #3a1800 35%, #1a0e00 65%, #0a0600 100%)',
+  'vallis-cold':     'radial-gradient(ellipse at 50% 30%, #0d3550 0%, #082240 30%, #040e20 65%, #020610 100%)',
+  // Cambion Drift — burnt amber Fass / deep teal Vome
+  'cambion-fass':    'radial-gradient(ellipse at 70% 70%, #5c2800 0%, #3a1500 35%, #1a0800 65%, #080400 100%)',
+  'cambion-vome':    'radial-gradient(ellipse at 40% 60%, #082a1e 0%, #041a12 35%, #020e0a 65%, #010805 100%)',
+  // Zariman Ten Zero — Void blue / Grineer blood red
+  'zariman-corpus':  'radial-gradient(ellipse at 50% 50%, #0c1e50 0%, #081440 35%, #040c28 65%, #020610 100%)',
+  'zariman-grineer': 'radial-gradient(ellipse at 50% 50%, #4a0c08 0%, #300806 35%, #180402 65%, #0a0200 100%)',
+  // Duviri — rich moody per-emotion gradients
+  'duviri-joy':      'radial-gradient(ellipse at 50% 70%, #4a3800 0%, #2a2000 35%, #141000 65%, #080600 100%)',
+  'duviri-anger':    'radial-gradient(ellipse at 50% 70%, #4a0e00 0%, #2c0800 35%, #160400 65%, #080200 100%)',
+  'duviri-envy':     'radial-gradient(ellipse at 50% 70%, #084a08 0%, #043004 35%, #021802 65%, #010801 100%)',
+  'duviri-sorrow':   'radial-gradient(ellipse at 50% 30%, #082040 0%, #041428 35%, #020a18 65%, #010610 100%)',
+  'duviri-fear':     'radial-gradient(ellipse at 50% 50%, #1e0640 0%, #120428 35%, #080218 65%, #040110 100%)',
+  // Earth — jungle green day / dark forest night
+  'earth-day':       'radial-gradient(ellipse at 40% 80%, #1a3800 0%, #0e2200 35%, #060e00 65%, #030800 100%)',
+  'earth-night':     'radial-gradient(ellipse at 50% 20%, #0c1430 0%, #060c20 35%, #030612 65%, #010408 100%)',
 };
 
-function getCardGradient(id: string, state: string): string {
+export function getCardGradient(id: string, state: string): string {
   return CARD_GRADIENT[`${id}-${state}`]
     ?? 'linear-gradient(135deg, #131313 0%, #1c1b1b 100%)';
 }
@@ -84,7 +91,7 @@ const STATIC_REWARDS: Record<string, string> = {
   'earth-night':     'NIGHTTIME FISHING',
 };
 
-function getStaticRewards(id: string, state: string): string {
+export function getStaticRewards(id: string, state: string): string {
   return STATIC_REWARDS[`${id}-${state}`] ?? '—';
 }
 
