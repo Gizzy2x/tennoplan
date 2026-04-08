@@ -17,7 +17,12 @@
       "Bash(npx vite:*)",
       "Bash(\"C:\\\\Users\\\\Nuclear Spaceship\\\\Documents\\\\GitHub\\\\tennoplan\\\\src\\\\adapters\\\\api\\\\dailiesAdapter.ts\")",
       "Bash(npm install:*)",
-      "Bash(find src/features/celestial-pendulum src/core/domain src/adapters/api/syndic* src/adapters/api/simarisAdapter.ts -type f)"
+      "Bash(find src/features/celestial-pendulum src/core/domain src/adapters/api/syndic* src/adapters/api/simarisAdapter.ts -type f)",
+      "mcp__context-mode__ctx_batch_execute",
+      "mcp__context-mode__ctx_fetch_and_index",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "WebFetch(domain:warframe.wiki.gg)",
+      "mcp__context-mode__ctx_execute"
     ]
   }
 }
