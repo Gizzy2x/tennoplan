@@ -1,14 +1,15 @@
 import { useWorldCycles } from './hooks/useWorldCycles';
 import { CycleCard } from './components/CycleCard';
+import { SyndicateMissionsPanel } from './components/SyndicateMissionsPanel';
+import { SimarisPanel } from './components/SimarisPanel';
 import { formatCacheAge } from '@/core/services/WorldstateService';
 import type { CycleId } from '@/core/domain/cycles';
 
-// Cycle IDs in the order we want them displayed.
-// Cetus is featured (wider card) because Eidolon windows are the most
-// time-sensitive content for most players.
-const FEATURED: CycleId   = 'cetus';
-const SECONDARY: CycleId  = 'vallis';
-const TERTIARY: CycleId[] = ['cambion', 'zariman', 'earth'];
+// Row 1 — the three main open-world farming cycles (featured, taller cards)
+const ROW_1: CycleId[] = ['cetus', 'vallis', 'cambion'];
+
+// Row 2 — three secondary cycles (standard height)
+const ROW_2: CycleId[] = ['zariman', 'duviri', 'earth'];
 
 export function CelestialPendulumPage() {
   const {
@@ -118,31 +119,24 @@ export function CelestialPendulumPage() {
         </div>
       )}
 
-      {/* ── Cycle grid ────────────────────────────────────────────── */}
+      {/* ── Section A: World Cycles ────────────────────────────────── */}
       {statuses.length > 0 && (
-        <div className="space-y-4">
+        <div className="space-y-3">
 
-          {/* Row 1: Cetus (featured, 7 cols) + Vallis (5 cols) */}
-          <div className="grid grid-cols-12 gap-4">
-            {byId[FEATURED] && (
-              <div className="col-span-7">
-                <CycleCard status={byId[FEATURED]} featured />
-              </div>
-            )}
-            {byId[SECONDARY] && (
-              <div className="col-span-5">
-                <CycleCard status={byId[SECONDARY]} />
-              </div>
+          {/* Row 1: Plains of Eidolon | Orb Vallis | Cambion Drift */}
+          <div className="grid grid-cols-3 gap-3">
+            {ROW_1.map(id =>
+              byId[id] ? (
+                <CycleCard key={id} status={byId[id]} featured />
+              ) : null
             )}
           </div>
 
-          {/* Row 2: Cambion + Zariman + Earth (4 cols each) */}
-          <div className="grid grid-cols-12 gap-4">
-            {TERTIARY.map(id =>
+          {/* Row 2: Zariman | Duviri | Earth */}
+          <div className="grid grid-cols-3 gap-3">
+            {ROW_2.map(id =>
               byId[id] ? (
-                <div key={id} className="col-span-4">
-                  <CycleCard status={byId[id]} />
-                </div>
+                <CycleCard key={id} status={byId[id]} />
               ) : null
             )}
           </div>
@@ -165,6 +159,16 @@ export function CelestialPendulumPage() {
           </button>
         </div>
       )}
+
+      {/* ── Section B: Syndicate Dispatches ──────────────────────── */}
+      <div className="mt-10">
+        <SyndicateMissionsPanel />
+      </div>
+
+      {/* ── Section C: Simaris Sanctuary ─────────────────────────── */}
+      <div className="mt-10 mb-8">
+        <SimarisPanel />
+      </div>
     </>
   );
 }

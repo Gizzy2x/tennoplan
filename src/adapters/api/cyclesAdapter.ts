@@ -17,6 +17,7 @@ const ENDPOINT: Record<CycleId, string> = {
   cambion: `${BASE}/cambionCycle`,
   zariman: `${BASE}/zarimanCycle`,
   earth:   `${BASE}/earthCycle`,
+  duviri:  `${BASE}/duviriCycle`,
 };
 
 const META: Record<CycleId, { name: string; location: string }> = {
@@ -25,6 +26,7 @@ const META: Record<CycleId, { name: string; location: string }> = {
   cambion: { name: 'Cambion Drift',     location: 'Necralisk' },
   zariman: { name: 'Zariman Ten Zero',  location: 'Chrysalith' },
   earth:   { name: 'Earth',            location: 'Earth Proxima' },
+  duviri:  { name: 'Duviri',           location: 'Duviri Paradox' },
 };
 
 const CYCLE_CACHE_KEY: Record<CycleId, string> = {
@@ -33,6 +35,7 @@ const CYCLE_CACHE_KEY: Record<CycleId, string> = {
   cambion: WS_CACHE_KEYS.cycleCambion,
   zariman: WS_CACHE_KEYS.cycleZariman,
   earth:   WS_CACHE_KEYS.cycleEarth,
+  duviri:  WS_CACHE_KEYS.cycleDuviri,
 };
 
 // ---------------------------------------------------------------------------
@@ -46,6 +49,8 @@ interface RawCycle {
   state?:  string;
   /** cambionCycle uses "active" instead of "state" */
   active?: string;
+  /** duviriCycle may use "mood" instead of "state" */
+  mood?:   string;
 }
 
 // ---------------------------------------------------------------------------
@@ -60,6 +65,7 @@ interface CycleFetchMeta {
 
 function normalizeState(id: CycleId, raw: RawCycle): string {
   if (id === 'cambion') return (raw.active ?? 'fass').toLowerCase();
+  if (id === 'duviri')  return (raw.state ?? raw.mood ?? 'joy').toLowerCase();
   return (raw.state ?? 'day').toLowerCase();
 }
 
@@ -125,7 +131,7 @@ async function fetchOneCycle(id: CycleId): Promise<CycleFetchMeta> {
 // Public API
 // ---------------------------------------------------------------------------
 
-const CYCLE_IDS: CycleId[] = ['cetus', 'vallis', 'cambion', 'zariman', 'earth'];
+const CYCLE_IDS: CycleId[] = ['cetus', 'vallis', 'cambion', 'zariman', 'earth', 'duviri'];
 
 /**
  * Fetch all five world cycles, returning whichever succeed.
