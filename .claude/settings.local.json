@@ -22,7 +22,9 @@
       "mcp__context-mode__ctx_fetch_and_index",
       "mcp__Claude_in_Chrome__tabs_context_mcp",
       "WebFetch(domain:warframe.wiki.gg)",
-      "mcp__context-mode__ctx_execute"
+      "mcp__context-mode__ctx_execute",
+      "Bash(python3 \"C:/Users/Nuclear Spaceship/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.5.0/.claude/skills/ui-ux-pro-max/scripts/search.py\" \"gaming companion dark cinematic immersive data dashboard\" --design-system -p \"Tennoplan Celestial Pendulum\" -f markdown)",
+      "Bash(python3 cli/assets/scripts/search.py \"gaming companion dark cinematic immersive real-time dashboard\" --design-system -p \"Tennoplan\" -f markdown)"
     ]
   }
 }

@@ -28,6 +28,7 @@ We strictly follow **Hexagonal Architecture** so the core business logic never d
 - **Core / Domain** (inside the hexagon — pure, never changes):
   - Entities & Types (`Item`, `Relic`, `Cycle`, `PulseTracker`, `FoundryBuild`, `NightwaveAct`, etc.)
   - Pure business logic (timer calculations, pulse deduction rules, price valuation, set completion checks, etc.)
+  - Entities & Types (`Item`, `Relic`, `Cycle`, `PulseTracker`, `FoundryBuild`, `NightwaveAct`, `ItemWithIcon`, `DropTableEntry`, etc.)
 
 - **Adapters** (outside the hexagon — pluggable):
   - **API Adapters**: `WorldstateAdapter`, `MarketAdapter`
@@ -59,7 +60,7 @@ This makes the app extremely maintainable: if warframe.market changes, you only 
 | Static Data    | WFCD/warframe-items + warframe-relic-data (bundled JSON) | Always up-to-date items/relics |
 | EE.log         | Tauri FS plugin + custom Rust parser (inspired by WFCD/warframe-deathlog) | Safe file reading |
 | Versioning     | Git + GitHub                           | Easy rollbacks |
-
+- Asset Management: Vite static imports + Dexie blob caching for dynamic icons + Tauri FS for larger background images
 **No heavy ORMs or paid services.** Start simple, scale only when needed.
 
 ## 4. Project Folder Structure
@@ -79,22 +80,28 @@ tennoplan/
 │   │   ├── analytics-session/
 │   │   └── overlays-helpers/
 │   ├── core/                        # Hexagonal "Inside"
-│   │   ├── domain/                  # Types & Entities
-│   │   ├── services/                # Pure logic (TimerService, PulseService, etc.)
-│   │   └── utils/
+│   │   ├── domain/                  # Types & Entities (add: ItemWithIcon, DropTableEntry, etc.)
+│   │   ├── services/                # Pure logic (TimerService, PulseService, IconService, DropTableService, etc.)
+│   │   └── utils/                   # Pure utilities (getItemIconPath, resolveDropChance, etc.)
 │   ├── adapters/                    # Hexagonal "Outside"
-│   │   ├── api/                     # WorldstateAdapter, MarketAdapter
-│   │   ├── storage/                 # Dexie schemas & repositories
+│   │   ├── api/                     # WorldstateAdapter, MarketAdapter, DropTableAdapter
+│   │   ├── assets/                  # New: IconResolver, ImageCache, AssetLoader
+│   │   ├── storage/                 # Dexie schemas & repositories (add icon/blob caching tables)
 │   │   └── log/                     # EE.log parser commands
-│   ├── lib/                         # Constants, config, types
+│   ├── lib/                         # Constants, config, types (add: AssetPaths, WarframeCDN)
 │   ├── store/                       # Zustand stores (one per feature when needed)
 │   ├── App.tsx                      # Root with AppShell
 │   └── main.tsx
 ├── src-tauri/                       # Rust backend
 │   ├── src/
-│   │   └── commands/                # Tauri commands (read EE.log, etc.)
+│   │   └── commands/                # Tauri commands (read EE.log, asset management if needed)
 │   └── tauri.conf.json
-├── public/                          # Static assets, bundled JSON data
+├── public/
+│   ├── assets/
+│   │   ├── icons/                   # Bundled Warframe item icons (organized by category or flat)
+│   │   ├── images/                  # Backgrounds, cinematic stills, relic images, etc.
+│   │   └── data/                    # Bundled JSON: warframe-items.json, relics.json, drop-data.json (minified subsets)
+│   └── icons/                       # Optional flat fallback for direct /icons/ access
 ├── package.json
 └── README.md
 text
@@ -106,14 +113,16 @@ text
 - **Market** → `https://api.warframe.market/v2/` (v2 is current; auth required for personal orders)
 - **Items / Relics / Drops** → Bundle latest JSON from `https://github.com/WFCD/warframe-items` and `warframe-relic-data`
 - **EE.log** → Read via Tauri FS + parser (community tools like WFCD/warframe-deathlog confirm this is safe and widely used)
+- **Item Icons & Assets** → Bundle PNGs from `warframe-items` (using `imageName` field). Primary CDN fallback: `https://cdn.warframestat.us/images/${imageName}`. All critical icons are bundled for true offline use.
+- **Drop Tables** → `https://github.com/WFCD/warframe-drop-data` (bundle `all.json` or key subsets in `public/assets/data/`). Live fetch via `DropTableAdapter` with aggressive caching (drops change infrequently).
 
 ## 6. Frontend UI Vision (High-Level)
 
 - **AppShell**: Fixed sidebar + persistent top bar.
 - **Top Bar (persistent on every page)**: Includes a prominent **Dailies & Weeklies** button in the middle. Clicking it switches the main content area (same as sidebar tabs).
 - **Sidebar Navigation Tabs** (order):
-  1. Celestial Pendulum — world cycle timers (simple, glanceable)
-  2. Void Reliquaries — active fissures (simple, glanceable)
+  1. Celestial Pendulum — world cycle timers 
+  2. Void Reliquaries — active fissures 
   3. Solar Rail Feed — live events, invasions, alerts
   4. Ascension Registry — Mastery & Progression Tracker (MR, item unlock/check-off)
   5. Dailies & Weeklies — **Killer feature** (Nightwave, Pulse, Netracell, EDA/ETA, full checklist). Accessed primarily via top bar.

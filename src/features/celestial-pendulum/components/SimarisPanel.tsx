@@ -8,24 +8,29 @@ import { useSimaris } from '../hooks/useSimaris';
  * Displays the active Simaris synthesis target.
  * Single full-width card — this is the right layout for one atomic piece of data.
  * No countdown: the API provides no expiry; we surface "Resets Daily" instead.
+ *
+ * standaloneSection (default true): when false, omits the leading somatic-line
+ * divider and section header so the page can provide its own spacing.
  */
-export function SimarisPanel() {
+export function SimarisPanel({ standaloneSection = true }: { standaloneSection?: boolean }) {
   const { data, isLoading, isError, isStale } = useSimaris();
   const target = data?.activeSynthesisTarget;
 
   return (
     <section>
-      <div className="somatic-line mb-6" />
+      {standaloneSection && <div className="somatic-line mb-6" />}
 
       {/* Section header */}
-      <div className="flex items-center gap-4 mb-4">
-        <p className="font-label text-[10px] uppercase tracking-[0.4em] text-primary/50">
-          Simaris Sanctuary
-        </p>
-        <span className="font-label text-[9px] uppercase tracking-[0.25em] text-secondary/25">
-          — Synthesis Targets
-        </span>
-      </div>
+      {standaloneSection && (
+        <div className="flex items-center gap-4 mb-4">
+          <p className="font-label text-[10px] uppercase tracking-[0.4em] text-primary/50">
+            Simaris Sanctuary
+          </p>
+          <span className="font-label text-[9px] uppercase tracking-[0.25em] text-secondary/25">
+            — Synthesis Targets
+          </span>
+        </div>
+      )}
 
       {/* Single full-width card */}
       <div
