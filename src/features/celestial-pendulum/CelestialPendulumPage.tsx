@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useWorldCycles }       from './hooks/useWorldCycles';
 import { useSyndicateMissions } from './hooks/useSyndicateMissions';
 import { CinematicCyclePanel }  from './components/CinematicCyclePanel';
+import { WorldBackground }      from './components/WorldBackground';
 import { STATE, FALLBACK, getCardGradient } from './components/CycleCard';
 import { getWorldBg }           from './worldAssets';
 import { formatMsParts }        from '@/core/services/cycleService';
@@ -63,34 +64,15 @@ export function CelestialPendulumPage() {
     : '#131313';
 
   return (
+    <>
+    {/* WorldBackground is fixed-position — owns the bg image + bottom fade.
+        Swap world images in worldAssets.ts. Sidebar width via --sidebar-w in index.css. */}
+    <WorldBackground url={bgUrl} fallbackColor={cssGradient} />
+
     <div
       className="-mx-12 -mt-24 relative flex flex-col"
-      style={{ minHeight: '100vh', overflowX: 'hidden', background: cssGradient }}
+      style={{ height: '100dvh', overflow: 'hidden' }}
     >
-
-      {/* ── Full-bleed background image ──────────────────────────────────── */}
-      {bgUrl && (
-        <img
-          key={bgUrl}
-          src={bgUrl}
-          alt=""
-          aria-hidden
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
-          style={{ zIndex: 0, animation: 'cpBgFadeIn 0.45s ease forwards' }}
-        />
-      )}
-
-      {/* ── Gradient overlay ─────────────────────────────────────────────── */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: [
-            'linear-gradient(to right, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.62) 38%, rgba(0,0,0,0.20) 65%, rgba(0,0,0,0.55) 100%)',
-            'linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.10) 35%, rgba(0,0,0,0.55) 100%)',
-          ].join(', '),
-          zIndex: 1,
-        }}
-      />
 
       {/* ── First-launch / no-data ───────────────────────────────────────── */}
       {!hasEverLoaded && (
@@ -130,7 +112,7 @@ export function CelestialPendulumPage() {
 
       {/* ── Main content ─────────────────────────────────────────────────── */}
       {orderedStatuses.length > 0 && (
-        <div className="relative flex flex-col" style={{ zIndex: 5, minHeight: '100vh' }}>
+        <div className="relative flex flex-col" style={{ zIndex: 5, height: '100%' }}>
 
           {/* ════════════════════════════════════════════════════════════════
               TOP AREA — page title + world tab strip
@@ -183,10 +165,10 @@ export function CelestialPendulumPage() {
                       fontWeight:    700,
                       letterSpacing: '0.18em',
                       textTransform: 'uppercase',
-                      color:         isActive ? pres.color : 'rgba(198,198,199,0.42)',
-                      background:    isActive ? `${pres.color}0E` : 'transparent',
+                      color:         isActive ? pres.color : 'rgba(198,198,199,0.60)',
+                      background:    isActive ? `${pres.color}14` : 'transparent',
                       border:        isActive
-                        ? `1px solid ${pres.color}50`
+                        ? `1px solid ${pres.color}45`
                         : '1px solid transparent',
                       cursor:      'pointer',
                       whiteSpace:  'nowrap',
@@ -195,12 +177,16 @@ export function CelestialPendulumPage() {
                     }}
                     onMouseEnter={e => {
                       if (!isActive) {
-                        (e.currentTarget as HTMLButtonElement).style.color = 'rgba(198,198,199,0.70)';
+                        (e.currentTarget as HTMLButtonElement).style.color = 'rgba(227,195,114,0.80)';
+                        (e.currentTarget as HTMLButtonElement).style.borderColor = `${pres.color}28`;
+                        (e.currentTarget as HTMLButtonElement).style.background = `${pres.color}08`;
                       }
                     }}
                     onMouseLeave={e => {
                       if (!isActive) {
-                        (e.currentTarget as HTMLButtonElement).style.color = 'rgba(198,198,199,0.42)';
+                        (e.currentTarget as HTMLButtonElement).style.color = 'rgba(198,198,199,0.60)';
+                        (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent';
+                        (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
                       }
                     }}
                   >
@@ -231,7 +217,7 @@ export function CelestialPendulumPage() {
           {selectedStatus && (
             <div
               className="relative flex"
-              style={{ flex: '1 0 0', minHeight: 'calc(100vh - 90px)' }}
+              style={{ flex: '1 1 0', minHeight: 0, overflow: 'hidden' }}
             >
               <CinematicCyclePanel
                 key={activeId}
@@ -279,5 +265,6 @@ export function CelestialPendulumPage() {
       )}
 
     </div>
+    </>
   );
 }

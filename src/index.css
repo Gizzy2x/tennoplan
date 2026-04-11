@@ -102,6 +102,18 @@
 }
 
 /* ================================================================
+   Layout Variables
+   ================================================================
+   --sidebar-w: width of the sidebar. Update this one variable if
+   the sidebar becomes collapsible or resizable — all cinematic
+   backgrounds adapt automatically via position: fixed + left: var(--sidebar-w).
+   ================================================================ */
+
+:root {
+  --sidebar-w: 280px;
+}
+
+/* ================================================================
    Base Styles
    ================================================================ */
 

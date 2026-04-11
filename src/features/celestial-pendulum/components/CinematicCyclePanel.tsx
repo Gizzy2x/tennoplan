@@ -1,9 +1,8 @@
 import { formatMsParts, nextCycleState } from '@/core/services/cycleService';
 import type { CycleStatus } from '@/core/domain/cycles';
 import type { SyndicateMission } from '@/core/domain/syndicates';
-import { STATE, FALLBACK, getCardGradient } from './CycleCard';
+import { STATE, FALLBACK } from './CycleCard';
 import { BountyJobList } from './BountyJobList';
-import { getWorldBg } from '../worldAssets';
 
 // ── Static world lore ──────────────────────────────────────────────────────
 
@@ -141,8 +140,6 @@ export function CinematicCyclePanel({
   const nextPres  = STATE[nextState] ?? FALLBACK;
   const { h, m, s } = formatMsParts(msRemaining);
 
-  const bgUrl       = getWorldBg(cycle.id, cycle.state);
-  const cssGradient = getCardGradient(cycle.id, cycle.state);
   const hasBounties = !!syndicateMission && syndicateMission.jobs.length > 0;
   const resources   = KEY_RESOURCES[`${cycle.id}-${cycle.state}`] ?? [];
   const aboutText   = WORLD_ABOUT[cycle.id] ?? '';
@@ -155,42 +152,25 @@ export function CinematicCyclePanel({
 
   return (
     <div
-      className="relative flex-1 overflow-hidden"
-      style={{ background: cssGradient, minHeight: 0 }}
+      className="relative flex-1"
+      style={{ minHeight: 0, height: '100%', overflow: 'hidden' }}
     >
-      {/* ── Background image ──────────────────────────────────────────────── */}
-      {bgUrl && (
-        <img
-          src={bgUrl}
-          alt=""
-          aria-hidden
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
-          style={{ zIndex: 0 }}
-        />
-      )}
+      {/* Background image + bottom fade are owned by <WorldBackground> in the
+          page root (position: fixed). This panel only adds the left/right
+          vignette overlay for text readability. */}
 
-      {/* ── Vignette overlay ──────────────────────────────────────────────── */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: [
-            'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.60) 38%, rgba(0,0,0,0.18) 65%, rgba(0,0,0,0.55) 100%)',
-            'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.12) 35%, rgba(0,0,0,0.55) 100%)',
-          ].join(', '),
-          zIndex: 1,
-        }}
-      />
+      {/* Vignette is handled entirely by <WorldBackground> — no overlay here */}
 
       {/* ── Two-column content ────────────────────────────────────────────── */}
       <div
-        className="relative h-full flex"
-        style={{ zIndex: 6, padding: '32px 48px 32px 44px', gap: 48 }}
+        className="relative flex"
+        style={{ zIndex: 6, padding: '32px 48px 32px 44px', gap: 48, height: '100%' }}
       >
 
         {/* ══ LEFT COLUMN ══════════════════════════════════════════════════ */}
         <div
           className="flex flex-col"
-          style={{ flex: '0 0 60%', minWidth: 0, overflowY: 'auto', scrollbarWidth: 'none' }}
+          style={{ flex: '0 0 60%', minWidth: 0, overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none', height: '100%' }}
         >
 
           {/* World title */}
@@ -300,11 +280,18 @@ export function CinematicCyclePanel({
               >
                 Key Resources
               </p>
-              <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {resources.map(res => (
                   <div
                     key={res.name}
-                    style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}
+                    style={{
+                      display:    'flex',
+                      alignItems: 'flex-start',
+                      gap:        8,
+                      padding:    '7px 11px',
+                      border:     '1px solid rgba(227,195,114,0.22)',
+                      background: 'rgba(0,0,0,0.28)',
+                    }}
                   >
                     <span style={{ color: '#E3C372', opacity: 0.65, fontSize: '0.62rem', marginTop: 3, flexShrink: 0 }}>
                       {res.icon}
@@ -458,7 +445,7 @@ export function CinematicCyclePanel({
         </div>
 
         {/* ══ RIGHT COLUMN ══════════════════════════════════════════════════ */}
-        <div className="flex flex-col" style={{ flex: 1, minWidth: 0 }}>
+        <div className="flex flex-col" style={{ flex: 1, minWidth: 0, height: '100%', overflow: 'hidden' }}>
 
           {/* State badge — top right */}
           <div style={{ alignSelf: 'flex-end', textAlign: 'right', marginBottom: 10 }}>
