@@ -1,67 +1,104 @@
-import type { CycleStatus } from '@/core/domain/cycles';
+import { formatMsParts } from '@/core/services/cycleService';
+import type { CycleId, CycleStatus } from '@/core/domain/cycles';
 import { STATE, FALLBACK } from './CycleCard';
 
 interface WorldSelectorTabsProps {
-  statuses: CycleStatus[];
+  statuses:   CycleStatus[];
+  selectedId: CycleId;
+  onSelect:   (id: CycleId) => void;
 }
 
-export function WorldSelectorTabs({ statuses }: WorldSelectorTabsProps) {
+export function WorldSelectorTabs({ statuses, selectedId, onSelect }: WorldSelectorTabsProps) {
   return (
-    <div className="flex" style={{ borderTop: '1px solid rgba(227,195,114,0.12)' }}>
-      {statuses.map(s => {
-        const pres = STATE[s.cycle.state] ?? FALLBACK;
+    <div
+      style={{
+        display:              'flex',
+        background:           'rgba(8,6,4,0.82)',
+        borderBottom:         '1px solid rgba(227,195,114,0.10)',
+        backdropFilter:       'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        flexShrink:           0,
+        zIndex:               10,
+      }}
+    >
+      {statuses.map(status => {
+        const pres     = STATE[status.cycle.state] ?? FALLBACK;
+        const isActive = status.cycle.id === selectedId;
+        const { h, m, s } = formatMsParts(status.msRemaining);
+
+        // Show h+m when more than an hour, else m+s
+        const timeStr = h !== '00'
+          ? `${parseInt(h, 10)}H ${parseInt(m, 10)}M`
+          : `${parseInt(m, 10)}M ${parseInt(s, 10)}S`;
+
         return (
-          <div
-            key={s.cycle.id}
-            className="flex-1 relative flex flex-col items-center justify-center py-3 px-2"
+          <button
+            key={status.cycle.id}
+            onClick={() => onSelect(status.cycle.id)}
             style={{
-              borderRight: '1px solid rgba(227,195,114,0.10)',
-              minWidth: 0,
+              flex:           1,
+              display:        'flex',
+              alignItems:     'center',
+              justifyContent: 'center',
+              gap:            6,
+              padding:        '9px 6px',
+              borderRight:    '1px solid rgba(227,195,114,0.07)',
+              borderTop:      isActive ? `2px solid ${pres.color}` : '2px solid transparent',
+              background:     isActive ? `${pres.color}0C` : 'transparent',
+              cursor:         'pointer',
+              minWidth:       0,
+              transition:     'background 0.18s, border-color 0.18s',
             }}
           >
-            {/* Diamond ornament at top */}
+            {/* State icon */}
             <span
-              aria-hidden
-              className="absolute"
               style={{
-                top:       -6,
-                left:      '50%',
-                transform: 'translateX(-50%)',
-                fontSize:  '0.45rem',
-                color:     pres.color,
-                opacity:   0.55,
+                fontSize:   '0.72rem',
+                color:      pres.color,
+                opacity:    isActive ? 0.92 : 0.40,
+                flexShrink: 0,
+                transition: 'opacity 0.18s',
+                lineHeight: 1,
               }}
             >
-              ◆
+              {pres.icon}
             </span>
 
-            <p
-              className="font-label uppercase text-center"
+            {/* Location name (e.g. "Cetus", not full "Plains of Eidolon") */}
+            <span
               style={{
-                fontSize:      'clamp(0.5rem, 0.75vw, 0.65rem)',
-                letterSpacing: '0.35em',
-                color:         'rgba(198,198,199,0.45)',
-                whiteSpace:    'nowrap',
+                fontFamily:    'var(--font-body)',
+                fontSize:      '0.52rem',
+                fontWeight:    600,
+                letterSpacing: '0.26em',
+                textTransform: 'uppercase',
+                color:         isActive ? 'rgba(229,226,225,0.92)' : 'rgba(198,198,199,0.32)',
                 overflow:      'hidden',
                 textOverflow:  'ellipsis',
-                maxWidth:      '100%',
+                whiteSpace:    'nowrap',
+                transition:    'color 0.18s',
               }}
             >
-              {s.cycle.name}
-            </p>
-
-            <span
-              className="font-label uppercase mt-0.5"
-              style={{
-                fontSize:      '0.5rem',
-                letterSpacing: '0.25em',
-                color:         pres.color,
-                opacity:       0.65,
-              }}
-            >
-              {pres.badge}
+              {status.cycle.location}
             </span>
-          </div>
+
+            {/* Time remaining */}
+            <span
+              style={{
+                fontFamily:    'var(--font-body)',
+                fontSize:      '0.50rem',
+                fontWeight:    500,
+                letterSpacing: '0.10em',
+                color:         pres.color,
+                opacity:       isActive ? 0.88 : 0.32,
+                flexShrink:    0,
+                whiteSpace:    'nowrap',
+                transition:    'opacity 0.18s',
+              }}
+            >
+              {timeStr}
+            </span>
+          </button>
         );
       })}
     </div>
