@@ -1,7 +1,6 @@
 import type { ComponentType } from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
-import { BackgroundDecorations } from "@/components/decorations/BackgroundDecorations";
 import { useNavigationStore, type NavTab } from "@/store/navigation";
 
 import { DailiesWeekliesPage } from "@/features/dailies-weeklies/DailiesWeekliesPage";
@@ -36,7 +35,6 @@ export function AppShell() {
 
   return (
     <>
-      <BackgroundDecorations />
       <Sidebar />
       <Header />
 
