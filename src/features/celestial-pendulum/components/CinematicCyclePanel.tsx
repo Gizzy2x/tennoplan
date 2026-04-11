@@ -11,11 +11,11 @@ const WORLD_ABOUT: Record<string, string> = {
   cetus:
     'The Plains of Eidolon stretch beyond the colony of Cetus, a trading hub where the Ostron people thrive. At night, massive Sentient Eidolons roam the landscape — remnants of a vast Sentient destroyed during the Old War. Tenno brave enough to face them can earn Arcanes and Operator Amps.',
   vallis:
-    "The Orb Vallis is a terraformed Venusian plateau controlled by Nef Anyo's Corpus operations. The enslaved Solaris United work in its debt-vaults beneath the surface. During cold snaps, rare Toroids emerge — essential materials for advancing Vent Kids standings and Operator Amps.",
+    "Beneath the frozen surface of Venus lies Fortuna, a debt-internment colony. The Solaris United resistance fights against Nef Anyo's Corpus regime. Above ground, the Orb Vallis cycles between frigid cold and brief warmth, each state affecting the wildlife and bounty availability.",
   cambion:
-    'The Cambion Drift is the Infestation-ravaged landscape of Deimos, home to the partially-infested Entrati family. Isolation Vaults hold Orokin secrets guarded by ancient Necramechs. The alternating Fass and Vome cycles determine which resources and enemies are most abundant.',
+    'Deimos, the Infested moon, houses the Entrati family in the Necralisk. The Cambion Drift is a nightmarish landscape where two wyrms — Fass and Vome — battle eternally. Their cycle determines which Infested resources appear and affects the behavior of the local fauna.',
   zariman:
-    'The Zariman Ten Zero vanished into the Void for fifty years, returning with its young colonists forever changed by Void exposure. Now held by the Holdfasts, its corridors contain unique Void-touched resources. Corpus and Grineer factions vie for control of its decks.',
+    'The Zariman Ten Zero was a colony ship lost in the Void, its passengers transformed by Void exposure. Now partially restored, it serves as a hub for Tenno operations. The ship alternates between Grineer and Corpus incursions, each bringing different enemies and mission modifiers.',
   duviri:
     'Duviri is an impossible realm within the Void, shaped by the ever-shifting moods of Dominus Thrax. Tenno enter as Drifters, separated from their Warframes. The current Spiral mood determines enemy behavior, decree types, and rewards available from the circuit.',
   earth:
@@ -25,12 +25,12 @@ const WORLD_ABOUT: Record<string, string> = {
 const WORLD_HINT: Record<string, string> = {
   'cetus-day':       'Eidolon hunts available at night — bring Amp and Void Strike',
   'cetus-night':     'Eidolons active — hunt Teralyst, Gantulyst, Hydrolyst for Arcanes',
-  'vallis-warm':     'Wildlife spawns increased — optimal for conservation and rare fish',
-  'vallis-cold':     'Toroid drop rates increased — check Enrichment Labs and Temple of Profit',
-  'cambion-fass':    'Isolation Vaults unlocked — bring Necramech and Helminth Charger',
-  'cambion-vome':    'Conservation active — Son tokens available from rare wildlife encounters',
-  'zariman-corpus':  'Corpus Bounties active — Voidplume Wings and Drifter Intrinsics available',
-  'zariman-grineer': 'Grineer Bounties active — Voidplume Wings and Drifter Intrinsics available',
+  'vallis-warm':     'Exploiter Orb requires warm cycle — Profit-Taker available anytime',
+  'vallis-cold':     'Exploiter Orb requires warm cycle — Profit-Taker available anytime',
+  'cambion-fass':    'Residue type changes with cycle — collect both for max standing',
+  'cambion-vome':    'Residue type changes with cycle — collect both for max standing',
+  'zariman-corpus':  'Faction determines mission enemies and Incarnon rotations',
+  'zariman-grineer': 'Faction determines mission enemies and Incarnon rotations',
   'duviri-joy':      'Joy Spiral — speed and combat efficiency decrees available this cycle',
   'duviri-anger':    'Anger Spiral — powerful but chaotic decrees active, high risk',
   'duviri-envy':     'Envy Spiral — resource acquisition bonuses active this cycle',
@@ -49,49 +49,76 @@ const KEY_RESOURCES: Partial<Record<string, KeyResource[]>> = {
     { icon: '◈', name: 'Iradite',            source: 'Rock formations' },
     { icon: '◎', name: 'Grokdrul',           source: 'Grineer camps' },
     { icon: '◇', name: 'Sentirum',           source: 'Mining (rare)' },
-    { icon: '◆', name: 'Nyth',              source: 'Mining (rare)' },
+    { icon: '◆', name: 'Nyth',               source: 'Mining (rare)' },
   ],
   'cetus-night': [
-    { icon: '✦', name: 'Arcane Energize',   source: 'Eidolon hunts' },
-    { icon: '◆', name: 'Cetus Wisp',        source: 'Plains (glowing)' },
-    { icon: '◈', name: 'Brilliant Shard',   source: 'Eidolons' },
-    { icon: '◇', name: 'Intact Core',       source: 'Sentients' },
+    { icon: '✦', name: 'Arcane Energize',    source: 'Eidolon hunts' },
+    { icon: '◆', name: 'Cetus Wisp',         source: 'Plains (glowing)' },
+    { icon: '◈', name: 'Brilliant Shard',    source: 'Eidolons' },
+    { icon: '◇', name: 'Intact Core',        source: 'Sentients' },
   ],
   'vallis-warm': [
-    { icon: '◆', name: 'Thermal Sludge',     source: 'Mining' },
-    { icon: '✦', name: 'Thumper Organs',     source: 'Thumper kills' },
-    { icon: '◈', name: 'Mytocardia Spore',   source: 'Conservation' },
-    { icon: '◎', name: 'Dusklight Sarracenia', source: 'Plains flora' },
+    { icon: '◆', name: 'Gyromag Systems',    source: 'Heist bounties' },
+    { icon: '✦', name: 'Repeller Systems',   source: 'Profit-Taker bounty' },
+    { icon: '◈', name: 'Atmo Systems',       source: 'Coolant pools' },
+    { icon: '◎', name: 'Thermal Sludge',     source: 'Mining' },
+    { icon: '◇', name: 'Mytocardia Spore',   source: 'Conservation' },
   ],
   'vallis-cold': [
-    { icon: '◆', name: 'Toroid',             source: 'Orb encounters' },
-    { icon: '✦', name: 'Field Ron',          source: 'Mining' },
-    { icon: '◈', name: 'Marquise Thyst',     source: 'Mining (rare)' },
-    { icon: '◇', name: 'Foxglove Sunflower', source: 'Bounty rewards' },
+    { icon: '◎', name: 'Toroid',             source: 'Spiders & caves' },
+    { icon: '✦', name: 'Repeller Systems',   source: 'Profit-Taker bounty' },
+    { icon: '◈', name: 'Gyromag Systems',    source: 'Heist bounties' },
+    { icon: '◎', name: 'Thermal Sludge',     source: 'Coolant pools' },
+    { icon: '◇', name: 'Amarast',            source: 'Mining' },
   ],
   'cambion-fass': [
-    { icon: '◆', name: 'Anomaly Shard',      source: 'Isolation Vaults' },
-    { icon: '✦', name: 'Sporulate Sac',      source: 'Infested nodes' },
-    { icon: '◈', name: 'Fass Residue',       source: 'Fass worm' },
-    { icon: '◎', name: 'Thaumica',           source: 'Mining' },
+    { icon: '✦', name: 'Scintillant',        source: 'Isolation Vaults' },
+    { icon: '◎', name: 'Son Tokens',         source: 'Conservation' },
+    { icon: '◈', name: 'Mother Tokens',      source: 'Bounties' },
+    { icon: '◆', name: 'Father Tokens',      source: 'Parts trading' },
+    { icon: '◇', name: 'Ganglion',           source: 'Infested deposits' },
   ],
   'cambion-vome': [
     { icon: '◆', name: 'Vome Residue',       source: 'Vome worm' },
     { icon: '✦', name: 'Pustulite',          source: 'Mining' },
-    { icon: '◈', name: 'Latrox Une',         source: 'Conservation' },
-    { icon: '◇', name: 'Biotic',             source: 'Infested cysts' },
+    { icon: '◈', name: 'Son Tokens',         source: 'Conservation' },
+    { icon: '◇', name: 'Mother Tokens',      source: 'Bounties' },
+    { icon: '◆', name: 'Ganglion',           source: 'Infested deposits' },
   ],
   'zariman-corpus': [
-    { icon: '◆', name: 'Voidplume Quill',    source: 'Zariman mobs' },
-    { icon: '✦', name: 'Voidplume Crest',    source: 'Bounty rewards' },
-    { icon: '◈', name: 'HoldFast Token',     source: 'Bounties' },
-    { icon: '◇', name: 'Incarnon Genesis',   source: 'Circuit rewards' },
+    { icon: '◆', name: 'Voidplume Quill',    source: 'Bounties Lv.3' },
+    { icon: '✦', name: 'Voidplume Down',     source: 'Bounties Lv.2' },
+    { icon: '◈', name: 'Holdfast Token',     source: 'Bounties' },
+    { icon: '◇', name: 'Incarnon Genesis',   source: 'Bounties rare' },
   ],
   'zariman-grineer': [
-    { icon: '◆', name: 'Voidplume Quill',    source: 'Zariman mobs' },
-    { icon: '✦', name: 'Voidplume Crest',    source: 'Bounty rewards' },
-    { icon: '◈', name: 'HoldFast Token',     source: 'Bounties' },
-    { icon: '◇', name: 'Incarnon Genesis',   source: 'Circuit rewards' },
+    { icon: '◆', name: 'Voidplume Quill',    source: 'Bounties Lv.3' },
+    { icon: '✦', name: 'Voidplume Down',     source: 'Bounties Lv.2' },
+    { icon: '◈', name: 'Holdfast Token',     source: 'Bounties' },
+    { icon: '◇', name: 'Incarnon Genesis',   source: 'Bounties rare' },
+  ],
+};
+
+// ── Special missions (hardcoded game knowledge) ────────────────────────────
+
+interface SpecialMission {
+  name:      string;
+  type:      string;
+  rotation?: 'A' | 'B' | 'C';
+  levels:    string;
+  icon:      string;
+}
+
+const SPECIAL_MISSIONS: Partial<Record<string, SpecialMission[]>> = {
+  cambion: [
+    { name: 'Isolation Vault T1', type: 'Vault',          levels: 'Lv. 30-40', icon: '◈' },
+    { name: 'Isolation Vault T2', type: 'Vault',          levels: 'Lv. 40-50', icon: '◈' },
+    { name: 'Isolation Vault T3', type: 'Vault',          levels: 'Lv. 50-60', icon: '◈' },
+  ],
+  zariman: [
+    { name: 'Cascade',           type: 'Exterminate',    rotation: 'A', levels: 'Lv. 50-55', icon: '✗' },
+    { name: 'Halako Perimeter',  type: 'Mobile Defense', rotation: 'B', levels: 'Lv. 50-55', icon: '✗' },
+    { name: 'Void Flood',        type: 'Survival',       rotation: 'C', levels: 'Lv. 50-55', icon: '✗' },
   ],
 };
 
@@ -114,12 +141,13 @@ export function CinematicCyclePanel({
   const nextPres  = STATE[nextState] ?? FALLBACK;
   const { h, m, s } = formatMsParts(msRemaining);
 
-  const bgUrl        = getWorldBg(cycle.id, cycle.state);
-  const cssGradient  = getCardGradient(cycle.id, cycle.state);
-  const hasBounties  = !!syndicateMission && syndicateMission.jobs.length > 0;
-  const resources    = KEY_RESOURCES[`${cycle.id}-${cycle.state}`] ?? [];
-  const aboutText    = WORLD_ABOUT[cycle.id] ?? '';
-  const hintText     = WORLD_HINT[`${cycle.id}-${cycle.state}`] ?? '';
+  const bgUrl       = getWorldBg(cycle.id, cycle.state);
+  const cssGradient = getCardGradient(cycle.id, cycle.state);
+  const hasBounties = !!syndicateMission && syndicateMission.jobs.length > 0;
+  const resources   = KEY_RESOURCES[`${cycle.id}-${cycle.state}`] ?? [];
+  const aboutText   = WORLD_ABOUT[cycle.id] ?? '';
+  const hintText    = WORLD_HINT[`${cycle.id}-${cycle.state}`] ?? '';
+  const specials    = SPECIAL_MISSIONS[cycle.id] ?? [];
 
   const timerParts: { val: string; unit: string }[] = [];
   if (h !== '00') timerParts.push({ val: h, unit: 'H' });
@@ -130,7 +158,7 @@ export function CinematicCyclePanel({
       className="relative flex-1 overflow-hidden"
       style={{ background: cssGradient, minHeight: 0 }}
     >
-      {/* ── Background image (local asset) ────────────────────────────────── */}
+      {/* ── Background image ──────────────────────────────────────────────── */}
       {bgUrl && (
         <img
           src={bgUrl}
@@ -197,7 +225,7 @@ export function CinematicCyclePanel({
             {cycle.location}
           </p>
 
-          {/* Timer */}
+          {/* Countdown timer */}
           <div
             style={{
               display:      'flex',
@@ -256,7 +284,7 @@ export function CinematicCyclePanel({
             </p>
           )}
 
-          {/* KEY RESOURCES */}
+          {/* ── KEY RESOURCES ───────────────────────────────────────────── */}
           {resources.length > 0 && (
             <div style={{ marginBottom: 20 }}>
               <p
@@ -305,7 +333,7 @@ export function CinematicCyclePanel({
             }}
           />
 
-          {/* BOUNTY BOARD */}
+          {/* ── BOUNTY BOARD ─────────────────────────────────────────────── */}
           {hasBounties ? (
             <BountyJobList
               jobs={syndicateMission!.jobs}
@@ -324,12 +352,115 @@ export function CinematicCyclePanel({
               </p>
             </div>
           )}
+
+          {/* ── SPECIAL MISSIONS ─────────────────────────────────────────── */}
+          {specials.length > 0 && (
+            <div style={{ marginTop: 20 }}>
+              <p
+                style={{
+                  fontFamily:    'var(--font-body)',
+                  fontSize:      '0.48rem',
+                  fontWeight:    700,
+                  letterSpacing: '0.55em',
+                  color:         'rgba(227,195,114,0.50)',
+                  textTransform: 'uppercase',
+                  marginBottom:  10,
+                }}
+              >
+                Special Missions
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {specials.map(m => (
+                  <div
+                    key={m.name}
+                    style={{
+                      display:    'flex',
+                      alignItems: 'center',
+                      gap:        10,
+                      padding:    '7px 0',
+                      borderTop:  '1px solid rgba(227,195,114,0.06)',
+                    }}
+                  >
+                    {/* Mission icon */}
+                    <div
+                      style={{
+                        width:           28,
+                        height:          28,
+                        flexShrink:      0,
+                        display:         'flex',
+                        alignItems:      'center',
+                        justifyContent:  'center',
+                        background:      `${pres.color}12`,
+                        border:          `1px solid ${pres.color}28`,
+                      }}
+                    >
+                      <span style={{ fontSize: '0.70rem', color: pres.color, opacity: 0.75 }}>
+                        {m.icon}
+                      </span>
+                    </div>
+
+                    {/* Mission name */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p
+                        style={{
+                          fontFamily:    'var(--font-body)',
+                          fontSize:      '0.64rem',
+                          fontWeight:    700,
+                          color:         'rgba(229,226,225,0.88)',
+                          letterSpacing: '0.06em',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {m.name}
+                      </p>
+                      <p
+                        style={{
+                          fontFamily:    'var(--font-body)',
+                          fontSize:      '0.52rem',
+                          color:         'rgba(198,198,199,0.45)',
+                          marginTop:     2,
+                        }}
+                      >
+                        {m.type}
+                        {m.rotation && (
+                          <span
+                            style={{
+                              marginLeft:    6,
+                              color:         pres.color,
+                              opacity:       0.70,
+                              letterSpacing: '0.08em',
+                            }}
+                          >
+                            · ⊕ {m.rotation}
+                          </span>
+                        )}
+                      </p>
+                    </div>
+
+                    {/* Level range */}
+                    <span
+                      style={{
+                        fontFamily:    'var(--font-body)',
+                        fontSize:      '0.50rem',
+                        color:         'rgba(198,198,199,0.40)',
+                        letterSpacing: '0.06em',
+                        flexShrink:    0,
+                        whiteSpace:    'nowrap',
+                      }}
+                    >
+                      {m.levels}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ══ RIGHT COLUMN ══════════════════════════════════════════════════ */}
         <div className="flex flex-col" style={{ flex: 1, minWidth: 0 }}>
 
-          {/* State badge */}
+          {/* State badge — top right */}
           <div style={{ alignSelf: 'flex-end', textAlign: 'right', marginBottom: 10 }}>
             <span
               style={{
@@ -366,7 +497,7 @@ export function CinematicCyclePanel({
 
           <div style={{ flex: 1 }} />
 
-          {/* About section */}
+          {/* About section — bottom right */}
           {aboutText && (
             <div>
               <p

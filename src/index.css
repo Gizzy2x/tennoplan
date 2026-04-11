@@ -297,3 +297,9 @@ body {
   pointer-events: none;
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(0, 0, 0, 0.3);
 }
+
+/* Celestial Pendulum — background crossfade when switching worlds */
+@keyframes cpBgFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useWorldCycles }       from './hooks/useWorldCycles';
 import { useSyndicateMissions } from './hooks/useSyndicateMissions';
 import { CinematicCyclePanel }  from './components/CinematicCyclePanel';
-import { WorldOverviewPanel }   from './components/WorldOverviewPanel';
-import { SyndicateMissionsPanel } from './components/SyndicateMissionsPanel';
-import { SimarisPanel }         from './components/SimarisPanel';
+import { STATE, FALLBACK, getCardGradient } from './components/CycleCard';
+import { getWorldBg }           from './worldAssets';
+import { formatMsParts }        from '@/core/services/cycleService';
 import { formatCacheAge }       from '@/core/services/WorldstateService';
 import type { CycleId }         from '@/core/domain/cycles';
 
@@ -18,14 +18,23 @@ const CYCLE_TO_SYNDICATE: Partial<Record<CycleId, string>> = {
 
 const WORLD_ORDER: CycleId[] = ['cetus', 'vallis', 'cambion', 'zariman', 'duviri', 'earth'];
 
+/** Compact tab countdown: "1H 22M" when ≥1h, "10M 22S" otherwise */
+function formatTabTime(msRemaining: number): string {
+  const { h, m, s } = formatMsParts(msRemaining);
+  const hNum = parseInt(h, 10);
+  const mNum = parseInt(m, 10);
+  const sNum = parseInt(s, 10);
+  if (hNum > 0) return `${hNum}H ${mNum}M`;
+  return `${mNum}M ${sNum}S`;
+}
+
 export function CelestialPendulumPage() {
-  // null = overview, CycleId = detail view
-  const [selectedId, setSelectedId] = useState<CycleId | null>(null);
+  // Default to first world — tab strip is the world switcher
+  const [selectedId, setSelectedId] = useState<CycleId>('cetus');
 
   const {
     statuses,
     isLoading,
-    isError,
     isStale,
     cacheAgeMs,
     hasEverLoaded,
@@ -41,20 +50,52 @@ export function CelestialPendulumPage() {
       .map(([id, name]) => [id, missionByName[name] ?? null])
   );
 
-  const byId           = Object.fromEntries(statuses.map(s => [s.cycle.id, s]));
+  const byId            = Object.fromEntries(statuses.map(s => [s.cycle.id, s]));
   const orderedStatuses = WORLD_ORDER.map(id => byId[id]).filter(Boolean);
-  const selectedStatus  = selectedId ? (byId[selectedId] ?? null) : null;
+
+  // Fall back to first loaded world if selectedId has no data yet
+  const selectedStatus = byId[selectedId] ?? orderedStatuses[0] ?? null;
+  const activeId       = selectedStatus?.cycle.id ?? selectedId;
+
+  const bgUrl       = selectedStatus ? getWorldBg(selectedStatus.cycle.id, selectedStatus.cycle.state) : '';
+  const cssGradient = selectedStatus
+    ? getCardGradient(selectedStatus.cycle.id, selectedStatus.cycle.state)
+    : '#131313';
 
   return (
     <div
       className="-mx-12 -mt-24 relative flex flex-col"
-      style={{ minHeight: '100vh', overflowX: 'hidden' }}
+      style={{ minHeight: '100vh', overflowX: 'hidden', background: cssGradient }}
     >
 
-      {/* ── First-launch / no-data state ──────────────────────────────────── */}
+      {/* ── Full-bleed background image ──────────────────────────────────── */}
+      {bgUrl && (
+        <img
+          key={bgUrl}
+          src={bgUrl}
+          alt=""
+          aria-hidden
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
+          style={{ zIndex: 0, animation: 'cpBgFadeIn 0.45s ease forwards' }}
+        />
+      )}
+
+      {/* ── Gradient overlay ─────────────────────────────────────────────── */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: [
+            'linear-gradient(to right, rgba(0,0,0,0.90) 0%, rgba(0,0,0,0.62) 38%, rgba(0,0,0,0.20) 65%, rgba(0,0,0,0.55) 100%)',
+            'linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.10) 35%, rgba(0,0,0,0.55) 100%)',
+          ].join(', '),
+          zIndex: 1,
+        }}
+      />
+
+      {/* ── First-launch / no-data ───────────────────────────────────────── */}
       {!hasEverLoaded && (
         <div
-          className="flex-1 flex items-center justify-center"
+          className="relative flex-1 flex items-center justify-center"
           style={{ zIndex: 5, paddingTop: 96 }}
         >
           <div className="glass-panel p-10 max-w-lg text-center flex flex-col gap-4">
@@ -87,161 +128,123 @@ export function CelestialPendulumPage() {
         </div>
       )}
 
-      {/* ── Main content ──────────────────────────────────────────────────── */}
+      {/* ── Main content ─────────────────────────────────────────────────── */}
       {orderedStatuses.length > 0 && (
-        <>
-          {/* ════════════════════════════════════════════════════════════════
-              DETAIL VIEW — full-bleed single world
-          ════════════════════════════════════════════════════════════════ */}
-          {selectedId !== null && selectedStatus && (
-            <>
-              {/* Back button */}
-              <div
-                className="absolute flex items-center gap-2"
-                style={{ top: 88, left: 20, zIndex: 20 }}
-              >
-                <button
-                  onClick={() => setSelectedId(null)}
-                  style={{
-                    fontFamily:    'var(--font-body)',
-                    fontSize:      '0.52rem',
-                    fontWeight:    700,
-                    letterSpacing: '0.28em',
-                    textTransform: 'uppercase',
-                    color:         'rgba(227,195,114,0.60)',
-                    background:    'rgba(0,0,0,0.55)',
-                    border:        '1px solid rgba(227,195,114,0.18)',
-                    padding:       '5px 12px',
-                    cursor:        'pointer',
-                    backdropFilter: 'blur(6px)',
-                    transition:    'color 0.18s, border-color 0.18s',
-                  }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLButtonElement).style.color = 'rgba(227,195,114,0.90)';
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(227,195,114,0.40)';
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLButtonElement).style.color = 'rgba(227,195,114,0.60)';
-                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(227,195,114,0.18)';
-                  }}
-                >
-                  ← OVERVIEW
-                </button>
-              </div>
-
-              {/* Single-world cinematic panel */}
-              <div
-                className="relative flex"
-                style={{
-                  flex:      '1 0 0',
-                  minHeight: 'clamp(380px, 56vh, 760px)',
-                  zIndex:    5,
-                  paddingTop: 80,
-                }}
-              >
-                <CinematicCyclePanel
-                  key={selectedId}
-                  status={selectedStatus}
-                  syndicateMission={missionByCycleId[selectedId]}
-                  now={now}
-                />
-              </div>
-
-              {/* Below-the-fold: Syndicate Dispatches + Simaris */}
-              <div
-                style={{
-                  zIndex:     5,
-                  flexShrink: 0,
-                  borderTop:  '1px solid rgba(227,195,114,0.08)',
-                }}
-              >
-                <div className="px-12 py-8">
-                  <SyndicateMissionsPanel />
-                </div>
-                <div
-                  style={{
-                    height:     1,
-                    background: 'linear-gradient(to right, transparent 0%, rgba(227,195,114,0.14) 20%, rgba(227,195,114,0.14) 80%, transparent 100%)',
-                  }}
-                />
-                <div className="px-12 py-8">
-                  <SimarisPanel standaloneSection />
-                </div>
-              </div>
-            </>
-          )}
+        <div className="relative flex flex-col" style={{ zIndex: 5, minHeight: '100vh' }}>
 
           {/* ════════════════════════════════════════════════════════════════
-              OVERVIEW — horizontal panel grid
+              TOP AREA — page title + world tab strip
           ════════════════════════════════════════════════════════════════ */}
-          {selectedId === null && (
-            <div
-              className="relative flex flex-col"
-              style={{ flex: '1 0 0', minHeight: '100vh' }}
+          <div style={{ padding: '22px 44px 0' }}>
+
+            {/* Page heading */}
+            <p
+              style={{
+                fontFamily:    'var(--font-body)',
+                fontWeight:    700,
+                fontSize:      '0.52rem',
+                letterSpacing: '0.42em',
+                color:         '#E3C372',
+                textTransform: 'uppercase',
+                marginBottom:  14,
+              }}
             >
-              {/* Giant "CELESTIAL PENDULUM" title */}
-              <div
-                className="absolute pointer-events-none select-none"
-                style={{
-                  top:    0,
-                  left:   0,
-                  right:  0,
-                  zIndex: 10,
-                  padding: '18px 28px 0',
-                }}
-                aria-hidden
-              >
-                <h1
-                  style={{
-                    fontFamily:    'var(--font-headline)',
-                    fontWeight:    900,
-                    fontSize:      'clamp(1.4rem, 2.8vw, 3rem)',
-                    lineHeight:    1,
-                    color:         '#E3C372',
-                    letterSpacing: '0.20em',
-                    textTransform: 'uppercase',
-                    textShadow:    '0 2px 24px rgba(0,0,0,0.90), 0 0 60px rgba(227,195,114,0.18)',
-                  }}
-                >
-                  Celestial Pendulum
-                </h1>
-                <p
-                  style={{
-                    fontFamily:    'var(--font-body)',
-                    fontSize:      '0.48rem',
-                    letterSpacing: '0.40em',
-                    color:         'rgba(227,195,114,0.40)',
-                    textTransform: 'uppercase',
-                    marginTop:     4,
-                  }}
-                >
-                  World Cycle Monitor
-                </p>
-              </div>
+              Celestial Pendulum
+            </p>
 
-              {/* Horizontal world panels */}
-              <div
-                className="flex"
-                style={{
-                  flex:       '1 0 0',
-                  minHeight:  'calc(100vh - 0px)',
-                }}
-              >
-                {orderedStatuses.map((status, i) => (
-                  <WorldOverviewPanel
-                    key={status.cycle.id}
-                    status={status}
-                    onSelect={(id) => setSelectedId(id as CycleId)}
-                    isLast={i === orderedStatuses.length - 1}
-                  />
-                ))}
-              </div>
+            {/* World tab strip */}
+            <div
+              style={{
+                display:       'flex',
+                alignItems:    'center',
+                gap:           0,
+                flexWrap:      'nowrap',
+                overflowX:     'auto',
+                scrollbarWidth: 'none',
+              }}
+            >
+              {orderedStatuses.map(status => {
+                const { cycle, msRemaining } = status;
+                const pres     = STATE[cycle.state] ?? FALLBACK;
+                const isActive = activeId === cycle.id;
+                const tabTime  = formatTabTime(msRemaining);
+
+                return (
+                  <button
+                    key={cycle.id}
+                    onClick={() => setSelectedId(cycle.id as CycleId)}
+                    style={{
+                      display:       'flex',
+                      alignItems:    'center',
+                      gap:           6,
+                      padding:       '6px 14px',
+                      fontFamily:    'var(--font-body)',
+                      fontSize:      '0.52rem',
+                      fontWeight:    700,
+                      letterSpacing: '0.18em',
+                      textTransform: 'uppercase',
+                      color:         isActive ? pres.color : 'rgba(198,198,199,0.42)',
+                      background:    isActive ? `${pres.color}0E` : 'transparent',
+                      border:        isActive
+                        ? `1px solid ${pres.color}50`
+                        : '1px solid transparent',
+                      cursor:      'pointer',
+                      whiteSpace:  'nowrap',
+                      flexShrink:  0,
+                      transition:  'color 0.18s, border-color 0.18s, background 0.18s',
+                    }}
+                    onMouseEnter={e => {
+                      if (!isActive) {
+                        (e.currentTarget as HTMLButtonElement).style.color = 'rgba(198,198,199,0.70)';
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      if (!isActive) {
+                        (e.currentTarget as HTMLButtonElement).style.color = 'rgba(198,198,199,0.42)';
+                      }
+                    }}
+                  >
+                    <span style={{ fontSize: '0.75rem', lineHeight: 1, opacity: isActive ? 1 : 0.55 }}>
+                      {pres.icon}
+                    </span>
+                    <span>{cycle.location.toUpperCase()}</span>
+                    <span
+                      style={{
+                        fontFamily:         'var(--font-body)',
+                        fontSize:           '0.46rem',
+                        fontVariantNumeric: 'tabular-nums',
+                        opacity:            isActive ? 0.82 : 0.52,
+                        letterSpacing:      '0.10em',
+                      }}
+                    >
+                      {tabTime}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ════════════════════════════════════════════════════════════════
+              CINEMATIC DETAIL — full-bleed single world (always visible)
+          ════════════════════════════════════════════════════════════════ */}
+          {selectedStatus && (
+            <div
+              className="relative flex"
+              style={{ flex: '1 0 0', minHeight: 'calc(100vh - 90px)' }}
+            >
+              <CinematicCyclePanel
+                key={activeId}
+                status={selectedStatus}
+                syndicateMission={missionByCycleId[activeId] ?? null}
+                now={now}
+              />
             </div>
           )}
-        </>
+        </div>
       )}
 
-      {/* ── Offline / stale-cache banner ──────────────────────────────────── */}
+      {/* ── Stale / offline banner ───────────────────────────────────────── */}
       {isStale && orderedStatuses.length > 0 && (
         <div
           className="flex items-center gap-3 px-8 py-2"
@@ -265,24 +268,13 @@ export function CelestialPendulumPage() {
         </div>
       )}
 
-      {/* ── Corner sync indicator ─────────────────────────────────────────── */}
-      {orderedStatuses.length > 0 && !isStale && selectedId === null && (
+      {/* ── Sync pulse ───────────────────────────────────────────────────── */}
+      {orderedStatuses.length > 0 && !isStale && isLoading && (
         <div
           className="absolute flex items-center gap-2"
-          style={{ top: 20, right: 24, zIndex: 12 }}
+          style={{ top: 22, right: 24, zIndex: 12 }}
         >
-          {isLoading && (
-            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-          )}
-          {!isError && !isLoading && (
-            <button
-              onClick={forceRefetch}
-              title="Force refresh"
-              className="font-label text-[8px] uppercase tracking-[0.3em] text-secondary/20 hover:text-primary/50 transition-colors cursor-pointer"
-            >
-              ↻
-            </button>
-          )}
+          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
         </div>
       )}
 
