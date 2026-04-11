@@ -1,14 +1,12 @@
-import { useWorldCycles } from './hooks/useWorldCycles';
+import { useState } from 'react';
+import { useWorldCycles }       from './hooks/useWorldCycles';
 import { useSyndicateMissions } from './hooks/useSyndicateMissions';
-import { CinematicCyclePanel } from './components/CinematicCyclePanel';
-import { SimarisPanel } from './components/SimarisPanel';
-import { formatCacheAge } from '@/core/services/WorldstateService';
-import type { CycleId } from '@/core/domain/cycles';
-
-// Worlds shown in the primary cinematic strip (with bounty data)
-const ROW_1: CycleId[] = ['cetus', 'vallis', 'cambion', 'zariman'];
-// Worlds shown in the compact secondary strip (no associated bounties)
-const ROW_2: CycleId[] = ['duviri', 'earth'];
+import { CinematicCyclePanel }  from './components/CinematicCyclePanel';
+import { WorldSelectorTabs }    from './components/WorldSelectorTabs';
+import { SyndicateMissionsPanel } from './components/SyndicateMissionsPanel';
+import { SimarisPanel }         from './components/SimarisPanel';
+import { formatCacheAge }       from '@/core/services/WorldstateService';
+import type { CycleId }         from '@/core/domain/cycles';
 
 // Maps each primary cycle to its corresponding syndicate name in the API
 const CYCLE_TO_SYNDICATE: Partial<Record<CycleId, string>> = {
@@ -18,7 +16,12 @@ const CYCLE_TO_SYNDICATE: Partial<Record<CycleId, string>> = {
   zariman: 'The Holdfasts',
 };
 
+// All 6 worlds in display order
+const WORLD_ORDER: CycleId[] = ['cetus', 'vallis', 'cambion', 'zariman', 'duviri', 'earth'];
+
 export function CelestialPendulumPage() {
+  const [selectedId, setSelectedId] = useState<CycleId>('cetus');
+
   const {
     statuses,
     isLoading,
@@ -32,32 +35,26 @@ export function CelestialPendulumPage() {
 
   const { missions } = useSyndicateMissions();
 
-  // Build a fast lookup: cycleId → SyndicateMission
-  const missionByName   = Object.fromEntries(missions.map(m => [m.syndicate, m]));
+  // Build lookup: cycleId → SyndicateMission
+  const missionByName    = Object.fromEntries(missions.map(m => [m.syndicate, m]));
   const missionByCycleId = Object.fromEntries(
     (Object.entries(CYCLE_TO_SYNDICATE) as [CycleId, string][])
       .map(([id, name]) => [id, missionByName[name] ?? null])
   );
 
-  const byId           = Object.fromEntries(statuses.map(s => [s.cycle.id, s]));
-  const row1Statuses   = ROW_1.map(id => byId[id]).filter(Boolean);
-  const row2Statuses   = ROW_2.map(id => byId[id]).filter(Boolean);
+  // Keep tab order stable: use WORLD_ORDER to sort statuses
+  const byId      = Object.fromEntries(statuses.map(s => [s.cycle.id, s]));
+  const orderedStatuses = WORLD_ORDER.map(id => byId[id]).filter(Boolean);
 
-  const divider = (
-    <div
-      style={{
-        height:     1,
-        background: 'linear-gradient(to right, transparent 0%, rgba(227,195,114,0.18) 20%, rgba(227,195,114,0.18) 80%, transparent 100%)',
-        flexShrink: 0,
-        zIndex:     5,
-      }}
-    />
-  );
+  const selectedStatus = byId[selectedId] ?? null;
 
   return (
-    <div className="-mx-12 -mt-24 relative flex flex-col overflow-hidden" style={{ minHeight: '100vh' }}>
+    <div
+      className="-mx-12 -mt-24 relative flex flex-col"
+      style={{ minHeight: '100vh', overflowX: 'hidden' }}
+    >
 
-      {/* Watermark title — visible enough to anchor the page, not enough to compete */}
+      {/* ── Watermark title ────────────────────────────────────────────── */}
       <div
         className="absolute inset-x-0 top-0 overflow-hidden pointer-events-none select-none"
         style={{ zIndex: 0 }}
@@ -66,10 +63,10 @@ export function CelestialPendulumPage() {
         <h1
           className="font-headline font-black leading-none whitespace-nowrap"
           style={{
-            fontSize:    'clamp(4rem, 13vw, 11rem)',
-            color:       'rgba(227,195,114,0.055)',
-            paddingLeft: '0.75rem',
-            paddingTop:  '0.15rem',
+            fontSize:      'clamp(4rem, 13vw, 11rem)',
+            color:         'rgba(227,195,114,0.04)',
+            paddingLeft:   '0.75rem',
+            paddingTop:    '0.15rem',
             letterSpacing: '-0.02em',
           }}
         >
@@ -77,9 +74,12 @@ export function CelestialPendulumPage() {
         </h1>
       </div>
 
-      {/* ── First-launch / no-data state ──────────────────────────────── */}
+      {/* ── First-launch / no-data state ───────────────────────────────── */}
       {!hasEverLoaded && (
-        <div className="flex-1 flex items-center justify-center" style={{ zIndex: 5 }}>
+        <div
+          className="flex-1 flex items-center justify-center"
+          style={{ zIndex: 5, paddingTop: 96 }}
+        >
           <div className="glass-panel p-10 max-w-lg text-center flex flex-col gap-4">
             {isLoading ? (
               <>
@@ -110,46 +110,59 @@ export function CelestialPendulumPage() {
         </div>
       )}
 
-      {/* ── Cinematic panels ─────────────────────────────────────────── */}
+      {/* ── Main content ───────────────────────────────────────────────── */}
       {statuses.length > 0 && (
         <>
-          {/* Row 1: Cetus | Orb Vallis | Cambion Drift | Zariman (primary — with bounties) */}
-          <div
-            className="relative flex"
-            style={{ height: '62vh', minHeight: 380, zIndex: 5 }}
-          >
-            {row1Statuses.map(s => (
-              <CinematicCyclePanel
-                key={s.cycle.id}
-                status={s}
-                syndicateMission={missionByCycleId[s.cycle.id]}
-                now={now}
-              />
-            ))}
+          {/* World selector tab bar — sits just below the AppShell header */}
+          <div style={{ paddingTop: 80, zIndex: 10, flexShrink: 0 }}>
+            <WorldSelectorTabs
+              statuses={orderedStatuses}
+              selectedId={selectedId}
+              onSelect={(id) => setSelectedId(id)}
+            />
           </div>
 
-          {divider}
-
-          {/* Row 2: Duviri | Earth (compact — mood/cycle timers only) */}
+          {/* Single-world cinematic panel — fills remaining viewport height */}
           <div
             className="relative flex"
-            style={{ height: '28vh', minHeight: 200, zIndex: 5 }}
+            style={{
+              flex:      '1 0 0',
+              minHeight: 'clamp(380px, 56vh, 760px)',
+              zIndex:    5,
+            }}
           >
-            {row2Statuses.map(s => (
+            {selectedStatus && (
               <CinematicCyclePanel
-                key={s.cycle.id}
-                status={s}
+                key={selectedId}
+                status={selectedStatus}
+                syndicateMission={missionByCycleId[selectedId]}
                 now={now}
-                compact
               />
-            ))}
+            )}
           </div>
 
-          {divider}
+          {/* ── Below-the-fold: Syndicate Dispatches + Simaris ─────────── */}
+          <div
+            style={{
+              zIndex:     5,
+              flexShrink: 0,
+              borderTop:  '1px solid rgba(227,195,114,0.08)',
+            }}
+          >
+            <div className="px-12 py-8">
+              <SyndicateMissionsPanel />
+            </div>
 
-          {/* Simaris Sanctuary */}
-          <div className="px-12 py-6" style={{ zIndex: 5, flexShrink: 0 }}>
-            <SimarisPanel standaloneSection={false} />
+            <div
+              style={{
+                height:     1,
+                background: 'linear-gradient(to right, transparent 0%, rgba(227,195,114,0.14) 20%, rgba(227,195,114,0.14) 80%, transparent 100%)',
+              }}
+            />
+
+            <div className="px-12 py-8">
+              <SimarisPanel standaloneSection />
+            </div>
           </div>
         </>
       )}
@@ -159,9 +172,9 @@ export function CelestialPendulumPage() {
         <div
           className="flex items-center gap-3 px-8 py-2"
           style={{
-            zIndex:     6,
-            background: 'rgba(13,13,13,0.85)',
-            borderTop:  '1px solid rgba(255,255,255,0.06)',
+            zIndex:     10,
+            background: 'rgba(13,13,13,0.88)',
+            borderTop:  '1px solid rgba(255,255,255,0.05)',
             flexShrink: 0,
           }}
         >
@@ -178,11 +191,11 @@ export function CelestialPendulumPage() {
         </div>
       )}
 
-      {/* ── Corner sync indicator (non-intrusive) ────────────────────── */}
+      {/* ── Corner sync indicator ─────────────────────────────────────── */}
       {statuses.length > 0 && !isStale && (
         <div
-          className="absolute top-6 right-6 flex items-center gap-2"
-          style={{ zIndex: 10 }}
+          className="absolute flex items-center gap-2"
+          style={{ top: 88, right: 24, zIndex: 12 }}
         >
           {isLoading && (
             <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />

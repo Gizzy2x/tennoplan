@@ -2,14 +2,101 @@ import { useState } from 'react';
 import { formatMsParts, nextCycleState } from '@/core/services/cycleService';
 import type { CycleStatus } from '@/core/domain/cycles';
 import type { SyndicateMission } from '@/core/domain/syndicates';
-import { STATE, FALLBACK, getCardGradient, getStaticRewards } from './CycleCard';
+import { STATE, FALLBACK, getCardGradient } from './CycleCard';
 import { BountyJobList } from './BountyJobList';
 
-// ---------------------------------------------------------------------------
-// Wiki background images (may be hotlink-blocked; CSS gradients are the
-// real visual foundation — images are a bonus if they load).
-// ---------------------------------------------------------------------------
-const WORLD_BG_IMAGE: Record<string, string> = {
+// ── Static world lore ──────────────────────────────────────────────────────
+
+const WORLD_ABOUT: Record<string, string> = {
+  cetus:
+    'The Plains of Eidolon stretch beyond the colony of Cetus, a trading hub where the Ostron people thrive. At night, massive Sentient Eidolons roam the landscape — remnants of a vast Sentient destroyed during the Old War. Tenno brave enough to face them can earn Arcanes and Operator Amps.',
+  vallis:
+    "The Orb Vallis is a terraformed Venusian plateau controlled by Nef Anyo's Corpus operations. The enslaved Solaris United work in its debt-vaults beneath the surface. During cold snaps, rare Toroids emerge — essential materials for advancing Vent Kids standings and Operator Amps.",
+  cambion:
+    'The Cambion Drift is the Infestation-ravaged landscape of Deimos, home to the partially-infested Entrati family. Isolation Vaults hold Orokin secrets guarded by ancient Necramechs. The alternating Fass and Vome cycles determine which resources and enemies are most abundant.',
+  zariman:
+    'The Zariman Ten Zero vanished into the Void for fifty years, returning with its young colonists forever changed by Void exposure. Now held by the Holdfasts, its corridors contain unique Void-touched resources. Corpus and Grineer factions vie for control of its decks.',
+  duviri:
+    'Duviri is an impossible realm within the Void, shaped by the ever-shifting moods of Dominus Thrax. Tenno enter as Drifters, separated from their Warframes. The current Spiral mood determines enemy behavior, decree types, and rewards available from the circuit.',
+  earth:
+    "Earth's forests have long since reclaimed humanity's first cities. The Grineer hold the surface while the Ostron colony of Cetus endures on the edge of the Plains. The open world offers unique fishing opportunities and rare encounters with Grineer patrol squads.",
+};
+
+const WORLD_HINT: Record<string, string> = {
+  'cetus-day':       'Eidolon hunts available at night — bring Amp and Void Strike',
+  'cetus-night':     'Eidolons active — hunt Teralyst, Gantulyst, Hydrolyst for Arcanes',
+  'vallis-warm':     'Wildlife spawns increased — optimal for conservation and rare fish',
+  'vallis-cold':     'Toroid drop rates increased — check Enrichment Labs and Temple of Profit',
+  'cambion-fass':    'Isolation Vaults unlocked — bring Necramech and Helminth Charger',
+  'cambion-vome':    'Conservation active — Son tokens available from rare wildlife encounters',
+  'zariman-corpus':  'Corpus Bounties active — Voidplume Wings and Drifter Intrinsics available',
+  'zariman-grineer': 'Grineer Bounties active — Voidplume Wings and Drifter Intrinsics available',
+  'duviri-joy':      'Joy Spiral — speed and combat efficiency decrees available this cycle',
+  'duviri-anger':    'Anger Spiral — powerful but chaotic decrees active, high risk',
+  'duviri-envy':     'Envy Spiral — resource acquisition bonuses active this cycle',
+  'duviri-sorrow':   'Sorrow Spiral — stealth and evasion decrees available',
+  'duviri-fear':     'Fear Spiral — high-risk, high-reward encounter modifiers active',
+  'earth-day':       'Cetus Wisps spawn near water — check the Plains during day',
+  'earth-night':     'Rare fish spawns increased — bring Luminous Dye for night fishing',
+};
+
+interface KeyResource { icon: string; name: string; source: string; }
+
+const KEY_RESOURCES: Partial<Record<string, KeyResource[]>> = {
+  'cetus-day': [
+    { icon: '◆', name: 'Cetus Wisp',        source: 'Plains (night)' },
+    { icon: '✦', name: 'Breath of Eidolon',  source: 'Bounties Lv.4+' },
+    { icon: '◈', name: 'Iradite',            source: 'Rock formations' },
+    { icon: '◎', name: 'Grokdrul',           source: 'Grineer camps' },
+    { icon: '◇', name: 'Sentirum',           source: 'Mining (rare)' },
+    { icon: '◆', name: 'Nyth',              source: 'Mining (rare)' },
+  ],
+  'cetus-night': [
+    { icon: '✦', name: 'Arcane Energize',   source: 'Eidolon hunts' },
+    { icon: '◆', name: 'Cetus Wisp',        source: 'Plains (glowing)' },
+    { icon: '◈', name: 'Brilliant Shard',   source: 'Eidolons' },
+    { icon: '◇', name: 'Intact Core',       source: 'Sentients' },
+  ],
+  'vallis-warm': [
+    { icon: '◆', name: 'Thermal Sludge',     source: 'Mining' },
+    { icon: '✦', name: 'Thumper Organs',     source: 'Thumper kills' },
+    { icon: '◈', name: 'Mytocardia Spore',   source: 'Conservation' },
+    { icon: '◎', name: 'Dusklight Sarracenia', source: 'Plains flora' },
+  ],
+  'vallis-cold': [
+    { icon: '◆', name: 'Toroid',             source: 'Orb encounters' },
+    { icon: '✦', name: 'Field Ron',          source: 'Mining' },
+    { icon: '◈', name: 'Marquise Thyst',     source: 'Mining (rare)' },
+    { icon: '◇', name: 'Foxglove Sunflower', source: 'Bounty rewards' },
+  ],
+  'cambion-fass': [
+    { icon: '◆', name: 'Anomaly Shard',      source: 'Isolation Vaults' },
+    { icon: '✦', name: 'Sporulate Sac',      source: 'Infested nodes' },
+    { icon: '◈', name: 'Fass Residue',       source: 'Fass worm' },
+    { icon: '◎', name: 'Thaumica',           source: 'Mining' },
+  ],
+  'cambion-vome': [
+    { icon: '◆', name: 'Vome Residue',       source: 'Vome worm' },
+    { icon: '✦', name: 'Pustulite',          source: 'Mining' },
+    { icon: '◈', name: 'Latrox Une',         source: 'Conservation' },
+    { icon: '◇', name: 'Biotic',             source: 'Infested cysts' },
+  ],
+  'zariman-corpus': [
+    { icon: '◆', name: 'Voidplume Pinion',   source: 'Voidplume nodes' },
+    { icon: '✦', name: 'Voidplume Crest',    source: 'Bounty rewards' },
+    { icon: '◈', name: 'Voidplume Quill',    source: 'Zariman mobs' },
+    { icon: '◇', name: 'Voidplume Wing',     source: 'Rare bounties' },
+  ],
+  'zariman-grineer': [
+    { icon: '◆', name: 'Voidplume Pinion',   source: 'Voidplume nodes' },
+    { icon: '✦', name: 'Voidplume Crest',    source: 'Bounty rewards' },
+    { icon: '◈', name: 'Voidplume Quill',    source: 'Zariman mobs' },
+    { icon: '◇', name: 'Voidplume Wing',     source: 'Rare bounties' },
+  ],
+};
+
+// ── Background images ──────────────────────────────────────────────────────
+const WORLD_BG: Record<string, string> = {
   cetus:   'https://static.wikia.nocookie.net/warframe/images/b/b8/Plains_of_Eidolon.png',
   vallis:  'https://static.wikia.nocookie.net/warframe/images/6/68/OrbVallisTilesetPanorama.png',
   cambion: 'https://static.wikia.nocookie.net/warframe/images/e/e4/CambionDrift.png',
@@ -18,94 +105,45 @@ const WORLD_BG_IMAGE: Record<string, string> = {
   earth:   'https://static.wikia.nocookie.net/warframe/images/4/41/EarthRooftop.png',
 };
 
-// ---------------------------------------------------------------------------
-// Orokin diamond ornament — centered on the border line
-// ---------------------------------------------------------------------------
-function Diamond({ color, size = 7, opacity = 0.75, lineWidth = 18 }: {
-  color: string;
-  size?: number;
-  opacity?: number;
-  lineWidth?: number;
-}) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 5, pointerEvents: 'none' }}>
-      <div style={{ width: lineWidth, height: 1, background: color, opacity: opacity * 0.45 }} />
-      <div style={{
-        width: size,
-        height: size,
-        background: color,
-        transform: 'rotate(45deg)',
-        opacity,
-        boxShadow: `0 0 6px ${color}90`,
-        flexShrink: 0,
-      }} />
-      <div style={{ width: lineWidth, height: 1, background: color, opacity: opacity * 0.45 }} />
-    </div>
-  );
-}
+// ── Component ──────────────────────────────────────────────────────────────
 
-// ---------------------------------------------------------------------------
-// CinematicCyclePanel
-// ---------------------------------------------------------------------------
 export interface CinematicCyclePanelProps {
   status:            CycleStatus;
   syndicateMission?: SyndicateMission | null;
   now?:              number;
-  /** compact = secondary row (Duviri / Earth) — 2 panels, taller font */
-  compact?:          boolean;
 }
 
 export function CinematicCyclePanel({
   status,
   syndicateMission,
   now = Date.now(),
-  compact = false,
 }: CinematicCyclePanelProps) {
-  const { cycle, msRemaining, progress, isExpired } = status;
+  const { cycle, msRemaining, isExpired } = status;
   const pres      = STATE[cycle.state] ?? FALLBACK;
-  const { h, m, s } = formatMsParts(msRemaining);
   const nextState = nextCycleState(cycle.id, cycle.state);
   const nextPres  = STATE[nextState] ?? FALLBACK;
-  const rewards   = getStaticRewards(cycle.id, cycle.state);
-  const lootItems = rewards !== '—' ? rewards.split(' · ') : [];
+  const { h, m, s } = formatMsParts(msRemaining);
 
   const [imgFailed, setImgFailed] = useState(false);
-  const wikiUrl     = WORLD_BG_IMAGE[cycle.id];
+
+  const wikiUrl     = WORLD_BG[cycle.id];
   const cssGradient = getCardGradient(cycle.id, cycle.state);
+  const hasBounties = !!syndicateMission && syndicateMission.jobs.length > 0;
+  const resources   = KEY_RESOURCES[`${cycle.id}-${cycle.state}`] ?? [];
+  const aboutText   = WORLD_ABOUT[cycle.id] ?? '';
+  const hintText    = WORLD_HINT[`${cycle.id}-${cycle.state}`] ?? '';
 
-  const hasBounties = !compact && !!syndicateMission && syndicateMission.jobs.length > 0;
-
-  // Compact row = 2 panels wide = more space per panel = bigger timer
-  // Primary row = 4 panels wide = less space = smaller (but still large) timer
-  const timerFont    = compact ? 'clamp(3.5rem, 7vw, 8rem)'    : 'clamp(2.2rem, 4.5vw, 5.5rem)';
-  const unitFont     = compact ? 'clamp(1.4rem, 2.8vw, 3.2rem)': 'clamp(0.9rem, 1.8vw, 2.2rem)';
-  const worldFont    = compact ? 'clamp(0.85rem, 1.6vw, 1.4rem)': 'clamp(0.8rem, 1.6vw, 1.6rem)';
-  const medallionSz  = compact ? 120 : 100;
-  const medalIconSz  = compact ? '2.4rem' : '2rem';
-  const topPad       = compact ? 14 : 80; // primary panels start behind the AppShell header
-
-  // Overlays: heavy at bottom for text legibility, moderate at top
-  const darkOverlay = [
-    'linear-gradient(to top,',
-    '  rgba(0,0,0,0.97) 0%,',
-    '  rgba(0,0,0,0.82) 28%,',
-    '  rgba(0,0,0,0.52) 58%,',
-    '  rgba(0,0,0,0.62) 100%)',
-  ].join('\n');
-  const accentTint = `linear-gradient(170deg, ${pres.color}14 0%, transparent 50%)`;
-
-  const BORDER_INSET = 10; // px — how far the ornate frame is from panel edge
+  // Build timer parts — omit hours when zero
+  const timerParts: { val: string; unit: string }[] = [];
+  if (h !== '00') timerParts.push({ val: h, unit: 'H' });
+  timerParts.push({ val: m, unit: 'M' }, { val: s, unit: 'S' });
 
   return (
     <div
-      className="relative flex-1 flex flex-col overflow-hidden"
-      style={{
-        background:  cssGradient,
-        borderRight: `1px solid rgba(227,195,114,0.10)`,
-        minWidth:    0,
-      }}
+      className="relative flex-1 overflow-hidden"
+      style={{ background: cssGradient, minHeight: 0 }}
     >
-      {/* Full-bleed background image (bonus — may not load due to hotlink protection) */}
+      {/* ── Background image ────────────────────────────────────────────── */}
       {wikiUrl && !imgFailed && (
         <img
           src={wikiUrl}
@@ -117,139 +155,97 @@ export function CinematicCyclePanel({
         />
       )}
 
-      {/* Dark overlay */}
+      {/* ── Vignette overlay — heavier on left and bottom for legibility ── */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: darkOverlay, zIndex: 1 }}
-      />
-
-      {/* Accent color tint — faint top-corner blush */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: accentTint, zIndex: 2 }}
-      />
-
-      {/* ── Orokin ornate frame ─────────────────────────────────────────── */}
-      {/* Outer border — full panel edge */}
-      <div
-        className="absolute pointer-events-none"
         style={{
-          inset:  0,
-          border: `1px solid ${pres.color}18`,
-          zIndex: 3,
+          background: [
+            'linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.60) 38%, rgba(0,0,0,0.18) 65%, rgba(0,0,0,0.55) 100%)',
+            'linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.12) 35%, rgba(0,0,0,0.55) 100%)',
+          ].join(', '),
+          zIndex: 1,
         }}
       />
 
-      {/* Inner border — inset frame (the main "card" border) */}
+      {/* ── Two-column content ──────────────────────────────────────────── */}
       <div
-        className="absolute pointer-events-none"
-        style={{
-          inset:     BORDER_INSET,
-          border:    `1px solid ${pres.color}35`,
-          boxShadow: `inset 0 0 40px ${pres.color}06`,
-          zIndex:    3,
-        }}
-      />
-
-      {/* Corner brackets on inner frame */}
-      <span className="absolute pointer-events-none" style={{ top: BORDER_INSET, left: BORDER_INSET, width: 20, height: 20, borderTop: `1px solid ${pres.color}70`, borderLeft: `1px solid ${pres.color}70`, zIndex: 4 }} />
-      <span className="absolute pointer-events-none" style={{ top: BORDER_INSET, right: BORDER_INSET, width: 20, height: 20, borderTop: `1px solid ${pres.color}50`, borderRight: `1px solid ${pres.color}50`, zIndex: 4 }} />
-      <span className="absolute pointer-events-none" style={{ bottom: BORDER_INSET, left: BORDER_INSET, width: 20, height: 20, borderBottom: `1px solid ${pres.color}40`, borderLeft: `1px solid ${pres.color}40`, zIndex: 4 }} />
-      <span className="absolute pointer-events-none" style={{ bottom: BORDER_INSET, right: BORDER_INSET, width: 20, height: 20, borderBottom: `1px solid ${pres.color}30`, borderRight: `1px solid ${pres.color}30`, zIndex: 4 }} />
-
-      {/* Top diamond — sits on the inner frame's top edge */}
-      <div
-        className="absolute left-1/2 pointer-events-none"
-        style={{ top: BORDER_INSET, transform: 'translate(-50%, -50%)', zIndex: 5 }}
+        className="relative h-full flex"
+        style={{ zIndex: 6, padding: '32px 48px 32px 44px', gap: 48 }}
       >
-        <Diamond color={pres.color} />
-      </div>
 
-      {/* Bottom diamond */}
-      <div
-        className="absolute left-1/2 pointer-events-none"
-        style={{ bottom: BORDER_INSET, transform: 'translate(-50%, 50%)', zIndex: 5 }}
-      >
-        <Diamond color={pres.color} opacity={0.45} lineWidth={12} />
-      </div>
-
-      {/* ── Content ─────────────────────────────────────────────────────── */}
-      <div className="relative flex flex-col h-full" style={{ zIndex: 6 }}>
-
-        {/* TOP: World name */}
+        {/* ══ LEFT COLUMN ══════════════════════════════════════════════════ */}
         <div
-          className="flex flex-col items-center text-center"
-          style={{ paddingTop: topPad + BORDER_INSET, paddingBottom: 0, paddingLeft: 16, paddingRight: 16 }}
+          className="flex flex-col"
+          style={{ flex: '0 0 60%', minWidth: 0, overflowY: 'auto', scrollbarWidth: 'none' }}
         >
-          <p
-            className="font-label uppercase"
+
+          {/* World title */}
+          <h2
             style={{
-              fontSize:      '0.55rem',
-              letterSpacing: '0.55em',
-              color:         pres.color,
-              opacity:       0.5,
-              marginBottom:  6,
-            }}
-          >
-            {compact ? 'World Cycle' : 'World Cycle Status'}
-          </p>
-          <h3
-            className="font-headline font-black text-on-surface leading-none uppercase"
-            style={{
-              fontSize:      worldFont,
-              letterSpacing: '0.1em',
-              textShadow:    '0 1px 16px rgba(0,0,0,0.95)',
+              fontFamily:    'var(--font-headline)',
+              fontWeight:    900,
+              fontSize:      'clamp(2.4rem, 4.8vw, 5.2rem)',
+              lineHeight:    1,
+              color:         '#E3C372',
+              textShadow:    '0 2px 32px rgba(0,0,0,0.98), 0 0 80px rgba(227,195,114,0.12)',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              marginBottom:  8,
             }}
           >
             {cycle.name}
-          </h3>
-        </div>
+          </h2>
 
-        {/* CENTER: Timer + "UNTIL X" + medallion */}
-        <div
-          className="flex-1 flex flex-col items-center justify-center"
-          style={{ padding: '12px 8px', gap: 0 }}
-        >
-          {/* ── Giant countdown ── */}
-          <div
+          {/* Location subtitle */}
+          <p
             style={{
-              display:    'flex',
-              alignItems: 'flex-end',
-              gap:        'clamp(1px, 0.3vw, 5px)',
-              marginBottom: 6,
-              flexWrap:   'nowrap',
+              fontFamily:    'var(--font-body)',
+              fontSize:      '0.62rem',
+              fontWeight:    500,
+              letterSpacing: '0.45em',
+              color:         'rgba(227,195,114,0.50)',
+              textTransform: 'uppercase',
+              marginBottom:  18,
             }}
           >
-            {[
-              { val: h, unit: 'H' },
-              { val: m, unit: 'M' },
-              { val: s, unit: 'S' },
-            ].map(({ val, unit }, i) => (
-              <div key={unit} style={{ display: 'flex', alignItems: 'flex-end', gap: 1 }}>
+            {cycle.location}
+          </p>
+
+          {/* Timer */}
+          <div
+            style={{
+              display:      'flex',
+              alignItems:   'flex-end',
+              gap:          4,
+              marginBottom: 10,
+              flexWrap:     'nowrap',
+            }}
+          >
+            {timerParts.map(({ val, unit }, i) => (
+              <div key={unit} style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
                 <span
                   style={{
-                    fontFamily:        'var(--font-headline)',
-                    fontWeight:        900,
-                    fontSize:          timerFont,
-                    lineHeight:        0.9,
-                    color:             pres.color,
-                    textShadow:        `0 0 50px ${pres.color}55, 0 2px 20px rgba(0,0,0,0.99)`,
-                    fontVariantNumeric:'tabular-nums',
-                    letterSpacing:     '-0.03em',
+                    fontFamily:         'var(--font-headline)',
+                    fontWeight:         900,
+                    fontSize:           'clamp(2.2rem, 4.2vw, 4.8rem)',
+                    lineHeight:         0.9,
+                    color:              '#E3C372',
+                    textShadow:         '0 2px 28px rgba(0,0,0,0.98)',
+                    fontVariantNumeric: 'tabular-nums',
                   }}
                 >
                   {val}
                 </span>
                 <span
                   style={{
-                    fontFamily:  'var(--font-headline)',
-                    fontWeight:  700,
-                    fontSize:    unitFont,
-                    color:       pres.color,
-                    opacity:     0.5,
-                    lineHeight:  1,
-                    paddingBottom: '0.18em',
-                    marginRight: i < 2 ? 'clamp(2px, 0.5vw, 10px)' : 0,
+                    fontFamily:    'var(--font-headline)',
+                    fontWeight:    700,
+                    fontSize:      'clamp(1rem, 2vw, 2rem)',
+                    color:         '#E3C372',
+                    opacity:       0.40,
+                    lineHeight:    1,
+                    paddingBottom: '0.14em',
+                    marginRight:   i < timerParts.length - 1 ? 8 : 0,
                   }}
                 >
                   {unit}
@@ -258,150 +254,204 @@ export function CinematicCyclePanel({
             ))}
           </div>
 
-          {/* UNTIL label */}
-          <p
-            className="font-label uppercase"
-            style={{
-              fontSize:      'clamp(0.5rem, 0.85vw, 0.75rem)',
-              letterSpacing: '0.45em',
-              color:         'rgba(198,198,199,0.45)',
-              textShadow:    '0 1px 8px rgba(0,0,0,0.9)',
-              marginBottom:  20,
-            }}
-          >
-            {isExpired ? 'SYNCING…' : `UNTIL ${nextPres.badge}`}
-          </p>
-
-          {/* State medallion */}
-          <div
-            style={{
-              width:           medallionSz,
-              height:          medallionSz,
-              borderRadius:    '50%',
-              border:          `1.5px solid ${pres.color}50`,
-              background:      `radial-gradient(circle at 38% 32%, ${pres.color}1A 0%, ${pres.color}07 65%, transparent 100%)`,
-              boxShadow:       `0 0 40px ${pres.color}22, inset 0 0 30px ${pres.color}0A`,
-              display:         'flex',
-              flexDirection:   'column',
-              alignItems:      'center',
-              justifyContent:  'center',
-              gap:             6,
-              flexShrink:      0,
-            }}
-          >
-            <span
-              aria-hidden
+          {/* Hint text */}
+          {hintText && (
+            <p
               style={{
-                fontSize:  medalIconSz,
-                lineHeight: 1,
-                filter:    `drop-shadow(0 0 10px ${pres.color}99)`,
+                fontFamily:   'var(--font-body)',
+                fontSize:     '0.72rem',
+                fontStyle:    'italic',
+                color:        'rgba(198,198,199,0.52)',
+                marginBottom: 24,
+                lineHeight:   1.5,
               }}
             >
-              {pres.icon}
-            </span>
-            <span
-              className="font-label font-bold uppercase"
-              style={{
-                fontSize:      'clamp(0.48rem, 0.72vw, 0.65rem)',
-                letterSpacing: '0.22em',
-                color:         pres.color,
-              }}
-            >
-              {pres.badge}
-            </span>
-          </div>
-        </div>
+              {hintText}
+            </p>
+          )}
 
-        {/* BOTTOM: bounties / loot info + progress bar */}
-        <div style={{ padding: `0 ${BORDER_INSET + 8}px ${BORDER_INSET + 14}px`, flexShrink: 0 }}>
-
-          {hasBounties ? (
-            <div
-              style={{
-                maxHeight:      'clamp(90px, 20vh, 170px)',
-                overflowY:      'auto',
-                marginBottom:   10,
-                scrollbarWidth: 'thin',
-              }}
-            >
-              <BountyJobList
-                jobs={syndicateMission!.jobs}
-                accentColor={pres.color}
-                expiryMs={syndicateMission!.expiryMs}
-                now={now}
-                maxJobsShown={3}
-              />
-            </div>
-          ) : lootItems.length > 0 ? (
-            <div style={{ marginBottom: 10 }}>
+          {/* KEY RESOURCES ─────────────────────────────────────────────── */}
+          {resources.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
               <p
-                className="font-label uppercase"
-                style={{ fontSize: '0.5rem', letterSpacing: '0.45em', color: pres.color, opacity: 0.38, marginBottom: 5 }}
+                style={{
+                  fontFamily:    'var(--font-body)',
+                  fontSize:      '0.48rem',
+                  fontWeight:    700,
+                  letterSpacing: '0.55em',
+                  color:         'rgba(227,195,114,0.50)',
+                  textTransform: 'uppercase',
+                  marginBottom:  12,
+                }}
               >
-                Active Rewards
+                Key Resources
               </p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                {lootItems.map(item => (
-                  <li
-                    key={item}
-                    className="font-label"
-                    style={{
-                      fontSize:    'clamp(0.52rem, 0.72vw, 0.65rem)',
-                      color:       'rgba(198,198,199,0.5)',
-                      display:     'flex',
-                      alignItems:  'center',
-                      gap:         6,
-                    }}
+              <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap' }}>
+                {resources.map(res => (
+                  <div
+                    key={res.name}
+                    style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}
                   >
-                    <span style={{ color: pres.color, opacity: 0.4, fontSize: '0.35rem', flexShrink: 0 }}>▶</span>
-                    {item}
-                  </li>
+                    <span
+                      style={{
+                        color:      '#E3C372',
+                        opacity:    0.65,
+                        fontSize:   '0.62rem',
+                        marginTop:  3,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {res.icon}
+                    </span>
+                    <div>
+                      <p
+                        style={{
+                          fontFamily: 'var(--font-body)',
+                          fontSize:   '0.68rem',
+                          fontWeight: 500,
+                          color:      'rgba(229,226,225,0.88)',
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {res.name}
+                      </p>
+                      <p
+                        style={{
+                          fontFamily:    'var(--font-body)',
+                          fontSize:      '0.52rem',
+                          color:         'rgba(198,198,199,0.38)',
+                          letterSpacing: '0.04em',
+                          marginTop:     2,
+                        }}
+                      >
+                        {res.source}
+                      </p>
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
-          ) : null}
+          )}
 
-          {/* Progress strip */}
+          {/* Divider */}
           <div
             style={{
-              width:           '100%',
-              height:          3,
-              background:      'rgba(255,255,255,0.06)',
-              borderRadius:    2,
-              overflow:        'hidden',
-              position:        'relative',
+              height:     1,
+              background: 'linear-gradient(to right, rgba(227,195,114,0.18) 0%, rgba(227,195,114,0.06) 100%)',
+              marginBottom: 16,
+              flexShrink: 0,
             }}
-          >
-            <div
-              style={{
-                position:        'absolute',
-                inset:           '0 auto 0 0',
-                width:           `${progress * 100}%`,
-                background:      pres.color,
-                boxShadow:       `0 0 8px ${pres.color}`,
-                transition:      'width 1s linear',
-                borderRadius:    2,
-              }}
-            />
-          </div>
+          />
 
-          {/* State labels flanking the progress bar */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 5 }}>
-            <span
-              className="font-label uppercase"
-              style={{ fontSize: '0.48rem', letterSpacing: '0.3em', color: pres.color, opacity: 0.5 }}
-            >
-              {pres.badge}
-            </span>
-            <span
-              className="font-label uppercase"
-              style={{ fontSize: '0.48rem', letterSpacing: '0.3em', color: 'rgba(198,198,199,0.28)' }}
-            >
-              {nextPres.badge}
-            </span>
-          </div>
+          {/* BOUNTY BOARD ──────────────────────────────────────────────── */}
+          {hasBounties ? (
+            <BountyJobList
+              jobs={syndicateMission!.jobs}
+              accentColor={pres.color}
+              expiryMs={syndicateMission!.expiryMs}
+              now={now}
+              worldId={cycle.id}
+            />
+          ) : (
+            <div>
+              <p
+                style={{
+                  fontFamily:    'var(--font-body)',
+                  fontSize:      '0.48rem',
+                  fontWeight:    700,
+                  letterSpacing: '0.55em',
+                  color:         'rgba(227,195,114,0.45)',
+                  textTransform: 'uppercase',
+                  marginBottom:  8,
+                }}
+              >
+                Bounty Board
+              </p>
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize:   '0.65rem',
+                  color:      'rgba(198,198,199,0.30)',
+                  fontStyle:  'italic',
+                }}
+              >
+                No active bounties for this cycle
+              </p>
+            </div>
+          )}
         </div>
 
+        {/* ══ RIGHT COLUMN ══════════════════════════════════════════════════ */}
+        <div className="flex flex-col" style={{ flex: 1, minWidth: 0 }}>
+
+          {/* State badge — top-right */}
+          <div style={{ alignSelf: 'flex-end', textAlign: 'right', marginBottom: 10 }}>
+            <span
+              style={{
+                display:       'inline-flex',
+                alignItems:    'center',
+                gap:           7,
+                fontFamily:    'var(--font-body)',
+                fontSize:      '0.58rem',
+                fontWeight:    700,
+                letterSpacing: '0.28em',
+                color:         pres.color,
+                border:        `1px solid ${pres.color}48`,
+                background:    `${pres.color}0D`,
+                padding:       '5px 14px',
+                textTransform: 'uppercase',
+              }}
+            >
+              <span style={{ fontSize: '0.80rem', lineHeight: 1 }}>{pres.icon}</span>
+              {pres.badge}
+            </span>
+            <p
+              style={{
+                fontFamily:    'var(--font-body)',
+                fontSize:      '0.46rem',
+                letterSpacing: '0.32em',
+                color:         'rgba(198,198,199,0.30)',
+                textTransform: 'uppercase',
+                marginTop:     6,
+              }}
+            >
+              {isExpired ? 'SYNCING…' : `UNTIL ${nextPres.badge}`}
+            </p>
+          </div>
+
+          {/* Push About section to bottom of right column */}
+          <div style={{ flex: 1 }} />
+
+          {/* About section */}
+          {aboutText && (
+            <div>
+              <p
+                style={{
+                  fontFamily:    'var(--font-body)',
+                  fontSize:      '0.48rem',
+                  fontWeight:    700,
+                  letterSpacing: '0.42em',
+                  color:         'rgba(227,195,114,0.50)',
+                  textTransform: 'uppercase',
+                  marginBottom:  10,
+                }}
+              >
+                About {cycle.name}
+              </p>
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize:   '0.72rem',
+                  color:      'rgba(198,198,199,0.58)',
+                  lineHeight: 1.68,
+                }}
+              >
+                {aboutText}
+              </p>
+            </div>
+          )}
+
+        </div>
       </div>
     </div>
   );

@@ -2,34 +2,44 @@
 
 > **Self-maintenance rule:** After every major phase or significant UI change, update this file to reflect new patterns so future work stays consistent.
 
-## Cinematic Reference & Mixing System (Primary Visual Bible — Use for ALL UI Work)
+## Cinematic Reference System & Index Usage
 
-This is the **single source of truth** for all visual and layout decisions in the app.
+All cinematic reference images are stored in: `/Reference-for-Tennoplan/cinematic-variants/`
 
-1. All cinematic reference images live in `/Reference-for-Tennoplan/cinematic-variants/` (create this subfolder if it doesn't exist).
-2. When the user uploads or references multiple cinematic images:
-   - Analyze **every** provided image.
-   - Extract specific elements the user likes (e.g. “full-bleed cinematic background from image 1”, “multi-panel layout with gold borders from image 3”, “etched gold lettering + text-shadow from image 2”, “timer ring + icon style from image 4”, “location tabs at bottom from image 5”).
-   - Explicitly note what the user dislikes and avoid it.
-   - Mix elements across images exactly as instructed. Never default back to the clean glass-panel “Orokin Digital Standard” unless the user specifically asks for it.
-3. Typography (non-negotiable for cinematic style):
-   - Headlines / large titles: Orokin-inspired serif (use `font-family: "Noto Serif"` or closest loaded Orokin-style serif; heavy weight, gold #E3C372 with etched text-shadow: `0 1px 3px rgba(227,195,114,0.25), 0 0 8px rgba(227,195,114,0.15)`).
-   - Body / labels: Noto Sans (exactly as Warframe uses for UI text).
-   - Never use Inter or default sans unless user says so.
-4. Layout rules for cinematic style:
-   - Full-bleed cinematic backgrounds (high-res cycle/location images with vignette/dark overlay).
-   - Multi-panel layouts where requested (seam lines, gold borders, dramatic lighting).
-   - Timer rings, location tabs (Plains / Orb Vallis / Cambion Drift style), and mood/faction indicators must match the reference images exactly.
-   - Minimize or avoid shadcn/ui Card / Panel components. Use raw divs + custom Tailwind arbitrary values + @layer utilities.
-5. Reuse across the entire app:
-   - This system applies to **every page and every new feature**, not just Celestial Pendulum.
-   - When user says “apply cinematic style to [new page]” or “mix styles from these images for Solar Rail Feed”, do it.
-   - Create reusable CSS utilities in `src/index.css` (e.g. `.cinematic-hero`, `.cinematic-timer`, `.etched-gold`, `.cinematic-panel`) so future pages can import the same look instantly.
-6. Prompting workflow:
-   - User will reference specific images + say what they like/dislike.
-   - Output must feel like an in-game Warframe HUD screenshot, never a clean SaaS dashboard.
+There is a helper file: `cinematic-variants-index.md` inside that folder which contains:
+- An automatically updated list of all images
+- Grouped sections by feature (Celestial Pendulum, Void Reliquaries, etc.)
+- Description and "Best For" columns (some may be filled in by the user)
 
-Self-maintenance: After any cinematic-style UI change, add the new pattern to this section so future work stays consistent.
+### Rules for Using References (Strict)
+
+1. **Always check the index first**
+   - Before designing or redesigning any UI, read `cinematic-variants-index.md` to see what reference images exist for that category.
+
+2. **When the user asks to redesign or create a page:**
+   - First look for images under the relevant section in the index (e.g. "Celestial Pendulum" section).
+   - Use **exact filenames** from the index when referencing them.
+   - Mix elements from multiple images exactly as the user describes (background, layout, timer style, borders, typography, etc.).
+
+3. **If references exist for the category:**
+   - Prioritize and mix from those images.
+   - Never default back to the clean glass-panel "Orokin Digital Standard" style unless the user explicitly asks.
+
+4. **If NO references exist for the requested category or page:**
+   - Do **NOT** invent a new style from scratch.
+   - Instead, reply with this exact message (or very close):
+
+     > "I don't see any cinematic reference images yet for [Category/Page Name] in cinematic-variants-index.md.  
+     > Would you like to add some reference images first, or should I create a design based on the general cinematic style from the existing Celestial Pendulum / General images?"
+
+   - Wait for user confirmation before proceeding.
+
+5. **General fallback rule**
+   - Only use "general / reusable" images (e.g. etched-gold-typography, stitched borders, vignette overlays) when no specific category references exist.
+   - Always ask the user for clarification rather than guessing the full visual direction.
+
+6. **Self-maintenance**
+   - After the user adds new images and runs the update script, re-read `cinematic-variants-index.md` so you have the latest list.
 
 ## Project
 
@@ -41,7 +51,6 @@ Tennoplan: offline-first Warframe companion desktop app built with Tauri 2 + Rea
 npm run dev          # Vite dev server (frontend only)
 npm run build        # tsc -b && vite build
 npx tsc --noEmit     # Type-check
-
 Architecture
 Hexagonal (Clean Architecture). src/core/ has zero imports from React, Dexie, or fetch.
 src/core/domain/       — pure TS types & entities
@@ -63,26 +72,30 @@ Solar Rail Feed,"Invasions, alerts, events. Simple focused view."
 All others,Placeholder or future vertical slices.
 Rule: Side tabs are simple and focused. They may only show a small "Completed" flag + link to the Dailies & Weeklies tab. Completion state is owned only by the Dailies & Weeklies tab (and synced to Dexie).
 
-Design System — The Orokin Digital Standard
-Tokens live in src/index.css inside @theme {} (Tailwind v4 CSS-first).
-Background #131313, Primary gold #E3C372, Secondary #C6C6C7, Tertiary #bac3fe
-Fonts: font-headline = Noto Serif, font-label / font-body = Inter
-Radius: max 8 px (rounded-lg). No pure white — ceiling is #F2F2F2
-Class,Effect
-.glass-panel,backdrop-blur(12px) + semi-transparent dark bg + top border
-.somatic-line,Full-width 1 px gold gradient divider
-.filigree-corner,"Absolute corner bracket (gold, 20% opacity)"
-.ghost-border,1 px border at 20% opacity
+## Design System — The Orokin Digital Standard (Fallback Only)
 
-Orokin Typography & Text Effects
-Mission types and tier headers: Noto Serif + font-black.
-Etched gold text-shadow: 0 1px 3px rgba(227,195,114,0.25).
-Body text gets no text-shadow.
-Glanceability Principles
-Icon + mission type first (left spotlight with transparency).
-SP / tier badge immediately right of icon.
-Time + progress bar rightmost.
-Tier gradients: Subtle right-to-left, 10–15% opacity max.
+This is the **clean / minimal** style. It should only be used when the user explicitly asks for the "Orokin Digital Standard", "glass-panel", or "clean dashboard" look.
+
+**Cinematic Style (from reference images) has higher priority.**
+
+When the user wants cinematic / stitch / in-game HUD style:
+- Prioritize the Cinematic Reference System & Index Usage (see section above).
+- Use full-bleed backgrounds, stitched multi-panels, heavy etched gold typography, dramatic lighting, and vignette overlays from the reference images.
+- Minimize or avoid glass-panel, somatic-line, filigree-corner, and ghost-border classes unless the user specifically requests them.
+- Typography: Noto Serif for large headlines with strong etched gold text-shadow. Noto Sans for body text.
+
+### When to Use Orokin Digital Standard
+- Only when user says: “use clean style”, “glass panel”, “minimal”, or “Orokin Digital Standard”.
+- Default to cinematic style whenever reference images or “cinematic” is mentioned.
+
+### Core Tokens (Always Available)
+- Background: #131313
+- Primary gold: #E3C372
+- Secondary: #C6C6C7
+- Etched gold text-shadow: `0 1px 3px rgba(227,195,114,0.25), 0 0 8px rgba(227,195,114,0.15)`
+- Fonts: Noto Serif (headlines), Noto Sans (body/labels)
+
+Reusable cinematic utilities should be added to `src/index.css` (e.g. `.cinematic-hero`, `.etched-gold`, `.cinematic-panel`, `.cinematic-timer`).
 
 Implemented Features
 Tab,Status,Notes
