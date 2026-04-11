@@ -1,9 +1,9 @@
-import { useState } from 'react';
 import { formatMsParts, nextCycleState } from '@/core/services/cycleService';
 import type { CycleStatus } from '@/core/domain/cycles';
 import type { SyndicateMission } from '@/core/domain/syndicates';
 import { STATE, FALLBACK, getCardGradient } from './CycleCard';
 import { BountyJobList } from './BountyJobList';
+import { getWorldBg } from '../worldAssets';
 
 // ── Static world lore ──────────────────────────────────────────────────────
 
@@ -82,27 +82,17 @@ const KEY_RESOURCES: Partial<Record<string, KeyResource[]>> = {
     { icon: '◇', name: 'Biotic',             source: 'Infested cysts' },
   ],
   'zariman-corpus': [
-    { icon: '◆', name: 'Voidplume Pinion',   source: 'Voidplume nodes' },
+    { icon: '◆', name: 'Voidplume Quill',    source: 'Zariman mobs' },
     { icon: '✦', name: 'Voidplume Crest',    source: 'Bounty rewards' },
-    { icon: '◈', name: 'Voidplume Quill',    source: 'Zariman mobs' },
-    { icon: '◇', name: 'Voidplume Wing',     source: 'Rare bounties' },
+    { icon: '◈', name: 'HoldFast Token',     source: 'Bounties' },
+    { icon: '◇', name: 'Incarnon Genesis',   source: 'Circuit rewards' },
   ],
   'zariman-grineer': [
-    { icon: '◆', name: 'Voidplume Pinion',   source: 'Voidplume nodes' },
+    { icon: '◆', name: 'Voidplume Quill',    source: 'Zariman mobs' },
     { icon: '✦', name: 'Voidplume Crest',    source: 'Bounty rewards' },
-    { icon: '◈', name: 'Voidplume Quill',    source: 'Zariman mobs' },
-    { icon: '◇', name: 'Voidplume Wing',     source: 'Rare bounties' },
+    { icon: '◈', name: 'HoldFast Token',     source: 'Bounties' },
+    { icon: '◇', name: 'Incarnon Genesis',   source: 'Circuit rewards' },
   ],
-};
-
-// ── Background images ──────────────────────────────────────────────────────
-const WORLD_BG: Record<string, string> = {
-  cetus:   'https://static.wikia.nocookie.net/warframe/images/b/b8/Plains_of_Eidolon.png',
-  vallis:  'https://static.wikia.nocookie.net/warframe/images/6/68/OrbVallisTilesetPanorama.png',
-  cambion: 'https://static.wikia.nocookie.net/warframe/images/e/e4/CambionDrift.png',
-  zariman: 'https://static.wikia.nocookie.net/warframe/images/f/f5/Zariman_Ten_Zero.png',
-  duviri:  'https://static.wikia.nocookie.net/warframe/images/d/d7/Duviri.png',
-  earth:   'https://static.wikia.nocookie.net/warframe/images/4/41/EarthRooftop.png',
 };
 
 // ── Component ──────────────────────────────────────────────────────────────
@@ -124,16 +114,13 @@ export function CinematicCyclePanel({
   const nextPres  = STATE[nextState] ?? FALLBACK;
   const { h, m, s } = formatMsParts(msRemaining);
 
-  const [imgFailed, setImgFailed] = useState(false);
+  const bgUrl        = getWorldBg(cycle.id, cycle.state);
+  const cssGradient  = getCardGradient(cycle.id, cycle.state);
+  const hasBounties  = !!syndicateMission && syndicateMission.jobs.length > 0;
+  const resources    = KEY_RESOURCES[`${cycle.id}-${cycle.state}`] ?? [];
+  const aboutText    = WORLD_ABOUT[cycle.id] ?? '';
+  const hintText     = WORLD_HINT[`${cycle.id}-${cycle.state}`] ?? '';
 
-  const wikiUrl     = WORLD_BG[cycle.id];
-  const cssGradient = getCardGradient(cycle.id, cycle.state);
-  const hasBounties = !!syndicateMission && syndicateMission.jobs.length > 0;
-  const resources   = KEY_RESOURCES[`${cycle.id}-${cycle.state}`] ?? [];
-  const aboutText   = WORLD_ABOUT[cycle.id] ?? '';
-  const hintText    = WORLD_HINT[`${cycle.id}-${cycle.state}`] ?? '';
-
-  // Build timer parts — omit hours when zero
   const timerParts: { val: string; unit: string }[] = [];
   if (h !== '00') timerParts.push({ val: h, unit: 'H' });
   timerParts.push({ val: m, unit: 'M' }, { val: s, unit: 'S' });
@@ -143,19 +130,18 @@ export function CinematicCyclePanel({
       className="relative flex-1 overflow-hidden"
       style={{ background: cssGradient, minHeight: 0 }}
     >
-      {/* ── Background image ────────────────────────────────────────────── */}
-      {wikiUrl && !imgFailed && (
+      {/* ── Background image (local asset) ────────────────────────────────── */}
+      {bgUrl && (
         <img
-          src={wikiUrl}
+          src={bgUrl}
           alt=""
           aria-hidden
-          onError={() => setImgFailed(true)}
           className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
           style={{ zIndex: 0 }}
         />
       )}
 
-      {/* ── Vignette overlay — heavier on left and bottom for legibility ── */}
+      {/* ── Vignette overlay ──────────────────────────────────────────────── */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -167,7 +153,7 @@ export function CinematicCyclePanel({
         }}
       />
 
-      {/* ── Two-column content ──────────────────────────────────────────── */}
+      {/* ── Two-column content ────────────────────────────────────────────── */}
       <div
         className="relative h-full flex"
         style={{ zIndex: 6, padding: '32px 48px 32px 44px', gap: 48 }}
@@ -270,7 +256,7 @@ export function CinematicCyclePanel({
             </p>
           )}
 
-          {/* KEY RESOURCES ─────────────────────────────────────────────── */}
+          {/* KEY RESOURCES */}
           {resources.length > 0 && (
             <div style={{ marginBottom: 20 }}>
               <p
@@ -292,38 +278,14 @@ export function CinematicCyclePanel({
                     key={res.name}
                     style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}
                   >
-                    <span
-                      style={{
-                        color:      '#E3C372',
-                        opacity:    0.65,
-                        fontSize:   '0.62rem',
-                        marginTop:  3,
-                        flexShrink: 0,
-                      }}
-                    >
+                    <span style={{ color: '#E3C372', opacity: 0.65, fontSize: '0.62rem', marginTop: 3, flexShrink: 0 }}>
                       {res.icon}
                     </span>
                     <div>
-                      <p
-                        style={{
-                          fontFamily: 'var(--font-body)',
-                          fontSize:   '0.68rem',
-                          fontWeight: 500,
-                          color:      'rgba(229,226,225,0.88)',
-                          lineHeight: 1.2,
-                        }}
-                      >
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.68rem', fontWeight: 500, color: 'rgba(229,226,225,0.88)', lineHeight: 1.2 }}>
                         {res.name}
                       </p>
-                      <p
-                        style={{
-                          fontFamily:    'var(--font-body)',
-                          fontSize:      '0.52rem',
-                          color:         'rgba(198,198,199,0.38)',
-                          letterSpacing: '0.04em',
-                          marginTop:     2,
-                        }}
-                      >
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.52rem', color: 'rgba(198,198,199,0.38)', letterSpacing: '0.04em', marginTop: 2 }}>
                         {res.source}
                       </p>
                     </div>
@@ -336,14 +298,14 @@ export function CinematicCyclePanel({
           {/* Divider */}
           <div
             style={{
-              height:     1,
-              background: 'linear-gradient(to right, rgba(227,195,114,0.18) 0%, rgba(227,195,114,0.06) 100%)',
+              height:       1,
+              background:   'linear-gradient(to right, rgba(227,195,114,0.18) 0%, rgba(227,195,114,0.06) 100%)',
               marginBottom: 16,
-              flexShrink: 0,
+              flexShrink:   0,
             }}
           />
 
-          {/* BOUNTY BOARD ──────────────────────────────────────────────── */}
+          {/* BOUNTY BOARD */}
           {hasBounties ? (
             <BountyJobList
               jobs={syndicateMission!.jobs}
@@ -354,27 +316,10 @@ export function CinematicCyclePanel({
             />
           ) : (
             <div>
-              <p
-                style={{
-                  fontFamily:    'var(--font-body)',
-                  fontSize:      '0.48rem',
-                  fontWeight:    700,
-                  letterSpacing: '0.55em',
-                  color:         'rgba(227,195,114,0.45)',
-                  textTransform: 'uppercase',
-                  marginBottom:  8,
-                }}
-              >
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.48rem', fontWeight: 700, letterSpacing: '0.55em', color: 'rgba(227,195,114,0.45)', textTransform: 'uppercase', marginBottom: 8 }}>
                 Bounty Board
               </p>
-              <p
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize:   '0.65rem',
-                  color:      'rgba(198,198,199,0.30)',
-                  fontStyle:  'italic',
-                }}
-              >
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.65rem', color: 'rgba(198,198,199,0.30)', fontStyle: 'italic' }}>
                 No active bounties for this cycle
               </p>
             </div>
@@ -384,7 +329,7 @@ export function CinematicCyclePanel({
         {/* ══ RIGHT COLUMN ══════════════════════════════════════════════════ */}
         <div className="flex flex-col" style={{ flex: 1, minWidth: 0 }}>
 
-          {/* State badge — top-right */}
+          {/* State badge */}
           <div style={{ alignSelf: 'flex-end', textAlign: 'right', marginBottom: 10 }}>
             <span
               style={{
@@ -419,7 +364,6 @@ export function CinematicCyclePanel({
             </p>
           </div>
 
-          {/* Push About section to bottom of right column */}
           <div style={{ flex: 1 }} />
 
           {/* About section */}
@@ -450,7 +394,6 @@ export function CinematicCyclePanel({
               </p>
             </div>
           )}
-
         </div>
       </div>
     </div>

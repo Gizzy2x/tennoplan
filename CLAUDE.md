@@ -11,35 +11,41 @@ There is a helper file: `cinematic-variants-index.md` inside that folder which c
 - Grouped sections by feature (Celestial Pendulum, Void Reliquaries, etc.)
 - Description and "Best For" columns (some may be filled in by the user)
 
-### Rules for Using References (Strict)
+## Cinematic Reference System (STRICT ENFORCEMENT)
 
-1. **Always check the index first**
-   - Before designing or redesigning any UI, read `cinematic-variants-index.md` to see what reference images exist for that category.
+All cinematic reference images are now stored in tab-specific folders under:  
+`/Reference-for-Tennoplan/cinematic-variants/[tab-name]/`  
+(Example: celestial-pendulum/, dailies-weeklies/, etc. — images sit directly inside the folder.)
 
-2. **When the user asks to redesign or create a page:**
-   - First look for images under the relevant section in the index (e.g. "Celestial Pendulum" section).
-   - Use **exact filenames** from the index when referencing them.
-   - Mix elements from multiple images exactly as the user describes (background, layout, timer style, borders, typography, etc.).
+**NEW GOLDEN RULES (these override everything else in this file):**
 
-3. **If references exist for the category:**
-   - Prioritize and mix from those images.
-   - Never default back to the clean glass-panel "Orokin Digital Standard" style unless the user explicitly asks.
+1. **Layout is ALWAYS the highest priority**
+   - When the user shows ANY reference (Lovable URL, screenshot, image filenames, or mentions the reference folder), replicate the **exact layout** from the reference first — panel arrangement, grid structure, full-bleed behavior, title placement, column splits, spacing, and flow — before anything else.
 
-4. **If NO references exist for the requested category or page:**
-   - Do **NOT** invent a new style from scratch.
-   - Instead, reply with this exact message (or very close):
+2. **Interviewer Prompting Rule (mandatory)**
+   - As soon as the user provides a reference (Lovable link, screenshot description, image names, or folder mention), **immediately stop** and ask clarifying questions like an interviewer.
+   - Use this exact style (or extremely close):
 
-     > "I don't see any cinematic reference images yet for [Category/Page Name] in cinematic-variants-index.md.  
-     > Would you like to add some reference images first, or should I create a design based on the general cinematic style from the existing Celestial Pendulum / General images?"
+     > "I see the reference you provided for [feature/tab] (Lovable URL / screenshot / images in the [tab-name] folder).  
+     > How would you like me to use it?  
+     > Please tell me which parts are most important (exact layout, background treatment, title position, panel proportions, etc.). Should I follow it as closely as possible with zero creative changes to the layout?"
 
-   - Wait for user confirmation before proceeding.
+   - Do **not** start designing, suggesting layouts, or writing any code until the user answers.
 
-5. **General fallback rule**
-   - Only use "general / reusable" images (e.g. etched-gold-typography, stitched borders, vignette overlays) when no specific category references exist.
-   - Always ask the user for clarification rather than guessing the full visual direction.
+3. **No creative liberties on layout**
+   - Never replace the reference layout with tabs, bento cards, glass panels, extra borders, stitched frames, or any other structure unless the reference itself shows them.
+   - Over-use of borders, decorative elements, or "Orokin Digital Standard" panels is explicitly forbidden when a reference is provided.
+
+4. **Reference priority order (strict)**
+   1. User-provided reference (Lovable URL, screenshot, images from the tab folder, or description) → highest authority
+   2. Images in the relevant tab folder under cinematic-variants/
+   3. General cinematic utilities only as supporting elements (vignette, gold text shadow, etc.)
+
+5. **Background is secondary**
+   - After layout is matched exactly, apply the background shown in the reference (local asset or visual style). Do not substitute unless the user says so.
 
 6. **Self-maintenance**
-   - After the user adds new images and runs the update script, re-read `cinematic-variants-index.md` so you have the latest list.
+   - After every major UI change, update this file so the rules stay current.
 
 ## Project
 
@@ -72,13 +78,17 @@ Solar Rail Feed,"Invasions, alerts, events. Simple focused view."
 All others,Placeholder or future vertical slices.
 Rule: Side tabs are simple and focused. They may only show a small "Completed" flag + link to the Dailies & Weeklies tab. Completion state is owned only by the Dailies & Weeklies tab (and synced to Dexie).
 
-## Design System — The Orokin Digital Standard (Fallback Only)
+### Design System
 
-This is the **clean / minimal** style. It should only be used when the user explicitly asks for the "Orokin Digital Standard", "glass-panel", or "clean dashboard" look.
+**User-provided reference has absolute priority.**
 
+- When the user gives any reference (Lovable URL, screenshot, or images from the tab folder), **follow its layout exactly**. Style comes second. Background comes third.
+- Never default to glass-panel, bento cards, extra borders, filigree, or "Orokin Digital Standard" if a reference is present.
+- Typography rule remains: Noto Serif for large headlines, Noto Sans for body (never CameraPlainVariable).
+- Only use Orokin Digital Standard when the user explicitly says “clean”, “glass”, “minimal”, or “Orokin Digital Standard”.
 **Cinematic Style (from reference images) has higher priority.**
 
-When the user wants cinematic / stitch / in-game HUD style:
+When the user wants cinematic / stitch / in-game HUD style or any prefered visual change:
 - Prioritize the Cinematic Reference System & Index Usage (see section above).
 - Use full-bleed backgrounds, stitched multi-panels, heavy etched gold typography, dramatic lighting, and vignette overlays from the reference images.
 - Minimize or avoid glass-panel, somatic-line, filigree-corner, and ghost-border classes unless the user specifically requests them.
