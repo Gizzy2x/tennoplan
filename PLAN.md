@@ -127,8 +127,8 @@ tennoplan/
 - **AppShell**: Fixed sidebar + persistent top bar.
 - **Top Bar (persistent on every page)**: Includes a prominent **Dailies & Weeklies** button in the middle. Clicking it switches the main content area (same as sidebar tabs).
 - **Sidebar Navigation Tabs** (order):
-  1. Celestial Pendulum — world cycle timers (simple, glanceable)
-  2. Void Reliquaries — active fissures (simple, glanceable)
+  1. Celestial Pendulum — world cycle timers 
+  2. Void Reliquaries — active fissures 
   3. Solar Rail Feed — live events, invasions, alerts
   4. Ascension Registry — Mastery & Progression Tracker (MR, item unlock/check-off)
   5. Dailies & Weeklies — **Killer feature** (Nightwave, Pulse, Netracell, EDA/ETA, full checklist). Accessed primarily via top bar.

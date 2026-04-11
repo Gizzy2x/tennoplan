@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useWorldCycles }       from './hooks/useWorldCycles';
 import { useSyndicateMissions } from './hooks/useSyndicateMissions';
 import { CinematicCyclePanel }  from './components/CinematicCyclePanel';
-import { WorldSelectorTabs }    from './components/WorldSelectorTabs';
+import { WorldOverviewPanel }   from './components/WorldOverviewPanel';
 import { SyndicateMissionsPanel } from './components/SyndicateMissionsPanel';
 import { SimarisPanel }         from './components/SimarisPanel';
 import { formatCacheAge }       from '@/core/services/WorldstateService';
@@ -16,11 +16,11 @@ const CYCLE_TO_SYNDICATE: Partial<Record<CycleId, string>> = {
   zariman: 'The Holdfasts',
 };
 
-// All 6 worlds in display order
 const WORLD_ORDER: CycleId[] = ['cetus', 'vallis', 'cambion', 'zariman', 'duviri', 'earth'];
 
 export function CelestialPendulumPage() {
-  const [selectedId, setSelectedId] = useState<CycleId>('cetus');
+  // null = overview, CycleId = detail view
+  const [selectedId, setSelectedId] = useState<CycleId | null>(null);
 
   const {
     statuses,
@@ -35,18 +35,15 @@ export function CelestialPendulumPage() {
 
   const { missions } = useSyndicateMissions();
 
-  // Build lookup: cycleId → SyndicateMission
   const missionByName    = Object.fromEntries(missions.map(m => [m.syndicate, m]));
   const missionByCycleId = Object.fromEntries(
     (Object.entries(CYCLE_TO_SYNDICATE) as [CycleId, string][])
       .map(([id, name]) => [id, missionByName[name] ?? null])
   );
 
-  // Keep tab order stable: use WORLD_ORDER to sort statuses
-  const byId      = Object.fromEntries(statuses.map(s => [s.cycle.id, s]));
+  const byId           = Object.fromEntries(statuses.map(s => [s.cycle.id, s]));
   const orderedStatuses = WORLD_ORDER.map(id => byId[id]).filter(Boolean);
-
-  const selectedStatus = byId[selectedId] ?? null;
+  const selectedStatus  = selectedId ? (byId[selectedId] ?? null) : null;
 
   return (
     <div
@@ -54,27 +51,7 @@ export function CelestialPendulumPage() {
       style={{ minHeight: '100vh', overflowX: 'hidden' }}
     >
 
-      {/* ── Watermark title ────────────────────────────────────────────── */}
-      <div
-        className="absolute inset-x-0 top-0 overflow-hidden pointer-events-none select-none"
-        style={{ zIndex: 0 }}
-        aria-hidden
-      >
-        <h1
-          className="font-headline font-black leading-none whitespace-nowrap"
-          style={{
-            fontSize:      'clamp(4rem, 13vw, 11rem)',
-            color:         'rgba(227,195,114,0.04)',
-            paddingLeft:   '0.75rem',
-            paddingTop:    '0.15rem',
-            letterSpacing: '-0.02em',
-          }}
-        >
-          CELESTIAL PENDULUM
-        </h1>
-      </div>
-
-      {/* ── First-launch / no-data state ───────────────────────────────── */}
+      {/* ── First-launch / no-data state ──────────────────────────────────── */}
       {!hasEverLoaded && (
         <div
           className="flex-1 flex items-center justify-center"
@@ -110,65 +87,162 @@ export function CelestialPendulumPage() {
         </div>
       )}
 
-      {/* ── Main content ───────────────────────────────────────────────── */}
-      {statuses.length > 0 && (
+      {/* ── Main content ──────────────────────────────────────────────────── */}
+      {orderedStatuses.length > 0 && (
         <>
-          {/* World selector tab bar — sits just below the AppShell header */}
-          <div style={{ paddingTop: 80, zIndex: 10, flexShrink: 0 }}>
-            <WorldSelectorTabs
-              statuses={orderedStatuses}
-              selectedId={selectedId}
-              onSelect={(id) => setSelectedId(id)}
-            />
-          </div>
+          {/* ════════════════════════════════════════════════════════════════
+              DETAIL VIEW — full-bleed single world
+          ════════════════════════════════════════════════════════════════ */}
+          {selectedId !== null && selectedStatus && (
+            <>
+              {/* Back button */}
+              <div
+                className="absolute flex items-center gap-2"
+                style={{ top: 88, left: 20, zIndex: 20 }}
+              >
+                <button
+                  onClick={() => setSelectedId(null)}
+                  style={{
+                    fontFamily:    'var(--font-body)',
+                    fontSize:      '0.52rem',
+                    fontWeight:    700,
+                    letterSpacing: '0.28em',
+                    textTransform: 'uppercase',
+                    color:         'rgba(227,195,114,0.60)',
+                    background:    'rgba(0,0,0,0.55)',
+                    border:        '1px solid rgba(227,195,114,0.18)',
+                    padding:       '5px 12px',
+                    cursor:        'pointer',
+                    backdropFilter: 'blur(6px)',
+                    transition:    'color 0.18s, border-color 0.18s',
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLButtonElement).style.color = 'rgba(227,195,114,0.90)';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(227,195,114,0.40)';
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLButtonElement).style.color = 'rgba(227,195,114,0.60)';
+                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(227,195,114,0.18)';
+                  }}
+                >
+                  ← OVERVIEW
+                </button>
+              </div>
 
-          {/* Single-world cinematic panel — fills remaining viewport height */}
-          <div
-            className="relative flex"
-            style={{
-              flex:      '1 0 0',
-              minHeight: 'clamp(380px, 56vh, 760px)',
-              zIndex:    5,
-            }}
-          >
-            {selectedStatus && (
-              <CinematicCyclePanel
-                key={selectedId}
-                status={selectedStatus}
-                syndicateMission={missionByCycleId[selectedId]}
-                now={now}
-              />
-            )}
-          </div>
+              {/* Single-world cinematic panel */}
+              <div
+                className="relative flex"
+                style={{
+                  flex:      '1 0 0',
+                  minHeight: 'clamp(380px, 56vh, 760px)',
+                  zIndex:    5,
+                  paddingTop: 80,
+                }}
+              >
+                <CinematicCyclePanel
+                  key={selectedId}
+                  status={selectedStatus}
+                  syndicateMission={missionByCycleId[selectedId]}
+                  now={now}
+                />
+              </div>
 
-          {/* ── Below-the-fold: Syndicate Dispatches + Simaris ─────────── */}
-          <div
-            style={{
-              zIndex:     5,
-              flexShrink: 0,
-              borderTop:  '1px solid rgba(227,195,114,0.08)',
-            }}
-          >
-            <div className="px-12 py-8">
-              <SyndicateMissionsPanel />
-            </div>
+              {/* Below-the-fold: Syndicate Dispatches + Simaris */}
+              <div
+                style={{
+                  zIndex:     5,
+                  flexShrink: 0,
+                  borderTop:  '1px solid rgba(227,195,114,0.08)',
+                }}
+              >
+                <div className="px-12 py-8">
+                  <SyndicateMissionsPanel />
+                </div>
+                <div
+                  style={{
+                    height:     1,
+                    background: 'linear-gradient(to right, transparent 0%, rgba(227,195,114,0.14) 20%, rgba(227,195,114,0.14) 80%, transparent 100%)',
+                  }}
+                />
+                <div className="px-12 py-8">
+                  <SimarisPanel standaloneSection />
+                </div>
+              </div>
+            </>
+          )}
 
+          {/* ════════════════════════════════════════════════════════════════
+              OVERVIEW — horizontal panel grid
+          ════════════════════════════════════════════════════════════════ */}
+          {selectedId === null && (
             <div
-              style={{
-                height:     1,
-                background: 'linear-gradient(to right, transparent 0%, rgba(227,195,114,0.14) 20%, rgba(227,195,114,0.14) 80%, transparent 100%)',
-              }}
-            />
+              className="relative flex flex-col"
+              style={{ flex: '1 0 0', minHeight: '100vh' }}
+            >
+              {/* Giant "CELESTIAL PENDULUM" title */}
+              <div
+                className="absolute pointer-events-none select-none"
+                style={{
+                  top:    0,
+                  left:   0,
+                  right:  0,
+                  zIndex: 10,
+                  padding: '18px 28px 0',
+                }}
+                aria-hidden
+              >
+                <h1
+                  style={{
+                    fontFamily:    'var(--font-headline)',
+                    fontWeight:    900,
+                    fontSize:      'clamp(1.4rem, 2.8vw, 3rem)',
+                    lineHeight:    1,
+                    color:         '#E3C372',
+                    letterSpacing: '0.20em',
+                    textTransform: 'uppercase',
+                    textShadow:    '0 2px 24px rgba(0,0,0,0.90), 0 0 60px rgba(227,195,114,0.18)',
+                  }}
+                >
+                  Celestial Pendulum
+                </h1>
+                <p
+                  style={{
+                    fontFamily:    'var(--font-body)',
+                    fontSize:      '0.48rem',
+                    letterSpacing: '0.40em',
+                    color:         'rgba(227,195,114,0.40)',
+                    textTransform: 'uppercase',
+                    marginTop:     4,
+                  }}
+                >
+                  World Cycle Monitor
+                </p>
+              </div>
 
-            <div className="px-12 py-8">
-              <SimarisPanel standaloneSection />
+              {/* Horizontal world panels */}
+              <div
+                className="flex"
+                style={{
+                  flex:       '1 0 0',
+                  minHeight:  'calc(100vh - 0px)',
+                }}
+              >
+                {orderedStatuses.map((status, i) => (
+                  <WorldOverviewPanel
+                    key={status.cycle.id}
+                    status={status}
+                    onSelect={(id) => setSelectedId(id as CycleId)}
+                    isLast={i === orderedStatuses.length - 1}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </>
       )}
 
-      {/* ── Offline / stale-cache banner ──────────────────────────────── */}
-      {isStale && statuses.length > 0 && (
+      {/* ── Offline / stale-cache banner ──────────────────────────────────── */}
+      {isStale && orderedStatuses.length > 0 && (
         <div
           className="flex items-center gap-3 px-8 py-2"
           style={{
@@ -191,11 +265,11 @@ export function CelestialPendulumPage() {
         </div>
       )}
 
-      {/* ── Corner sync indicator ─────────────────────────────────────── */}
-      {statuses.length > 0 && !isStale && (
+      {/* ── Corner sync indicator ─────────────────────────────────────────── */}
+      {orderedStatuses.length > 0 && !isStale && selectedId === null && (
         <div
           className="absolute flex items-center gap-2"
-          style={{ top: 88, right: 24, zIndex: 12 }}
+          style={{ top: 20, right: 24, zIndex: 12 }}
         >
           {isLoading && (
             <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
