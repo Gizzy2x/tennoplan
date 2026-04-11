@@ -1,23 +1,12 @@
-# CLAUDE.md
-
 > **Self-maintenance rule:** After every major phase or significant UI change, update this file to reflect new patterns so future work stays consistent.
 
-## Cinematic Reference System & Index Usage
-
-All cinematic reference images are stored in: `/Reference-for-Tennoplan/cinematic-variants/`
-
-There is a helper file: `cinematic-variants-index.md` inside that folder which contains:
-- An automatically updated list of all images
-- Grouped sections by feature (Celestial Pendulum, Void Reliquaries, etc.)
-- Description and "Best For" columns (some may be filled in by the user)
-
-## Cinematic Reference System (STRICT ENFORCEMENT)
+## Cinematic Reference System (STRICT ENFORCEMENT — Highest Priority)
 
 All cinematic reference images are now stored in tab-specific folders under:  
 `/Reference-for-Tennoplan/cinematic-variants/[tab-name]/`  
 (Example: celestial-pendulum/, dailies-weeklies/, etc. — images sit directly inside the folder.)
 
-**NEW GOLDEN RULES (these override everything else in this file):**
+**These rules override ALL other instructions in this file.**
 
 1. **Layout is ALWAYS the highest priority**
    - When the user shows ANY reference (Lovable URL, screenshot, image filenames, or mentions the reference folder), replicate the **exact layout** from the reference first — panel arrangement, grid structure, full-bleed behavior, title placement, column splits, spacing, and flow — before anything else.
@@ -57,6 +46,7 @@ Tennoplan: offline-first Warframe companion desktop app built with Tauri 2 + Rea
 npm run dev          # Vite dev server (frontend only)
 npm run build        # tsc -b && vite build
 npx tsc --noEmit     # Type-check
+
 Architecture
 Hexagonal (Clean Architecture). src/core/ has zero imports from React, Dexie, or fetch.
 src/core/domain/       — pure TS types & entities
@@ -67,7 +57,6 @@ src/features/<tab>/    — vertical slice per tab
 src/store/             — Zustand stores
 src/components/layout/ — AppShell, Sidebar, Header
 Navigation: No router. Zustand useNavigationStore drives sidebar + top-bar tabs.
-
 Tab Strategy
 Tab,Purpose
 Dailies & Weeklies,"Killer feature — Nightwave challenges, Pulse tracker, Netracell, EDA/ETA, weekly checklist. Persistent top-bar access. All completion state lives here."
@@ -77,36 +66,23 @@ Void Reliquaries,"Active fissures. Simple focused view + small ""Completed"" fla
 Solar Rail Feed,"Invasions, alerts, events. Simple focused view."
 All others,Placeholder or future vertical slices.
 Rule: Side tabs are simple and focused. They may only show a small "Completed" flag + link to the Dailies & Weeklies tab. Completion state is owned only by the Dailies & Weeklies tab (and synced to Dexie).
+Design System
+User-provided reference has absolute priority over everything else.
 
-### Design System
+When the user gives any reference (Lovable URL, screenshot, or images from the tab folder), follow its layout exactly. Style comes second. Background comes third.
+Typography rule remains: Noto Serif for large headlines, Noto Sans for body (never CameraPlainVariable).
+Only use Orokin Digital Standard / glass-panel / clean style when the user explicitly asks for it.
+When no reference is provided, default to general cinematic style (full-bleed backgrounds, heavy etched gold typography, vignette overlays).
 
-**User-provided reference has absolute priority.**
+Core Tokens (Always Available)
 
-- When the user gives any reference (Lovable URL, screenshot, or images from the tab folder), **follow its layout exactly**. Style comes second. Background comes third.
-- Never default to glass-panel, bento cards, extra borders, filigree, or "Orokin Digital Standard" if a reference is present.
-- Typography rule remains: Noto Serif for large headlines, Noto Sans for body (never CameraPlainVariable).
-- Only use Orokin Digital Standard when the user explicitly says “clean”, “glass”, “minimal”, or “Orokin Digital Standard”.
-**Cinematic Style (from reference images) has higher priority.**
+Background: #131313
+Primary gold: #E3C372
+Secondary: #C6C6C7
+Etched gold text-shadow: 0 1px 3px rgba(227,195,114,0.25), 0 0 8px rgba(227,195,114,0.15)
+Fonts: Noto Serif (headlines), Noto Sans (body/labels)
 
-When the user wants cinematic / stitch / in-game HUD style or any prefered visual change:
-- Prioritize the Cinematic Reference System & Index Usage (see section above).
-- Use full-bleed backgrounds, stitched multi-panels, heavy etched gold typography, dramatic lighting, and vignette overlays from the reference images.
-- Minimize or avoid glass-panel, somatic-line, filigree-corner, and ghost-border classes unless the user specifically requests them.
-- Typography: Noto Serif for large headlines with strong etched gold text-shadow. Noto Sans for body text.
-
-### When to Use Orokin Digital Standard
-- Only when user says: “use clean style”, “glass panel”, “minimal”, or “Orokin Digital Standard”.
-- Default to cinematic style whenever reference images or “cinematic” is mentioned.
-
-### Core Tokens (Always Available)
-- Background: #131313
-- Primary gold: #E3C372
-- Secondary: #C6C6C7
-- Etched gold text-shadow: `0 1px 3px rgba(227,195,114,0.25), 0 0 8px rgba(227,195,114,0.15)`
-- Fonts: Noto Serif (headlines), Noto Sans (body/labels)
-
-Reusable cinematic utilities should be added to `src/index.css` (e.g. `.cinematic-hero`, `.etched-gold`, `.cinematic-panel`, `.cinematic-timer`).
-
+Reusable cinematic utilities should be added to src/index.css (e.g. .cinematic-hero, .etched-gold, .cinematic-panel, .cinematic-timer).
 Implemented Features
 Tab,Status,Notes
 celestial-pendulum,Phase 1 complete,Live timers
@@ -114,7 +90,6 @@ void-reliquaries,UI polished,FissureCard with top tags
 ascension-registry,Stub,Mastery & Progression Tracker
 dailies-weeklies,Not started,Killer feature — will receive current challenge cards
 All others,Placeholder,features/<tab>/<Tab>Page.tsx
-
 Data Sources
 Worldstate / Nightwave / Fissures: https://api.warframestat.us/
 Market: https://api.warframe.market/v2/
