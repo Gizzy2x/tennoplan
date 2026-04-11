@@ -135,7 +135,7 @@ export function CelestialPendulumPage() {
           {/* ════════════════════════════════════════════════════════════════
               TOP AREA — page title + world tab strip
           ════════════════════════════════════════════════════════════════ */}
-          <div style={{ padding: '22px 44px 0' }}>
+          <div style={{ padding: '88px 44px 0' }}>
 
             {/* Page heading */}
             <p
