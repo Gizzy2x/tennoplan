@@ -255,7 +255,8 @@ export function CinematicCyclePanel({
                 fontFamily:   'var(--font-body)',
                 fontSize:     '0.72rem',
                 fontStyle:    'italic',
-                color:        'rgba(198,198,199,0.52)',
+                color:        'rgba(198,198,199,0.78)',
+                textShadow:   '0 1px 6px rgba(0,0,0,0.90)',
                 marginBottom: 24,
                 lineHeight:   1.5,
               }}
@@ -297,10 +298,10 @@ export function CinematicCyclePanel({
                       {res.icon}
                     </span>
                     <div>
-                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.68rem', fontWeight: 500, color: 'rgba(229,226,225,0.88)', lineHeight: 1.2 }}>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.68rem', fontWeight: 500, color: 'rgba(229,226,225,0.95)', lineHeight: 1.2, textShadow: '0 1px 4px rgba(0,0,0,0.85)' }}>
                         {res.name}
                       </p>
-                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.52rem', color: 'rgba(198,198,199,0.38)', letterSpacing: '0.04em', marginTop: 2 }}>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.52rem', color: 'rgba(198,198,199,0.62)', letterSpacing: '0.04em', marginTop: 2 }}>
                         {res.source}
                       </p>
                     </div>
@@ -334,7 +335,7 @@ export function CinematicCyclePanel({
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.48rem', fontWeight: 700, letterSpacing: '0.55em', color: 'rgba(227,195,114,0.45)', textTransform: 'uppercase', marginBottom: 8 }}>
                 Bounty Board
               </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.65rem', color: 'rgba(198,198,199,0.30)', fontStyle: 'italic' }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.65rem', color: 'rgba(198,198,199,0.55)', fontStyle: 'italic', textShadow: '0 1px 4px rgba(0,0,0,0.80)' }}>
                 No active bounties for this cycle
               </p>
             </div>
@@ -393,9 +394,10 @@ export function CinematicCyclePanel({
                           fontFamily:    'var(--font-body)',
                           fontSize:      '0.64rem',
                           fontWeight:    700,
-                          color:         'rgba(229,226,225,0.88)',
+                          color:         'rgba(229,226,225,0.95)',
                           letterSpacing: '0.06em',
                           textTransform: 'uppercase',
+                          textShadow:    '0 1px 4px rgba(0,0,0,0.85)',
                         }}
                       >
                         {m.name}
@@ -504,8 +506,9 @@ export function CinematicCyclePanel({
                 style={{
                   fontFamily: 'var(--font-body)',
                   fontSize:   '0.72rem',
-                  color:      'rgba(198,198,199,0.58)',
+                  color:      'rgba(198,198,199,0.82)',
                   lineHeight: 1.68,
+                  textShadow: '0 1px 6px rgba(0,0,0,0.90)',
                 }}
               >
                 {aboutText}

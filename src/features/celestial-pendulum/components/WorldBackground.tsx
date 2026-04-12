@@ -66,6 +66,8 @@ export function WorldBackground({ url, fallbackColor = '#131313' }: WorldBackgro
             objectFit:      'cover',
             objectPosition: 'center',
             display:        'block',
+            /* Dim image so overlaid text is always legible */
+            filter:         'brightness(0.52) saturate(0.80)',
             /* cpBgFadeIn defined in index.css */
             animation:      'cpBgFadeIn 0.45s ease forwards',
           }}
@@ -73,18 +75,21 @@ export function WorldBackground({ url, fallbackColor = '#131313' }: WorldBackgro
       )}
 
       {/* ── Edge vignette ───────────────────────────────────────────────── */}
-      {/* Top and bottom darkening lives HERE on the fixed background so   */}
-      {/* it naturally covers the full viewport. Panel-level overlays only */}
-      {/* handle left/right text-readability gradients.                    */}
+      {/* Covers all four edges so text in every corner stays readable.    */}
       <div
         aria-hidden
         style={{
           position:   'absolute',
           inset:      0,
-          /* Bottom fade + 45° diagonal sweep from bottom-left (slightly lighter) */
           background: [
-            'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.70) 25%, rgba(0,0,0,0) 50%)',
-            'linear-gradient(45deg,  rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 48%)',
+            /* Bottom — heaviest, content anchors here */
+            'linear-gradient(to top,    rgba(0,0,0,0.92) 0%,  rgba(0,0,0,0.60) 28%, rgba(0,0,0,0) 55%)',
+            /* Top — header area */
+            'linear-gradient(to bottom, rgba(0,0,0,0.72) 0%,  rgba(0,0,0,0.30) 18%, rgba(0,0,0,0) 40%)',
+            /* Left — left column text */
+            'linear-gradient(to right,  rgba(0,0,0,0.68) 0%,  rgba(0,0,0,0.20) 40%, rgba(0,0,0,0) 65%)',
+            /* Right — right column text */
+            'linear-gradient(to left,   rgba(0,0,0,0.55) 0%,  rgba(0,0,0,0.10) 35%, rgba(0,0,0,0) 60%)',
           ].join(', '),
           zIndex:        1,
           pointerEvents: 'none',
