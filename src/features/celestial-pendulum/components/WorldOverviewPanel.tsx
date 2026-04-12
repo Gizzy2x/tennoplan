@@ -85,9 +85,8 @@ export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPa
         minWidth:    0,
         cursor:      'pointer',
         background:  'transparent',
-        border:      'none',
         padding:     0,
-        borderRight: isLast ? 'none' : '1px solid rgba(227,195,114,0.08)',
+        borderRight: isLast ? undefined : '1px solid rgba(227,195,114,0.08)',
       }}
       aria-label={`${cycle.name} — ${label}`}
     >

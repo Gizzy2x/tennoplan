@@ -315,3 +315,41 @@ body {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+/* Active Terminal — "power on" scan effect when a bounty tier is selected */
+@keyframes terminalPowerOn {
+  0%   { opacity: 0;   filter: brightness(2.5) blur(3px); transform: scaleY(0.96); }
+  25%  { opacity: 0.8; filter: brightness(1.8) blur(1px); transform: scaleY(0.99); }
+  55%  { opacity: 0.9; filter: brightness(0.8);            transform: scaleY(1.005); }
+  80%  { opacity: 1;   filter: brightness(1.05);           transform: scaleY(1);    }
+  100% { opacity: 1;   filter: brightness(1)   blur(0);   transform: scaleY(1);    }
+}
+
+.terminal-power-on {
+  animation: terminalPowerOn 0.30s ease-out forwards;
+  transform-origin: top center;
+}
+
+/* Heartbeat dot — pulsing blue animation while syncing */
+@keyframes heartbeatPulse {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 6px #60a5fa88; }
+  50%       { opacity: 0.4; box-shadow: 0 0 14px #60a5facc; }
+}
+
+.heartbeat-dot-pulse {
+  animation: heartbeatPulse 0.8s ease-in-out infinite;
+}
+
+/* ================================================================
+   Navigation Rail — Sidebar collapse/peek transitions
+   ================================================================ */
+
+/* Somatic Link identity pulse — used on the "T" monogram in collapsed rail */
+@keyframes somaticPulse {
+  0%, 100% { opacity: 0.65; }
+  50%       { opacity: 1;    }
+}
+
+.somatic-pulse {
+  animation: somaticPulse 2.4s ease-in-out infinite;
+}

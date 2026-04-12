@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import { useEffect, type ComponentType } from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { useNavigationStore, type NavTab } from "@/store/navigation";
@@ -14,6 +14,9 @@ import { SolarRailFeedPage } from "@/features/solar-rail-feed/SolarRailFeedPage"
 import { PlatinumLedgerPage } from "@/features/platinum-ledger/PlatinumLedgerPage";
 import { NeuralArchivePage } from "@/features/neural-archive/NeuralArchivePage";
 import { CephalonWeavePage } from "@/features/cephalon-weave/CephalonWeavePage";
+
+const EXPANDED_W = 260;
+const RAIL_W = 72;
 
 const PAGE_MAP: Record<NavTab, ComponentType> = {
   "dailies-weeklies": DailiesWeekliesPage,
@@ -31,14 +34,27 @@ const PAGE_MAP: Record<NavTab, ComponentType> = {
 
 export function AppShell() {
   const activeTab = useNavigationStore((s) => s.activeTab);
+  const isCollapsed = useNavigationStore((s) => s.isCollapsed);
   const ActivePage = PAGE_MAP[activeTab];
+  const sidebarW = isCollapsed ? RAIL_W : EXPANDED_W;
+
+  // Keep the CSS variable in sync so fixed cinematic backgrounds adapt automatically
+  useEffect(() => {
+    document.documentElement.style.setProperty("--sidebar-w", `${sidebarW}px`);
+  }, [sidebarW]);
 
   return (
     <>
       <Sidebar />
       <Header />
 
-      <main className="ml-[280px] pt-24 pb-12 px-12 min-h-screen relative overflow-hidden">
+      <main
+        style={{
+          marginLeft: sidebarW,
+          transition: "margin-left 250ms ease-in-out",
+        }}
+        className="pt-24 pb-12 px-12 min-h-screen relative overflow-hidden"
+      >
         <ActivePage />
       </main>
     </>

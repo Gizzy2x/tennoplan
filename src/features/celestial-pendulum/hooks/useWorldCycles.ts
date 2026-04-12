@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchAllCycles } from '@/adapters/api/cyclesAdapter';
 import {
@@ -10,6 +10,7 @@ import { getCacheAgeMs } from '@/core/services/WorldstateService';
 import { computeCycleStatus, extrapolateCycle } from '@/core/services/cycleService';
 import type { WorldCycle, CycleId, CycleStatus } from '@/core/domain/cycles';
 import type { WSFetchResult } from '@/adapters/api/types';
+import { useHeartbeatStore } from '@/store/heartbeat';
 
 // ---------------------------------------------------------------------------
 // Pre-load state
@@ -103,6 +104,17 @@ export function useWorldCycles() {
     await refetch();
   }
 
+  // ── Heartbeat registration ────────────────────────────────────────────
+  // Keep a stable ref so the heartbeat store always calls the current version
+  const refetchRef = useRef(forceRefetch);
+  refetchRef.current = forceRefetch;
+
+  useEffect(() => {
+    const { registerRefetch } = useHeartbeatStore.getState();
+    registerRefetch(() => refetchRef.current());
+    return () => useHeartbeatStore.getState().registerRefetch(null);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── 1-second clock ────────────────────────────────────────────────────
   const [now, setNow] = useState(() => Date.now());
 
@@ -125,6 +137,19 @@ export function useWorldCycles() {
   const isStale       = !!result?.fromStaleCache;
   const cacheAgeMs    = getCacheAgeMs(result?.cachedAt ?? now, now);
   const hasEverLoaded = !!(data || (!isLoading && !error));
+
+  // ── Sync heartbeat store ──────────────────────────────────────────────
+  useEffect(() => {
+    const { setSync, status } = useHeartbeatStore.getState();
+    if (status === 'syncing') return; // let the triggerRefetch handler settle
+    if (error && !data) {
+      setSync('offline');
+    } else if (isStale) {
+      setSync('cached', result?.cachedAt ? new Date(result.cachedAt).getTime() : undefined);
+    } else if (data) {
+      setSync('live', dataUpdatedAt || Date.now());
+    }
+  }, [data, error, isStale, dataUpdatedAt, result?.cachedAt]);
 
   return {
     statuses,
