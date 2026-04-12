@@ -178,14 +178,14 @@ export function CelestialPendulumPage() {
                     onMouseEnter={e => {
                       if (!isActive) {
                         (e.currentTarget as HTMLButtonElement).style.color = 'rgba(227,195,114,0.80)';
-                        (e.currentTarget as HTMLButtonElement).style.borderColor = `${pres.color}28`;
+                        (e.currentTarget as HTMLButtonElement).style.border = `1px solid ${pres.color}28`;
                         (e.currentTarget as HTMLButtonElement).style.background = `${pres.color}08`;
                       }
                     }}
                     onMouseLeave={e => {
                       if (!isActive) {
                         (e.currentTarget as HTMLButtonElement).style.color = 'rgba(198,198,199,0.60)';
-                        (e.currentTarget as HTMLButtonElement).style.borderColor = 'transparent';
+                        (e.currentTarget as HTMLButtonElement).style.border = '1px solid transparent';
                         (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
                       }
                     }}

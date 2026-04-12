@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { formatMsParts, nextCycleState } from '@/core/services/cycleService';
 import type { CycleStatus } from '@/core/domain/cycles';
 import type { SyndicateMission } from '@/core/domain/syndicates';
@@ -121,6 +122,109 @@ const SPECIAL_MISSIONS: Partial<Record<string, SpecialMission[]>> = {
   ],
 };
 
+// ── Info Popover ───────────────────────────────────────────────────────────
+// Uses position:fixed so it escapes any overflow:hidden ancestor.
+
+interface InfoPopoverProps {
+  text:        string;
+  worldName:   string;
+  accentColor: string;
+}
+
+function InfoPopover({ text, worldName, accentColor }: InfoPopoverProps) {
+  const [visible, setVisible] = useState(false);
+  const [pos, setPos]         = useState({ top: 0, left: 0 });
+  const btnRef                = useRef<HTMLButtonElement>(null);
+
+  function handleMouseEnter() {
+    if (btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      setPos({ top: r.bottom + 10, left: r.left });
+    }
+    setVisible(true);
+  }
+
+  return (
+    <>
+      <button
+        ref={btnRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={() => setVisible(false)}
+        style={{
+          display:        'inline-flex',
+          alignItems:     'center',
+          justifyContent: 'center',
+          width:           18,
+          height:          18,
+          flexShrink:      0,
+          alignSelf:       'flex-end',
+          marginBottom:    '0.28em',
+          marginLeft:      10,
+          fontFamily:      'var(--font-body)',
+          fontSize:        '0.68rem',
+          fontWeight:      700,
+          color:           accentColor,
+          opacity:         0.45,
+          border:          `1px solid ${accentColor}30`,
+          background:      `${accentColor}0A`,
+          cursor:          'default',
+          transition:      'opacity 0.15s, border-color 0.15s',
+          lineHeight:      1,
+        }}
+        onFocus={handleMouseEnter}
+        onBlur={() => setVisible(false)}
+        aria-label={`About ${worldName}`}
+      >
+        ⓘ
+      </button>
+
+      {visible && (
+        <div
+          style={{
+            position:           'fixed',
+            top:                pos.top,
+            left:               pos.left,
+            zIndex:             9999,
+            maxWidth:           340,
+            background:         'rgba(10,10,12,0.92)',
+            backdropFilter:     'blur(14px)',
+            WebkitBackdropFilter: 'blur(14px)',
+            border:             `1px solid ${accentColor}28`,
+            boxShadow:          `0 8px 40px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.04) inset`,
+            padding:            '14px 16px',
+            pointerEvents:      'none',
+          }}
+        >
+          <p
+            style={{
+              fontFamily:    'var(--font-body)',
+              fontSize:      '0.46rem',
+              fontWeight:    700,
+              letterSpacing: '0.38em',
+              color:         accentColor,
+              opacity:       0.65,
+              textTransform: 'uppercase',
+              marginBottom:  8,
+            }}
+          >
+            About {worldName}
+          </p>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize:   '0.68rem',
+              color:      'rgba(198,198,199,0.84)',
+              lineHeight: 1.65,
+            }}
+          >
+            {text}
+          </p>
+        </div>
+      )}
+    </>
+  );
+}
+
 // ── Component ──────────────────────────────────────────────────────────────
 
 export interface CinematicCyclePanelProps {
@@ -155,12 +259,6 @@ export function CinematicCyclePanel({
       className="relative flex-1"
       style={{ minHeight: 0, height: '100%', overflow: 'hidden' }}
     >
-      {/* Background image + bottom fade are owned by <WorldBackground> in the
-          page root (position: fixed). This panel only adds the left/right
-          vignette overlay for text readability. */}
-
-      {/* Vignette is handled entirely by <WorldBackground> — no overlay here */}
-
       {/* ── Two-column content ────────────────────────────────────────────── */}
       <div
         className="relative flex"
@@ -173,22 +271,30 @@ export function CinematicCyclePanel({
           style={{ flex: '0 0 60%', minWidth: 0, overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none', height: '100%' }}
         >
 
-          {/* World title */}
-          <h2
-            style={{
-              fontFamily:    'var(--font-headline)',
-              fontWeight:    900,
-              fontSize:      'clamp(2.4rem, 4.8vw, 5.2rem)',
-              lineHeight:    1,
-              color:         '#E3C372',
-              textShadow:    '0 2px 32px rgba(0,0,0,0.98), 0 0 80px rgba(227,195,114,0.12)',
-              letterSpacing: '0.05em',
-              textTransform: 'uppercase',
-              marginBottom:  8,
-            }}
-          >
-            {cycle.name}
-          </h2>
+          {/* World title + info icon */}
+          <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: 8 }}>
+            <h2
+              style={{
+                fontFamily:    'var(--font-headline)',
+                fontWeight:    900,
+                fontSize:      'clamp(2.4rem, 4.8vw, 5.2rem)',
+                lineHeight:    1,
+                color:         '#E3C372',
+                textShadow:    '0 2px 32px rgba(0,0,0,0.98), 0 0 80px rgba(227,195,114,0.12)',
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+              }}
+            >
+              {cycle.name}
+            </h2>
+            {aboutText && (
+              <InfoPopover
+                text={aboutText}
+                worldName={cycle.name}
+                accentColor={pres.color}
+              />
+            )}
+          </div>
 
           {/* Location subtitle */}
           <p
@@ -369,7 +475,6 @@ export function CinematicCyclePanel({
                       borderTop:  '1px solid rgba(227,195,114,0.06)',
                     }}
                   >
-                    {/* Mission icon */}
                     <div
                       style={{
                         width:           28,
@@ -386,8 +491,6 @@ export function CinematicCyclePanel({
                         {m.icon}
                       </span>
                     </div>
-
-                    {/* Mission name */}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p
                         style={{
@@ -402,31 +505,15 @@ export function CinematicCyclePanel({
                       >
                         {m.name}
                       </p>
-                      <p
-                        style={{
-                          fontFamily:    'var(--font-body)',
-                          fontSize:      '0.52rem',
-                          color:         'rgba(198,198,199,0.45)',
-                          marginTop:     2,
-                        }}
-                      >
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.52rem', color: 'rgba(198,198,199,0.45)', marginTop: 2 }}>
                         {m.type}
                         {m.rotation && (
-                          <span
-                            style={{
-                              marginLeft:    6,
-                              color:         pres.color,
-                              opacity:       0.70,
-                              letterSpacing: '0.08em',
-                            }}
-                          >
+                          <span style={{ marginLeft: 6, color: pres.color, opacity: 0.70, letterSpacing: '0.08em' }}>
                             · ⊕ {m.rotation}
                           </span>
                         )}
                       </p>
                     </div>
-
-                    {/* Level range */}
                     <span
                       style={{
                         fontFamily:    'var(--font-body)',
@@ -484,37 +571,8 @@ export function CinematicCyclePanel({
             </p>
           </div>
 
+          {/* Right column: spacer — about section is now in info popover */}
           <div style={{ flex: 1 }} />
-
-          {/* About section — bottom right */}
-          {aboutText && (
-            <div>
-              <p
-                style={{
-                  fontFamily:    'var(--font-body)',
-                  fontSize:      '0.48rem',
-                  fontWeight:    700,
-                  letterSpacing: '0.42em',
-                  color:         'rgba(227,195,114,0.50)',
-                  textTransform: 'uppercase',
-                  marginBottom:  10,
-                }}
-              >
-                About {cycle.name}
-              </p>
-              <p
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize:   '0.72rem',
-                  color:      'rgba(198,198,199,0.82)',
-                  lineHeight: 1.68,
-                  textShadow: '0 1px 6px rgba(0,0,0,0.90)',
-                }}
-              >
-                {aboutText}
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>
