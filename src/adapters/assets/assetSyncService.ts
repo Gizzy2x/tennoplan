@@ -19,7 +19,6 @@
 import { fetchManifest } from './manifestAdapter';
 import { downloadBatch, prioritizeAsset } from './assetDownloader';
 import {
-  upsertAssetRecord,
   resolveAssetUrl,
   evictLRU,
   PLACEHOLDER_URL,
