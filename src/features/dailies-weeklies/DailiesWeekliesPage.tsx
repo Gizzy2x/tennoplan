@@ -172,7 +172,6 @@ export function DailiesWeekliesPage() {
     toggleComplete,
     toggleSortieCompleted,
     toggleArchonCompleted,
-    forceRefetch,
   } = useDailiesData();
 
   const lastSyncLabel = lastSync
@@ -274,15 +273,8 @@ export function DailiesWeekliesPage() {
             <ResetCounter label="Weekly Reset" msRemaining={weeklyMs} urgentMs={24 * 3600_000} />
           )}
 
-          {/* Sync status chip + force-refresh button */}
+          {/* Sync status chip */}
           <div className="ml-auto flex items-center gap-3 self-center">
-            <button
-              onClick={forceRefetch}
-              className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35 hover:text-primary/70 transition-colors cursor-pointer"
-              title="Force refresh all data"
-            >
-              ↻ Refresh
-            </button>
             <div className="w-1.5 h-1.5 rounded-full bg-success" />
             <span className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35">
               LIVE
@@ -374,19 +366,12 @@ export function DailiesWeekliesPage() {
         </div>
       )}
 
-      {/* ── First-launch onboarding (no cache, no network) ──────────── */}
+      {/* ── Initializing (no cached data yet) ──────────────────────── */}
       {!hasEverLoaded && (
-        <div className="glass-panel p-8 flex flex-col gap-4" style={{ borderColor: 'rgba(186,195,254,0.12)' }}>
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-tertiary/60">
-            First Sync Required
-          </p>
-          <p className="font-label text-sm text-secondary/50 max-w-lg leading-relaxed">
-            Tennoplan needs one network connection to initialize your Dailies &amp; Weeklies.
-            After that, all data persists locally — challenges, standing, and timers work
-            fully offline.
-          </p>
-          <p className="font-label text-[10px] uppercase tracking-[0.28em] text-secondary/25">
-            Connect to a network and this panel will populate automatically.
+        <div className="glass-panel p-8 flex items-center gap-4">
+          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
+            Initializing Systems…
           </p>
         </div>
       )}
@@ -465,12 +450,6 @@ export function DailiesWeekliesPage() {
           <p className="font-label text-[10px] uppercase tracking-widest text-secondary/30">
             Offline · Cached {formatCacheAge(cacheAgeMs)} · Local marks persist
           </p>
-          <button
-            onClick={forceRefetch}
-            className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/25 hover:text-primary/60 transition-colors ml-auto cursor-pointer"
-          >
-            ↻ Retry
-          </button>
         </div>
       )}
     </>

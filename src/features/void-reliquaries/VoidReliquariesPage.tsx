@@ -90,7 +90,6 @@ export function VoidReliquariesPage() {
     cacheAgeMs,
     hasEverLoaded,
     lastSync,
-    forceRefetch,
   } = useFissures(filters);
 
   const toggle = (key: keyof FissureFilters) =>
@@ -234,15 +233,8 @@ export function VoidReliquariesPage() {
           onClick={() => setShowExpired(v => !v)}
         />
 
-        {/* Sync status + force refresh */}
+        {/* Sync status indicator */}
         <div className="flex items-center gap-3 ml-4">
-          <button
-            onClick={forceRefetch}
-            className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35 hover:text-primary/70 transition-colors cursor-pointer"
-            title="Force refresh fissure data"
-          >
-            ↻ Refresh
-          </button>
           <div className={`w-1.5 h-1.5 rounded-full ${isStale ? 'bg-error/50' : 'bg-success'}`} />
           <span className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35">
             {isStale ? 'STALE' : 'LIVE'}
@@ -260,18 +252,12 @@ export function VoidReliquariesPage() {
         </div>
       )}
 
-      {/* ── First-launch onboarding (no cache, no network) ──────────── */}
+      {/* ── Initializing (no cached data yet) ──────────────────────── */}
       {!hasEverLoaded && (
-        <div className="glass-panel p-8 flex flex-col gap-4" style={{ borderColor: 'rgba(186,195,254,0.12)' }}>
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-tertiary/60">
-            First Sync Required
-          </p>
-          <p className="font-label text-sm text-secondary/50 max-w-lg leading-relaxed">
-            Tennoplan needs one network connection to initialize Void Reliquaries.
-            After that, all fissure data persists locally and works fully offline.
-          </p>
-          <p className="font-label text-[10px] uppercase tracking-[0.28em] text-secondary/25">
-            Connect to a network and this panel will populate automatically.
+        <div className="glass-panel p-8 flex items-center gap-4">
+          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
+            Initializing Systems…
           </p>
         </div>
       )}
@@ -338,12 +324,6 @@ export function VoidReliquariesPage() {
           <p className="font-label text-[10px] uppercase tracking-widest text-secondary/30">
             Offline · Cached {formatCacheAge(cacheAgeMs)} · Fissure timings may be stale
           </p>
-          <button
-            onClick={forceRefetch}
-            className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/25 hover:text-primary/60 transition-colors ml-auto cursor-pointer"
-          >
-            ↻ Retry
-          </button>
         </div>
       )}
     </>

@@ -1,27 +1,7 @@
 import { db } from './db';
 
 // ---------------------------------------------------------------------------
-// Internal shape stored in Dexie cache.data
-// ---------------------------------------------------------------------------
-
-interface StoredWSEntry<T> {
-  data:     T;
-  cachedAt: number; // ms epoch when last fetched live from API
-}
-
-// ---------------------------------------------------------------------------
-// Public result type
-// ---------------------------------------------------------------------------
-
-export interface WorldstateCacheResult<T> {
-  data:      T;
-  cachedAt:  number;  // when the data was last fetched from the API
-  expiresAt: number;  // TTL boundary (may be in the past for stale entries)
-  isExpired: boolean;
-}
-
-// ---------------------------------------------------------------------------
-// Cache keys — separate namespace from legacy ascensionAdapter entries
+// Cache key constants — shared by SyncService, legacy adapters, feature hooks
 // ---------------------------------------------------------------------------
 
 export const WS_CACHE_KEYS = {
@@ -35,10 +15,8 @@ export const WS_CACHE_KEYS = {
   cycleZariman:      'ws:cycle:zariman',
   cycleEarth:        'ws:cycle:earth',
   cycleDuviri:       'ws:cycle:duviri',
-  // Celestial Pendulum — Syndicate Dispatches & Simaris
   syndicateMissions: 'ws:syndicateMissions',
   simaris:           'ws:simaris',
-  // Solar Rail Feed
   invasions:         'ws:invasions',
   alerts:            'ws:alerts',
   darvoDeals:        'ws:darvoDeals',
@@ -49,55 +27,65 @@ export const WS_CACHE_KEYS = {
 } as const;
 
 // ---------------------------------------------------------------------------
-// Repository
+// Result type (used by feature hooks — do NOT remove)
 // ---------------------------------------------------------------------------
 
-/**
- * Read a worldstate cache entry. Returns null if no entry exists.
- * Returns stale entries (isExpired: true) so callers can decide whether to
- * serve them offline while triggering a background refresh.
- */
+export interface WorldstateCacheResult<T> {
+  data:      T;
+  cachedAt:  number;
+  expiresAt: number;
+  isExpired: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Read
+// Returns null if no entry exists. Returns stale entries (isExpired: true) so
+// callers can decide whether to serve them offline while triggering a refresh.
+// ---------------------------------------------------------------------------
+
 export async function getWsCache<T>(key: string): Promise<WorldstateCacheResult<T> | null> {
   const entry = await db.cache.get(key);
   if (!entry) return null;
-
-  const stored = entry.data as StoredWSEntry<T>;
-
-  // Backward-compat: if the stored payload is not wrapped (legacy entry from
-  // ascensionAdapter), fall back to entry.updatedAt as cachedAt.
-  const cachedAt =
-    stored && typeof stored === 'object' && 'cachedAt' in stored
-      ? stored.cachedAt
-      : entry.updatedAt;
-  const data =
-    stored && typeof stored === 'object' && 'data' in stored
-      ? stored.data
-      : (entry.data as T);
-
   return {
-    data,
-    cachedAt,
+    data:      entry.data as T,
+    cachedAt:  entry.updatedAt,
     expiresAt: entry.expiresAt,
     isExpired: entry.expiresAt < Date.now(),
   };
 }
 
-/**
- * Write a worldstate cache entry. Embeds `cachedAt` inside the payload so it
- * survives TTL expiry and can be read even after `expiresAt` has passed.
- */
-export async function setWsCache<T>(key: string, data: T, ttlMs: number): Promise<void> {
-  const now    = Date.now();
-  const stored: StoredWSEntry<T> = { data, cachedAt: now };
+// ---------------------------------------------------------------------------
+// Write
+// ttlMs defaults to 24 hours so SyncService can omit it; legacy adapters that
+// pass an explicit TTL continue to work unchanged.
+// ---------------------------------------------------------------------------
+
+const DEFAULT_TTL_MS = 86_400_000; // 24 h
+
+export async function setWsCache<T>(key: string, data: T, ttlMs = DEFAULT_TTL_MS): Promise<void> {
+  const now = Date.now();
   await db.cache.put({
     key,
-    data:      stored,
+    data:      data as unknown,
     expiresAt: now + ttlMs,
     updatedAt: now,
   });
 }
 
-/** Delete one or more worldstate cache entries (used by forceRefetch). */
+// ---------------------------------------------------------------------------
+// Delete (used by feature hook forceRefetch callbacks)
+// ---------------------------------------------------------------------------
+
 export async function clearWsCache(...keys: string[]): Promise<void> {
   await db.cache.bulkDelete(keys);
+}
+
+// ---------------------------------------------------------------------------
+// Timestamp helper — used by SyncService 60s anti-spam lock
+// Reads updatedAt regardless of TTL expiry so stale entries still satisfy the lock.
+// ---------------------------------------------------------------------------
+
+export async function getWsTimestamp(key: string): Promise<number> {
+  const entry = await db.cache.get(key);
+  return entry ? entry.updatedAt : 0;
 }
