@@ -340,6 +340,17 @@ body {
   animation: heartbeatPulse 0.8s ease-in-out infinite;
 }
 
+/* SystemPulse — golden ring radiates outward while syncing */
+@keyframes systemPulseRing {
+  0%   { box-shadow: 0 0 0 0   rgba(227,195,114,0.55), 0 0 0 0   rgba(227,195,114,0.20); }
+  60%  { box-shadow: 0 0 0 5px rgba(227,195,114,0),    0 0 0 10px rgba(227,195,114,0);   }
+  100% { box-shadow: 0 0 0 0   rgba(227,195,114,0),    0 0 0 0   rgba(227,195,114,0);    }
+}
+
+.system-pulse-ring {
+  animation: systemPulseRing 1.4s ease-out infinite;
+}
+
 /* ================================================================
    Navigation Rail — Sidebar collapse/peek transitions
    ================================================================ */

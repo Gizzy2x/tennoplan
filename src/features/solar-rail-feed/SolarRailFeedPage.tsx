@@ -76,7 +76,6 @@ export function SolarRailFeedPage() {
     hasEverLoaded,
     cacheAgeMs,
     lastSync,
-    forceRefetch,
   } = useSolarRailFeed();
 
   const lastSyncLabel = lastSync
@@ -156,43 +155,22 @@ export function SolarRailFeedPage() {
 
       <div className="somatic-line mb-8" />
 
-      {/* ── Refresh control ────────────────────────────────────────────── */}
+      {/* ── Sync status indicator ──────────────────────────────────────── */}
       {hasEverLoaded && (
         <div className="flex items-center gap-3 mb-6">
           <div className={`w-1.5 h-1.5 rounded-full ${syncState === 'LIVE' ? 'bg-success' : 'bg-error/50'}`} />
           <span className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35">
             {syncState}
           </span>
-          <button
-            onClick={forceRefetch}
-            className="ml-auto font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35 hover:text-primary/70 transition-colors cursor-pointer"
-            title="Force refresh all data"
-          >
-            ↻ Refresh
-          </button>
         </div>
       )}
 
-      {/* ── Loading skeleton ─────────────────────────────────────────────── */}
-      {isLoading && !hasEverLoaded && (
+      {/* ── Initializing (no cached data yet) ──────────────────────────── */}
+      {!hasEverLoaded && (
         <div className="glass-panel p-8 flex items-center gap-4">
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
           <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
-            Querying Solar Rail — acquiring live worldstate…
-          </p>
-        </div>
-      )}
-
-      {/* ── First-launch onboarding ─────────────────────────────────────── */}
-      {!hasEverLoaded && !isLoading && (
-        <div className="glass-panel p-8 flex flex-col gap-4" style={{ borderColor: 'rgba(186,195,254,0.12)' }}>
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-tertiary/60">First Sync Required</p>
-          <p className="font-label text-sm text-secondary/50 max-w-lg leading-relaxed">
-            Tennoplan needs one network connection to initialize the Solar Rail Feed.
-            After that, all data persists locally and works fully offline.
-          </p>
-          <p className="font-label text-[10px] uppercase tracking-[0.28em] text-secondary/25">
-            Connect to a network and this panel will populate automatically.
+            Initializing Systems…
           </p>
         </div>
       )}
@@ -411,12 +389,6 @@ export function SolarRailFeedPage() {
           <p className="font-label text-[10px] uppercase tracking-widest text-secondary/30">
             Offline · Cached {formatCacheAge(cacheAgeMs)} · Rail data may be stale
           </p>
-          <button
-            onClick={forceRefetch}
-            className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/25 hover:text-primary/60 transition-colors ml-auto cursor-pointer"
-          >
-            ↻ Retry
-          </button>
         </div>
       )}
 

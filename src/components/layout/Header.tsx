@@ -1,20 +1,17 @@
 import { useEffect, useState } from "react";
-import { Terminal, Search, Bell, Settings, Power, ListChecks } from "lucide-react";
+import { Terminal, Search, Bell, Settings, Power, ListChecks, Activity } from "lucide-react";
 import { NAV_ITEMS, useNavigationStore } from "@/store/navigation";
-import { useHeartbeatStore, type HeartbeatStatus } from "@/store/heartbeat";
+import { useHeartbeatStore } from "@/store/heartbeat";
+import { SyncService } from "@/services/SyncService";
 import { cn } from "@/lib/utils";
 
 const EXPANDED_W = 260;
 const RAIL_W = 72;
 
-// ── Heartbeat Indicator ─────────────────────────────────────────────────────
+// ── SystemPulse ─────────────────────────────────────────────────────────────
 
-const STATUS_META: Record<HeartbeatStatus, { dot: string; pulse: boolean; label: (age: string) => string }> = {
-  live:    { dot: '#4ade80', pulse: false, label: ()      => 'LIVE'           },
-  cached:  { dot: '#f59e0b', pulse: false, label: (age)   => `CACHED ${age}`  },
-  offline: { dot: '#f87171', pulse: false, label: ()      => 'OFFLINE'        },
-  syncing: { dot: '#60a5fa', pulse: true,  label: ()      => 'SYNCING…'       },
-};
+const GOLD = '#E3C372';
+const COOLDOWN_MS = 60_000;
 
 function formatAge(ms: number): string {
   const s = Math.floor(ms / 1000);
@@ -24,83 +21,99 @@ function formatAge(ms: number): string {
   return `${Math.floor(m / 60)}h ago`;
 }
 
-function HeartbeatIndicator() {
-  const { status, lastSyncMs, triggerRefetch } = useHeartbeatStore();
+function SystemPulse() {
+  const { status, lastSyncMs, setSync } = useHeartbeatStore();
   const [now, setNow] = useState(() => Date.now());
 
-  // 1-second tick so the "Xm ago" label stays fresh
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
 
-  const meta     = STATUS_META[status];
-  const ageMs    = now - lastSyncMs;
-  const ageLabel = formatAge(ageMs);
-  const label    = meta.label(ageLabel);
+  const ageMs       = now - lastSyncMs;
+  const ageLabel    = formatAge(ageMs);
+  const isSyncing   = status === 'syncing';
+  const secondsLeft = Math.max(0, Math.ceil((COOLDOWN_MS - ageMs) / 1000));
+  const inCooldown  = secondsLeft > 0 && !isSyncing;
+  const isDisabled  = isSyncing || inCooldown;
+
+  const title = isSyncing
+    ? 'Somatic link syncing…'
+    : inCooldown
+      ? `Next sync available in ${secondsLeft}s`
+      : `Last Link: ${ageLabel} · Click to sync`;
+
+  async function handleSync() {
+    if (isDisabled) return;
+    setSync('syncing');
+    try {
+      await SyncService.performSync();
+      setSync('live', Date.now());
+    } catch {
+      setSync('offline');
+    }
+  }
+
+  // Icon color: gold while syncing, dimmed otherwise
+  const iconColor  = isSyncing ? GOLD : 'rgba(227,195,114,0.35)';
+  const ringColor  = `${GOLD}60`;
 
   return (
-    <button
-      onClick={triggerRefetch}
-      disabled={status === 'syncing'}
-      title={
-        status === 'live'    ? `Data synced ${ageLabel} — click to force refresh` :
-        status === 'cached'  ? `Using cached data (${ageLabel}) — click to retry` :
-        status === 'offline' ? 'No connection — click to retry'                   :
-        'Syncing…'
-      }
-      style={{
-        display:    'flex',
-        alignItems: 'center',
-        gap:        6,
-        padding:    '4px 10px',
-        border:     `1px solid ${meta.dot}30`,
-        background: `${meta.dot}08`,
-        cursor:     status === 'syncing' ? 'default' : 'pointer',
-        transition: 'border-color 0.2s, background 0.2s',
-        flexShrink: 0,
-      }}
-      onMouseEnter={e => {
-        if (status !== 'syncing') {
-          (e.currentTarget as HTMLButtonElement).style.background     = `${meta.dot}14`;
-          (e.currentTarget as HTMLButtonElement).style.borderColor    = `${meta.dot}55`;
-        }
-      }}
-      onMouseLeave={e => {
-        (e.currentTarget as HTMLButtonElement).style.background  = `${meta.dot}08`;
-        (e.currentTarget as HTMLButtonElement).style.borderColor = `${meta.dot}30`;
-      }}
-    >
-      {/* Status dot */}
-      <span
-        className={meta.pulse ? 'heartbeat-dot-pulse' : ''}
+    <div className="flex items-center gap-2.5 flex-shrink-0">
+      {/* The pulse button */}
+      <button
+        onClick={handleSync}
+        disabled={isDisabled}
+        title={title}
         style={{
-          width:        6,
-          height:       6,
+          position:     'relative',
+          display:      'flex',
+          alignItems:   'center',
+          justifyContent: 'center',
+          width:        28,
+          height:       28,
           borderRadius: '50%',
-          background:   meta.dot,
-          boxShadow:    `0 0 6px ${meta.dot}88`,
+          border:       `1px solid ${isSyncing ? `${GOLD}50` : 'rgba(227,195,114,0.15)'}`,
+          background:   isSyncing ? `${GOLD}0C` : 'transparent',
+          cursor:       isDisabled ? 'default' : 'pointer',
+          transition:   'border-color 0.2s, background 0.2s',
           flexShrink:   0,
-          display:      'inline-block',
         }}
-      />
+        className={isSyncing ? 'system-pulse-ring' : ''}
+        onMouseEnter={e => {
+          if (!isDisabled) {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = `${GOLD}45`;
+            (e.currentTarget as HTMLButtonElement).style.background  = `${GOLD}10`;
+          }
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLButtonElement).style.borderColor = isSyncing ? `${GOLD}50` : 'rgba(227,195,114,0.15)';
+          (e.currentTarget as HTMLButtonElement).style.background  = isSyncing ? `${GOLD}0C` : 'transparent';
+        }}
+      >
+        <Activity
+          size={13}
+          strokeWidth={2}
+          style={{ color: iconColor, transition: 'color 0.3s' }}
+        />
+      </button>
 
-      {/* Label */}
+      {/* Timestamp label */}
       <span
         style={{
           fontFamily:    'var(--font-label)',
-          fontSize:      '0.44rem',
+          fontSize:      '0.40rem',
           fontWeight:    700,
-          letterSpacing: '0.20em',
+          letterSpacing: '0.18em',
           textTransform: 'uppercase',
-          color:         meta.dot,
+          color:         isSyncing ? GOLD : ringColor,
           whiteSpace:    'nowrap',
-          opacity:       0.85,
+          transition:    'color 0.3s',
         }}
       >
-        {label}
+        {isSyncing ? 'Linking…' : `Last Link: ${ageLabel}`}
       </span>
-    </button>
+    </div>
   );
 }
 
@@ -144,8 +157,8 @@ export function Header() {
           Dailies &amp; Weeklies
         </button>
 
-        {/* Global Heartbeat Indicator */}
-        <HeartbeatIndicator />
+        {/* Global System Pulse */}
+        <SystemPulse />
 
         {/* Search */}
         <div className="relative flex items-center border-b border-primary/20 pb-1">

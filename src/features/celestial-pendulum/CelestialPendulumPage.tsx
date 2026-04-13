@@ -40,7 +40,6 @@ export function CelestialPendulumPage() {
     cacheAgeMs,
     hasEverLoaded,
     now,
-    forceRefetch,
   } = useWorldCycles();
 
   const { missions } = useSyndicateMissions();
@@ -74,38 +73,17 @@ export function CelestialPendulumPage() {
       style={{ height: '100dvh', overflow: 'hidden' }}
     >
 
-      {/* ── First-launch / no-data ───────────────────────────────────────── */}
+      {/* ── Initializing (no cached data yet) ───────────────────────────── */}
       {!hasEverLoaded && (
         <div
           className="relative flex-1 flex items-center justify-center"
           style={{ zIndex: 5, paddingTop: 96 }}
         >
           <div className="glass-panel p-10 max-w-lg text-center flex flex-col gap-4">
-            {isLoading ? (
-              <>
-                <div className="w-2 h-2 rounded-full bg-primary animate-pulse mx-auto" />
-                <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
-                  Establishing somatic link — fetching world states…
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="font-label text-xs uppercase tracking-[0.3em] text-tertiary/60">
-                  First Sync Required
-                </p>
-                <p className="font-label text-sm text-secondary/50 leading-relaxed">
-                  Tennoplan needs one network connection to initialize the Celestial Pendulum.
-                  After that, all cycle data persists locally — timers extrapolate forward
-                  and work fully offline.
-                </p>
-                <button
-                  onClick={forceRefetch}
-                  className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/30 hover:text-primary/70 transition-colors cursor-pointer mx-auto"
-                >
-                  ↻ Retry
-                </button>
-              </>
-            )}
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse mx-auto" />
+            <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
+              Initializing Systems…
+            </p>
           </div>
         </div>
       )}
@@ -245,12 +223,6 @@ export function CelestialPendulumPage() {
           <p className="font-label text-[9px] uppercase tracking-widest text-secondary/30 flex-1">
             Offline · Cached {formatCacheAge(cacheAgeMs)} · Timers extrapolated
           </p>
-          <button
-            onClick={forceRefetch}
-            className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/25 hover:text-primary/60 transition-colors cursor-pointer"
-          >
-            ↻ Retry
-          </button>
         </div>
       )}
 
