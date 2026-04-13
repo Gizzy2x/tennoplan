@@ -11,6 +11,18 @@ export default defineConfig({
     },
   },
   clearScreen: false,
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor:  ['react', 'react-dom'],
+          query:   ['@tanstack/react-query'],
+          icons:   ['lucide-react'],
+          storage: ['dexie'],
+        },
+      },
+    },
+  },
   server: {
     port: 5173,
     strictPort: true,
