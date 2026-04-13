@@ -1,15 +1,13 @@
 import { db } from '../storage/db';
+import { fetchWorldstate } from '../api/worldstateFetcher';
 import type { NightwaveChallengeRaw, NightwaveRaw, SortieRaw, ArchonHuntRaw } from '../../core/domain/ascension';
 
 // ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------
 
-const NW_ENDPOINT           = 'https://api.warframestat.us/pc/nightwave';
-const SORTIE_ENDPOINT       = 'https://api.warframestat.us/pc/sortie';
-const ARCHON_HUNT_ENDPOINT  = 'https://api.warframestat.us/pc/archonHunt';
-const CACHE_TTL_MS          = 300_000;   // 5 min — daily challenges
-const ARCHON_HUNT_TTL_MS    = 3_600_000; // 1 h — weekly event
+const CACHE_TTL_MS       = 300_000;   // 5 min — daily challenges
+const ARCHON_HUNT_TTL_MS = 3_600_000; // 1 h — weekly event
 
 // ---------------------------------------------------------------------------
 // Nightwave
@@ -30,14 +28,9 @@ export async function fetchNightwave(): Promise<{ challenges: NightwaveChallenge
   }
 
   try {
-    const res = await fetch(NW_ENDPOINT);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw: NightwaveRaw = await res.json();
+    const ws  = await fetchWorldstate();
+    const raw = (ws['nightwave'] ?? {}) as NightwaveRaw;
 
-    // Normalize standing to a safe number on ingestion.
-    // Warframe Nightwave API sometimes omits or returns non-numeric standing
-    // fields between seasons or on first load — Number(undefined) = NaN, so
-    // we coerce with || 0 here so the rest of the pipeline never sees NaN.
     const result = {
       challenges: (raw.activeChallenges ?? []).map(c => ({
         ...c,
@@ -82,9 +75,8 @@ export async function fetchSortie(): Promise<SortieRaw> {
   }
 
   try {
-    const res = await fetch(SORTIE_ENDPOINT);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw: SortieRaw = await res.json();
+    const ws  = await fetchWorldstate();
+    const raw = (ws['sortie'] ?? {}) as SortieRaw;
 
     await db.cache.put({
       key:       CACHE_KEY,
@@ -119,9 +111,8 @@ export async function fetchArchonHunt(): Promise<ArchonHuntRaw> {
   }
 
   try {
-    const res = await fetch(ARCHON_HUNT_ENDPOINT);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw: ArchonHuntRaw = await res.json();
+    const ws  = await fetchWorldstate();
+    const raw = (ws['archonHunt'] ?? {}) as ArchonHuntRaw;
 
     await db.cache.put({
       key:       CACHE_KEY,

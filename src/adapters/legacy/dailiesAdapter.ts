@@ -1,4 +1,5 @@
 import { getWsCache, setWsCache, WS_CACHE_KEYS } from '../storage/worldstateCache';
+import { fetchWorldstate } from '../api/worldstateFetcher';
 import type { NightwaveChallengeRaw, NightwaveRaw, SortieRaw, ArchonHuntRaw } from '../../core/domain/ascension';
 import type { WSFetchResult } from './types';
 
@@ -7,11 +8,6 @@ export type { WSFetchResult } from './types';
 // ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------
-
-const BASE            = 'https://api.warframestat.us/pc';
-const NW_ENDPOINT     = `${BASE}/nightwave?language=en`;
-const SORTIE_ENDPOINT = `${BASE}/sortie?language=en`;
-const ARCHON_ENDPOINT = `${BASE}/archonHunt?language=en`;
 
 const NW_TTL_MS     = 300_000;   // 5 min — daily challenge rotation
 const ARCHON_TTL_MS = 3_600_000; // 1 h  — weekly event
@@ -29,10 +25,10 @@ export type NightwavePayload = {
 /**
  * Fetch active Nightwave challenges.
  * Fallback order:
- *   1. Fresh Dexie cache  → return immediately, fromStaleCache: false
- *   2. Live network fetch → store + return,     fromStaleCache: false
- *   3. Stale Dexie cache  → return,             fromStaleCache: true
- *   4. No cache at all    → throw (first-launch offline)
+ *   1. Fresh Dexie cache   → return immediately, fromStaleCache: false
+ *   2. Live worldstate fetch → store + return,   fromStaleCache: false
+ *   3. Stale Dexie cache   → return,             fromStaleCache: true
+ *   4. No cache at all     → throw (first-launch offline)
  */
 export async function fetchNightwaveWS(): Promise<WSFetchResult<NightwavePayload>> {
   const cached = await getWsCache<NightwavePayload>(WS_CACHE_KEYS.nightwave);
@@ -42,9 +38,8 @@ export async function fetchNightwaveWS(): Promise<WSFetchResult<NightwavePayload
   }
 
   try {
-    const res = await fetch(NW_ENDPOINT);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw: NightwaveRaw = await res.json();
+    const ws  = await fetchWorldstate();
+    const raw = (ws['nightwave'] ?? {}) as NightwaveRaw;
 
     const data: NightwavePayload = {
       challenges: (raw.activeChallenges ?? []).map(c => ({
@@ -79,9 +74,8 @@ export async function fetchSortieWS(): Promise<WSFetchResult<SortieRaw>> {
   }
 
   try {
-    const res = await fetch(SORTIE_ENDPOINT);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw: SortieRaw = await res.json();
+    const ws  = await fetchWorldstate();
+    const raw = (ws['sortie'] ?? {}) as SortieRaw;
 
     await setWsCache(WS_CACHE_KEYS.sortie, raw, NW_TTL_MS);
     return { data: raw, cachedAt: Date.now(), fromStaleCache: false };
@@ -105,9 +99,8 @@ export async function fetchArchonHuntWS(): Promise<WSFetchResult<ArchonHuntRaw>>
   }
 
   try {
-    const res = await fetch(ARCHON_ENDPOINT);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw: ArchonHuntRaw = await res.json();
+    const ws  = await fetchWorldstate();
+    const raw = (ws['archonHunt'] ?? {}) as ArchonHuntRaw;
 
     await setWsCache(WS_CACHE_KEYS.archon, raw, ARCHON_TTL_MS);
     return { data: raw, cachedAt: Date.now(), fromStaleCache: false };
