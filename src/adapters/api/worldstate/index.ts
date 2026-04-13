@@ -1,4 +1,4 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { WorldState } from 'warframe-worldstate-parser';
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
