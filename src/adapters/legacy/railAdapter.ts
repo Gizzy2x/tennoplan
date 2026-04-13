@@ -1,11 +1,12 @@
 // ---------------------------------------------------------------------------
-// Solar Rail Feed adapter — offline-first fetch for 7 new endpoints.
+// Solar Rail Feed adapter — offline-first fetch for worldstate data.
 // Sortie / Archon Hunt are re-exported from dailiesAdapter (cache keys reused).
 // All functions follow the same 4-step fallback chain as fissureAdapter.ts.
 // Domain-mapped data is stored in cache (not raw) so pre-loads are type-safe.
 // ---------------------------------------------------------------------------
 
 import { getWsCache, setWsCache, WS_CACHE_KEYS } from '../storage/worldstateCache';
+import { fetchWorldstate } from '../api/worldstateFetcher';
 import type { WSFetchResult } from './types';
 import type {
   Alert,
@@ -30,18 +31,6 @@ export { fetchSortieWS, fetchArchonHuntWS } from './dailiesAdapter';
 // ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------
-
-const BASE = 'https://api.warframestat.us/pc';
-
-const ENDPOINTS = {
-  invasions:         `${BASE}/invasions?language=en`,
-  alerts:            `${BASE}/alerts?language=en`,
-  darvoDeals:        `${BASE}/dailyDeals?language=en`,
-  voidTrader:        `${BASE}/voidTrader?language=en`,
-  steelPath:         `${BASE}/steelPath?language=en`,
-  persistentEnemies: `${BASE}/persistentEnemies?language=en`,
-  news:              `${BASE}/news?language=en`,
-} as const;
 
 const TTL = {
   invasions:         60_000,   // 60 s
@@ -166,12 +155,13 @@ function rawToNewsItem(raw: RawNewsItem, fetchedAt: number): NewsItem {
 
 // ---------------------------------------------------------------------------
 // Public fetch functions
+// All use fetchWorldstate() as the live-data source.
 // All store domain-mapped data in Dexie so pre-loads are type-safe.
 // ---------------------------------------------------------------------------
 
 /**
  * Fetch active invasions (excludes completed ones).
- * Fallback: fresh cache → live fetch → stale cache → throw
+ * Fallback: fresh cache → live worldstate → stale cache → throw
  */
 export async function fetchInvasions(): Promise<WSFetchResult<Invasion[]>> {
   const cached = await getWsCache<Invasion[]>(WS_CACHE_KEYS.invasions);
@@ -181,9 +171,8 @@ export async function fetchInvasions(): Promise<WSFetchResult<Invasion[]>> {
   }
 
   try {
-    const res = await fetch(ENDPOINTS.invasions);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raws: RawInvasion[] = await res.json();
+    const ws   = await fetchWorldstate();
+    const raws = (ws['invasions'] ?? []) as RawInvasion[];
     const now  = Date.now();
     const data = raws.filter(r => !r.completed).map(r => rawToInvasion(r, now));
     await setWsCache(WS_CACHE_KEYS.invasions, data, TTL.invasions);
@@ -203,9 +192,8 @@ export async function fetchAlerts(): Promise<WSFetchResult<Alert[]>> {
   }
 
   try {
-    const res = await fetch(ENDPOINTS.alerts);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raws: RawAlert[] = await res.json();
+    const ws   = await fetchWorldstate();
+    const raws = (ws['alerts'] ?? []) as RawAlert[];
     const now  = Date.now();
     const data = raws.filter(r => !r.expired).map(r => rawToAlert(r, now));
     await setWsCache(WS_CACHE_KEYS.alerts, data, TTL.alerts);
@@ -225,9 +213,9 @@ export async function fetchDarvoDeals(): Promise<WSFetchResult<DarvoDeal[]>> {
   }
 
   try {
-    const res = await fetch(ENDPOINTS.darvoDeals);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raws: RawDarvoDeal[] = await res.json();
+    const ws   = await fetchWorldstate();
+    // worldstate handler exports the field as "dailyDeals"
+    const raws = (ws['dailyDeals'] ?? []) as RawDarvoDeal[];
     const now  = Date.now();
     const data = raws.map(r => rawToDarvoDeal(r, now));
     await setWsCache(WS_CACHE_KEYS.darvoDeals, data, TTL.darvoDeals);
@@ -247,9 +235,11 @@ export async function fetchVoidTrader(): Promise<WSFetchResult<VoidTrader>> {
   }
 
   try {
-    const res = await fetch(ENDPOINTS.voidTrader);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw: RawVoidTrader = await res.json();
+    const ws = await fetchWorldstate();
+    // worldstate handler exports as "voidTraders" (array) — take the first (Baro)
+    const traders = (ws['voidTraders'] ?? []) as RawVoidTrader[];
+    const raw = traders[0];
+    if (!raw) throw new Error('No void trader in worldstate');
     const now  = Date.now();
     const data = rawToVoidTrader(raw, now);
     await setWsCache(WS_CACHE_KEYS.voidTrader, data, TTL.voidTrader);
@@ -269,9 +259,9 @@ export async function fetchSteelPath(): Promise<WSFetchResult<SteelPath>> {
   }
 
   try {
-    const res = await fetch(ENDPOINTS.steelPath);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw: RawSteelPath = await res.json();
+    const ws  = await fetchWorldstate();
+    const raw = ws['steelPath'] as RawSteelPath | undefined;
+    if (!raw) throw new Error('No steel path in worldstate');
     const now  = Date.now();
     const data = rawToSteelPath(raw, now);
     await setWsCache(WS_CACHE_KEYS.steelPath, data, TTL.steelPath);
@@ -291,9 +281,8 @@ export async function fetchPersistentEnemies(): Promise<WSFetchResult<Persistent
   }
 
   try {
-    const res = await fetch(ENDPOINTS.persistentEnemies);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raws: RawPersistentEnemy[] = await res.json();
+    const ws   = await fetchWorldstate();
+    const raws = (ws['persistentEnemies'] ?? []) as RawPersistentEnemy[];
     const now  = Date.now();
     const data = raws.filter(r => !r.isDestroyed).map(r => rawToPersistentEnemy(r, now));
     await setWsCache(WS_CACHE_KEYS.persistentEnemies, data, TTL.persistentEnemies);
@@ -313,9 +302,8 @@ export async function fetchNews(): Promise<WSFetchResult<NewsItem[]>> {
   }
 
   try {
-    const res = await fetch(ENDPOINTS.news);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raws: RawNewsItem[] = await res.json();
+    const ws   = await fetchWorldstate();
+    const raws = (ws['news'] ?? []) as RawNewsItem[];
     const now  = Date.now();
     const data = raws.slice(0, 10).map(r => rawToNewsItem(r, now));
     await setWsCache(WS_CACHE_KEYS.news, data, TTL.news);

@@ -1,4 +1,5 @@
 import { getWsCache, setWsCache, WS_CACHE_KEYS } from '../storage/worldstateCache';
+import { fetchWorldstate } from '../api/worldstateFetcher';
 import type { SyndicateMission, SyndicateJob } from '../../core/domain/syndicates';
 import type { WSFetchResult } from './types';
 
@@ -6,13 +7,10 @@ import type { WSFetchResult } from './types';
 // Config
 // ---------------------------------------------------------------------------
 
-const ENDPOINT    = 'https://api.warframestat.us/pc/syndicateMissions';
-const CACHE_TTL_MS = 30 * 60_000; // 30 min — syndicates rotate daily but we stay responsive
+const CACHE_TTL_MS = 30 * 60_000; // 30 min
 
 /**
  * Canonical display names as returned by the API.
- * Note: The API may use slightly different capitalisation at times — the
- * SYNDICATE_ALIASES map handles known variants.
  */
 const WANTED_SYNDICATES = new Set([
   'Ostron',
@@ -99,14 +97,12 @@ export async function fetchSyndicateMissions():
     return { data: cached.data, cachedAt: cached.cachedAt, fromStaleCache: false };
   }
 
-  // 2. Live fetch
+  // 2. Live fetch via shared worldstate endpoint
   try {
-    const res = await fetch(ENDPOINT);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const rawAll: RawSyndicateMission[] = await res.json();
+    const ws     = await fetchWorldstate();
+    const rawAll = (ws['syndicateMissions'] ?? []) as RawSyndicateMission[];
 
     // Filter to open-world syndicates, normalize, deduplicate by syndicate name
-    // (keep the entry with the later expiry when duplicates exist)
     const seen = new Map<string, SyndicateMission>();
     for (const raw of rawAll) {
       const canonical = canonicalizeName(raw.syndicate ?? '');

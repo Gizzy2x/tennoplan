@@ -1,4 +1,5 @@
 import { getWsCache, setWsCache, WS_CACHE_KEYS } from '../storage/worldstateCache';
+import { fetchWorldstate } from '../api/worldstateFetcher';
 import type { WorldCycle, CycleId } from '../../core/domain/cycles';
 import type { WSFetchResult } from './types';
 
@@ -6,19 +7,8 @@ import type { WSFetchResult } from './types';
 // Config
 // ---------------------------------------------------------------------------
 
-const BASE = 'https://api.warframestat.us/pc';
-
 /** How long to trust a fresh API response before re-fetching. */
 const CACHE_TTL_MS = 90_000; // 90 s
-
-const ENDPOINT: Record<CycleId, string> = {
-  cetus:   `${BASE}/cetusCycle`,
-  vallis:  `${BASE}/vallisCycle`,
-  cambion: `${BASE}/cambionCycle`,
-  zariman: `${BASE}/zarimanCycle`,
-  earth:   `${BASE}/earthCycle`,
-  duviri:  `${BASE}/duviriCycle`,
-};
 
 const META: Record<CycleId, { name: string; location: string }> = {
   cetus:   { name: 'Plains of Eidolon', location: 'Cetus' },
@@ -36,6 +26,16 @@ const CYCLE_CACHE_KEY: Record<CycleId, string> = {
   zariman: WS_CACHE_KEYS.cycleZariman,
   earth:   WS_CACHE_KEYS.cycleEarth,
   duviri:  WS_CACHE_KEYS.cycleDuviri,
+};
+
+/** Worldstate packet key for each cycle */
+const WS_FIELD: Record<CycleId, string> = {
+  cetus:   'cetusCycle',
+  vallis:  'vallisCycle',
+  cambion: 'cambionCycle',
+  zariman: 'zarimanCycle',
+  earth:   'earthCycle',
+  duviri:  'duviriCycle',
 };
 
 // ---------------------------------------------------------------------------
@@ -97,11 +97,11 @@ async function fetchOneCycle(id: CycleId): Promise<CycleFetchMeta> {
     };
   }
 
-  // 2. Live fetch
+  // 2. Live fetch via shared worldstate endpoint
   try {
-    const res = await fetch(ENDPOINT[id]);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw: RawCycle = await res.json();
+    const ws  = await fetchWorldstate();
+    const raw = ws[WS_FIELD[id]] as RawCycle | undefined;
+    if (!raw?.expiry) throw new Error(`No cycle data for "${id}" in worldstate`);
     const now = Date.now();
 
     await setWsCache(key, raw, CACHE_TTL_MS);

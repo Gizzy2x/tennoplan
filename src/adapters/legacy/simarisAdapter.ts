@@ -1,4 +1,5 @@
 import { getWsCache, setWsCache, WS_CACHE_KEYS } from '../storage/worldstateCache';
+import { fetchWorldstate } from '../api/worldstateFetcher';
 import type { SimarisData } from '../../core/domain/simaris';
 import type { WSFetchResult } from './types';
 
@@ -6,7 +7,6 @@ import type { WSFetchResult } from './types';
 // Config
 // ---------------------------------------------------------------------------
 
-const ENDPOINT     = 'https://api.warframestat.us/pc/simaris';
 const CACHE_TTL_MS = 24 * 60 * 60_000; // 24h — Simaris target resets daily
 
 // ---------------------------------------------------------------------------
@@ -39,11 +39,10 @@ export async function fetchSimaris(): Promise<WSFetchResult<SimarisData>> {
     return { data: cached.data, cachedAt: cached.cachedAt, fromStaleCache: false };
   }
 
-  // 2. Live fetch
+  // 2. Live fetch via shared worldstate endpoint
   try {
-    const res = await fetch(ENDPOINT);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raw: RawSimaris = await res.json();
+    const ws  = await fetchWorldstate();
+    const raw = (ws['simaris'] ?? {}) as RawSimaris;
 
     const t = raw.activeSynthesisTarget;
     const data: SimarisData = {

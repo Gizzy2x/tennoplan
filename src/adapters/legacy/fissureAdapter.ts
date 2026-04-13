@@ -1,4 +1,5 @@
 import { getWsCache, setWsCache, WS_CACHE_KEYS } from '../storage/worldstateCache';
+import { fetchWorldstate } from '../api/worldstateFetcher';
 import type { Fissure, FissureEnemy, FissureTier } from '../../core/domain/relics';
 import type { WSFetchResult } from './types';
 
@@ -6,7 +7,6 @@ import type { WSFetchResult } from './types';
 // Config
 // ---------------------------------------------------------------------------
 
-const ENDPOINT     = 'https://api.warframestat.us/pc/fissures?language=en';
 const CACHE_TTL_MS = 60_000; // 60 s — fissures rotate frequently
 
 // ---------------------------------------------------------------------------
@@ -52,11 +52,11 @@ function rawToFissure(raw: RawFissure, fetchedAt: number): Fissure {
 // ---------------------------------------------------------------------------
 
 /**
- * Fetch all active void fissures from the API.
+ * Fetch all active void fissures from the worldstate.
  * Fallback order:
  *   1. Fresh Dexie cache  → return immediately, fromStaleCache: false
- *   2. Live network fetch → store + return,     fromStaleCache: false
- *   3. Stale Dexie cache  → return,             fromStaleCache: true
+ *   2. Live worldstate fetch → store + return, fromStaleCache: false
+ *   3. Stale Dexie cache  → return,            fromStaleCache: true
  *   4. No cache at all    → throw (first-launch offline)
  */
 export async function fetchFissures(): Promise<WSFetchResult<Fissure[]>> {
@@ -68,9 +68,8 @@ export async function fetchFissures(): Promise<WSFetchResult<Fissure[]>> {
   }
 
   try {
-    const res = await fetch(ENDPOINT);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const raws: RawFissure[] = await res.json();
+    const ws   = await fetchWorldstate();
+    const raws = (ws['fissures'] ?? []) as RawFissure[];
 
     await setWsCache(WS_CACHE_KEYS.fissures, raws, CACHE_TTL_MS);
 

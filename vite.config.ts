@@ -14,5 +14,15 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    proxy: {
+      // In local dev, forward /api/worldstate to the warframestat.us flat endpoint.
+      // On Vercel, the serverless function at api/worldstate/index.ts handles this.
+      '/api/worldstate': {
+        target: 'https://api.warframestat.us',
+        changeOrigin: true,
+        rewrite: () => '/pc',
+        secure: true,
+      },
+    },
   },
 });
