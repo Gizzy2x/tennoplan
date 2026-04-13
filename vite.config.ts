@@ -14,11 +14,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor:  ['react', 'react-dom'],
-          query:   ['@tanstack/react-query'],
-          icons:   ['lucide-react'],
-          storage: ['dexie'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('lucide-react')) return 'icons';
+            if (id.includes('dexie')) return 'storage';
+            if (id.includes('@tanstack')) return 'query';
+            return 'vendor';
+          }
         },
       },
     },
