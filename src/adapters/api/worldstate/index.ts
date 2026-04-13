@@ -1,7 +1,7 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { WorldState } from 'warframe-worldstate-parser';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
     // 1. Fetch the absolute raw data
     const response = await fetch('https://content.warframe.com/dynamic/worldState.php');
