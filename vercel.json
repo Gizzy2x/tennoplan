@@ -1,13 +1,1 @@
-{
-  "functions": {
-    "src/adapters/api/worldstate/index.ts": {
-      "runtime": "vercel-node@latest"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/worldstate",
-      "destination": "/src/adapters/api/worldstate/index.ts"
-    }
-  ]
-}
+{}
