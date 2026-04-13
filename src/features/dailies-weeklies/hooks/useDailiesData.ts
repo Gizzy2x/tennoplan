@@ -165,7 +165,7 @@ export function useDailiesData() {
       };
     }
 
-    const statuses = nwData.challenges.map(c =>
+    const statuses = (nwData.challenges ?? []).map(c =>
       computeChallengeStatus(c, completedIds, now)
     );
 
