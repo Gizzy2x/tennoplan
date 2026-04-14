@@ -3,16 +3,102 @@ import { setWsCache, getWsCache, getWsTimestamp } from '../adapters/storage/worl
 
 const USER_INVENTORY_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
+// ---------------------------------------------------------------------------
+// Endpoint config
+// ---------------------------------------------------------------------------
+
+const PRIMARY_URL    = '/api/worldstate';
+const FALLBACK_URL   = 'https://api.warframestat.us/pc';
+const PRIMARY_TIMEOUT_MS  = 3_000;  // give the Vercel proxy 3 s
+const FALLBACK_TIMEOUT_MS = 8_000;  // mirror gets a bit more headroom
+
+// ---------------------------------------------------------------------------
+// LocalStorage snapshot — synchronous, instant read on cold start.
+// Dexie is seeded from this before any network call so the UI never blanks.
+// ---------------------------------------------------------------------------
+
+const LS_SNAPSHOT_KEY = 'tennoplan:worldstate_snapshot';
+
+function lsReadSnapshot(): unknown | null {
+  try {
+    const raw = localStorage.getItem(LS_SNAPSHOT_KEY);
+    return raw ? (JSON.parse(raw) as unknown) : null;
+  } catch {
+    return null;
+  }
+}
+
+function lsWriteSnapshot(data: unknown): void {
+  try {
+    localStorage.setItem(LS_SNAPSHOT_KEY, JSON.stringify(data));
+  } catch {
+    // Quota exceeded — silently ignore; Dexie is the authoritative store.
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Fetch helper with AbortController-based timeout
+// ---------------------------------------------------------------------------
+
+async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Primary → fallback fetch
+// Tries the Vercel proxy first. If that times out or throws, falls back to
+// the public api.warframestat.us mirror directly.
+// ---------------------------------------------------------------------------
+
+async function fetchWorldstate(): Promise<unknown> {
+  try {
+    const res = await fetchWithTimeout(PRIMARY_URL, PRIMARY_TIMEOUT_MS);
+    if (!res.ok) throw new Error(`Primary returned HTTP ${res.status}`);
+    return await res.json();
+  } catch (primaryErr) {
+    console.warn(
+      '[SyncService] Primary endpoint failed or timed out — switching to mirror.',
+      primaryErr,
+    );
+    const res = await fetchWithTimeout(FALLBACK_URL, FALLBACK_TIMEOUT_MS);
+    if (!res.ok) throw new Error(`Mirror returned HTTP ${res.status}`);
+    return await res.json();
+  }
+}
+
 export const SyncService = {
   /**
    * The single entry-point for all worldstate network requests.
+   *
+   * Flow:
+   *  1. Seed Dexie from LocalStorage snapshot if Dexie is cold (black-screen guard).
+   *  2. Honour the 60 s anti-spam lock unless force=true.
+   *  3. Try /api/worldstate (3 s timeout) → fall back to warframestat.us mirror.
+   *  4. Persist to Dexie (1 h TTL) + update the LS snapshot.
+   *  5. On total failure, return whatever stale data Dexie has.
    *
    * @param force - bypass the 60s anti-spam lock (for manual user-triggered refreshes)
    */
   async performSync(force = false) {
     const now = Date.now();
 
-    // 1. The 60s Lock (Anti-Spam) — skipped when force=true
+    // 1. Black-screen guard — seed Dexie from LS on cold start so
+    //    useLiveQuery subscribers have something to render immediately.
+    const existing = await getWsCache<unknown>('worldstate_master');
+    if (!existing) {
+      const snapshot = lsReadSnapshot();
+      if (snapshot) {
+        await setWsCache('worldstate_master', snapshot, 3_600_000);
+      }
+    }
+
+    // 2. The 60s Lock (Anti-Spam) — skipped when force=true
     if (!force) {
       const lastSync = await getWsTimestamp('last_sync_time');
       if (lastSync && now - lastSync < 60_000) {
@@ -21,19 +107,18 @@ export const SyncService = {
     }
 
     try {
-      // 2. Fetch the full worldstate packet — this is the ONLY place in the app
-      //    that calls fetch('/api/worldstate').
-      const response = await fetch('/api/worldstate');
-      const data = await response.json();
+      // 3. Fetch — primary first, mirror as fallback
+      const data = await fetchWorldstate();
 
-      // 3. Save the entire payload to one Dexie entry (1h TTL).
+      // 4. Persist to Dexie (1 h TTL) + update the LS snapshot.
       //    All useLiveQuery subscribers auto-update — no manual invalidation needed.
       await setWsCache('worldstate_master', data, 3_600_000);
       await setWsCache('last_sync_time', now);
+      lsWriteSnapshot(data);
 
       return data;
     } catch (error) {
-      console.error('Sync failed, falling back to offline data.');
+      console.error('[SyncService] All endpoints failed, serving offline data.', error);
       return (await getWsCache<unknown>('worldstate_master'))?.data ?? null;
     }
   },
