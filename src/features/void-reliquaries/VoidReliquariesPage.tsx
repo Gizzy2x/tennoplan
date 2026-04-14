@@ -252,12 +252,18 @@ export function VoidReliquariesPage() {
         </div>
       )}
 
-      {/* ── Initializing (no cached data yet) ──────────────────────── */}
-      {!hasEverLoaded && (
-        <div className="glass-panel p-8 flex items-center gap-4">
-          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
-            Initializing Systems…
+      {/* ── System Offline — no data ever synced and API unreachable ── */}
+      {isError && (
+        <div className="glass-panel p-8 flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-error/70" />
+            <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/50">
+              System Offline · Data Unavailable
+            </p>
+          </div>
+          <p className="font-label text-[10px] uppercase tracking-[0.25em] text-secondary/30">
+            Unable to reach the Void relay. Check your network connection — cached data will
+            display once a sync completes.
           </p>
         </div>
       )}

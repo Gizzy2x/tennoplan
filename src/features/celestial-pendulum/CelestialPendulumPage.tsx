@@ -36,6 +36,7 @@ export function CelestialPendulumPage() {
   const {
     statuses,
     isLoading,
+    isError,
     isStale,
     cacheAgeMs,
     hasEverLoaded,
@@ -83,6 +84,24 @@ export function CelestialPendulumPage() {
             <div className="w-2 h-2 rounded-full bg-primary animate-pulse mx-auto" />
             <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
               Initializing Systems…
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ── System Offline — no data, API unreachable ───────────────────── */}
+      {isError && (
+        <div
+          className="relative flex-1 flex items-center justify-center"
+          style={{ zIndex: 5, paddingTop: 96 }}
+        >
+          <div className="glass-panel p-10 max-w-lg text-center flex flex-col gap-4">
+            <div className="w-2 h-2 rounded-full bg-error/70 mx-auto" />
+            <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/50">
+              System Offline · Data Unavailable
+            </p>
+            <p className="font-label text-[10px] uppercase tracking-[0.25em] text-secondary/30">
+              Unable to reach the Void relay. Check your network connection.
             </p>
           </div>
         </div>
