@@ -1,13 +1,28 @@
 export default async function handler(req: any, res: any) {
   try {
-    const response = await fetch('https://api.warframestat.us/pc');
+    const response = await fetch('https://api.warframestat.us/pc', {
+      headers: {
+        'User-Agent': 'tennoplan/1.0 (https://github.com/Nuclear-Spaceship/tennoplan)',
+      },
+    });
+
+    // Set Vercel cache header: 5 minutes shared cache, plus stale-while-revalidate
+    res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate=59');
+
+    const text = await response.text();
+
     if (!response.ok) {
-      const text = await response.text().catch(() => 'no response body');
-      throw new Error(`Upstream API failed with status ${response.status}: ${text}`);
+      console.error(`Upstream API failed with status ${response.status}. Raw response:`, text);
+      throw new Error(`Upstream API failed with status ${response.status}`);
     }
 
-    const data = await response.json();
-    res.status(200).json(data);
+    try {
+      const data = JSON.parse(text);
+      res.status(200).json(data);
+    } catch (parseError) {
+      console.error('JSON parsing failed. Raw response text:', text);
+      throw new Error('Unexpected end of JSON input (failed to parse response)');
+    }
   } catch (error) {
     console.error('worldstate function error:', error);
     res.status(500).json({
