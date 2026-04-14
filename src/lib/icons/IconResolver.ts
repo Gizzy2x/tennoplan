@@ -20,9 +20,7 @@ let _bakedMap: Record<string, string> | null = null;
 async function getBakedMap(): Promise<Record<string, string>> {
   if (_bakedMap) return _bakedMap;
   try {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore — file is generated at bake time; missing at type-check time is expected
-    const mod = await import('@/lib/icons/baked-icons-map.json');
+    const mod = await import('./baked-icons-map.json');
     _bakedMap = mod.default as Record<string, string>;
   } catch {
     _bakedMap = {};

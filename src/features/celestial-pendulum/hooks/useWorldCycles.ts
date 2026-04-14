@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, useEffect } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/adapters/storage/db';
 import { SyncService } from '@/services/SyncService';
@@ -6,6 +6,7 @@ import { getCacheAgeMs } from '@/core/services/WorldstateService';
 import { computeCycleStatus, extrapolateCycle } from '@/core/services/cycleService';
 import type { WorldCycle, CycleId, CycleStatus } from '@/core/domain/cycles';
 import { useHeartbeatStore } from '@/store/heartbeat';
+import { useGameClock } from '@/hooks/useGameClock';
 
 // ---------------------------------------------------------------------------
 // Raw API shapes (kept local — not a domain concern)
@@ -91,12 +92,8 @@ export function useWorldCycles() {
     return () => useHeartbeatStore.getState().registerRefetch(null);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── 1-second clock ────────────────────────────────────────────────────
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
+  // ── Shared global clock (no per-hook setInterval) ─────────────────────
+  const now = useGameClock();
 
   // ── Map + derive ──────────────────────────────────────────────────────
   const statuses = useMemo((): CycleStatus[] => {

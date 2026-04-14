@@ -2,6 +2,7 @@ import { useEffect, type ComponentType } from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { useNavigationStore, type NavTab } from "@/store/navigation";
+import { SyncService } from "@/services/SyncService";
 
 import { DailiesWeekliesPage } from "@/features/dailies-weeklies/DailiesWeekliesPage";
 import { CelestialPendulumPage } from "@/features/celestial-pendulum/CelestialPendulumPage";
@@ -37,6 +38,13 @@ export function AppShell() {
   const isCollapsed = useNavigationStore((s) => s.isCollapsed);
   const ActivePage = PAGE_MAP[activeTab];
   const sidebarW = isCollapsed ? RAIL_W : EXPANDED_W;
+
+  // Bootstrap: fire the first worldstate sync immediately on app mount.
+  // Without this, a fresh Dexie DB has no worldstate_master entry and every
+  // useLiveQuery hook returns null indefinitely.
+  useEffect(() => {
+    SyncService.performSync(true);
+  }, []);
 
   // Keep the CSS variable in sync so fixed cinematic backgrounds adapt automatically
   useEffect(() => {

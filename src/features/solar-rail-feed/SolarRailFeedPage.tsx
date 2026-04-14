@@ -156,7 +156,7 @@ export function SolarRailFeedPage() {
       <div className="somatic-line mb-8" />
 
       {/* ── Sync status indicator ──────────────────────────────────────── */}
-      {hasEverLoaded && (
+      {hasEverLoaded && !isError && (
         <div className="flex items-center gap-3 mb-6">
           <div className={`w-1.5 h-1.5 rounded-full ${syncState === 'LIVE' ? 'bg-success' : 'bg-error/50'}`} />
           <span className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35">
@@ -175,7 +175,22 @@ export function SolarRailFeedPage() {
         </div>
       )}
 
-      {hasEverLoaded && (
+      {/* ── System Offline — no data, API unreachable ──────────────────── */}
+      {isError && (
+        <div className="glass-panel p-8 flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-error/70" />
+            <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/50">
+              System Offline · Data Unavailable
+            </p>
+          </div>
+          <p className="font-label text-[10px] uppercase tracking-[0.25em] text-secondary/30">
+            Unable to reach the Solar Rail. Check your network connection — data will populate once a sync completes.
+          </p>
+        </div>
+      )}
+
+      {hasEverLoaded && !isError && (
         <div className="space-y-10">
 
           {/* ── 1. Alerts ──────────────────────────────────────────────── */}

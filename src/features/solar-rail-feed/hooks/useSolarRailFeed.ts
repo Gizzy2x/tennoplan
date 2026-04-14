@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/adapters/storage/db';
 import { SyncService } from '@/services/SyncService';
@@ -43,6 +43,7 @@ import type {
   RawVoidTrader,
 } from '@/core/domain/railFeed';
 import type { SortieRaw, ArchonHuntRaw, SortieStatus, ArchonHuntStatus } from '@/core/domain/ascension';
+import { useGameClock } from '@/hooks/useGameClock';
 
 // ---------------------------------------------------------------------------
 // Mapping helpers (raw API → domain)
@@ -175,12 +176,8 @@ export function useSolarRailFeed() {
   const cachedAt  = wsEntry?.updatedAt ?? 0;
   const isStale   = wsEntry ? wsEntry.expiresAt < Date.now() : false;
 
-  // ── 1-second clock ────────────────────────────────────────────────────
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
+  // ── Shared global clock (no per-hook setInterval) ─────────────────────
+  const now = useGameClock();
 
   // ── Map + derive ──────────────────────────────────────────────────────
   const {
