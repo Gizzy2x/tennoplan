@@ -1,30 +1,32 @@
 import { setWsCache, getWsCache, getWsTimestamp } from '../adapters/storage/worldstateCache';
-import { queryClient } from '../lib/queryClient';
 
 export const SyncService = {
-  async performSync() {
-    // 1. The 60s Lock (Anti-Spam)
-    const lastSync = await getWsTimestamp('last_sync_time');
+  /**
+   * The single entry-point for all worldstate network requests.
+   *
+   * @param force - bypass the 60s anti-spam lock (for manual user-triggered refreshes)
+   */
+  async performSync(force = false) {
     const now = Date.now();
 
-    if (lastSync && now - lastSync < 60_000) {
-      return (await getWsCache<unknown>('worldstate_master'))?.data ?? null;
+    // 1. The 60s Lock (Anti-Spam) — skipped when force=true
+    if (!force) {
+      const lastSync = await getWsTimestamp('last_sync_time');
+      if (lastSync && now - lastSync < 60_000) {
+        return (await getWsCache<unknown>('worldstate_master'))?.data ?? null;
+      }
     }
 
     try {
-      // 2. Fetch the full worldstate packet
+      // 2. Fetch the full worldstate packet — this is the ONLY place in the app
+      //    that calls fetch('/api/worldstate').
       const response = await fetch('/api/worldstate');
       const data = await response.json();
 
-      // 3. Save to Dexie (1h TTL; 60s lock controls live refresh rate)
+      // 3. Save the entire payload to one Dexie entry (1h TTL).
+      //    All useLiveQuery subscribers auto-update — no manual invalidation needed.
       await setWsCache('worldstate_master', data, 3_600_000);
       await setWsCache('last_sync_time', now);
-
-      // 4. Invalidate all active worldstate queries so the UI snaps to life
-      await queryClient.invalidateQueries({ queryKey: ['ws:worldCycles'] });
-      await queryClient.invalidateQueries({ queryKey: ['ws:fissures'] });
-      await queryClient.invalidateQueries({ queryKey: ['ws:nightwave'] });
-      await queryClient.invalidateQueries({ queryKey: ['ws:rail'] });
 
       return data;
     } catch (error) {
