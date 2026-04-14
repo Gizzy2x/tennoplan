@@ -1,36 +1,31 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState, useEffect } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/adapters/storage/db';
-import {
-  getWsCache,
-  clearWsCache,
-  WS_CACHE_KEYS,
-} from '@/adapters/storage/worldstateCache';
-import {
-  fetchNightwaveWS,
-} from '@/adapters/api/dailiesAdapter';
-import type { NightwavePayload, WSFetchResult } from '@/adapters/api/dailiesAdapter';
+import { SyncService } from '@/services/SyncService';
+import { getCacheAgeMs } from '@/core/services/WorldstateService';
 import {
   computeChallengeStatus,
   groupChallenges,
   computeStanding,
 } from '@/core/services/ascensionService';
-import { getCacheAgeMs } from '@/core/services/WorldstateService';
 import { getWeekStart } from '@/core/services/cycleService';
 import type {
+  NightwaveChallengeRaw,
+  NightwaveRaw,
   ChallengeKind,
   ChallengeStatus,
   StandingSummary,
 } from '@/core/domain/ascension';
 
 // ---------------------------------------------------------------------------
-// Pre-load state — async Dexie reads before TanStack Query activates
+// Local type (mirrors what was in the legacy dailiesAdapter)
 // ---------------------------------------------------------------------------
 
-interface PreloadState {
-  nw:    WSFetchResult<NightwavePayload> | null;
-  ready: boolean;
-}
+type NightwavePayload = {
+  challenges: NightwaveChallengeRaw[];
+  season:     number;
+  tag:        string;
+};
 
 // ---------------------------------------------------------------------------
 // Hook
@@ -38,53 +33,34 @@ interface PreloadState {
 
 /**
  * Offline-first data hook for the Dailies & Weeklies tab.
- *
- * Offline-first pattern:
- *   1. On mount, all three Dexie cache entries are read in parallel.
- *   2. Once the pre-load resolves (always < 50 ms), queries are enabled.
- *   3. Cached data is passed as `initialData` + `initialDataUpdatedAt` so
- *      TanStack Query starts with real data immediately — no loading flash
- *      even when fully offline with stale cache.
- *   4. If `cachedAt` is older than `staleTime`, TQ background-refetches.
- *   5. If there is no cache AND no network, the query errors; `hasEverLoaded`
- *      will be false, triggering the first-sync onboarding card.
+ * Reads worldstate_master via useLiveQuery — no fetch, no TanStack Query.
  */
 export function useDailiesData() {
-  const queryClient = useQueryClient();
+  const wsEntry = useLiveQuery(
+    () => db.cache.get('worldstate_master').then(e => e ?? null),
+    []
+  );
 
-  // ── Phase 1: async Dexie pre-load ─────────────────────────────────────
-  const [preload, setPreload] = useState<PreloadState>({ nw: null, ready: false });
+  const isLoading = wsEntry === undefined;
+  const ws        = (wsEntry?.data ?? null) as Record<string, unknown> | null;
+  const cachedAt  = wsEntry?.updatedAt ?? 0;
+  const isStale   = wsEntry ? wsEntry.expiresAt < Date.now() : false;
 
-  useEffect(() => {
-    getWsCache<NightwavePayload>(WS_CACHE_KEYS.nightwave).then(nw => {
-      setPreload({
-        nw: nw ? { data: nw.data, cachedAt: nw.cachedAt, fromStaleCache: nw.isExpired } : null,
-        ready: true,
-      });
-    });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // ── Parse Nightwave from worldstate ───────────────────────────────────
+  const nwData = useMemo((): NightwavePayload | null => {
+    if (!ws) return null;
+    const raw = (ws['nightwave'] ?? {}) as NightwaveRaw;
+    return {
+      challenges: (raw.activeChallenges ?? []).map(c => ({
+        ...c,
+        reputation: Number(c.reputation) || 0,
+      })),
+      season: raw.season ?? 0,
+      tag:    raw.tag    ?? '',
+    };
+  }, [ws]);
 
-  // ── Phase 2: TanStack Query — enabled only after pre-load ─────────────
-
-  const {
-    data:          nwResult,
-    isLoading:     nwLoading,
-    error:         nwError,
-    dataUpdatedAt: nwUpdatedAt,
-    refetch:       refetchNW,
-  } = useQuery<WSFetchResult<NightwavePayload>>({
-    queryKey:             ['ws:nightwave'],
-    queryFn:              fetchNightwaveWS,
-    enabled:              preload.ready,
-    initialData:          preload.nw ?? undefined,
-    initialDataUpdatedAt: preload.nw?.cachedAt ?? 0,
-    staleTime:            300_000,
-    refetchInterval:      300_000,
-    retry:                2,
-    networkMode:          'always',
-  });
-
-  // ── Completion state (identical to useDailiesWeeklies) ─────────────────
+  // ── Completion state ───────────────────────────────────────────────────
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [weeklyEarned, setWeeklyEarned] = useState(0);
 
@@ -132,54 +108,9 @@ export function useDailiesData() {
     await loadMarks();
   }
 
-  // ── Force refresh ──────────────────────────────────────────────────────
-  async function forceRefetch() {
-    await clearWsCache(WS_CACHE_KEYS.nightwave);
-    queryClient.removeQueries({ queryKey: ['ws:nightwave'] });
-    await refetchNW();
-  }
-
-  // ── 1-second clock ─────────────────────────────────────────────────────
-  const [now, setNow] = useState(() => Date.now());
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  // ── Derived state ───────────────────────────────────────────────────────
-  const nwData = nwResult?.data;
-
-  const {
-    grouped,
-    standing,
-    totalChallenges,
-    completedCount,
-  } = useMemo(() => {
-    if (!nwData) {
-      return {
-        grouped:         { daily: [], weekly: [], elite: [] } as Record<ChallengeKind, ChallengeStatus[]>,
-        standing:        { earned: 0, available: 0, pct: 0 } as StandingSummary,
-        totalChallenges: 0,
-        completedCount:  0,
-      };
-    }
-
-    const statuses = (nwData.challenges ?? []).map(c =>
-      computeChallengeStatus(c, completedIds, now)
-    );
-
-    return {
-      grouped:         groupChallenges(statuses),
-      standing:        computeStanding(statuses),
-      totalChallenges: statuses.length,
-      completedCount:  statuses.filter(s => s.completed).length,
-    };
-  }, [nwData, completedIds, now]);
-
-  // ── Sortie / Archon completion toggles (time-keyed, no API needed) ────────
-  const [sortieCompleted,  setSortieCompleted]  = useState(false);
-  const [archonCompleted,  setArchonCompleted]  = useState(false);
+  // ── Sortie / Archon completion toggles ────────────────────────────────
+  const [sortieCompleted, setSortieCompleted] = useState(false);
+  const [archonCompleted, setArchonCompleted] = useState(false);
 
   function todayKey(): string {
     return 'sortie:' + new Date().toISOString().slice(0, 10);
@@ -225,11 +156,40 @@ export function useDailiesData() {
     await loadCompletionToggles();
   }
 
-  // ── Offline / staleness signals ─────────────────────────────────────────
-  const isStale       = !!nwResult?.fromStaleCache;
-  const cacheAgeMs    = getCacheAgeMs(nwResult?.cachedAt ?? now, now);
-  const hasEverLoaded = !!(nwData || (!nwLoading && !nwError));
-  const lastSync      = nwUpdatedAt || 0;
+  // ── Force refresh ──────────────────────────────────────────────────────
+  async function forceRefetch() {
+    await SyncService.performSync(true);
+  }
+
+  // ── 1-second clock ────────────────────────────────────────────────────
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  // ── Derived state ──────────────────────────────────────────────────────
+  const { grouped, standing, totalChallenges, completedCount } = useMemo(() => {
+    if (!nwData) {
+      return {
+        grouped:         { daily: [], weekly: [], elite: [] } as Record<ChallengeKind, ChallengeStatus[]>,
+        standing:        { earned: 0, available: 0, pct: 0 } as StandingSummary,
+        totalChallenges: 0,
+        completedCount:  0,
+      };
+    }
+
+    const statuses = (nwData.challenges ?? []).map(c =>
+      computeChallengeStatus(c, completedIds, now)
+    );
+
+    return {
+      grouped:         groupChallenges(statuses),
+      standing:        computeStanding(statuses),
+      totalChallenges: statuses.length,
+      completedCount:  statuses.filter(s => s.completed).length,
+    };
+  }, [nwData, completedIds, now]);
 
   return {
     grouped,
@@ -241,12 +201,12 @@ export function useDailiesData() {
     archonCompleted,
     season:    nwData?.season ?? 0,
     seasonTag: nwData?.tag    ?? '',
-    isLoading:     !preload.ready || nwLoading,
-    isError:       !!nwError,
+    isLoading,
+    isError:       !isLoading && wsEntry === null,
     isStale,
-    cacheAgeMs,
-    hasEverLoaded,
-    lastSync,
+    cacheAgeMs:    getCacheAgeMs(cachedAt || now, now),
+    hasEverLoaded: !isLoading,
+    lastSync:      cachedAt,
     now,
     toggleComplete,
     toggleSortieCompleted,

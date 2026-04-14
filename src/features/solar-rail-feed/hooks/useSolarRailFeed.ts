@@ -1,21 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  fetchAlerts,
-  fetchInvasions,
-  fetchDarvoDeals,
-  fetchVoidTrader,
-  fetchSteelPath,
-  fetchPersistentEnemies,
-  fetchNews,
-  fetchSortieWS,
-  fetchArchonHuntWS,
-} from '@/adapters/api/railAdapter';
-import {
-  getWsCache,
-  clearWsCache,
-  WS_CACHE_KEYS,
-} from '@/adapters/storage/worldstateCache';
+import { useMemo, useState, useEffect } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '@/adapters/storage/db';
+import { SyncService } from '@/services/SyncService';
 import { getCacheAgeMs } from '@/core/services/WorldstateService';
 import {
   computeAlertStatus,
@@ -34,7 +20,6 @@ import {
   computeSortieStatus,
   computeArchonHuntStatus,
 } from '@/core/services/ascensionService';
-import type { WSFetchResult } from '@/adapters/api/types';
 import type {
   Alert,
   AlertStatus,
@@ -49,29 +34,125 @@ import type {
   SteelPathStatus,
   VoidTrader,
   VoidTraderStatus,
+  RawAlert,
+  RawDarvoDeal,
+  RawInvasion,
+  RawNewsItem,
+  RawPersistentEnemy,
+  RawSteelPath,
+  RawVoidTrader,
 } from '@/core/domain/railFeed';
 import type { SortieRaw, ArchonHuntRaw, SortieStatus, ArchonHuntStatus } from '@/core/domain/ascension';
 
 // ---------------------------------------------------------------------------
-// Pre-load state
+// Mapping helpers (raw API → domain)
 // ---------------------------------------------------------------------------
 
-interface PreloadState {
-  alerts:            WSFetchResult<Alert[]>          | null;
-  invasions:         WSFetchResult<Invasion[]>       | null;
-  darvoDeals:        WSFetchResult<DarvoDeal[]>      | null;
-  voidTrader:        WSFetchResult<VoidTrader>       | null;
-  steelPath:         WSFetchResult<SteelPath>        | null;
-  persistentEnemies: WSFetchResult<PersistentEnemy[]>| null;
-  news:              WSFetchResult<NewsItem[]>       | null;
-  sortie:            WSFetchResult<SortieRaw>        | null;
-  archon:            WSFetchResult<ArchonHuntRaw>    | null;
-  ready:             boolean;
+function rawToInvasion(raw: RawInvasion, fetchedAt: number): Invasion {
+  return {
+    id:               raw.id,
+    node:             raw.node,
+    desc:             raw.desc ?? '',
+    attackerReward:   raw.attackerReward?.itemString ?? '',
+    defenderReward:   raw.defenderReward?.itemString ?? '',
+    attackerCredits:  raw.attackerReward?.credits ?? 0,
+    defenderCredits:  raw.defenderReward?.credits ?? 0,
+    attackingFaction: raw.attackingFaction ?? '',
+    defendingFaction: raw.defendingFaction ?? '',
+    completion:       raw.completion ?? 0,
+    vsInfestation:    raw.vsInfestation ?? false,
+    activationMs:     new Date(raw.activation).getTime(),
+    fetchedAt,
+  };
 }
 
-function cacheToResult<T>(cached: Awaited<ReturnType<typeof getWsCache<T>>>): WSFetchResult<T> | null {
-  if (!cached) return null;
-  return { data: cached.data, cachedAt: cached.cachedAt, fromStaleCache: cached.isExpired };
+function rawToAlert(raw: RawAlert, fetchedAt: number): Alert {
+  return {
+    id:               raw.id,
+    node:             raw.mission?.node ?? '',
+    missionType:      raw.mission?.type ?? '',
+    faction:          raw.mission?.faction ?? '',
+    reward:           raw.mission?.reward?.itemString ?? '',
+    rewardCredits:    raw.mission?.reward?.credits ?? 0,
+    minLevel:         raw.mission?.minEnemyLevel ?? 0,
+    maxLevel:         raw.mission?.maxEnemyLevel ?? 0,
+    nightmare:        raw.mission?.nightmare ?? false,
+    archwingRequired: raw.mission?.archwingRequired ?? false,
+    activationMs:     new Date(raw.activation).getTime(),
+    expiryMs:         new Date(raw.expiry).getTime(),
+    fetchedAt,
+  };
+}
+
+function rawToDarvoDeal(raw: RawDarvoDeal, fetchedAt: number): DarvoDeal {
+  return {
+    id:            raw.id,
+    item:          raw.item ?? '',
+    originalPrice: raw.originalPrice ?? 0,
+    salePrice:     raw.salePrice ?? 0,
+    discount:      raw.discount ?? 0,
+    total:         raw.total ?? 1,
+    sold:          raw.sold ?? 0,
+    expiryMs:      new Date(raw.expiry).getTime(),
+    fetchedAt,
+  };
+}
+
+function rawToVoidTrader(raw: RawVoidTrader, fetchedAt: number): VoidTrader {
+  return {
+    id:           raw.id,
+    character:    raw.character ?? "Baro Ki'Teer",
+    location:     raw.location ?? '',
+    inventory:    (raw.inventory ?? []).map(i => ({
+      item:    i.item,
+      ducats:  i.ducats,
+      credits: i.credits,
+    })),
+    activationMs: new Date(raw.activation).getTime(),
+    expiryMs:     new Date(raw.expiry).getTime(),
+    active:       raw.active ?? false,
+    fetchedAt,
+  };
+}
+
+function rawToSteelPath(raw: RawSteelPath, fetchedAt: number): SteelPath {
+  return {
+    rewardName:   raw.currentReward?.name ?? '',
+    rewardCost:   raw.currentReward?.cost ?? 15,
+    activationMs: new Date(raw.activation).getTime(),
+    expiryMs:     new Date(raw.expiry).getTime(),
+    rotation:     (raw.rotation ?? []).map(r => ({ name: r.name, cost: r.cost })),
+    fetchedAt,
+  };
+}
+
+function rawToPersistentEnemy(raw: RawPersistentEnemy, fetchedAt: number): PersistentEnemy {
+  return {
+    id:           raw.id,
+    agentType:    raw.agentType ?? '',
+    typeKey:      raw.typeKey ?? '',
+    health:       raw.health ?? 100,
+    isDiscovered: raw.isDiscovered ?? false,
+    isDestroyed:  raw.isDestroyed ?? false,
+    lastNode:     raw.lastNode ?? '',
+    location:     raw.location ?? '',
+    active:       raw.active ?? true,
+    fetchedAt,
+  };
+}
+
+function rawToNewsItem(raw: RawNewsItem, fetchedAt: number): NewsItem {
+  return {
+    id:        raw.id,
+    headline:  raw.translations?.en ?? raw.message ?? '',
+    link:      raw.link ?? '',
+    imageLink: raw.imageLink ?? '',
+    dateMs:    new Date(raw.date).getTime(),
+    isUpdate:  raw.update ?? false,
+    isPrime:   raw.prime ?? false,
+    isStream:  raw.stream ?? false,
+    fetchedAt,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -79,153 +160,29 @@ function cacheToResult<T>(cached: Awaited<ReturnType<typeof getWsCache<T>>>): WS
 // ---------------------------------------------------------------------------
 
 /**
- * Composite hook for the Solar Rail Feed tab.
- * Covers 9 data streams: alerts, invasions, darvo, voidTrader, steelPath,
- * persistentEnemies, news, sortie, archonHunt.
- *
- * Offline-first: Dexie pre-load → TQ with initialData → 1s clock → derived state.
+ * Composite subscriber for the Solar Rail Feed tab.
+ * Reads a single worldstate_master entry and fans out to 9 data streams.
+ * No TanStack Query — useLiveQuery re-renders whenever SyncService writes.
  */
 export function useSolarRailFeed() {
-  const queryClient = useQueryClient();
+  const wsEntry = useLiveQuery(
+    () => db.cache.get('worldstate_master').then(e => e ?? null),
+    []
+  );
 
-  // ── Phase 1: async Dexie pre-load (all 9 in parallel) ────────────────────
-  const [preload, setPreload] = useState<PreloadState>({
-    alerts: null, invasions: null, darvoDeals: null, voidTrader: null,
-    steelPath: null, persistentEnemies: null, news: null,
-    sortie: null, archon: null, ready: false,
-  });
+  const isLoading = wsEntry === undefined;
+  const ws        = (wsEntry?.data ?? null) as Record<string, unknown> | null;
+  const cachedAt  = wsEntry?.updatedAt ?? 0;
+  const isStale   = wsEntry ? wsEntry.expiresAt < Date.now() : false;
 
-  useEffect(() => {
-    Promise.all([
-      getWsCache<Alert[]>(WS_CACHE_KEYS.alerts),
-      getWsCache<Invasion[]>(WS_CACHE_KEYS.invasions),
-      getWsCache<DarvoDeal[]>(WS_CACHE_KEYS.darvoDeals),
-      getWsCache<VoidTrader>(WS_CACHE_KEYS.voidTrader),
-      getWsCache<SteelPath>(WS_CACHE_KEYS.steelPath),
-      getWsCache<PersistentEnemy[]>(WS_CACHE_KEYS.persistentEnemies),
-      getWsCache<NewsItem[]>(WS_CACHE_KEYS.news),
-      getWsCache<SortieRaw>(WS_CACHE_KEYS.sortie),
-      getWsCache<ArchonHuntRaw>(WS_CACHE_KEYS.archon),
-    ]).then(([alerts, invasions, darvoDeals, voidTrader, steelPath, persistentEnemies, news, sortie, archon]) => {
-      setPreload({
-        alerts:            cacheToResult(alerts),
-        invasions:         cacheToResult(invasions),
-        darvoDeals:        cacheToResult(darvoDeals),
-        voidTrader:        cacheToResult(voidTrader),
-        steelPath:         cacheToResult(steelPath),
-        persistentEnemies: cacheToResult(persistentEnemies),
-        news:              cacheToResult(news),
-        sortie:            cacheToResult(sortie),
-        archon:            cacheToResult(archon),
-        ready:             true,
-      });
-    });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // ── Phase 2: TanStack Query — 9 queries ──────────────────────────────────
-
-  const enabled = preload.ready;
-
-  const { data: alertsResult,   isLoading: alertsLoading,   error: alertsError,   dataUpdatedAt: alertsUpdatedAt,   refetch: refetchAlerts   } =
-    useQuery<WSFetchResult<Alert[]>>({
-      queryKey: ['ws:alerts'], queryFn: fetchAlerts, enabled,
-      initialData: preload.alerts ?? undefined, initialDataUpdatedAt: preload.alerts?.cachedAt ?? 0,
-      staleTime: 30_000, refetchInterval: 30_000, retry: 2, networkMode: 'always',
-    });
-
-  const { data: invasionsResult, isLoading: invasionsLoading, error: invasionsError, refetch: refetchInvasions } =
-    useQuery<WSFetchResult<Invasion[]>>({
-      queryKey: ['ws:invasions'], queryFn: fetchInvasions, enabled,
-      initialData: preload.invasions ?? undefined, initialDataUpdatedAt: preload.invasions?.cachedAt ?? 0,
-      staleTime: 60_000, refetchInterval: 60_000, retry: 2, networkMode: 'always',
-    });
-
-  const { data: darvoResult, isLoading: darvoLoading, error: darvoError, refetch: refetchDarvo } =
-    useQuery<WSFetchResult<DarvoDeal[]>>({
-      queryKey: ['ws:darvoDeals'], queryFn: fetchDarvoDeals, enabled,
-      initialData: preload.darvoDeals ?? undefined, initialDataUpdatedAt: preload.darvoDeals?.cachedAt ?? 0,
-      staleTime: 300_000, refetchInterval: 300_000, retry: 2, networkMode: 'always',
-    });
-
-  const { data: voidTraderResult, isLoading: voidTraderLoading, error: voidTraderError, refetch: refetchVoidTrader } =
-    useQuery<WSFetchResult<VoidTrader>>({
-      queryKey: ['ws:voidTrader'], queryFn: fetchVoidTrader, enabled,
-      initialData: preload.voidTrader ?? undefined, initialDataUpdatedAt: preload.voidTrader?.cachedAt ?? 0,
-      staleTime: 60_000, refetchInterval: 60_000, retry: 2, networkMode: 'always',
-    });
-
-  const { data: steelPathResult, isLoading: steelPathLoading, error: steelPathError, refetch: refetchSteelPath } =
-    useQuery<WSFetchResult<SteelPath>>({
-      queryKey: ['ws:steelPath'], queryFn: fetchSteelPath, enabled,
-      initialData: preload.steelPath ?? undefined, initialDataUpdatedAt: preload.steelPath?.cachedAt ?? 0,
-      staleTime: 300_000, refetchInterval: 300_000, retry: 2, networkMode: 'always',
-    });
-
-  const { data: enemiesResult, isLoading: enemiesLoading, error: enemiesError, refetch: refetchEnemies } =
-    useQuery<WSFetchResult<PersistentEnemy[]>>({
-      queryKey: ['ws:persistentEnemies'], queryFn: fetchPersistentEnemies, enabled,
-      initialData: preload.persistentEnemies ?? undefined, initialDataUpdatedAt: preload.persistentEnemies?.cachedAt ?? 0,
-      staleTime: 60_000, refetchInterval: 60_000, retry: 2, networkMode: 'always',
-    });
-
-  const { data: newsResult, isLoading: newsLoading, error: newsError, refetch: refetchNews } =
-    useQuery<WSFetchResult<NewsItem[]>>({
-      queryKey: ['ws:news'], queryFn: fetchNews, enabled,
-      initialData: preload.news ?? undefined, initialDataUpdatedAt: preload.news?.cachedAt ?? 0,
-      staleTime: 300_000, refetchInterval: 300_000, retry: 2, networkMode: 'always',
-    });
-
-  const { data: sortieResult, isLoading: sortieLoading, error: sortieError, refetch: refetchSortie } =
-    useQuery<WSFetchResult<SortieRaw>>({
-      queryKey: ['ws:sortie'], queryFn: fetchSortieWS, enabled,
-      initialData: preload.sortie ?? undefined, initialDataUpdatedAt: preload.sortie?.cachedAt ?? 0,
-      staleTime: 300_000, refetchInterval: 300_000, retry: 2, networkMode: 'always',
-    });
-
-  const { data: archonResult, isLoading: archonLoading, error: archonError, refetch: refetchArchon } =
-    useQuery<WSFetchResult<ArchonHuntRaw>>({
-      queryKey: ['ws:archon'], queryFn: fetchArchonHuntWS, enabled,
-      initialData: preload.archon ?? undefined, initialDataUpdatedAt: preload.archon?.cachedAt ?? 0,
-      staleTime: 3_600_000, refetchInterval: 3_600_000, retry: 2, networkMode: 'always',
-    });
-
-  // ── Force refresh ─────────────────────────────────────────────────────────
-  async function forceRefetch() {
-    await clearWsCache(
-      WS_CACHE_KEYS.alerts,
-      WS_CACHE_KEYS.invasions,
-      WS_CACHE_KEYS.darvoDeals,
-      WS_CACHE_KEYS.voidTrader,
-      WS_CACHE_KEYS.steelPath,
-      WS_CACHE_KEYS.persistentEnemies,
-      WS_CACHE_KEYS.news,
-      WS_CACHE_KEYS.sortie,
-      WS_CACHE_KEYS.archon,
-    );
-    queryClient.removeQueries({ queryKey: ['ws:alerts'] });
-    queryClient.removeQueries({ queryKey: ['ws:invasions'] });
-    queryClient.removeQueries({ queryKey: ['ws:darvoDeals'] });
-    queryClient.removeQueries({ queryKey: ['ws:voidTrader'] });
-    queryClient.removeQueries({ queryKey: ['ws:steelPath'] });
-    queryClient.removeQueries({ queryKey: ['ws:persistentEnemies'] });
-    queryClient.removeQueries({ queryKey: ['ws:news'] });
-    queryClient.removeQueries({ queryKey: ['ws:sortie'] });
-    queryClient.removeQueries({ queryKey: ['ws:archon'] });
-    await Promise.all([
-      refetchAlerts(), refetchInvasions(), refetchDarvo(), refetchVoidTrader(),
-      refetchSteelPath(), refetchEnemies(), refetchNews(), refetchSortie(), refetchArchon(),
-    ]);
-  }
-
-  // ── 1-second clock ────────────────────────────────────────────────────────
+  // ── 1-second clock ────────────────────────────────────────────────────
   const [now, setNow] = useState(() => Date.now());
-
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
 
-  // ── Derived state ─────────────────────────────────────────────────────────
+  // ── Map + derive ──────────────────────────────────────────────────────
   const {
     alertStatuses,
     invasionStatuses,
@@ -237,80 +194,58 @@ export function useSolarRailFeed() {
     sortieStatus,
     archonHuntStatus,
   } = useMemo(() => {
-    const alertData    = alertsResult?.data    ?? [];
-    const invasionData = invasionsResult?.data ?? [];
-    const darvoData    = darvoResult?.data     ?? [];
-    const enemyData    = enemiesResult?.data   ?? [];
-    const newsData     = newsResult?.data      ?? [];
+    const empty = {
+      alertStatuses:    [] as AlertStatus[],
+      invasionStatuses: [] as InvasionStatus[],
+      darvoDealStatuses:[] as DarvoDealStatus[],
+      voidTraderStatus:  null as VoidTraderStatus | null,
+      steelPathStatus:   null as SteelPathStatus | null,
+      enemyStatuses:    [] as PersistentEnemyStatus[],
+      newsItems:        [] as NewsItem[],
+      sortieStatus:      null as SortieStatus | null,
+      archonHuntStatus:  null as ArchonHuntStatus | null,
+    };
 
-    const activeAlerts   = filterActiveAlerts(alertData, now);
-    const activeEnemies  = filterActiveEnemies(enemyData);
+    if (!ws) return empty;
 
-    const alertStatuses: AlertStatus[] =
-      sortAlertsByExpiry(activeAlerts).map(a => computeAlertStatus(a, now));
+    const rawAlerts   = ((ws['alerts']            ?? []) as RawAlert[]).filter(r => !(r as { expired?: boolean }).expired);
+    const rawInvasions= ((ws['invasions']          ?? []) as RawInvasion[]).filter(r => !(r as { completed?: boolean }).completed);
+    const rawDarvo    = (ws['dailyDeals']          ?? []) as RawDarvoDeal[];
+    const rawTraders  = (ws['voidTraders']         ?? []) as RawVoidTrader[];
+    const rawSteelPath= ws['steelPath']            as RawSteelPath | undefined;
+    const rawEnemies  = ((ws['persistentEnemies']  ?? []) as RawPersistentEnemy[]).filter(r => !r.isDestroyed);
+    const rawNews     = (ws['news']                ?? []) as RawNewsItem[];
+    const rawSortie   = ws['sortie']               as SortieRaw | undefined;
+    const rawArchon   = ws['archonHunt']           as ArchonHuntRaw | undefined;
 
-    const invasionStatuses: InvasionStatus[] =
-      sortInvasionsByCompletion(invasionData).map(computeInvasionStatus);
+    const alerts    = rawAlerts.map(r => rawToAlert(r, cachedAt));
+    const invasions = rawInvasions.map(r => rawToInvasion(r, cachedAt));
+    const darvo     = rawDarvo.map(r => rawToDarvoDeal(r, cachedAt));
+    const trader    = rawTraders[0] ? rawToVoidTrader(rawTraders[0], cachedAt) : null;
+    const sp        = rawSteelPath ? rawToSteelPath(rawSteelPath, cachedAt) : null;
+    const enemies   = rawEnemies.map(r => rawToPersistentEnemy(r, cachedAt));
+    const news      = rawNews.slice(0, 10).map(r => rawToNewsItem(r, cachedAt));
 
-    const darvoDealStatuses: DarvoDealStatus[] =
-      darvoData.map(d => computeDarvoDealStatus(d, now));
-
-    const voidTraderStatus: VoidTraderStatus | null =
-      voidTraderResult?.data ? computeVoidTraderStatus(voidTraderResult.data, now) : null;
-
-    const steelPathStatus: SteelPathStatus | null =
-      steelPathResult?.data ? computeSteelPathStatus(steelPathResult.data, now) : null;
-
-    const enemyStatuses: PersistentEnemyStatus[] =
-      activeEnemies.map(computePersistentEnemyStatus);
-
-    const newsItems: NewsItem[] = sortAndTrimNews(newsData);
-
-    const sortieStatus: SortieStatus | null =
-      sortieResult?.data ? computeSortieStatus(sortieResult.data, now) : null;
-
-    const archonHuntStatus: ArchonHuntStatus | null =
-      archonResult?.data ? computeArchonHuntStatus(archonResult.data, now) : null;
+    const activeAlerts  = filterActiveAlerts(alerts, now);
+    const activeEnemies = filterActiveEnemies(enemies);
 
     return {
-      alertStatuses, invasionStatuses, darvoDealStatuses,
-      voidTraderStatus, steelPathStatus, enemyStatuses,
-      newsItems, sortieStatus, archonHuntStatus,
+      alertStatuses:    sortAlertsByExpiry(activeAlerts).map(a => computeAlertStatus(a, now)),
+      invasionStatuses: sortInvasionsByCompletion(invasions).map(computeInvasionStatus),
+      darvoDealStatuses:darvo.map(d => computeDarvoDealStatus(d, now)),
+      voidTraderStatus:  trader ? computeVoidTraderStatus(trader, now) : null,
+      steelPathStatus:   sp ? computeSteelPathStatus(sp, now) : null,
+      enemyStatuses:    activeEnemies.map(computePersistentEnemyStatus),
+      newsItems:        sortAndTrimNews(news),
+      sortieStatus:      rawSortie ? computeSortieStatus(rawSortie, now) : null,
+      archonHuntStatus:  rawArchon ? computeArchonHuntStatus(rawArchon, now) : null,
     };
-  }, [alertsResult, invasionsResult, darvoResult, voidTraderResult, steelPathResult, enemiesResult, newsResult, sortieResult, archonResult, now]);
+  }, [ws, cachedAt, now]);
 
-  // ── Offline / staleness signals ───────────────────────────────────────────
-  const allResults = [
-    alertsResult, invasionsResult, darvoResult, voidTraderResult,
-    steelPathResult, enemiesResult, newsResult, sortieResult, archonResult,
-  ];
-
-  const isStale = allResults.some(r => r?.fromStaleCache);
-
-  // isError only if ALL queries errored (partial data is still useful)
-  const allErrors = [
-    alertsError, invasionsError, darvoError, voidTraderError,
-    steelPathError, enemiesError, newsError, sortieError, archonError,
-  ];
-  const isError = allErrors.every(e => e != null) && allResults.every(r => !r);
-
-  const anyLoading =
-    alertsLoading || invasionsLoading || darvoLoading || voidTraderLoading ||
-    steelPathLoading || enemiesLoading || newsLoading || sortieLoading || archonLoading;
-
-  const isLoading = !preload.ready || anyLoading;
-
-  const hasAnyData = allResults.some(r => r != null);
-  const hasEverLoaded = hasAnyData || (!anyLoading && !isError);
-
-  // Age of the oldest cached item being shown
-  const cachedAts = allResults
-    .map(r => r?.cachedAt)
-    .filter((t): t is number => t != null);
-  const oldestCachedAt = cachedAts.length > 0 ? Math.min(...cachedAts) : now;
-  const cacheAgeMs = getCacheAgeMs(oldestCachedAt, now);
-
-  const lastSync = alertsUpdatedAt || 0;
+  // ── Force refresh ─────────────────────────────────────────────────────
+  async function forceRefetch() {
+    await SyncService.performSync(true);
+  }
 
   return {
     alertStatuses,
@@ -325,11 +260,11 @@ export function useSolarRailFeed() {
     totalAlerts:    alertStatuses.length,
     totalInvasions: invasionStatuses.length,
     isLoading,
-    isError,
+    isError:        !isLoading && wsEntry === null,
     isStale,
-    hasEverLoaded,
-    cacheAgeMs,
-    lastSync,
+    hasEverLoaded:  !isLoading,
+    cacheAgeMs:     getCacheAgeMs(cachedAt || now, now),
+    lastSync:       cachedAt,
     now,
     forceRefetch,
   };
