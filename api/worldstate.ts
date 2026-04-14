@@ -1,15 +1,10 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export default async function handler(_req: VercelRequest, res: VercelResponse) {
+export default async function handler(req: any, res: any) {
   try {
-    const upstream = await fetch('https://api.warframestat.us/pc');
-    if (!upstream.ok) throw new Error(`Upstream HTTP ${upstream.status}`);
-
-    const data = await upstream.json() as unknown;
-
-    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=30');
-    return res.status(200).json(data);
+    const response = await fetch('https://api.warframestat.us/pc');
+    if (!response.ok) throw new Error('Upstream API Failed');
+    const data = await response.json();
+    res.status(200).json(data);
   } catch (error) {
-    return res.status(500).json({ error: 'Failed to fetch Worldstate' });
+    res.status(500).json({ error: 'Failed to fetch worldstate' });
   }
 }
