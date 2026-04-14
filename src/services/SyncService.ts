@@ -1,5 +1,8 @@
 import { db } from '../adapters/storage/db';
 import { setWsCache, getWsCache, getWsTimestamp } from '../adapters/storage/worldstateCache';
+import { logger } from '../core/utils/logger';
+
+const log = logger.scope('SyncService');
 
 const USER_INVENTORY_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
@@ -56,19 +59,23 @@ async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Respons
 // the public api.warframestat.us mirror directly.
 // ---------------------------------------------------------------------------
 
-async function fetchWorldstate(): Promise<unknown> {
+type DataSource = 'Primary' | 'Fallback' | 'Cache';
+
+interface FetchResult {
+  data: unknown;
+  source: DataSource;
+}
+
+async function fetchWorldstate(): Promise<FetchResult> {
   try {
     const res = await fetchWithTimeout(PRIMARY_URL, PRIMARY_TIMEOUT_MS);
     if (!res.ok) throw new Error(`Primary returned HTTP ${res.status}`);
-    return await res.json();
+    return { data: await res.json(), source: 'Primary' };
   } catch (primaryErr) {
-    console.warn(
-      '[SyncService] Primary endpoint failed or timed out — switching to mirror.',
-      primaryErr,
-    );
+    log.warn('Primary endpoint failed or timed out — switching to mirror.', primaryErr);
     const res = await fetchWithTimeout(FALLBACK_URL, FALLBACK_TIMEOUT_MS);
     if (!res.ok) throw new Error(`Mirror returned HTTP ${res.status}`);
-    return await res.json();
+    return { data: await res.json(), source: 'Fallback' };
   }
 }
 
@@ -94,6 +101,7 @@ export const SyncService = {
     if (!existing) {
       const snapshot = lsReadSnapshot();
       if (snapshot) {
+        log.info('Cold start: seeding Dexie from LocalStorage snapshot. [Cache]');
         await setWsCache('worldstate_master', snapshot, 3_600_000);
       }
     }
@@ -102,13 +110,14 @@ export const SyncService = {
     if (!force) {
       const lastSync = await getWsTimestamp('last_sync_time');
       if (lastSync && now - lastSync < 60_000) {
+        log.info('Sync skipped — within 60 s lock window. Serving from Cache.');
         return (await getWsCache<unknown>('worldstate_master'))?.data ?? null;
       }
     }
 
     try {
       // 3. Fetch — primary first, mirror as fallback
-      const data = await fetchWorldstate();
+      const { data, source } = await fetchWorldstate();
 
       // 4. Persist to Dexie (1 h TTL) + update the LS snapshot.
       //    All useLiveQuery subscribers auto-update — no manual invalidation needed.
@@ -116,9 +125,10 @@ export const SyncService = {
       await setWsCache('last_sync_time', now);
       lsWriteSnapshot(data);
 
+      log.success(`Worldstate synced. Source: ${source}`);
       return data;
     } catch (error) {
-      console.error('[SyncService] All endpoints failed, serving offline data.', error);
+      log.error('All endpoints failed — serving stale data from Cache.', error);
       return (await getWsCache<unknown>('worldstate_master'))?.data ?? null;
     }
   },
@@ -145,7 +155,7 @@ export const SyncService = {
         expiresAt: now + USER_INVENTORY_TTL,
       });
     } catch (error) {
-      console.error('Failed to persist user inventory:', error);
+      log.error('Failed to persist user inventory.', error);
       throw error;
     }
   },
