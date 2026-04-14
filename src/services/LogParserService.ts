@@ -1,8 +1,16 @@
-import { db } from '../adapters/storage/db';
+/**
+ * LogParserService — pure functions for parsing EE.log files.
+ * No Dexie imports; no side-effects.
+ * Inventory persistence is handled by SyncService.updateUserInventory().
+ */
 
 export const LogParserService = {
-  // This looks for "Inventory" or "Mission Reward" lines in the text
-  parseLog(content: string) {
+  /**
+   * Parse EE.log content and extract discovered item names.
+   * @param content - Raw text content from EE.log file
+   * @returns Array of unique item names found in the log
+   */
+  parseLog(content: string): string[] {
     const lines = content.split('\n');
     const discoveredItems: string[] = [];
 
@@ -18,15 +26,5 @@ export const LogParserService = {
     });
 
     return [...new Set(discoveredItems)]; // Return unique items found
-  },
-
-  async syncInventoryToDb(items: string[]) {
-    // Save these to your Dexie database so the app "remembers" you have them
-    await db.cache.put({
-      key: 'user_inventory',
-      data: items,
-      updatedAt: Date.now(),
-      expiresAt: Date.now() + (1000 * 60 * 60 * 24) // 24 hour "soft" expiry
-    });
   }
 };
