@@ -8,10 +8,9 @@
 @font-face {
   font-family: "Noto Serif";
   font-style: normal;
-  font-weight: 400 900;
+  font-weight: 100 900;
   font-display: swap;
-  src: url("https://fonts.gstatic.com/s/notoserif/v23/ga6iaw1J5X9T9RW6j9bNVls-hfgvz8brpZ-BEA.woff2")
-    format("woff2");
+  src: url("/fonts/noto-serif-vf.woff2") format("woff2");
 }
 
 @font-face {
@@ -19,8 +18,7 @@
   font-style: normal;
   font-weight: 300 700;
   font-display: swap;
-  src: url("https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2")
-    format("woff2");
+  src: url("/fonts/inter-vf.woff2") format("woff2");
 }
 
 @theme {

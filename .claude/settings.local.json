@@ -26,7 +26,18 @@
       "Bash(python3 \"C:/Users/Nuclear Spaceship/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.5.0/.claude/skills/ui-ux-pro-max/scripts/search.py\" \"gaming companion dark cinematic immersive data dashboard\" --design-system -p \"Tennoplan Celestial Pendulum\" -f markdown)",
       "Bash(python3 cli/assets/scripts/search.py \"gaming companion dark cinematic immersive real-time dashboard\" --design-system -p \"Tennoplan\" -f markdown)",
       "Bash(npm audit:*)",
-      "Bash(New-Item -ItemType File -Path \"src/adapters/api/worldstate/index.ts\" -Force)"
+      "Bash(New-Item -ItemType File -Path \"src/adapters/api/worldstate/index.ts\" -Force)",
+      "mcp__obsidian__search-vault",
+      "mcp__obsidian__edit-note",
+      "mcp__obsidian__create-note",
+      "Bash(rm -f src/adapters/api/worldstateFetcher.ts src/adapters/api/fissureAdapter.ts src/adapters/api/cyclesAdapter.ts src/adapters/api/ascensionAdapter.ts src/adapters/api/dailiesAdapter.ts src/adapters/api/railAdapter.ts src/adapters/api/simarisAdapter.ts src/adapters/api/syndicatesAdapter.ts)",
+      "Bash(rm -rf src/adapters/legacy/)",
+      "Bash(curl -L -o 'C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/tennoplan/public/fonts/noto-serif-vf.woff2' https://fonts.gstatic.com/s/notoserif/v23/ga6iaw1J5X9T9RW6j9bNVls-hfgvz8brpZ-BEA.woff2 --user-agent Mozilla/5.0)",
+      "Bash(curl -L -o 'C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/tennoplan/public/fonts/inter-vf.woff2' https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2 --user-agent Mozilla/5.0)",
+      "Bash(xxd)",
+      "Bash(curl -s 'https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900&display=swap' -H 'User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36')",
+      "Bash(xxd \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/tennoplan/public/fonts/inter-vf.woff2\")",
+      "Bash(curl -s -L -o 'C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/tennoplan/public/fonts/noto-serif-vf.woff2' https://fonts.gstatic.com/s/notoserif/v33/ga6daw1J5X9T9RW6j9bNVls-hfgvz8JcMofYTYf6D30.woff2 --user-agent 'Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36')"
     ]
   }
 }

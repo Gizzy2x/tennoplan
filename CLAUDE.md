@@ -94,3 +94,13 @@ Data Sources
 Worldstate / Nightwave / Fissures: https://api.warframestat.us/
 Market: https://api.warframe.market/v2/
 EE.log: Future Tauri Rust parser
+
+# Workflow: Post-Mortem Logging
+- When I say "Archive this bug," "Log this," or "Post-mortem," you must:
+  1. Identify the root cause and the final working solution.
+  2. Use the Obsidian MCP to create or append to a note at `Notes/Post_Mortems.md`.
+  3. Format the entry with:
+     - **Date:** [Current Date]
+     - **The Bug:** Short description.
+     - **The "Gotcha":** Why it happened (the logic failure).
+     - **The Fix:** The exact code or command that solved it.
