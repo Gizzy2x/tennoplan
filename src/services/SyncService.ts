@@ -1,4 +1,7 @@
+import { db } from '../adapters/storage/db';
 import { setWsCache, getWsCache, getWsTimestamp } from '../adapters/storage/worldstateCache';
+
+const USER_INVENTORY_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 export const SyncService = {
   /**
@@ -33,5 +36,32 @@ export const SyncService = {
       console.error('Sync failed, falling back to offline data.');
       return (await getWsCache<unknown>('worldstate_master'))?.data ?? null;
     }
-  }
+  },
+
+  /**
+   * Gateway method for persisting user inventory from parsed EE.log.
+   *
+   * @param items - Array of discovered item names from LogParserService.parseLog()
+   *
+   * This is the ONLY place in the app that writes user_inventory to cache.
+   * It ensures:
+   * - Consistent TTL (24 hours)
+   * - Single write path (SyncService enforces)
+   * - Coordination with worldstate sync cadence
+   */
+  async updateUserInventory(items: string[]) {
+    const now = Date.now();
+
+    try {
+      await db.cache.put({
+        key: 'user_inventory',
+        data: items,
+        updatedAt: now,
+        expiresAt: now + USER_INVENTORY_TTL,
+      });
+    } catch (error) {
+      console.error('Failed to persist user inventory:', error);
+      throw error;
+    }
+  },
 };
