@@ -28,3 +28,10 @@ src-tauri/target/
 
 # Developer-only reference assets (do not ship)
 Reference-for-Tennoplan/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example

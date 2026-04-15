@@ -4,6 +4,9 @@ import { db } from './db';
 // Cache key constants — shared by SyncService, legacy adapters, feature hooks
 // ---------------------------------------------------------------------------
 
+// ETag key — stored alongside worldstate data for conditional GET requests.
+export const WS_ETAG_KEY = 'worldstate:etag';
+
 export const WS_CACHE_KEYS = {
   nightwave:         'ws:nightwave',
   sortie:            'ws:sortie',
@@ -81,11 +84,31 @@ export async function clearWsCache(...keys: string[]): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
-// Timestamp helper — used by SyncService 60s anti-spam lock
-// Reads updatedAt regardless of TTL expiry so stale entries still satisfy the lock.
+// Timestamp helper — reads updatedAt regardless of TTL expiry.
 // ---------------------------------------------------------------------------
 
 export async function getWsTimestamp(key: string): Promise<number> {
   const entry = await db.cache.get(key);
   return entry ? entry.updatedAt : 0;
+}
+
+// ---------------------------------------------------------------------------
+// ETag helpers — used by SyncService for conditional GET (If-None-Match).
+// Storing in Dexie means the ETag survives page reloads and app restarts,
+// so we skip the 2 MB download whenever the worldstate hasn't changed.
+// ---------------------------------------------------------------------------
+
+export async function getWsEtag(): Promise<string | null> {
+  const entry = await db.cache.get(WS_ETAG_KEY);
+  return entry ? (entry.data as string) : null;
+}
+
+export async function setWsEtag(etag: string): Promise<void> {
+  const now = Date.now();
+  await db.cache.put({
+    key:       WS_ETAG_KEY,
+    data:      etag,
+    expiresAt: now + 86_400_000, // 24 h — refreshed on every successful sync
+    updatedAt: now,
+  });
 }
