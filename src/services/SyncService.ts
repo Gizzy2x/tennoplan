@@ -22,8 +22,14 @@ const PRIMARY_URL     = CF_WORKER_URL?.replace(/\/$/, '') ?? DIRECT_URL;
 // Only add a fallback when the Worker is primary — otherwise direct IS the primary
 const FALLBACK_URL    = CF_WORKER_URL ? DIRECT_URL : null;
 
-const REQUEST_TIMEOUT_MS   = 10_000;
-const USER_INVENTORY_TTL   = 24 * 60 * 60 * 1000;
+const REQUEST_TIMEOUT_MS        = 10_000;
+const USER_INVENTORY_TTL        = 24 * 60 * 60 * 1000;
+const PASSIVE_SYNC_COOLDOWN_MS  = 60_000;
+
+// Module-level cooldown guard for passive (expiry-triggered) syncs.
+// Prevents a cascade of requestPassiveSync() calls when multiple fissures
+// expire within the same second (they share the same useGameClock tick).
+let _lastPassiveSyncAt = 0;
 
 // ---------------------------------------------------------------------------
 // LocalStorage snapshot — synchronous, instant read on cold start.
@@ -166,6 +172,22 @@ export const SyncService = {
       log.error('All endpoints failed — serving stale data from Cache.', error);
       return (await getWsCache<unknown>('worldstate_master'))?.data ?? null;
     }
+  },
+
+  /**
+   * Lightweight sync nudge triggered by the UI when a non-deterministic item
+   * (fissure, invasion, alert) reaches 00:00:00.
+   *
+   * Internally rate-limited to one network call per 60 s — safe to call on
+   * every clock tick without worrying about spam. Because the CF Worker
+   * itself only refreshes once per minute, calling more often is pointless.
+   */
+  requestPassiveSync() {
+    const now = Date.now();
+    if (now - _lastPassiveSyncAt < PASSIVE_SYNC_COOLDOWN_MS) return;
+    _lastPassiveSyncAt = now;
+    log.info('Passive sync triggered by expiration event.');
+    void this.performSync(false);
   },
 
   /**
