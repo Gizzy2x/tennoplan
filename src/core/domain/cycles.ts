@@ -1,5 +1,5 @@
 /** All world cycle identifiers in Tennoplan */
-export type CycleId = 'cetus' | 'vallis' | 'cambion' | 'zariman' | 'earth';
+export type CycleId = 'cetus' | 'vallis' | 'cambion' | 'zariman' | 'earth' | 'duviri';
 
 // Per-world state unions
 export type CetusState   = 'day' | 'night';
@@ -7,13 +7,15 @@ export type VallisState  = 'warm' | 'cold';
 export type CambionState = 'fass' | 'vome';
 export type ZarimanState = 'corpus' | 'grineer';
 export type EarthState   = 'day' | 'night';
+export type DuviriState  = 'joy' | 'anger' | 'envy' | 'sorrow' | 'fear';
 
 export type CycleState =
   | CetusState
   | VallisState
   | CambionState
   | ZarimanState
-  | EarthState;
+  | EarthState
+  | DuviriState;
 
 /**
  * A live snapshot of one world's cycle, as received from the API or restored

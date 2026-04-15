@@ -1,8 +1,8 @@
-import type { ComponentType } from "react";
+import { useEffect, type ComponentType } from "react";
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
-import { BackgroundDecorations } from "@/components/decorations/BackgroundDecorations";
 import { useNavigationStore, type NavTab } from "@/store/navigation";
+import { SyncService } from "@/services/SyncService";
 
 import { DailiesWeekliesPage } from "@/features/dailies-weeklies/DailiesWeekliesPage";
 import { CelestialPendulumPage } from "@/features/celestial-pendulum/CelestialPendulumPage";
@@ -15,6 +15,9 @@ import { SolarRailFeedPage } from "@/features/solar-rail-feed/SolarRailFeedPage"
 import { PlatinumLedgerPage } from "@/features/platinum-ledger/PlatinumLedgerPage";
 import { NeuralArchivePage } from "@/features/neural-archive/NeuralArchivePage";
 import { CephalonWeavePage } from "@/features/cephalon-weave/CephalonWeavePage";
+
+const EXPANDED_W = 260;
+const RAIL_W = 72;
 
 const PAGE_MAP: Record<NavTab, ComponentType> = {
   "dailies-weeklies": DailiesWeekliesPage,
@@ -32,15 +35,34 @@ const PAGE_MAP: Record<NavTab, ComponentType> = {
 
 export function AppShell() {
   const activeTab = useNavigationStore((s) => s.activeTab);
+  const isCollapsed = useNavigationStore((s) => s.isCollapsed);
   const ActivePage = PAGE_MAP[activeTab];
+  const sidebarW = isCollapsed ? RAIL_W : EXPANDED_W;
+
+  // Bootstrap: fire the first worldstate sync immediately on app mount.
+  // Without this, a fresh Dexie DB has no worldstate_master entry and every
+  // useLiveQuery hook returns null indefinitely.
+  useEffect(() => {
+    SyncService.performSync(true);
+  }, []);
+
+  // Keep the CSS variable in sync so fixed cinematic backgrounds adapt automatically
+  useEffect(() => {
+    document.documentElement.style.setProperty("--sidebar-w", `${sidebarW}px`);
+  }, [sidebarW]);
 
   return (
     <>
-      <BackgroundDecorations />
       <Sidebar />
       <Header />
 
-      <main className="ml-[280px] pt-24 pb-12 px-12 min-h-screen relative overflow-hidden">
+      <main
+        style={{
+          marginLeft: sidebarW,
+          transition: "margin-left 250ms ease-in-out",
+        }}
+        className="pt-24 pb-12 px-12 min-h-screen relative overflow-hidden"
+      >
         <ActivePage />
       </main>
     </>

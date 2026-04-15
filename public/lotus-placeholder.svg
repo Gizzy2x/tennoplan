@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Orokin-styled Lotus sigil placeholder -->
+  <rect width="64" height="64" rx="4" fill="#1a1a1a" fill-opacity="0.6"/>
+  <!-- Outer ring -->
+  <circle cx="32" cy="32" r="26" stroke="#E3C372" stroke-width="1" stroke-opacity="0.3"/>
+  <!-- Inner ring -->
+  <circle cx="32" cy="32" r="18" stroke="#E3C372" stroke-width="0.5" stroke-opacity="0.2"/>
+  <!-- Lotus petals (simplified diamond cross) -->
+  <path d="M32 10 L36 28 L32 32 L28 28 Z" fill="#E3C372" fill-opacity="0.25"/>
+  <path d="M54 32 L36 36 L32 32 L36 28 Z" fill="#E3C372" fill-opacity="0.25"/>
+  <path d="M32 54 L28 36 L32 32 L36 36 Z" fill="#E3C372" fill-opacity="0.25"/>
+  <path d="M10 32 L28 28 L32 32 L28 36 Z" fill="#E3C372" fill-opacity="0.25"/>
+  <!-- Center dot -->
+  <circle cx="32" cy="32" r="3" fill="#E3C372" fill-opacity="0.4"/>
+  <!-- Corner filigree marks -->
+  <path d="M14 14 L18 14 M14 14 L14 18" stroke="#E3C372" stroke-width="1" stroke-opacity="0.2" stroke-linecap="round"/>
+  <path d="M50 14 L46 14 M50 14 L50 18" stroke="#E3C372" stroke-width="1" stroke-opacity="0.2" stroke-linecap="round"/>
+  <path d="M14 50 L18 50 M14 50 L14 46" stroke="#E3C372" stroke-width="1" stroke-opacity="0.2" stroke-linecap="round"/>
+  <path d="M50 50 L46 50 M50 50 L50 46" stroke="#E3C372" stroke-width="1" stroke-opacity="0.2" stroke-linecap="round"/>
+</svg>

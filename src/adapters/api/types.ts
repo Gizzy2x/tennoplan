@@ -1,9 +1,10 @@
-// ---------------------------------------------------------------------------
-// Shared adapter result type — used by all worldstate API adapters
-// ---------------------------------------------------------------------------
-
+/**
+ * Standard result envelope returned by worldstate fetch functions.
+ * fromStaleCache: true means the data came from an expired Dexie entry
+ * (network was unavailable at fetch time).
+ */
 export interface WSFetchResult<T> {
   data:           T;
-  cachedAt:       number;  // ms epoch when data was last fetched from the API
-  fromStaleCache: boolean; // true = network failed, serving expired Dexie data
+  cachedAt:       number;
+  fromStaleCache: boolean;
 }

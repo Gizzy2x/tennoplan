@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState, useEffect } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/adapters/storage/db';
-import { fetchNightwave, fetchSortie, fetchArchonHunt } from '@/adapters/api/ascensionAdapter';
+import { SyncService } from '@/services/SyncService';
 import {
   computeChallengeStatus,
   computeSortieStatus,
@@ -10,75 +10,39 @@ import {
   computeStanding,
 } from '@/core/services/ascensionService';
 import { getWeekStart } from '@/core/services/cycleService';
-import type { ChallengeKind, ChallengeStatus, SortieStatus, ArchonHuntStatus, StandingSummary } from '@/core/domain/ascension';
+import type {
+  NightwaveRaw,
+  SortieRaw,
+  ArchonHuntRaw,
+  ChallengeKind,
+  ChallengeStatus,
+  SortieStatus,
+  ArchonHuntStatus,
+  StandingSummary,
+} from '@/core/domain/ascension';
 
 // ---------------------------------------------------------------------------
 // Hook
 // ---------------------------------------------------------------------------
 
 /**
- * Provides live challenge statuses and Sortie for the Dailies & Weeklies tab.
- *
- * - React Query fetches Nightwave + Sortie (5 min poll), with Dexie fallback.
- * - Local completion state lives in userMarks (Dexie), loaded once on mount.
- *   Optimistic updates via setState so toggles feel instant.
- * - `weeklyEarned` sums metadata.reputation from all marks this UTC week,
- *   so standing stays correct even after daily challenges expire from the API.
- * - A 1-second interval ticks `now` for daily countdowns without re-fetching.
+ * Composite hook for the Dailies & Weeklies tab (legacy entry-point).
+ * Rewritten to read worldstate_master via useLiveQuery — no fetch calls,
+ * no TanStack Query. SyncService owns the single write path.
  */
 export function useDailiesWeeklies() {
-  const queryClient = useQueryClient();
+  const wsEntry = useLiveQuery(
+    () => db.cache.get('worldstate_master').then(e => e ?? null),
+    []
+  );
 
-  // ── Nightwave query ────────────────────────────────────────────────────
-  const {
-    data:          nwData,
-    isLoading:     nwLoading,
-    error:         nwError,
-    dataUpdatedAt: nwUpdatedAt,
-    refetch:       refetchNW,
-  } = useQuery({
-    queryKey:        ['nightwave'],
-    queryFn:         fetchNightwave,
-    staleTime:       300_000,
-    refetchInterval: 300_000,
-    retry:           2,
-    networkMode:     'always',
-  });
-
-  // ── Sortie query ───────────────────────────────────────────────────────
-  const {
-    data:          sortieData,
-    isLoading:     sortieLoading,
-    error:         sortieError,
-    dataUpdatedAt: sortieUpdatedAt,
-    refetch:       refetchSortie,
-  } = useQuery({
-    queryKey:        ['sortie'],
-    queryFn:         fetchSortie,
-    staleTime:       300_000,
-    refetchInterval: 300_000,
-    retry:           2,
-    networkMode:     'always',
-  });
-
-  // ── Archon Hunt query ──────────────────────────────────────────────────
-  const {
-    data:      archonHuntData,
-    isLoading: archonHuntLoading,
-    error:     archonHuntError,
-    refetch:   refetchArchonHunt,
-  } = useQuery({
-    queryKey:        ['archonHunt'],
-    queryFn:         fetchArchonHunt,
-    staleTime:       3_600_000,
-    refetchInterval: 3_600_000,
-    retry:           2,
-    networkMode:     'always',
-  });
+  const isLoading = wsEntry === undefined;
+  const ws        = (wsEntry?.data ?? null) as Record<string, unknown> | null;
+  const cachedAt  = wsEntry?.updatedAt ?? 0;
 
   // ── Local completion state ─────────────────────────────────────────────
-  const [completedIds,  setCompletedIds]  = useState<Set<string>>(new Set());
-  const [weeklyEarned,  setWeeklyEarned]  = useState(0);
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [weeklyEarned, setWeeklyEarned] = useState(0);
 
   async function loadMarks() {
     const marks = await db.userMarks.where('type').equals('ascension').toArray();
@@ -96,18 +60,12 @@ export function useDailiesWeeklies() {
   useEffect(() => { loadMarks(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function toggleComplete(challengeId: string, reputation: number) {
-    // Optimistic update first for instant UI response
     setCompletedIds(prev => {
       const next = new Set(prev);
-      if (next.has(challengeId)) {
-        next.delete(challengeId);
-      } else {
-        next.add(challengeId);
-      }
+      next.has(challengeId) ? next.delete(challengeId) : next.add(challengeId);
       return next;
     });
 
-    // Persist to Dexie
     const existing = await db.userMarks
       .where('[type+referenceId]')
       .equals(['ascension', challengeId])
@@ -127,32 +85,16 @@ export function useDailiesWeeklies() {
       });
     }
 
-    // Reload to keep weeklyEarned accurate
     await loadMarks();
   }
 
-  // ── Force refresh — clears Dexie cache + React Query cache then refetches
+  // ── Force refresh ──────────────────────────────────────────────────────
   async function forceRefetch() {
-    await Promise.all([
-      db.cache.delete('nightwave:all'),
-      db.cache.delete('sortie:daily'),
-      db.cache.delete('archonHunt:weekly'),
-    ]);
-    queryClient.removeQueries({ queryKey: ['nightwave'] });
-    queryClient.removeQueries({ queryKey: ['sortie'] });
-    queryClient.removeQueries({ queryKey: ['archonHunt'] });
-    await Promise.all([refetchNW(), refetchSortie(), refetchArchonHunt()]);
+    await SyncService.performSync(true);
   }
 
   // ── 1-second clock ────────────────────────────────────────────────────
-  // Drives daily countdown timers. Weekly/elite msRemaining is recomputed
-  // each tick but their "Xd Yh" format only changes hourly — imperceptible.
-  //
-  // TODO: EE.log integration — Tauri FS plugin will let us tail EE.log for
-  // "NightwaveChallengeCompleted" / "SortieCompleted" entries, auto-marking
-  // challenges without manual toggle. userMarks (Dexie) stays source of truth.
   const [now, setNow] = useState(() => Date.now());
-
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
@@ -166,57 +108,62 @@ export function useDailiesWeeklies() {
     standing,
     totalChallenges,
     completedCount,
+    season,
+    seasonTag,
   } = useMemo(() => {
-    if (!nwData) {
-      return {
-        grouped:          { daily: [], weekly: [], elite: [] } as Record<ChallengeKind, ChallengeStatus[]>,
-        sortieStatus:     null as SortieStatus | null,
-        archonHuntStatus: null as ArchonHuntStatus | null,
-        standing:         { earned: 0, available: 0, pct: 0 } as StandingSummary,
-        totalChallenges:  0,
-        completedCount:   0,
-      };
-    }
+    const empty = {
+      grouped:          { daily: [], weekly: [], elite: [] } as Record<ChallengeKind, ChallengeStatus[]>,
+      sortieStatus:     null as SortieStatus | null,
+      archonHuntStatus: null as ArchonHuntStatus | null,
+      standing:         { earned: 0, available: 0, pct: 0 } as StandingSummary,
+      totalChallenges:  0,
+      completedCount:   0,
+      season:           0,
+      seasonTag:        '',
+    };
 
-    const statuses = nwData.challenges.map(c =>
+    if (!ws) return empty;
+
+    const nwRaw     = (ws['nightwave']  ?? {}) as NightwaveRaw;
+    const sortieRaw = ws['sortie']             as SortieRaw | undefined;
+    const archonRaw = ws['archonHunt']         as ArchonHuntRaw | undefined;
+
+    const challenges = (nwRaw.activeChallenges ?? []).map(c => ({
+      ...c,
+      reputation: Number(c.reputation) || 0,
+    }));
+
+    const statuses = challenges.map(c =>
       computeChallengeStatus(c, completedIds, now)
     );
 
-    const sortieStatus = sortieData
-      ? computeSortieStatus(sortieData, now)
-      : null;
-
-    const archonHuntStatus = archonHuntData
-      ? computeArchonHuntStatus(archonHuntData, now)
-      : null;
-
     return {
-      grouped:         groupChallenges(statuses),
-      sortieStatus,
-      archonHuntStatus,
-      standing:        computeStanding(statuses),
-      totalChallenges: statuses.length,
-      completedCount:  statuses.filter(s => s.completed).length,
+      grouped:          groupChallenges(statuses),
+      sortieStatus:     sortieRaw ? computeSortieStatus(sortieRaw, now) : null,
+      archonHuntStatus: archonRaw ? computeArchonHuntStatus(archonRaw, now) : null,
+      standing:         computeStanding(statuses),
+      totalChallenges:  statuses.length,
+      completedCount:   statuses.filter(s => s.completed).length,
+      season:           nwRaw.season ?? 0,
+      seasonTag:        nwRaw.tag    ?? '',
     };
-  }, [nwData, sortieData, archonHuntData, completedIds, now]);
-
-  const lastSync = nwUpdatedAt || sortieUpdatedAt || 0;
+  }, [ws, completedIds, now]);
 
   return {
     grouped,
     sortieStatus,
     archonHuntStatus,
-    archonHuntLoading,
-    archonHuntError,
+    archonHuntLoading: isLoading,
+    archonHuntError:   !isLoading && wsEntry === null ? new Error('No data') : null,
     standing,
     weeklyEarned,
     totalChallenges,
     completedCount,
-    season:       nwData?.season  ?? 0,
-    seasonTag:    nwData?.tag     ?? '',
-    isLoading:    nwLoading || sortieLoading,
-    isError:      !!nwError || !!sortieError,
-    lastSync,
+    season,
+    seasonTag,
+    isLoading,
+    isError:   !isLoading && wsEntry === null,
+    lastSync:  cachedAt,
     now,
     toggleComplete,
     forceRefetch,

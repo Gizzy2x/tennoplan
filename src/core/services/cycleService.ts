@@ -15,6 +15,8 @@ export const CYCLE_DURATIONS: Record<CycleId, Readonly<Record<string, number>>> 
   cambion: { fass: 100 * 60_000, vome:  100 * 60_000 },
   zariman: { corpus: 20 * 60_000, grineer: 20 * 60_000 },
   earth:   { day: 4 * 60 * 60_000, night: 4 * 60 * 60_000 },
+  // Approximate: each Duviri mood lasts ~60 min (authoritative expiry from API)
+  duviri:  { joy: 60 * 60_000, anger: 60 * 60_000, envy: 60 * 60_000, sorrow: 60 * 60_000, fear: 60 * 60_000 },
 };
 
 const STATE_ORDER: Record<CycleId, readonly CycleState[]> = {
@@ -23,6 +25,7 @@ const STATE_ORDER: Record<CycleId, readonly CycleState[]> = {
   cambion: ['fass',   'vome'],
   zariman: ['corpus', 'grineer'],
   earth:   ['day',    'night'],
+  duviri:  ['joy',    'anger', 'envy', 'sorrow', 'fear'],
 };
 
 // ---------------------------------------------------------------------------

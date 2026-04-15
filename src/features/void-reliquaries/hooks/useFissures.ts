@@ -1,13 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchFissures } from '@/adapters/api/fissureAdapter';
-import {
-  getWsCache,
-  clearWsCache,
-  WS_CACHE_KEYS,
-} from '@/adapters/storage/worldstateCache';
+import { useMemo } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '@/adapters/storage/db';
+import { SyncService } from '@/services/SyncService';
 import { getCacheAgeMs } from '@/core/services/WorldstateService';
-import type { WSFetchResult } from '@/adapters/api/types';
 import {
   computeFissureStatus,
   filterFissures,
@@ -16,7 +11,12 @@ import {
   getNextToExpire,
   type FissureFilters,
 } from '@/core/services/fissureService';
-import type { Fissure, FissureStatus, FissureTier } from '@/core/domain/relics';
+import type { Fissure, FissureEnemy, FissureTier, FissureStatus } from '@/core/domain/relics';
+import { useGameClock } from '@/hooks/useGameClock';
+
+// ---------------------------------------------------------------------------
+// Filters
+// ---------------------------------------------------------------------------
 
 export const DEFAULT_FILTERS: FissureFilters = {
   showNormal:    true,
@@ -25,12 +25,37 @@ export const DEFAULT_FILTERS: FissureFilters = {
 };
 
 // ---------------------------------------------------------------------------
-// Pre-load state
+// Raw API shape (kept local — not a domain concern)
 // ---------------------------------------------------------------------------
 
-interface PreloadState {
-  fissures: WSFetchResult<Fissure[]> | null;
-  ready:    boolean;
+interface RawFissure {
+  id:          string;
+  node:        string;
+  missionType: string;
+  enemy:       string;
+  tier:        string;
+  tierNum:     number;
+  expiry:      string;
+  activation:  string;
+  expired:     boolean;
+  isStorm:     boolean;
+  isHard:      boolean;
+}
+
+function rawToFissure(raw: RawFissure, fetchedAt: number): Fissure {
+  return {
+    id:           raw.id,
+    node:         raw.node,
+    missionType:  raw.missionType,
+    enemy:        raw.enemy as FissureEnemy,
+    tier:         raw.tier as FissureTier,
+    tierNum:      raw.tierNum,
+    expiryMs:     new Date(raw.expiry).getTime(),
+    activationMs: new Date(raw.activation).getTime(),
+    fetchedAt,
+    isStorm:      raw.isStorm ?? false,
+    isHard:       raw.isHard ?? false,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -38,120 +63,69 @@ interface PreloadState {
 // ---------------------------------------------------------------------------
 
 /**
- * Provides live FissureStatus objects grouped by tier.
- *
- * Offline-first pattern (same as useDailiesData):
- *   1. On mount, Dexie cache is read via getWsCache.
- *   2. Once pre-load resolves, query is enabled with initialData.
- *   3. Cached data appears immediately — no loading flash even when offline.
- *   4. If cachedAt is older than staleTime, TQ background-refetches.
- *   5. If no cache AND no network, hasEverLoaded = false → first-sync card.
+ * Subscribes directly to worldstate_master in Dexie via useLiveQuery.
+ * SyncService is the only code that writes to that entry; this hook is
+ * purely a read-side subscriber. No TanStack Query, no fetch calls.
  */
 export function useFissures(filters: FissureFilters = DEFAULT_FILTERS) {
-  const queryClient = useQueryClient();
+  // useLiveQuery returns:
+  //   undefined → Dexie query still pending (< 5 ms on first load)
+  //   null      → no worldstate_master entry yet (never synced)
+  //   CacheEntry → live data
+  const wsEntry = useLiveQuery(
+    () => db.cache.get('worldstate_master').then(e => e ?? null),
+    []
+  );
 
-  // ── Phase 1: async Dexie pre-load ─────────────────────────────────────
-  const [preload, setPreload] = useState<PreloadState>({
-    fissures: null, ready: false,
-  });
+  const isLoading  = wsEntry === undefined;
+  const ws         = (wsEntry?.data ?? null) as Record<string, unknown> | null;
+  const cachedAt   = wsEntry?.updatedAt ?? 0;
+  const isStale    = wsEntry ? wsEntry.expiresAt < Date.now() : false;
 
-  useEffect(() => {
-    getWsCache<Fissure[]>(WS_CACHE_KEYS.fissures).then(cached => {
-      setPreload({
-        fissures: cached
-          ? { data: cached.data, cachedAt: cached.cachedAt, fromStaleCache: cached.isExpired }
-          : null,
-        ready: true,
-      });
-    });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // ── Shared global clock (no per-hook setInterval) ─────────────────────
+  const now = useGameClock();
 
-  // ── Phase 2: TanStack Query ───────────────────────────────────────────
-  const {
-    data:          result,
-    isLoading,
-    error,
-    dataUpdatedAt,
-    refetch,
-  } = useQuery<WSFetchResult<Fissure[]>>({
-    queryKey:             ['ws:fissures'],
-    queryFn:              fetchFissures,
-    enabled:              preload.ready,
-    initialData:          preload.fissures ?? undefined,
-    initialDataUpdatedAt: preload.fissures?.cachedAt ?? 0,
-    staleTime:            60_000,
-    refetchInterval:      60_000,
-    retry:                2,
-    networkMode:          'always',
-  });
-
-  // ── Force refresh ─────────────────────────────────────────────────────
-  async function forceRefetch() {
-    await clearWsCache(WS_CACHE_KEYS.fissures);
-    queryClient.removeQueries({ queryKey: ['ws:fissures'] });
-    await refetch();
-  }
-
-  // ── 1-second clock ────────────────────────────────────────────────────
-  const [now, setNow] = useState(() => Date.now());
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  // ── Derived state ─────────────────────────────────────────────────────
-  const data = result?.data;
-
-  const {
-    grouped,
-    expiredStatuses,
-    totalActive,
-    steelPathCount,
-    nextToExpire,
-  } = useMemo(() => {
-    if (!data) {
-      return {
+  // ── Map + derive ──────────────────────────────────────────────────────
+  const { grouped, expiredStatuses, totalActive, steelPathCount, nextToExpire } =
+    useMemo(() => {
+      const empty = {
         grouped:         new Map<FissureTier, FissureStatus[]>(),
         expiredStatuses: [] as FissureStatus[],
         totalActive:     0,
         steelPathCount:  0,
         nextToExpire:    null as FissureStatus | null,
       };
-    }
 
-    const filtered = filterFissures(data, filters);
+      if (!ws) return empty;
 
-    // Split locally-active vs locally-expired (between 60s API polls)
-    const activeFissures  = filtered.filter(f => computeFissureStatus(f, now).msRemaining > 0);
-    const expiredFissures = filtered.filter(f => computeFissureStatus(f, now).msRemaining === 0);
+      const raws    = (ws['fissures'] ?? []) as RawFissure[];
+      const fissures = raws.filter(r => !r.expired).map(r => rawToFissure(r, cachedAt));
+      const filtered = filterFissures(fissures, filters);
 
-    // Group active by tier, compute status for each
-    const byTier    = groupByTier(activeFissures);
-    const statusMap = new Map<FissureTier, FissureStatus[]>();
-    for (const [tier, fissures] of byTier) {
-      statusMap.set(tier, fissures.map(f => computeFissureStatus(f, now)));
-    }
+      const active  = filtered.filter(f => computeFissureStatus(f, now).msRemaining > 0);
+      const expired = filtered.filter(f => computeFissureStatus(f, now).msRemaining === 0);
 
-    // Derived stats for page header
-    const expiredStatuses = expiredFissures.map(f => computeFissureStatus(f, now));
-    const steelPathCount  = countSteelPath(activeFissures);
-    const nextFissure     = getNextToExpire(activeFissures);
-    const nextToExpire    = nextFissure ? computeFissureStatus(nextFissure, now) : null;
+      const byTier    = groupByTier(active);
+      const statusMap = new Map<FissureTier, FissureStatus[]>();
+      for (const [tier, fs] of byTier) {
+        statusMap.set(tier, fs.map(f => computeFissureStatus(f, now)));
+      }
 
-    return {
-      grouped:    statusMap,
-      expiredStatuses,
-      totalActive: activeFissures.length,
-      steelPathCount,
-      nextToExpire,
-    };
-  }, [data, filters, now]);
+      const nextRaw   = getNextToExpire(active);
 
-  // ── Offline / staleness signals ───────────────────────────────────────
-  const isStale      = !!result?.fromStaleCache;
-  const cacheAgeMs   = getCacheAgeMs(result?.cachedAt ?? now, now);
-  const hasEverLoaded = !!(data || (!isLoading && !error));
+      return {
+        grouped:         statusMap,
+        expiredStatuses: expired.map(f => computeFissureStatus(f, now)),
+        totalActive:     active.length,
+        steelPathCount:  countSteelPath(active),
+        nextToExpire:    nextRaw ? computeFissureStatus(nextRaw, now) : null,
+      };
+    }, [ws, cachedAt, filters, now]);
+
+  // ── Force refresh ─────────────────────────────────────────────────────
+  async function forceRefetch() {
+    await SyncService.performSync(true);
+  }
 
   return {
     grouped,
@@ -159,12 +133,12 @@ export function useFissures(filters: FissureFilters = DEFAULT_FILTERS) {
     totalActive,
     steelPathCount,
     nextToExpire,
-    isLoading: !preload.ready || isLoading,
-    isError:   !!error,
+    isLoading,
+    isError:       !isLoading && wsEntry === null,
     isStale,
-    cacheAgeMs,
-    hasEverLoaded,
-    lastSync:  dataUpdatedAt,
+    cacheAgeMs:    getCacheAgeMs(cachedAt || now, now),
+    hasEverLoaded: !isLoading,
+    lastSync:      cachedAt,
     now,
     forceRefetch,
   };
