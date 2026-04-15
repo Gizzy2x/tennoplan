@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/adapters/storage/db';
 import { SyncService } from '@/services/SyncService';
@@ -121,6 +121,24 @@ export function useFissures(filters: FissureFilters = DEFAULT_FILTERS) {
         nextToExpire:    nextRaw ? computeFissureStatus(nextRaw, now) : null,
       };
     }, [ws, cachedAt, filters, now]);
+
+  // ── Smart-trigger: passive sync when a fissure just expired ──────────
+  // Track the baseline expired count so we only fire when the count *grows*
+  // (i.e. a live fissure just hit zero), not on the initial stale-data load.
+  const prevExpiredCountRef = useRef<number | null>(null);
+  useEffect(() => {
+    const current = expiredStatuses.length;
+    if (prevExpiredCountRef.current === null) {
+      // First render — set baseline without syncing (data may already be stale)
+      prevExpiredCountRef.current = current;
+      return;
+    }
+    if (current > prevExpiredCountRef.current) {
+      // A fissure that was live just hit 00:00:00 — nudge the sync pipeline
+      SyncService.requestPassiveSync();
+    }
+    prevExpiredCountRef.current = current;
+  }, [expiredStatuses.length]);
 
   // ── Force refresh ─────────────────────────────────────────────────────
   async function forceRefetch() {

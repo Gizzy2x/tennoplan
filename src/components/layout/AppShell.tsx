@@ -46,6 +46,19 @@ export function AppShell() {
     SyncService.performSync(true);
   }, []);
 
+  // Page Visibility: when the user tabs back in, the RAF clock will instantly
+  // jump forward by however long they were away. Trigger a fresh sync so
+  // expired fissures are replaced rather than stuck on "Awaiting Intel...".
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        SyncService.performSync(false);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
   // Keep the CSS variable in sync so fixed cinematic backgrounds adapt automatically
   useEffect(() => {
     document.documentElement.style.setProperty("--sidebar-w", `${sidebarW}px`);
