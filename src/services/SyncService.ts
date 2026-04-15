@@ -1,19 +1,29 @@
 import { db } from '../adapters/storage/db';
-import { setWsCache, getWsCache, getWsTimestamp } from '../adapters/storage/worldstateCache';
+import { setWsCache, getWsCache, getWsEtag, setWsEtag } from '../adapters/storage/worldstateCache';
 import { logger } from '../core/utils/logger';
 
 const log = logger.scope('SyncService');
 
-const USER_INVENTORY_TTL = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-
 // ---------------------------------------------------------------------------
 // Endpoint config
+//
+// Primary:  Cloudflare Worker (set VITE_WORLDSTATE_WORKER_URL in .env).
+//           The Worker pulls warframestat.us once per minute via a scheduled
+//           cron, stores the result in KV, and serves it to all clients.
+//           At scale, 200k users = 200k cheap KV reads, not 200k upstream calls.
+//
+// Fallback: Direct warframestat.us — used during local dev (no Worker URL set)
+//           or if the Worker itself is unreachable.
 // ---------------------------------------------------------------------------
 
-const PRIMARY_URL    = '/api/worldstate';
-const FALLBACK_URL   = 'https://api.warframestat.us/pc';
-const PRIMARY_TIMEOUT_MS  = 3_000;  // give the Vercel proxy 3 s
-const FALLBACK_TIMEOUT_MS = 8_000;  // mirror gets a bit more headroom
+const CF_WORKER_URL   = import.meta.env.VITE_WORLDSTATE_WORKER_URL as string | undefined;
+const DIRECT_URL      = 'https://api.warframestat.us/pc';
+const PRIMARY_URL     = CF_WORKER_URL?.replace(/\/$/, '') ?? DIRECT_URL;
+// Only add a fallback when the Worker is primary — otherwise direct IS the primary
+const FALLBACK_URL    = CF_WORKER_URL ? DIRECT_URL : null;
+
+const REQUEST_TIMEOUT_MS   = 10_000;
+const USER_INVENTORY_TTL   = 24 * 60 * 60 * 1000;
 
 // ---------------------------------------------------------------------------
 // LocalStorage snapshot — synchronous, instant read on cold start.
@@ -35,49 +45,75 @@ function lsWriteSnapshot(data: unknown): void {
   try {
     localStorage.setItem(LS_SNAPSHOT_KEY, JSON.stringify(data));
   } catch {
-    // Quota exceeded — silently ignore; Dexie is the authoritative store.
+    // Quota exceeded — Dexie is authoritative, LS is just the cold-start seed.
   }
 }
 
 // ---------------------------------------------------------------------------
-// Fetch helper with AbortController-based timeout
+// Fetch helper — AbortController timeout + optional ETag header
 // ---------------------------------------------------------------------------
 
-async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
+async function fetchWithTimeout(
+  url: string,
+  etag: string | null,
+  timeoutMs: number,
+): Promise<Response> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    return await fetch(url, { signal: controller.signal });
+    const headers: Record<string, string> = { Accept: 'application/json' };
+    if (etag) headers['If-None-Match'] = etag;
+    return await fetch(url, { signal: controller.signal, headers });
   } finally {
     clearTimeout(timer);
   }
 }
 
 // ---------------------------------------------------------------------------
-// Primary → fallback fetch
-// Tries the Vercel proxy first. If that times out or throws, falls back to
-// the public api.warframestat.us mirror directly.
+// Fetch with primary → fallback and ETag support
 // ---------------------------------------------------------------------------
 
-type DataSource = 'Primary' | 'Fallback' | 'Cache';
+type DataSource = 'Worker' | 'Direct' | 'Unchanged';
 
 interface FetchResult {
-  data: unknown;
+  data:   unknown;
   source: DataSource;
+  etag:   string | null;
 }
 
-async function fetchWorldstate(): Promise<FetchResult> {
+async function fetchWorldstate(storedEtag: string | null): Promise<FetchResult> {
+  const sourceName: DataSource = CF_WORKER_URL ? 'Worker' : 'Direct';
+
   try {
-    const res = await fetchWithTimeout(PRIMARY_URL, PRIMARY_TIMEOUT_MS);
+    const res = await fetchWithTimeout(PRIMARY_URL, storedEtag, REQUEST_TIMEOUT_MS);
+
+    // 304 Not Modified — data hasn't changed, skip the 2 MB parse
+    if (res.status === 304) {
+      return { data: null, source: 'Unchanged', etag: storedEtag };
+    }
+
     if (!res.ok) throw new Error(`Primary returned HTTP ${res.status}`);
-    return { data: await res.json(), source: 'Primary' };
+
+    return { data: await res.json(), source: sourceName, etag: res.headers.get('ETag') };
   } catch (primaryErr) {
-    log.warn('Primary endpoint failed or timed out — switching to mirror.', primaryErr);
-    const res = await fetchWithTimeout(FALLBACK_URL, FALLBACK_TIMEOUT_MS);
-    if (!res.ok) throw new Error(`Mirror returned HTTP ${res.status}`);
-    return { data: await res.json(), source: 'Fallback' };
+    if (!FALLBACK_URL) throw primaryErr;
+
+    log.warn('CF Worker unreachable — falling back to warframestat.us directly.', primaryErr);
+    const res = await fetchWithTimeout(FALLBACK_URL, storedEtag, REQUEST_TIMEOUT_MS);
+
+    if (res.status === 304) {
+      return { data: null, source: 'Unchanged', etag: storedEtag };
+    }
+
+    if (!res.ok) throw new Error(`Direct fallback returned HTTP ${res.status}`);
+
+    return { data: await res.json(), source: 'Direct', etag: res.headers.get('ETag') };
   }
 }
+
+// ---------------------------------------------------------------------------
+// SyncService
+// ---------------------------------------------------------------------------
 
 export const SyncService = {
   /**
@@ -85,44 +121,43 @@ export const SyncService = {
    *
    * Flow:
    *  1. Seed Dexie from LocalStorage snapshot if Dexie is cold (black-screen guard).
-   *  2. Honour the 60 s anti-spam lock unless force=true.
-   *  3. Try /api/worldstate (3 s timeout) → fall back to warframestat.us mirror.
-   *  4. Persist to Dexie (1 h TTL) + update the LS snapshot.
-   *  5. On total failure, return whatever stale data Dexie has.
+   *  2. Load stored ETag from Dexie — sent as If-None-Match.
+   *  3. If 304 Not Modified: skip parse/write, return Dexie data instantly.
+   *  4. If 200 OK: persist new ETag + data to Dexie, update LS snapshot.
+   *  5. On total failure: return stale Dexie data.
    *
-   * @param force - bypass the 60s anti-spam lock (for manual user-triggered refreshes)
+   * Rate limiting is handled by the CF Worker (one upstream pull per minute).
+   * This client does no artificial throttling — each call is cheap either way:
+   * a 304 is ~200 bytes; the Worker's KV read is sub-millisecond.
+   *
+   * @param force - unused, kept for call-site compatibility
    */
-  async performSync(force = false) {
-    const now = Date.now();
-
-    // 1. Black-screen guard — seed Dexie from LS on cold start so
-    //    useLiveQuery subscribers have something to render immediately.
+  async performSync(_force = false) {
+    // 1. Black-screen guard — seed Dexie from LS on cold start
     const existing = await getWsCache<unknown>('worldstate_master');
     if (!existing) {
       const snapshot = lsReadSnapshot();
       if (snapshot) {
-        log.info('Cold start: seeding Dexie from LocalStorage snapshot. [Cache]');
+        log.info('Cold start: seeding Dexie from LocalStorage snapshot.');
         await setWsCache('worldstate_master', snapshot, 3_600_000);
       }
     }
 
-    // 2. The 60s Lock (Anti-Spam) — skipped when force=true
-    if (!force) {
-      const lastSync = await getWsTimestamp('last_sync_time');
-      if (lastSync && now - lastSync < 60_000) {
-        log.info('Sync skipped — within 60 s lock window. Serving from Cache.');
-        return (await getWsCache<unknown>('worldstate_master'))?.data ?? null;
-      }
-    }
+    // 2. Load stored ETag for conditional GET
+    const storedEtag = await getWsEtag();
 
     try {
-      // 3. Fetch — primary first, mirror as fallback
-      const { data, source } = await fetchWorldstate();
+      const { data, source, etag } = await fetchWorldstate(storedEtag);
 
-      // 4. Persist to Dexie (1 h TTL) + update the LS snapshot.
-      //    All useLiveQuery subscribers auto-update — no manual invalidation needed.
+      // 3. 304 Not Modified — serve existing Dexie data, nothing to write
+      if (source === 'Unchanged') {
+        log.info('Worldstate unchanged (304 Not Modified). Serving from Cache.');
+        return (await getWsCache<unknown>('worldstate_master'))?.data ?? null;
+      }
+
+      // 4. 200 OK — persist new data and ETag
       await setWsCache('worldstate_master', data, 3_600_000);
-      await setWsCache('last_sync_time', now);
+      if (etag) await setWsEtag(etag);
       lsWriteSnapshot(data);
 
       log.success(`Worldstate synced. Source: ${source}`);
@@ -134,23 +169,15 @@ export const SyncService = {
   },
 
   /**
-   * Gateway method for persisting user inventory from parsed EE.log.
-   *
-   * @param items - Array of discovered item names from LogParserService.parseLog()
-   *
-   * This is the ONLY place in the app that writes user_inventory to cache.
-   * It ensures:
-   * - Consistent TTL (24 hours)
-   * - Single write path (SyncService enforces)
-   * - Coordination with worldstate sync cadence
+   * Gateway for persisting user inventory from parsed EE.log.
+   * The only place in the app that writes user_inventory to cache.
    */
   async updateUserInventory(items: string[]) {
     const now = Date.now();
-
     try {
       await db.cache.put({
-        key: 'user_inventory',
-        data: items,
+        key:       'user_inventory',
+        data:      items,
         updatedAt: now,
         expiresAt: now + USER_INVENTORY_TTL,
       });

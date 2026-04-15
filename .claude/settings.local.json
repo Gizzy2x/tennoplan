@@ -37,7 +37,12 @@
       "Bash(xxd)",
       "Bash(curl -s 'https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900&display=swap' -H 'User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36')",
       "Bash(xxd \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/tennoplan/public/fonts/inter-vf.woff2\")",
-      "Bash(curl -s -L -o 'C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/tennoplan/public/fonts/noto-serif-vf.woff2' https://fonts.gstatic.com/s/notoserif/v33/ga6daw1J5X9T9RW6j9bNVls-hfgvz8JcMofYTYf6D30.woff2 --user-agent 'Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36')"
+      "Bash(curl -s -L -o 'C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/tennoplan/public/fonts/noto-serif-vf.woff2' https://fonts.gstatic.com/s/notoserif/v33/ga6daw1J5X9T9RW6j9bNVls-hfgvz8JcMofYTYf6D30.woff2 --user-agent 'Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36')",
+      "WebFetch(domain:hub.warframestat.us)",
+      "WebFetch(domain:docs.warframestat.us)",
+      "WebSearch",
+      "Bash(npx wrangler:*)",
+      "Bash(VITE_WORLDSTATE_WORKER_URL=\"https://app.test.workers.dev\" npm run build)"
     ]
   }
 }
