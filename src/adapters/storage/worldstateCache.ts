@@ -1,91 +1,114 @@
 import { db } from './db';
 
 // ---------------------------------------------------------------------------
-// Internal shape stored in Dexie cache.data
+// Cache key constants — shared by SyncService, legacy adapters, feature hooks
 // ---------------------------------------------------------------------------
 
-interface StoredWSEntry<T> {
-  data:     T;
-  cachedAt: number; // ms epoch when last fetched live from API
-}
+// ETag key — stored alongside worldstate data for conditional GET requests.
+export const WS_ETAG_KEY = 'worldstate:etag';
+
+export const WS_CACHE_KEYS = {
+  nightwave:         'ws:nightwave',
+  sortie:            'ws:sortie',
+  archon:            'ws:archon',
+  fissures:          'ws:fissures',
+  cycleCetus:        'ws:cycle:cetus',
+  cycleVallis:       'ws:cycle:vallis',
+  cycleCambion:      'ws:cycle:cambion',
+  cycleZariman:      'ws:cycle:zariman',
+  cycleEarth:        'ws:cycle:earth',
+  cycleDuviri:       'ws:cycle:duviri',
+  syndicateMissions: 'ws:syndicateMissions',
+  simaris:           'ws:simaris',
+  invasions:         'ws:invasions',
+  alerts:            'ws:alerts',
+  darvoDeals:        'ws:darvoDeals',
+  voidTrader:        'ws:voidTrader',
+  steelPath:         'ws:steelPath',
+  persistentEnemies: 'ws:persistentEnemies',
+  news:              'ws:news',
+} as const;
 
 // ---------------------------------------------------------------------------
-// Public result type
+// Result type (used by feature hooks — do NOT remove)
 // ---------------------------------------------------------------------------
 
 export interface WorldstateCacheResult<T> {
   data:      T;
-  cachedAt:  number;  // when the data was last fetched from the API
-  expiresAt: number;  // TTL boundary (may be in the past for stale entries)
+  cachedAt:  number;
+  expiresAt: number;
   isExpired: boolean;
 }
 
 // ---------------------------------------------------------------------------
-// Cache keys — separate namespace from legacy ascensionAdapter entries
+// Read
+// Returns null if no entry exists. Returns stale entries (isExpired: true) so
+// callers can decide whether to serve them offline while triggering a refresh.
 // ---------------------------------------------------------------------------
 
-export const WS_CACHE_KEYS = {
-  nightwave:    'ws:nightwave',
-  sortie:       'ws:sortie',
-  archon:       'ws:archon',
-  fissures:     'ws:fissures',
-  cycleCetus:   'ws:cycle:cetus',
-  cycleVallis:  'ws:cycle:vallis',
-  cycleCambion: 'ws:cycle:cambion',
-  cycleZariman: 'ws:cycle:zariman',
-  cycleEarth:   'ws:cycle:earth',
-} as const;
-
-// ---------------------------------------------------------------------------
-// Repository
-// ---------------------------------------------------------------------------
-
-/**
- * Read a worldstate cache entry. Returns null if no entry exists.
- * Returns stale entries (isExpired: true) so callers can decide whether to
- * serve them offline while triggering a background refresh.
- */
 export async function getWsCache<T>(key: string): Promise<WorldstateCacheResult<T> | null> {
   const entry = await db.cache.get(key);
   if (!entry) return null;
-
-  const stored = entry.data as StoredWSEntry<T>;
-
-  // Backward-compat: if the stored payload is not wrapped (legacy entry from
-  // ascensionAdapter), fall back to entry.updatedAt as cachedAt.
-  const cachedAt =
-    stored && typeof stored === 'object' && 'cachedAt' in stored
-      ? stored.cachedAt
-      : entry.updatedAt;
-  const data =
-    stored && typeof stored === 'object' && 'data' in stored
-      ? stored.data
-      : (entry.data as T);
-
   return {
-    data,
-    cachedAt,
+    data:      entry.data as T,
+    cachedAt:  entry.updatedAt,
     expiresAt: entry.expiresAt,
     isExpired: entry.expiresAt < Date.now(),
   };
 }
 
-/**
- * Write a worldstate cache entry. Embeds `cachedAt` inside the payload so it
- * survives TTL expiry and can be read even after `expiresAt` has passed.
- */
-export async function setWsCache<T>(key: string, data: T, ttlMs: number): Promise<void> {
-  const now    = Date.now();
-  const stored: StoredWSEntry<T> = { data, cachedAt: now };
+// ---------------------------------------------------------------------------
+// Write
+// ttlMs defaults to 24 hours so SyncService can omit it; legacy adapters that
+// pass an explicit TTL continue to work unchanged.
+// ---------------------------------------------------------------------------
+
+const DEFAULT_TTL_MS = 86_400_000; // 24 h
+
+export async function setWsCache<T>(key: string, data: T, ttlMs = DEFAULT_TTL_MS): Promise<void> {
+  const now = Date.now();
   await db.cache.put({
     key,
-    data:      stored,
+    data:      data as unknown,
     expiresAt: now + ttlMs,
     updatedAt: now,
   });
 }
 
-/** Delete one or more worldstate cache entries (used by forceRefetch). */
+// ---------------------------------------------------------------------------
+// Delete (used by feature hook forceRefetch callbacks)
+// ---------------------------------------------------------------------------
+
 export async function clearWsCache(...keys: string[]): Promise<void> {
   await db.cache.bulkDelete(keys);
+}
+
+// ---------------------------------------------------------------------------
+// Timestamp helper — reads updatedAt regardless of TTL expiry.
+// ---------------------------------------------------------------------------
+
+export async function getWsTimestamp(key: string): Promise<number> {
+  const entry = await db.cache.get(key);
+  return entry ? entry.updatedAt : 0;
+}
+
+// ---------------------------------------------------------------------------
+// ETag helpers — used by SyncService for conditional GET (If-None-Match).
+// Storing in Dexie means the ETag survives page reloads and app restarts,
+// so we skip the 2 MB download whenever the worldstate hasn't changed.
+// ---------------------------------------------------------------------------
+
+export async function getWsEtag(): Promise<string | null> {
+  const entry = await db.cache.get(WS_ETAG_KEY);
+  return entry ? (entry.data as string) : null;
+}
+
+export async function setWsEtag(etag: string): Promise<void> {
+  const now = Date.now();
+  await db.cache.put({
+    key:       WS_ETAG_KEY,
+    data:      etag,
+    expiresAt: now + 86_400_000, // 24 h — refreshed on every successful sync
+    updatedAt: now,
+  });
 }

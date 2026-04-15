@@ -8,10 +8,9 @@
 @font-face {
   font-family: "Noto Serif";
   font-style: normal;
-  font-weight: 400 900;
+  font-weight: 100 900;
   font-display: swap;
-  src: url("https://fonts.gstatic.com/s/notoserif/v23/ga6iaw1J5X9T9RW6j9bNVls-hfgvz8brpZ-BEA.woff2")
-    format("woff2");
+  src: url("/fonts/noto-serif-vf.woff2") format("woff2");
 }
 
 @font-face {
@@ -19,8 +18,7 @@
   font-style: normal;
   font-weight: 300 700;
   font-display: swap;
-  src: url("https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2")
-    format("woff2");
+  src: url("/fonts/inter-vf.woff2") format("woff2");
 }
 
 @theme {
@@ -99,6 +97,18 @@
   --font-headline: "Noto Serif", serif;
   --font-body: "Inter", sans-serif;
   --font-label: "Inter", sans-serif;
+}
+
+/* ================================================================
+   Layout Variables
+   ================================================================
+   --sidebar-w: width of the sidebar. Update this one variable if
+   the sidebar becomes collapsible or resizable — all cinematic
+   backgrounds adapt automatically via position: fixed + left: var(--sidebar-w).
+   ================================================================ */
+
+:root {
+  --sidebar-w: 280px;
 }
 
 /* ================================================================
@@ -234,4 +244,121 @@ body {
   padding: 5px 10px;
   white-space: nowrap;
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.35);
+}
+
+/* ================================================================
+   Cinematic Single-World Panel — v1-v5 Layout System
+   ================================================================ */
+
+/* Key Resources horizontal tab strip */
+.key-resources-tab {
+  font-family: var(--font-label);
+  font-size: 0.57rem;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  padding: 5px 14px 7px;
+  border-bottom: 1.5px solid transparent;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  background: none;
+  cursor: pointer;
+  white-space: nowrap;
+  color: rgba(198, 198, 199, 0.32);
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.key-resources-tab:hover {
+  color: rgba(198, 198, 199, 0.6);
+}
+
+.key-resources-tab.tab-active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+/* Bounty row — full-width row in the bounty board */
+.bounty-row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 7px 4px;
+  cursor: default;
+  border-radius: 1px;
+  transition: background-color 0.12s;
+}
+
+.bounty-row:hover {
+  background-color: rgba(227, 195, 114, 0.04);
+}
+
+/* Cycle tooltip — tooltipinfo-v3 style dark teal card */
+.cycle-tooltip {
+  position: absolute;
+  z-index: 50;
+  min-width: 240px;
+  max-width: 300px;
+  background: rgba(10, 20, 26, 0.97);
+  border: 1px solid rgba(227, 195, 114, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 14px 16px;
+  pointer-events: none;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Celestial Pendulum — background crossfade when switching worlds */
+@keyframes cpBgFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Active Terminal — "power on" scan effect when a bounty tier is selected */
+@keyframes terminalPowerOn {
+  0%   { opacity: 0;   filter: brightness(2.5) blur(3px); transform: scaleY(0.96); }
+  25%  { opacity: 0.8; filter: brightness(1.8) blur(1px); transform: scaleY(0.99); }
+  55%  { opacity: 0.9; filter: brightness(0.8);            transform: scaleY(1.005); }
+  80%  { opacity: 1;   filter: brightness(1.05);           transform: scaleY(1);    }
+  100% { opacity: 1;   filter: brightness(1)   blur(0);   transform: scaleY(1);    }
+}
+
+.terminal-power-on {
+  animation: terminalPowerOn 0.30s ease-out forwards;
+  transform-origin: top center;
+}
+
+/* Heartbeat dot — pulsing blue animation while syncing */
+@keyframes heartbeatPulse {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 6px #60a5fa88; }
+  50%       { opacity: 0.4; box-shadow: 0 0 14px #60a5facc; }
+}
+
+.heartbeat-dot-pulse {
+  animation: heartbeatPulse 0.8s ease-in-out infinite;
+}
+
+/* SystemPulse — golden ring radiates outward while syncing */
+@keyframes systemPulseRing {
+  0%   { box-shadow: 0 0 0 0   rgba(227,195,114,0.55), 0 0 0 0   rgba(227,195,114,0.20); }
+  60%  { box-shadow: 0 0 0 5px rgba(227,195,114,0),    0 0 0 10px rgba(227,195,114,0);   }
+  100% { box-shadow: 0 0 0 0   rgba(227,195,114,0),    0 0 0 0   rgba(227,195,114,0);    }
+}
+
+.system-pulse-ring {
+  animation: systemPulseRing 1.4s ease-out infinite;
+}
+
+/* ================================================================
+   Navigation Rail — Sidebar collapse/peek transitions
+   ================================================================ */
+
+/* Somatic Link identity pulse — used on the "T" monogram in collapsed rail */
+@keyframes somaticPulse {
+  0%, 100% { opacity: 0.65; }
+  50%       { opacity: 1;    }
+}
+
+.somatic-pulse {
+  animation: somaticPulse 2.4s ease-in-out infinite;
 }

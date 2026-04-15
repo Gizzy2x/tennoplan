@@ -5,71 +5,94 @@ import type { CycleStatus } from '@/core/domain/cycles';
 // State presentation config
 // ---------------------------------------------------------------------------
 
-interface StatePresentation {
-  label:     string;  // displayed in zone 2 below world name
-  badge:     string;  // short label inside the progress ring
+export interface StatePresentation {
+  label:     string;  // full state name
+  badge:     string;  // short indicator shown in the state pill
   color:     string;  // hex — used for glow, ring, countdown digits
-  nextLabel: string;  // prefix for the "transitions to…" footer
+  nextLabel: string;  // what the *next* state is called (shown in transition line)
+  icon:      string;  // unicode symbol for state medallion
 }
 
-const STATE: Record<string, StatePresentation> = {
-  day:     { label: 'DAY CYCLE',          badge: 'DAY',     color: '#E3C372', nextLabel: 'NIGHT BEGINS' },
-  night:   { label: 'NIGHT CYCLE',        badge: 'NIGHT',   color: '#bac3fe', nextLabel: 'DAY RETURNS'  },
-  warm:    { label: 'THERMAL SURGE',      badge: 'WARM',    color: '#fb923c', nextLabel: 'COLD FRONT'   },
-  cold:    { label: 'COLD FRONT',         badge: 'COLD',    color: '#67e8f9', nextLabel: 'WARM SURGE'   },
-  fass:    { label: 'FASS ASCENDANT',     badge: 'FASS',    color: '#fb923c', nextLabel: 'VOME RISES'   },
-  vome:    { label: 'VOME ASCENDANT',     badge: 'VOME',    color: '#c084fc', nextLabel: 'FASS RISES'   },
-  corpus:  { label: 'CORPUS CONTROL',     badge: 'CORPUS',  color: '#60a5fa', nextLabel: 'GRINEER ADV.' },
-  grineer: { label: 'GRINEER OCCUPATION', badge: 'GRINEER', color: '#f87171', nextLabel: 'CORPUS RET.'  },
+export const STATE: Record<string, StatePresentation> = {
+  // Cetus / Earth
+  day:     { label: 'DAY CYCLE',          badge: 'DAY',     color: '#E3C372', nextLabel: 'NIGHT',           icon: '☀' },
+  night:   { label: 'NIGHT CYCLE',        badge: 'NIGHT',   color: '#bac3fe', nextLabel: 'DAY',             icon: '☽' },
+  // Orb Vallis
+  warm:    { label: 'THERMAL SURGE',      badge: 'WARM',    color: '#fb923c', nextLabel: 'COLD FRONT',      icon: '◎' },
+  cold:    { label: 'COLD FRONT',         badge: 'COLD',    color: '#67e8f9', nextLabel: 'WARM SURGE',      icon: '❄' },
+  // Cambion Drift
+  fass:    { label: 'FASS ASCENDANT',     badge: 'FASS',    color: '#fb923c', nextLabel: 'VOME',            icon: '✦' },
+  vome:    { label: 'VOME ASCENDANT',     badge: 'VOME',    color: '#c084fc', nextLabel: 'FASS',            icon: '◈' },
+  // Zariman Ten Zero
+  corpus:  { label: 'CORPUS CONTROL',     badge: 'CORPUS',  color: '#60a5fa', nextLabel: 'GRINEER ADV.',    icon: '⊕' },
+  grineer: { label: 'GRINEER OCCUPATION', badge: 'GRINEER', color: '#f87171', nextLabel: 'CORPUS RET.',     icon: '☠' },
+  // Duviri moods
+  joy:     { label: 'JOY',               badge: 'JOY',     color: '#E3C372', nextLabel: 'ANGER APPROACHES', icon: '◌' },
+  anger:   { label: 'ANGER',             badge: 'ANGER',   color: '#ef4444', nextLabel: 'ENVY RISES',       icon: '△' },
+  envy:    { label: 'ENVY',              badge: 'ENVY',    color: '#22c55e', nextLabel: 'SORROW FALLS',     icon: '◆' },
+  sorrow:  { label: 'SORROW',            badge: 'SORROW',  color: '#60a5fa', nextLabel: 'FEAR COMES',       icon: '▽' },
+  fear:    { label: 'FEAR',              badge: 'FEAR',    color: '#a855f7', nextLabel: 'JOY RETURNS',      icon: '◇' },
 };
 
-const FALLBACK: StatePresentation = STATE.day;
+export const FALLBACK: StatePresentation = STATE.day;
 
 // ---------------------------------------------------------------------------
-// Sub-components
+// World background gradients — rich atmospheric gradients per world + state
 // ---------------------------------------------------------------------------
 
-function ProgressRing({
-  progress,
-  color,
-  size = 72,
-}: {
-  progress: number;
-  color:    string;
-  size?:    number;
-}) {
-  const stroke = 2;
-  const r      = (size - stroke) / 2;
-  const circ   = 2 * Math.PI * r;
-  const offset = circ * (1 - progress);
+const CARD_GRADIENT: Record<string, string> = {
+  // Plains of Eidolon — warm amber sunset / cold indigo night
+  'cetus-day':       'radial-gradient(ellipse at 30% 85%, #6b3800 0%, #3d1c00 35%, #1a0c00 65%, #0a0800 100%)',
+  'cetus-night':     'radial-gradient(ellipse at 60% 20%, #1a2a5e 0%, #0c1840 35%, #060d2a 65%, #020510 100%)',
+  // Orb Vallis — rust orange heat / icy steel blue
+  'vallis-warm':     'radial-gradient(ellipse at 50% 90%, #5a2800 0%, #3a1800 35%, #1a0e00 65%, #0a0600 100%)',
+  'vallis-cold':     'radial-gradient(ellipse at 50% 30%, #0d3550 0%, #082240 30%, #040e20 65%, #020610 100%)',
+  // Cambion Drift — burnt amber Fass / deep teal Vome
+  'cambion-fass':    'radial-gradient(ellipse at 70% 70%, #5c2800 0%, #3a1500 35%, #1a0800 65%, #080400 100%)',
+  'cambion-vome':    'radial-gradient(ellipse at 40% 60%, #082a1e 0%, #041a12 35%, #020e0a 65%, #010805 100%)',
+  // Zariman Ten Zero — Void blue / Grineer blood red
+  'zariman-corpus':  'radial-gradient(ellipse at 50% 50%, #0c1e50 0%, #081440 35%, #040c28 65%, #020610 100%)',
+  'zariman-grineer': 'radial-gradient(ellipse at 50% 50%, #4a0c08 0%, #300806 35%, #180402 65%, #0a0200 100%)',
+  // Duviri — rich moody per-emotion gradients
+  'duviri-joy':      'radial-gradient(ellipse at 50% 70%, #4a3800 0%, #2a2000 35%, #141000 65%, #080600 100%)',
+  'duviri-anger':    'radial-gradient(ellipse at 50% 70%, #4a0e00 0%, #2c0800 35%, #160400 65%, #080200 100%)',
+  'duviri-envy':     'radial-gradient(ellipse at 50% 70%, #084a08 0%, #043004 35%, #021802 65%, #010801 100%)',
+  'duviri-sorrow':   'radial-gradient(ellipse at 50% 30%, #082040 0%, #041428 35%, #020a18 65%, #010610 100%)',
+  'duviri-fear':     'radial-gradient(ellipse at 50% 50%, #1e0640 0%, #120428 35%, #080218 65%, #040110 100%)',
+  // Earth — jungle green day / dark forest night
+  'earth-day':       'radial-gradient(ellipse at 40% 80%, #1a3800 0%, #0e2200 35%, #060e00 65%, #030800 100%)',
+  'earth-night':     'radial-gradient(ellipse at 50% 20%, #0c1430 0%, #060c20 35%, #030612 65%, #010408 100%)',
+};
 
-  return (
-    <svg
-      width={size}
-      height={size}
-      aria-hidden
-      style={{ transform: 'rotate(-90deg)', flexShrink: 0 }}
-    >
-      {/* Track */}
-      <circle
-        cx={size / 2} cy={size / 2} r={r}
-        fill="none"
-        stroke="rgba(77,70,56,0.25)"
-        strokeWidth={stroke}
-      />
-      {/* Fill */}
-      <circle
-        cx={size / 2} cy={size / 2} r={r}
-        fill="none"
-        stroke={color}
-        strokeWidth={stroke}
-        strokeDasharray={circ}
-        strokeDashoffset={offset}
-        strokeLinecap="butt"
-        style={{ transition: 'stroke-dashoffset 1s linear' }}
-      />
-    </svg>
-  );
+export function getCardGradient(id: string, state: string): string {
+  return CARD_GRADIENT[`${id}-${state}`]
+    ?? 'linear-gradient(135deg, #131313 0%, #1c1b1b 100%)';
+}
+
+// ---------------------------------------------------------------------------
+// Static rewards — hardcoded game knowledge per world + state
+// ---------------------------------------------------------------------------
+
+const STATIC_REWARDS: Record<string, string> = {
+  'cetus-day':       'BOUNTIES · MINING · CONSERVATION',
+  'cetus-night':     'EIDOLON HUNTS · WISPS · SHARDS',
+  'vallis-warm':     'MINING · CONSERVATION',
+  'vallis-cold':     'TOROIDS · FIELD RON · BOUNTIES',
+  'cambion-fass':    'ISO VAULTS · MINING',
+  'cambion-vome':    'CONSERVATION · MINERALS',
+  'zariman-grineer': 'GRINEER BOUNTIES · VOIDPLUME',
+  'zariman-corpus':  'CORPUS BOUNTIES · VOIDPLUME',
+  'duviri-joy':      'JOY LOOP ACTIVE',
+  'duviri-anger':    'ANGER LOOP ACTIVE',
+  'duviri-envy':     'ENVY LOOP ACTIVE',
+  'duviri-sorrow':   'SORROW LOOP ACTIVE',
+  'duviri-fear':     'FEAR LOOP ACTIVE',
+  'earth-day':       'OPEN WORLD',
+  'earth-night':     'NIGHTTIME FISHING',
+};
+
+export function getStaticRewards(id: string, state: string): string {
+  return STATIC_REWARDS[`${id}-${state}`] ?? '—';
 }
 
 // ---------------------------------------------------------------------------
@@ -77,176 +100,221 @@ function ProgressRing({
 // ---------------------------------------------------------------------------
 
 export interface CycleCardProps {
-  status:   CycleStatus;
-  featured?: boolean;
+  status:    CycleStatus;
+  featured?: boolean;  // Row-1 cards: taller (≥280px). Row-2: standard (≥220px).
 }
 
 export function CycleCard({ status, featured = false }: CycleCardProps) {
   const { cycle, msRemaining, progress, isExpired } = status;
-  const pres          = STATE[cycle.state] ?? FALLBACK;
-  const { h, m, s }   = formatMsParts(msRemaining);
-  const showHours     = h !== '00';
-  const nextState     = nextCycleState(cycle.id, cycle.state);
-  const nextPres      = STATE[nextState] ?? FALLBACK;
+  const pres        = STATE[cycle.state] ?? FALLBACK;
+  const { h, m, s } = formatMsParts(msRemaining);
+  const nextState   = nextCycleState(cycle.id, cycle.state);
+  const nextPres    = STATE[nextState] ?? FALLBACK;
+
+  const bg        = getCardGradient(cycle.id, cycle.state);
+  const rewards   = getStaticRewards(cycle.id, cycle.state);
+  const minHeight = featured ? '280px' : '220px';
+
+  // Right-to-left state tint overlay (10–14% opacity)
+  const tintOverlay = `linear-gradient(to left, ${pres.color}24 0%, ${pres.color}0A 55%, transparent 100%)`;
 
   const isEidolonNight = cycle.id === 'cetus' && cycle.state === 'night';
 
-  const counterSize   = featured ? 'text-4xl' : 'text-3xl';
-  const ringSize      = featured ? 88 : 72;
-  const worldNameSize = featured ? 'text-2xl' : 'text-xl';
-
-  // Base background: transparent left → dark semi-opaque right.
-  // Left zone stays as pure blurred void so the ring pops against the background.
-  const cardBg = `linear-gradient(to right, transparent 0%, rgba(22,20,20,0.46) 38%, rgba(24,23,23,0.64) 100%)`;
-
-  // Cycle-state tint overlay: transparent left → state color at 10–15% opacity right.
-  const cycleOverlay = `linear-gradient(to right, transparent 30%, ${pres.color}1A 72%, ${pres.color}22 100%)`;
-
   return (
     <div
-      className="glass-panel relative overflow-hidden h-full"
+      className="relative overflow-hidden flex flex-col"
       style={{
-        padding:        featured ? '1.75rem 2rem' : '1.25rem 1.5rem',
-        background:     cardBg,
-        backdropFilter: 'blur(16px)',
-        borderColor:    `${pres.color}22`,
-        boxShadow:      isEidolonNight
-          ? `0 0 48px ${pres.color}18, inset 0 0 80px ${pres.color}06`
-          : '0 0 40px rgba(0,0,0,0.5)',
+        background:   bg,
+        minHeight,
+        borderRadius: '0.25rem',
+        border:       `1px solid ${pres.color}1A`,
+        boxShadow:    isEidolonNight
+          ? `0 0 48px ${pres.color}18, 0 0 80px rgba(0,0,0,0.6), inset 0 0 60px rgba(0,0,0,0.3)`
+          : `0 0 40px rgba(0,0,0,0.6), inset 0 0 60px rgba(0,0,0,0.3)`,
       }}
     >
-      {/* Cycle-state tint overlay — renders first, everything above sits on top */}
+      {/* Right-to-left state tint overlay */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: cycleOverlay }}
+        style={{ background: tintOverlay }}
       />
 
       {/* Filigree corners */}
       <span
-        className="absolute top-0 left-0 w-8 h-8 pointer-events-none"
-        style={{
-          borderTop:  `1px solid ${pres.color}44`,
-          borderLeft: `1px solid ${pres.color}44`,
-        }}
+        className="absolute top-0 left-0 w-6 h-6 pointer-events-none"
+        style={{ borderTop: `1px solid ${pres.color}44`, borderLeft: `1px solid ${pres.color}44` }}
       />
       <span
-        className="absolute bottom-0 right-0 w-8 h-8 pointer-events-none"
-        style={{
-          borderBottom: `1px solid ${pres.color}22`,
-          borderRight:  `1px solid ${pres.color}22`,
-        }}
+        className="absolute bottom-0 right-0 w-6 h-6 pointer-events-none"
+        style={{ borderBottom: `1px solid ${pres.color}22`, borderRight: `1px solid ${pres.color}22` }}
       />
 
-      {/* ── Scan order: Zone 1 → Zone 2 → Zone 3 ─────────────────────── */}
-      <div className="relative flex items-center gap-4 mb-4">
+      {/* ── TOP BAR: location label + state pill ───────────────────── */}
+      <div className="relative flex items-center justify-between px-4 pt-3 pb-1">
+        <p
+          className="font-label text-[9px] uppercase tracking-[0.35em]"
+          style={{ color: pres.color, opacity: 0.55 }}
+        >
+          {cycle.location}
+        </p>
 
-        {/* Zone 1: Progress ring — visual anchor, leftmost.
-            Left background is transparent so the ring reads against the blurred void. */}
-        <div className="flex-shrink-0 relative" style={{ width: ringSize, height: ringSize }}>
-          <ProgressRing progress={progress} color={pres.color} size={ringSize} />
-          {/* State badge centered in ring */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span
-              className="font-label font-bold uppercase"
-              style={{ fontSize: 9, letterSpacing: '0.1em', color: pres.color }}
-            >
-              {pres.badge}
-            </span>
-          </div>
+        <span
+          className="font-label text-[8px] uppercase tracking-[0.18em] px-2 py-0.5"
+          style={{
+            color:           pres.color,
+            border:          `1px solid ${pres.color}40`,
+            backgroundColor: `${pres.color}12`,
+            borderRadius:    '0.125rem',
+          }}
+        >
+          {pres.badge}
+        </span>
+      </div>
+
+      {/* ── HERO SECTION: world name + countdown + medallion ─────────── */}
+      <div className="relative flex-1 flex flex-col items-center justify-center px-4 py-3 gap-2">
+
+        {/* World name — smaller, sits above the countdown */}
+        <p className="font-headline text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface/35">
+          {cycle.name}
+        </p>
+
+        {/* HERO countdown */}
+        <div className="flex items-baseline gap-0.5 leading-none">
+          {h !== '00' && (
+            <>
+              <span
+                className="font-mono font-bold tabular-nums"
+                style={{
+                  fontSize:   featured ? '3rem' : '2.5rem',
+                  color:      pres.color,
+                  textShadow: `0 0 24px ${pres.color}50`,
+                }}
+              >
+                {h}
+              </span>
+              <span
+                className="font-mono font-semibold text-secondary/25"
+                style={{ fontSize: featured ? '1.1rem' : '0.95rem', marginRight: '0.25rem' }}
+              >
+                h
+              </span>
+            </>
+          )}
+          <span
+            className="font-mono font-bold tabular-nums"
+            style={{
+              fontSize:   featured ? '3rem' : '2.5rem',
+              color:      pres.color,
+              textShadow: `0 0 24px ${pres.color}50`,
+            }}
+          >
+            {m}
+          </span>
+          <span
+            className="font-mono font-semibold text-secondary/25"
+            style={{ fontSize: featured ? '1.1rem' : '0.95rem', marginRight: '0.25rem' }}
+          >
+            m
+          </span>
+          <span
+            className="font-mono font-bold tabular-nums"
+            style={{
+              fontSize:   featured ? '3rem' : '2.5rem',
+              color:      pres.color,
+              textShadow: `0 0 24px ${pres.color}50`,
+            }}
+          >
+            {s}
+          </span>
+          <span
+            className="font-mono font-semibold text-secondary/25"
+            style={{ fontSize: featured ? '1.1rem' : '0.95rem' }}
+          >
+            s
+          </span>
         </div>
 
-        {/* Zone 2: World identity — name + state label */}
-        <div className="flex-1 min-w-0">
-          <p
-            className="font-label text-[10px] uppercase tracking-widest mb-0.5"
-            style={{ color: pres.color, opacity: 0.5 }}
-          >
-            {cycle.location}
-          </p>
-          <h3
-            className={`font-headline font-black orokin-etched text-on-surface leading-tight truncate ${worldNameSize}`}
-          >
-            {cycle.name}
-          </h3>
-          <p
-            className="font-label text-[10px] uppercase tracking-[0.3em] mt-0.5"
-            style={{ color: pres.color }}
+        {/* Transition label */}
+        <p className="font-label text-[9px] uppercase tracking-[0.28em] text-secondary/35">
+          {isExpired ? 'SYNCING…' : `UNTIL ${nextPres.badge}`}
+        </p>
+
+        {/* State medallion — circular badge */}
+        <div
+          className="flex items-center justify-center mt-1"
+          style={{
+            width:           featured ? 72 : 58,
+            height:          featured ? 72 : 58,
+            borderRadius:    '50%',
+            border:          `1px solid ${pres.color}30`,
+            backgroundColor: `${pres.color}0D`,
+            boxShadow:       `0 0 16px ${pres.color}18, inset 0 0 20px ${pres.color}08`,
+            flexShrink:      0,
+          }}
+        >
+          <span
+            className="font-label font-bold uppercase text-center leading-tight"
+            style={{
+              fontSize:      featured ? '0.6rem' : '0.55rem',
+              letterSpacing: '0.12em',
+              color:         pres.color,
+              padding:       '0 8px',
+            }}
           >
             {pres.label}
-          </p>
-          {isEidolonNight && (
-            <span
-              className="inline-block font-label text-[9px] uppercase tracking-widest px-2 py-0.5 mt-1.5"
-              style={{
-                color:           pres.color,
-                border:          `1px solid ${pres.color}50`,
-                backgroundColor: `${pres.color}12`,
-              }}
-            >
-              EIDOLON WINDOW
-            </span>
-          )}
+          </span>
         </div>
 
-        {/* Zone 3: Time remaining — rightmost, highest precision when inspected */}
-        <div className="flex-shrink-0 text-right">
-          <div className="flex items-baseline justify-end gap-0.5">
-            {showHours && (
-              <>
-                <span
-                  className={`font-mono ${counterSize} font-bold tabular-nums leading-none`}
-                  style={{ color: pres.color }}
-                >
-                  {h}
-                </span>
-                <span className="font-mono text-xl text-secondary opacity-20 mx-0.5">:</span>
-              </>
-            )}
-            <span
-              className={`font-mono ${counterSize} font-bold tabular-nums leading-none`}
-              style={{ color: pres.color }}
-            >
-              {m}
-            </span>
-            <span className="font-mono text-xl text-secondary opacity-20 mx-0.5">:</span>
-            <span
-              className={`font-mono ${counterSize} font-bold tabular-nums leading-none`}
-              style={{ color: pres.color }}
-            >
-              {s}
-            </span>
-          </div>
-          <p className="font-label text-[9px] uppercase tracking-widest text-secondary opacity-30 mt-1">
-            {isExpired ? 'SYNCING…' : 'REMAINING'}
-          </p>
-        </div>
+        {/* Eidolon Night special badge */}
+        {isEidolonNight && (
+          <span
+            className="font-label text-[8px] uppercase tracking-widest px-2 py-0.5 mt-0.5"
+            style={{
+              color:           pres.color,
+              border:          `1px solid ${pres.color}50`,
+              backgroundColor: `${pres.color}12`,
+              borderRadius:    '0.125rem',
+            }}
+          >
+            EIDOLON WINDOW
+          </span>
+        )}
 
       </div>
 
-      {/* Progress bar — full width at bottom of card */}
-      <div className="relative w-full h-px bg-surface-container-highest mb-2 overflow-hidden">
-        <div
-          className="absolute inset-y-0 left-0 h-full"
-          style={{
-            width:           `${progress * 100}%`,
-            backgroundColor: pres.color,
-            boxShadow:       `0 0 6px ${pres.color}`,
-            transition:      'width 1s linear',
-          }}
-        />
-      </div>
+      {/* ── BOTTOM: progress strip + rewards footer ─────────────────── */}
+      <div className="relative px-4 pb-3 pt-1">
 
-      {/* Footer: next state */}
-      <div className="flex items-center justify-between">
-        <p className="font-label text-[10px] uppercase tracking-widest text-secondary opacity-30">
-          {pres.nextLabel} IN
-        </p>
-        <p
-          className="font-label text-[10px] uppercase tracking-widest"
-          style={{ color: nextPres.color, opacity: 0.7 }}
-        >
-          → {nextPres.badge}
-        </p>
+        {/* Thin progress strip */}
+        <div className="relative w-full h-px mb-2 overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+          <div
+            className="absolute inset-y-0 left-0 h-full"
+            style={{
+              width:           `${progress * 100}%`,
+              backgroundColor: pres.color,
+              boxShadow:       `0 0 4px ${pres.color}`,
+              transition:      'width 1s linear',
+            }}
+          />
+        </div>
+
+        {/* Next state footer */}
+        <div className="flex items-center justify-between">
+          <p
+            className="font-label text-[8px] uppercase tracking-[0.18em]"
+            style={{ color: pres.color, opacity: 0.35 }}
+          >
+            ACTIVE: {rewards}
+          </p>
+          <p
+            className="font-label text-[8px] uppercase tracking-[0.15em]"
+            style={{ color: nextPres.color, opacity: 0.5 }}
+          >
+            → {nextPres.badge}
+          </p>
+        </div>
+
       </div>
     </div>
   );
