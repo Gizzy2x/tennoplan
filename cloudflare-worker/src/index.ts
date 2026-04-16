@@ -120,6 +120,17 @@ async function fetchAndStore(env: Env): Promise<{ text: string; etag: string; ch
   }
 
   const text    = await res.text();
+
+  if (!text || text.trim().length === 0) {
+    throw new Error('Upstream returned empty body');
+  }
+  // Validate it's parseable before we store garbage in KV
+  try {
+    JSON.parse(text);
+  } catch {
+    throw new Error(`Upstream returned malformed JSON (${text.length} bytes)`);
+  }
+
   const etag    = `"${await sha1Short(text)}"`;
   const current = await env.WORLDSTATE.get(KV_ETAG_KEY);
   const changed = etag !== current;

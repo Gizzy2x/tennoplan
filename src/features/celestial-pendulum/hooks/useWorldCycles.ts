@@ -109,20 +109,6 @@ export function useWorldCycles() {
       .filter((s): s is CycleStatus => s !== null);
   }, [ws, cachedAt, now]);
 
-  // ── Sync heartbeat store ──────────────────────────────────────────────
-  const hasData = ws !== null;
-  useEffect(() => {
-    const { setSync, status } = useHeartbeatStore.getState();
-    if (status === 'syncing') return;
-    if (!isLoading && !hasData) {
-      setSync('offline');
-    } else if (isStale && cachedAt) {
-      setSync('cached', cachedAt);
-    } else if (hasData) {
-      setSync('live', cachedAt || Date.now());
-    }
-  }, [hasData, isLoading, isStale, cachedAt]);
-
   return {
     statuses,
     isLoading,

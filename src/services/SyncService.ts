@@ -1,39 +1,31 @@
 import { db } from '../adapters/storage/db';
 import { setWsCache, getWsCache, getWsEtag, setWsEtag } from '../adapters/storage/worldstateCache';
 import { logger } from '../core/utils/logger';
+import { useHeartbeatStore } from '../store/heartbeat';
 
 const log = logger.scope('SyncService');
 
 // ---------------------------------------------------------------------------
 // Endpoint config
-//
-// Primary:  Cloudflare Worker (set VITE_WORLDSTATE_WORKER_URL in .env).
-//           The Worker pulls warframestat.us once per minute via a scheduled
-//           cron, stores the result in KV, and serves it to all clients.
-//           At scale, 200k users = 200k cheap KV reads, not 200k upstream calls.
-//
-// Fallback: Direct warframestat.us — used during local dev (no Worker URL set)
-//           or if the Worker itself is unreachable.
 // ---------------------------------------------------------------------------
 
 const CF_WORKER_URL   = import.meta.env.VITE_WORLDSTATE_WORKER_URL as string | undefined;
 const DIRECT_URL      = 'https://api.warframestat.us/pc';
 const PRIMARY_URL     = CF_WORKER_URL?.replace(/\/$/, '') ?? DIRECT_URL;
-// Only add a fallback when the Worker is primary — otherwise direct IS the primary
 const FALLBACK_URL    = CF_WORKER_URL ? DIRECT_URL : null;
 
 const REQUEST_TIMEOUT_MS        = 10_000;
 const USER_INVENTORY_TTL        = 24 * 60 * 60 * 1000;
 const PASSIVE_SYNC_COOLDOWN_MS  = 60_000;
+const POLL_INTERVAL_MS          = 60_000;
 
-// Module-level cooldown guard for passive (expiry-triggered) syncs.
-// Prevents a cascade of requestPassiveSync() calls when multiple fissures
-// expire within the same second (they share the same useGameClock tick).
+// Module-level state
 let _lastPassiveSyncAt = 0;
+let _pollTimer: ReturnType<typeof setInterval> | null = null;
+let _visibilityHandler: (() => void) | null = null;
 
 // ---------------------------------------------------------------------------
-// LocalStorage snapshot — synchronous, instant read on cold start.
-// Dexie is seeded from this before any network call so the UI never blanks.
+// LocalStorage snapshot
 // ---------------------------------------------------------------------------
 
 const LS_SNAPSHOT_KEY = 'tennoplan:worldstate_snapshot';
@@ -56,7 +48,7 @@ function lsWriteSnapshot(data: unknown): void {
 }
 
 // ---------------------------------------------------------------------------
-// Fetch helper — AbortController timeout + optional ETag header
+// Fetch helpers
 // ---------------------------------------------------------------------------
 
 async function fetchWithTimeout(
@@ -73,6 +65,19 @@ async function fetchWithTimeout(
   } finally {
     clearTimeout(timer);
   }
+}
+
+/**
+ * Safe text-based JSON parse.
+ * Guards against empty bodies and partial responses that produce
+ * "Unexpected end of JSON input" when calling res.json() directly.
+ */
+async function safeJsonFromResponse(res: Response): Promise<unknown> {
+  const text = await res.text();
+  if (!text || text.trim().length === 0) {
+    throw new Error('Empty response body');
+  }
+  return JSON.parse(text); // SyntaxError propagates with useful message
 }
 
 // ---------------------------------------------------------------------------
@@ -93,14 +98,13 @@ async function fetchWorldstate(storedEtag: string | null): Promise<FetchResult> 
   try {
     const res = await fetchWithTimeout(PRIMARY_URL, storedEtag, REQUEST_TIMEOUT_MS);
 
-    // 304 Not Modified — data hasn't changed, skip the 2 MB parse
     if (res.status === 304) {
       return { data: null, source: 'Unchanged', etag: storedEtag };
     }
 
     if (!res.ok) throw new Error(`Primary returned HTTP ${res.status}`);
 
-    return { data: await res.json(), source: sourceName, etag: res.headers.get('ETag') };
+    return { data: await safeJsonFromResponse(res), source: sourceName, etag: res.headers.get('ETag') };
   } catch (primaryErr) {
     if (!FALLBACK_URL) throw primaryErr;
 
@@ -113,7 +117,7 @@ async function fetchWorldstate(storedEtag: string | null): Promise<FetchResult> 
 
     if (!res.ok) throw new Error(`Direct fallback returned HTTP ${res.status}`);
 
-    return { data: await res.json(), source: 'Direct', etag: res.headers.get('ETag') };
+    return { data: await safeJsonFromResponse(res), source: 'Direct', etag: res.headers.get('ETag') };
   }
 }
 
@@ -125,20 +129,14 @@ export const SyncService = {
   /**
    * The single entry-point for all worldstate network requests.
    *
-   * Flow:
-   *  1. Seed Dexie from LocalStorage snapshot if Dexie is cold (black-screen guard).
-   *  2. Load stored ETag from Dexie — sent as If-None-Match.
-   *  3. If 304 Not Modified: skip parse/write, return Dexie data instantly.
-   *  4. If 200 OK: persist new ETag + data to Dexie, update LS snapshot.
-   *  5. On total failure: return stale Dexie data.
-   *
-   * Rate limiting is handled by the CF Worker (one upstream pull per minute).
-   * This client does no artificial throttling — each call is cheap either way:
-   * a 304 is ~200 bytes; the Worker's KV read is sub-millisecond.
-   *
-   * @param force - unused, kept for call-site compatibility
+   * Always updates the heartbeat store with the true outcome:
+   *   live    — fresh data from network (200 or 304 confirmed current)
+   *   cached  — network failed, serving stale Dexie data
+   *   offline — network failed AND no local cache exists
    */
   async performSync(_force = false) {
+    const hb = useHeartbeatStore.getState();
+
     // 1. Black-screen guard — seed Dexie from LS on cold start
     const existing = await getWsCache<unknown>('worldstate_master');
     if (!existing) {
@@ -155,9 +153,10 @@ export const SyncService = {
     try {
       const { data, source, etag } = await fetchWorldstate(storedEtag);
 
-      // 3. 304 Not Modified — serve existing Dexie data, nothing to write
+      // 3. 304 Not Modified — serve existing Dexie data; still counts as a live sync
       if (source === 'Unchanged') {
         log.info('Worldstate unchanged (304 Not Modified). Serving from Cache.');
+        hb.setSync('live', Date.now());
         return (await getWsCache<unknown>('worldstate_master'))?.data ?? null;
       }
 
@@ -167,20 +166,27 @@ export const SyncService = {
       lsWriteSnapshot(data);
 
       log.success(`Worldstate synced. Source: ${source}`);
+      hb.setSync('live', Date.now());
       return data;
+
     } catch (error) {
       log.error('All endpoints failed — serving stale data from Cache.', error);
-      return (await getWsCache<unknown>('worldstate_master'))?.data ?? null;
+
+      // Update heartbeat to reflect the true state (stale cache or no data)
+      const cache = await getWsCache<unknown>('worldstate_master');
+      if (cache) {
+        hb.setSync('cached', cache.cachedAt);
+      } else {
+        hb.setSync('offline');
+      }
+
+      return cache?.data ?? null;
     }
   },
 
   /**
-   * Lightweight sync nudge triggered by the UI when a non-deterministic item
-   * (fissure, invasion, alert) reaches 00:00:00.
-   *
-   * Internally rate-limited to one network call per 60 s — safe to call on
-   * every clock tick without worrying about spam. Because the CF Worker
-   * itself only refreshes once per minute, calling more often is pointless.
+   * Rate-limited passive sync nudge — safe to call on every clock tick.
+   * Triggered when a fissure/invasion/alert hits 00:00:00.
    */
   requestPassiveSync() {
     const now = Date.now();
@@ -191,8 +197,61 @@ export const SyncService = {
   },
 
   /**
+   * Bootstrap the autonomous polling engine. Call exactly once in AppShell.
+   *
+   * - Fires an immediate sync on call.
+   * - Polls every 60 s while the tab is visible.
+   * - Pauses the interval when the tab is hidden.
+   * - On tab re-focus: fires an immediate resync, then restarts the 60 s loop.
+   */
+  init() {
+    // Immediate first sync
+    void this.performSync(false);
+
+    const startPoll = () => {
+      _pollTimer = setInterval(() => {
+        void SyncService.performSync(false);
+      }, POLL_INTERVAL_MS);
+    };
+
+    startPoll();
+
+    _visibilityHandler = () => {
+      if (document.visibilityState === 'visible') {
+        // Tab regained focus — immediate resync burst, restart poll loop
+        if (_pollTimer) clearInterval(_pollTimer);
+        void SyncService.performSync(false);
+        startPoll();
+      } else {
+        // Tab hidden — pause poll to spare resources
+        if (_pollTimer) {
+          clearInterval(_pollTimer);
+          _pollTimer = null;
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', _visibilityHandler);
+    log.info('SyncService polling engine started (60 s interval).');
+  },
+
+  /**
+   * Tear down the polling engine. Call in AppShell cleanup.
+   */
+  destroy() {
+    if (_pollTimer) {
+      clearInterval(_pollTimer);
+      _pollTimer = null;
+    }
+    if (_visibilityHandler) {
+      document.removeEventListener('visibilitychange', _visibilityHandler);
+      _visibilityHandler = null;
+    }
+    log.info('SyncService polling engine stopped.');
+  },
+
+  /**
    * Gateway for persisting user inventory from parsed EE.log.
-   * The only place in the app that writes user_inventory to cache.
    */
   async updateUserInventory(items: string[]) {
     const now = Date.now();
