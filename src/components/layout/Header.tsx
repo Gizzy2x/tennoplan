@@ -46,12 +46,8 @@ function SystemPulse() {
   async function handleSync() {
     if (isDisabled) return;
     setSync('syncing');
-    try {
-      await SyncService.performSync();
-      setSync('live', Date.now());
-    } catch {
-      setSync('offline');
-    }
+    await SyncService.performSync();
+    // heartbeat updated internally by SyncService.performSync — no manual setSync needed
   }
 
   // Icon color: gold while syncing, dimmed otherwise

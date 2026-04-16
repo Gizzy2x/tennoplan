@@ -39,24 +39,9 @@ export function AppShell() {
   const ActivePage = PAGE_MAP[activeTab];
   const sidebarW = isCollapsed ? RAIL_W : EXPANDED_W;
 
-  // Bootstrap: fire the first worldstate sync immediately on app mount.
-  // Without this, a fresh Dexie DB has no worldstate_master entry and every
-  // useLiveQuery hook returns null indefinitely.
   useEffect(() => {
-    SyncService.performSync(true);
-  }, []);
-
-  // Page Visibility: when the user tabs back in, the RAF clock will instantly
-  // jump forward by however long they were away. Trigger a fresh sync so
-  // expired fissures are replaced rather than stuck on "Awaiting Intel...".
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        SyncService.performSync(false);
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    SyncService.init();
+    return () => SyncService.destroy();
   }, []);
 
   // Keep the CSS variable in sync so fixed cinematic backgrounds adapt automatically
