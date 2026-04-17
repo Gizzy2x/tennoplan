@@ -1,4 +1,38 @@
 {
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat 'C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Context.md' 2>/dev/null || echo '(No context file found)'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git commit*)",
+            "command": "bash -c 'echo \"\\n**$(date +\"%Y-%m-%d %H:%M\") - Auto-logged commit:**\" >> \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\" && git log -1 --pretty=format:\"- %s (%an)\" >> \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\"' 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'mkdir -p \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes\" && echo \"\\n## Session ended $(date +\"%Y-%m-%d %H:%M\")\" >> \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\"' 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "Bash(find . -maxdepth 2 -type f -name README.md -o -name .cursorrules -o -name CLAUDE.md -o -name next.config.* -o -name tsconfig.json)",
@@ -43,7 +77,22 @@
       "WebSearch",
       "Bash(npx wrangler:*)",
       "Bash(VITE_WORLDSTATE_WORKER_URL=\"https://app.test.workers.dev\" npm run build)",
-      "mcp__obsidian__list-available-vaults"
+      "mcp__obsidian__list-available-vaults",
+      "Bash(curl -s \"https://api.warframestat.us/pc/\")",
+      "Bash(curl -v \"https://api.warframestat.us/pc/\")",
+      "Bash(curl -s \"https://api.warframestat.us/\")",
+      "Bash(curl -s \"https://api.warframestat.us/v2/pc\")",
+      "Bash(curl -s \"https://api.warframestat.us/v2/pc/\")",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(curl -s \"https://registry.npmjs.org/warframe-worldstate-parser/latest\")",
+      "Bash(python3 -c \"import json, sys; d = json.load\\(sys.stdin\\); print\\('Version:', d.get\\('version'\\)\\); print\\('Main:', d.get\\('main'\\)\\); print\\('Module:', d.get\\('module'\\)\\); print\\('Type:', d.get\\('type'\\)\\); print\\('Dependencies:'\\); [print\\(' ', k, v\\) for k, v in d.get\\('dependencies', {}\\).items\\(\\)]; print\\('Browser field:', d.get\\('browser', 'not set'\\)\\)\")",
+      "Bash(mkdir -p /tmp/wfparser-test)",
+      "Read(//tmp/**)",
+      "Bash(npm pack *)",
+      "Bash(tar -xzf warframe-worldstate-parser-5.3.3.tgz)",
+      "Bash(node test-parser.mjs)",
+      "Skill(update-config)",
+      "Skill(update-config:*)"
     ]
   }
 }

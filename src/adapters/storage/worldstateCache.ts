@@ -7,6 +7,13 @@ import { db } from './db';
 // ETag key — stored alongside worldstate data for conditional GET requests.
 export const WS_ETAG_KEY = 'worldstate:etag';
 
+// Data-source tag — which upstream fed the current worldstate_master entry.
+// Values: 'warframestat' (primary) | 'official' (parser-based fallback).
+// Read by <DataSourceBadge /> via useLiveQuery, written by SyncService on each sync.
+export const WS_SOURCE_KEY = 'worldstate:source';
+
+export type WorldstateSource = 'warframestat' | 'official';
+
 export const WS_CACHE_KEYS = {
   nightwave:         'ws:nightwave',
   sortie:            'ws:sortie',
@@ -109,6 +116,27 @@ export async function setWsEtag(etag: string): Promise<void> {
     key:       WS_ETAG_KEY,
     data:      etag,
     expiresAt: now + 86_400_000, // 24 h — refreshed on every successful sync
+    updatedAt: now,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Data-source helpers — record which upstream (warframestat.us or the
+// official Warframe API via parser) produced the current worldstate_master
+// payload. Surfaced in the UI through <DataSourceBadge />.
+// ---------------------------------------------------------------------------
+
+export async function getWsSource(): Promise<WorldstateSource | null> {
+  const entry = await db.cache.get(WS_SOURCE_KEY);
+  return entry ? (entry.data as WorldstateSource) : null;
+}
+
+export async function setWsSource(source: WorldstateSource): Promise<void> {
+  const now = Date.now();
+  await db.cache.put({
+    key:       WS_SOURCE_KEY,
+    data:      source,
+    expiresAt: now + 86_400_000,
     updatedAt: now,
   });
 }
