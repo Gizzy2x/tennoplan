@@ -3,6 +3,7 @@ import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { useNavigationStore, type NavTab } from "@/store/navigation";
 import { SyncService } from "@/services/SyncService";
+import { ItemsService } from "@/adapters/api/ItemsService";
 
 import { DailiesWeekliesPage } from "@/features/dailies-weeklies/DailiesWeekliesPage";
 import { CelestialPendulumPage } from "@/features/celestial-pendulum/CelestialPendulumPage";
@@ -41,7 +42,11 @@ export function AppShell() {
 
   useEffect(() => {
     SyncService.init();
-    return () => SyncService.destroy();
+    ItemsService.init();
+    return () => {
+      SyncService.destroy();
+      ItemsService.destroy();
+    };
   }, []);
 
   // Keep the CSS variable in sync so fixed cinematic backgrounds adapt automatically
