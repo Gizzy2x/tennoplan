@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useWorldCycles }       from './hooks/useWorldCycles';
 import { useSyndicateMissions } from './hooks/useSyndicateMissions';
+import { useDropsLastSynced }   from './hooks/useDropsLastSynced';
 import { CinematicCyclePanel }  from './components/CinematicCyclePanel';
 import { WorldBackground }      from './components/WorldBackground';
 import { STATE, FALLBACK, getCardGradient } from './components/CycleCard';
@@ -43,6 +44,7 @@ export function CelestialPendulumPage() {
   } = useWorldCycles();
 
   const { missions } = useSyndicateMissions();
+  const { ageLabel: dropsAgeLabel, lastSynced: dropsLastSynced } = useDropsLastSynced();
 
   const missionByName    = Object.fromEntries(missions.map(m => [m.syndicate, m]));
   const missionByCycleId = Object.fromEntries(
@@ -222,6 +224,41 @@ export function CelestialPendulumPage() {
               />
             </div>
           )}
+        </div>
+      )}
+
+      {/* ── Drop data freshness footer ──────────────────────────────────── */}
+      {orderedStatuses.length > 0 && (
+        <div
+          className="flex items-center gap-3 px-8 py-1.5"
+          style={{
+            zIndex:     10,
+            background: 'rgba(13,13,13,0.72)',
+            borderTop:  '1px solid rgba(227,195,114,0.06)',
+            flexShrink: 0,
+          }}
+        >
+          {/* Dot: gold if synced, amber if never synced */}
+          <div
+            className="w-1 h-1 rounded-full flex-shrink-0"
+            style={{
+              background: dropsLastSynced
+                ? 'rgba(227,195,114,0.55)'
+                : 'rgba(251,191,36,0.50)',
+            }}
+          />
+          <p
+            className="font-label uppercase tracking-widest flex-1"
+            style={{
+              fontSize: '0.38rem',
+              color:    dropsLastSynced
+                ? 'rgba(198,198,199,0.32)'
+                : 'rgba(251,191,36,0.55)',
+              letterSpacing: '0.20em',
+            }}
+          >
+            Drop data · {dropsAgeLabel}
+          </p>
         </div>
       )}
 
