@@ -40,7 +40,6 @@ export function CelestialPendulumPage() {
     isStale,
     cacheAgeMs,
     hasEverLoaded,
-    now,
   } = useWorldCycles();
 
   const { missions } = useSyndicateMissions();
@@ -220,7 +219,6 @@ export function CelestialPendulumPage() {
                 key={activeId}
                 status={selectedStatus}
                 syndicateMission={missionByCycleId[activeId] ?? null}
-                now={now}
               />
             </div>
           )}

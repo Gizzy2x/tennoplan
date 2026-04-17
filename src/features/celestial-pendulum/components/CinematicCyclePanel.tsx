@@ -231,13 +231,11 @@ function InfoPopover({ text, worldName, accentColor }: InfoPopoverProps) {
 export interface CinematicCyclePanelProps {
   status:            CycleStatus;
   syndicateMission?: SyndicateMission | null;
-  now?:              number;
 }
 
 export function CinematicCyclePanel({
   status,
   syndicateMission,
-  now = Date.now(),
 }: CinematicCyclePanelProps) {
   const { cycle, msRemaining, isExpired } = status;
   const pres      = STATE[cycle.state] ?? FALLBACK;
