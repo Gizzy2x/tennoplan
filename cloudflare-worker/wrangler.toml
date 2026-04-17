@@ -2,17 +2,37 @@ name = "app"
 main = "src/index.ts"
 compatibility_date = "2024-09-23"
 
+# nodejs_compat is required by warframe-worldstate-parser (uses reflect-metadata,
+# class-transformer, class-validator, plus Node-style module resolution).
+compatibility_flags = ["nodejs_compat"]
+
 # ---------------------------------------------------------------------------
-# Scheduled trigger — pulls warframestat.us once per minute and writes to KV.
+# Scheduled trigger — pulls worldstate once per minute and writes to KV.
 # All Tennoplan clients read from KV, never hitting warframestat.us directly.
 # ---------------------------------------------------------------------------
 [triggers]
 crons = ["* * * * *"]
 
 # ---------------------------------------------------------------------------
-# KV Namespace — stores the latest worldstate JSON + its ETag.
+# KV Namespace — stores the latest worldstate JSON + its ETag + source tag.
 # After running `wrangler kv namespace create WORLDSTATE`, replace the IDs below.
 # ---------------------------------------------------------------------------
 [[kv_namespaces]]
 binding = "WORLDSTATE"
 id = "a520a78ecd264bff9b0abf38adff3f8a"
+
+# ---------------------------------------------------------------------------
+# Alias @nestjs/swagger → local no-op stub.
+#
+# The parser's model classes decorate every property with @nestjs/swagger's
+# ApiProperty/ApiPropertyOptional for OpenAPI schema generation. We don't
+# serve an OpenAPI doc, so these decorators are pure metadata noise at runtime.
+# Bundling real @nestjs/swagger would drag the entire NestJS tree (RxJS,
+# reflect-metadata, Node HTTP server shims) into our Worker — pushing us past
+# the 1 MB bundle limit and importing server-only code that breaks in Workers.
+#
+# The stub exports no-op decorator factories that satisfy the imports at
+# runtime with ~200 bytes of code. All other parser functionality is preserved.
+# ---------------------------------------------------------------------------
+[alias]
+"@nestjs/swagger" = "./src/stubs/nestjs-swagger.ts"

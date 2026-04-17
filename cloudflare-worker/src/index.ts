@@ -1,28 +1,48 @@
 // ---------------------------------------------------------------------------
-// Tennoplan Worldstate Worker
+// Tennoplan Worldstate Worker  (Hybrid, parser-based fallback)
 //
 // Architecture:
-//   Scheduled cron (every 1 min) → fetch warframestat.us → store in KV
+//   Scheduled cron (every 1 min) → fetch warframestat.us  → store in KV
+//                                  ↳ on empty/fail: fetch api.warframe.com
+//                                    → run warframe-worldstate-parser
+//                                    → store parsed (warframestat.us-shape) in KV
 //   HTTP GET from clients        → serve from KV + ETag conditional GET
 //
-// This means warframestat.us is hit AT MOST once per minute, regardless of
-// how many Tennoplan users are online. 200k simultaneous users = 200k KV
-// reads, not 200k upstream API calls.
+// This means upstream APIs are hit AT MOST once per minute, regardless of
+// how many Tennoplan users are online. All clients read from KV + edge cache.
+//
+// Fallback is transparent: clients receive identical JSON shape in either
+// case. The only visible difference is the `X-Data-Source` response header
+// (`warframestat` | `official`), surfaced in the UI via DataSourceBadge.
 // ---------------------------------------------------------------------------
+
+import { WorldState } from 'warframe-worldstate-parser';
 
 export interface Env {
   WORLDSTATE: KVNamespace;
 }
 
-const UPSTREAM_URL    = 'https://api.warframestat.us/pc';
-const KV_DATA_KEY     = 'data';
-const KV_ETAG_KEY     = 'etag';
-const KV_TTL_SECONDS  = 300; // 5-min safety net; cron refreshes every 60s
+// ---------------------------------------------------------------------------
+// Config
+// ---------------------------------------------------------------------------
+
+const PRIMARY_URL    = 'https://api.warframestat.us/pc/';               // trailing slash is required — /pc 301→/pc/ and the 301 body is empty
+const FALLBACK_URL   = 'https://api.warframe.com/cdn/worldState.php';   // official DE endpoint — raw worldstate JSON
+
+const KV_DATA_KEY    = 'data';
+const KV_ETAG_KEY    = 'etag';
+const KV_SOURCE_KEY  = 'source';                                        // 'warframestat' | 'official'
+const KV_TTL_SECONDS = 300;                                             // 5-min safety net; cron refreshes every 60s
+
+const FETCH_TIMEOUT_MS = 10_000;
+
+type DataSource = 'warframestat' | 'official';
 
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
   'Access-Control-Allow-Headers': 'If-None-Match',
+  'Access-Control-Expose-Headers': 'ETag, X-Data-Source, X-Tennoplan-Source',
 };
 
 // ---------------------------------------------------------------------------
@@ -37,8 +57,9 @@ async function handleFetch(request: Request, env: Env): Promise<Response> {
     return new Response('Method Not Allowed', { status: 405 });
   }
 
-  const storedEtag  = await env.WORLDSTATE.get(KV_ETAG_KEY);
-  const clientEtag  = request.headers.get('If-None-Match');
+  const storedEtag   = await env.WORLDSTATE.get(KV_ETAG_KEY);
+  const storedSource = (await env.WORLDSTATE.get(KV_SOURCE_KEY)) as DataSource | null;
+  const clientEtag   = request.headers.get('If-None-Match');
 
   // Conditional GET — return 304 if client already has the latest version.
   // Client skips the ~2 MB JSON parse entirely.
@@ -47,8 +68,9 @@ async function handleFetch(request: Request, env: Env): Promise<Response> {
       status: 304,
       headers: {
         ...CORS_HEADERS,
-        'ETag':          storedEtag,
-        'Cache-Control': 'public, max-age=60',
+        'ETag':           storedEtag,
+        'Cache-Control':  'public, max-age=60',
+        'X-Data-Source':  storedSource ?? 'warframestat',
       },
     });
   }
@@ -64,13 +86,14 @@ async function handleFetch(request: Request, env: Env): Promise<Response> {
         'ETag':                storedEtag,
         'Cache-Control':       'public, max-age=60',
         'X-Tennoplan-Source':  'kv',
+        'X-Data-Source':       storedSource ?? 'warframestat',
       },
     });
   }
 
   // KV miss (cold Worker start or KV TTL expired) — fetch upstream and populate.
   try {
-    const { text, etag } = await fetchAndStore(env);
+    const { text, etag, source } = await fetchAndStore(env);
     return new Response(text, {
       status: 200,
       headers: {
@@ -79,10 +102,11 @@ async function handleFetch(request: Request, env: Env): Promise<Response> {
         'ETag':                etag,
         'Cache-Control':       'public, max-age=60',
         'X-Tennoplan-Source':  'origin',
+        'X-Data-Source':       source,
       },
     });
   } catch (err) {
-    console.error('KV miss + upstream fetch failed:', err);
+    console.error('KV miss + all upstreams failed:', err);
     return new Response(JSON.stringify({ error: 'Upstream unavailable', details: String(err) }), {
       status: 502,
       headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
@@ -97,38 +121,32 @@ async function handleFetch(request: Request, env: Env): Promise<Response> {
 // ---------------------------------------------------------------------------
 async function handleScheduled(env: Env): Promise<void> {
   try {
-    const { changed, etag } = await fetchAndStore(env);
-    console.log(`Scheduled refresh complete. ETag: ${etag}. Changed: ${changed}`);
+    const { etag, source, changed } = await fetchAndStore(env);
+    console.log(`Scheduled refresh complete. Source: ${source}. ETag: ${etag}. Changed: ${changed}`);
   } catch (err) {
-    console.error('Scheduled refresh failed:', err);
+    console.error('Scheduled refresh failed (both sources):', err);
   }
 }
 
 // ---------------------------------------------------------------------------
-// Shared fetch + KV write logic
+// Shared fetch + KV write logic — tries primary, falls back to official+parser
 // ---------------------------------------------------------------------------
-async function fetchAndStore(env: Env): Promise<{ text: string; etag: string; changed: boolean }> {
-  const res = await fetch(UPSTREAM_URL, {
-    headers: {
-      'User-Agent': 'Tennoplan/1.0 Worldstate Worker',
-      'Accept':     'application/json',
-    },
-  });
+async function fetchAndStore(env: Env): Promise<{
+  text: string;
+  etag: string;
+  source: DataSource;
+  changed: boolean;
+}> {
+  let text: string;
+  let source: DataSource;
 
-  if (!res.ok) {
-    throw new Error(`Upstream returned HTTP ${res.status}`);
-  }
-
-  const text    = await res.text();
-
-  if (!text || text.trim().length === 0) {
-    throw new Error('Upstream returned empty body');
-  }
-  // Validate it's parseable before we store garbage in KV
   try {
-    JSON.parse(text);
-  } catch {
-    throw new Error(`Upstream returned malformed JSON (${text.length} bytes)`);
+    text   = await fetchPrimary();
+    source = 'warframestat';
+  } catch (primaryErr) {
+    console.warn('Primary (warframestat.us) failed — falling back to official API:', primaryErr);
+    text   = await fetchFallback();
+    source = 'official';
   }
 
   const etag    = `"${await sha1Short(text)}"`;
@@ -137,12 +155,92 @@ async function fetchAndStore(env: Env): Promise<{ text: string; etag: string; ch
 
   if (changed) {
     await Promise.all([
-      env.WORLDSTATE.put(KV_DATA_KEY, text, { expirationTtl: KV_TTL_SECONDS }),
-      env.WORLDSTATE.put(KV_ETAG_KEY, etag, { expirationTtl: KV_TTL_SECONDS }),
+      env.WORLDSTATE.put(KV_DATA_KEY,   text,   { expirationTtl: KV_TTL_SECONDS }),
+      env.WORLDSTATE.put(KV_ETAG_KEY,   etag,   { expirationTtl: KV_TTL_SECONDS }),
+      env.WORLDSTATE.put(KV_SOURCE_KEY, source, { expirationTtl: KV_TTL_SECONDS }),
     ]);
+  } else {
+    // ETag unchanged but source may have flipped (e.g. primary recovered) —
+    // refresh the source tag without reuploading the (identical) body.
+    await env.WORLDSTATE.put(KV_SOURCE_KEY, source, { expirationTtl: KV_TTL_SECONDS });
   }
 
-  return { text, etag, changed };
+  return { text, etag, source, changed };
+}
+
+// ---------------------------------------------------------------------------
+// Primary: warframestat.us/pc/  (already parsed, preferred)
+// Throws on any failure, empty body, or unparseable JSON — caller falls back.
+// ---------------------------------------------------------------------------
+async function fetchPrimary(): Promise<string> {
+  const res = await fetchWithTimeout(PRIMARY_URL, {
+    headers: {
+      'User-Agent': 'Tennoplan/1.0 Worldstate Worker',
+      'Accept':     'application/json',
+    },
+  }, FETCH_TIMEOUT_MS);
+
+  if (!res.ok) {
+    throw new Error(`warframestat.us returned HTTP ${res.status}`);
+  }
+
+  const text = await res.text();
+
+  if (!text || text.trim().length === 0) {
+    // This is the bug we originally hit: 200 OK with Content-Length: 0.
+    throw new Error('warframestat.us returned empty body');
+  }
+
+  try {
+    JSON.parse(text);
+  } catch {
+    throw new Error(`warframestat.us returned malformed JSON (${text.length} bytes)`);
+  }
+
+  return text;
+}
+
+// ---------------------------------------------------------------------------
+// Fallback: api.warframe.com  (raw game worldstate) + warframe-worldstate-parser
+// Produces identical shape to warframestat.us so clients can't tell the difference.
+// ---------------------------------------------------------------------------
+async function fetchFallback(): Promise<string> {
+  const res = await fetchWithTimeout(FALLBACK_URL, {
+    headers: {
+      'User-Agent': 'Tennoplan/1.0 Worldstate Worker',
+      'Accept':     'application/json',
+    },
+  }, FETCH_TIMEOUT_MS);
+
+  if (!res.ok) {
+    throw new Error(`api.warframe.com returned HTTP ${res.status}`);
+  }
+
+  const rawJsonString = await res.text();
+
+  if (!rawJsonString || rawJsonString.trim().length === 0) {
+    throw new Error('api.warframe.com returned empty body');
+  }
+
+  // Parse raw DE worldstate into the community-standard warframestat.us shape.
+  // WorldState.build takes the raw JSON STRING (not a parsed object) and returns
+  // an instance whose JSON.stringify output matches warframestat.us's /pc response.
+  const ws = await WorldState.build(rawJsonString, { locale: 'en' });
+
+  return JSON.stringify(ws);
+}
+
+// ---------------------------------------------------------------------------
+// fetch() with a timeout — AbortController cleans up dangling connections.
+// ---------------------------------------------------------------------------
+async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController();
+  const timer      = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 // ---------------------------------------------------------------------------

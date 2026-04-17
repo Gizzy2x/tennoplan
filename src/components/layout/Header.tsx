@@ -3,6 +3,7 @@ import { Terminal, Search, Bell, Settings, Power, ListChecks, Activity } from "l
 import { NAV_ITEMS, useNavigationStore } from "@/store/navigation";
 import { useHeartbeatStore } from "@/store/heartbeat";
 import { SyncService } from "@/services/SyncService";
+import { DataSourceBadge } from "./DataSourceBadge";
 import { cn } from "@/lib/utils";
 
 const EXPANDED_W = 260;
@@ -155,6 +156,9 @@ export function Header() {
 
         {/* Global System Pulse */}
         <SystemPulse />
+
+        {/* Upstream source indicator (WS / OFFICIAL) */}
+        <DataSourceBadge />
 
         {/* Search */}
         <div className="relative flex items-center border-b border-primary/20 pb-1">
