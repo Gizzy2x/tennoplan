@@ -1,6 +1,8 @@
 import Dexie, { type Table } from "dexie";
 import type { AssetRecord, SyncError } from "@/core/domain/assets";
 import type { ProgressionRecord } from "@/core/domain/progression";
+import type { ItemState } from "@/core/domain/itemState";
+import type { DropLocation } from "@/core/domain/drops";
 
 export interface Setting {
   key: string;
@@ -35,6 +37,10 @@ export class TennoplanDB extends Dexie {
   syncErrors!: Table<SyncError, number>;
   /** Ascension Registry — one row per masterable item. Written only by MasteryService. */
   progression!: Table<ProgressionRecord, number>;
+  /** Per-user overlay state for items (owned flag). Sparse: rows only exist for touched items. */
+  itemStates!: Table<ItemState, string>;
+  /** Normalized drop locations from drops.warframestat.us. Wipe + bulkPut on sync. */
+  dropLocations!: Table<DropLocation, string>;
 
   constructor() {
     super("tennoplan");
@@ -68,6 +74,33 @@ export class TennoplanDB extends Dexie {
       assetMeta: "uniqueName, cacheKey, status, priority, lastAccessedAt",
       syncErrors: "++id, occurredAt, uniqueName",
       progression: "++id, itemId, category, status, lastUpdated",
+    });
+
+    // Version 4 — Items Integration Plan (Phase 1)
+    //
+    // itemStates:
+    //   Primary key = uniqueName (string; matches itemsAdapter).
+    //   Only touched items have rows (sparse table — saves space on older PCs).
+    //   `owned` is deliberately NOT indexed: IndexedDB's support for boolean
+    //   indexes is inconsistent across browsers; we filter in-memory instead.
+    //   `markedAt` is indexed so the UI can sort by most-recently-touched.
+    //
+    // dropLocations:
+    //   Primary key = locationKey (deterministic string, built by dropsService).
+    //   Using a string PK (not ++id) means re-syncs upsert cleanly — same input
+    //   → same row, no duplicates.
+    //   Compound indexes [type+bountyLocation] and [bountyLocation+bountyLevel]
+    //   cover Celestial Pendulum's most common faceted queries without scans.
+    this.version(4).stores({
+      settings: "key",
+      cache: "key, expiresAt",
+      userMarks: "++id, type, referenceId, [type+referenceId], updatedAt",
+      assetMeta: "uniqueName, cacheKey, status, priority, lastAccessedAt",
+      syncErrors: "++id, occurredAt, uniqueName",
+      progression: "++id, itemId, category, status, lastUpdated",
+      itemStates: "uniqueName, markedAt",
+      dropLocations:
+        "locationKey, type, bountyLocation, relicTier, fetchedAt, [type+bountyLocation], [bountyLocation+bountyLevel]",
     });
   }
 }

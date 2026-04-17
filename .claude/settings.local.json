@@ -42,7 +42,8 @@
       "WebFetch(domain:docs.warframestat.us)",
       "WebSearch",
       "Bash(npx wrangler:*)",
-      "Bash(VITE_WORLDSTATE_WORKER_URL=\"https://app.test.workers.dev\" npm run build)"
+      "Bash(VITE_WORLDSTATE_WORKER_URL=\"https://app.test.workers.dev\" npm run build)",
+      "mcp__obsidian__list-available-vaults"
     ]
   }
 }

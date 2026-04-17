@@ -4,6 +4,7 @@ import type { CycleStatus } from '@/core/domain/cycles';
 import type { SyndicateMission } from '@/core/domain/syndicates';
 import { STATE, FALLBACK } from './CycleCard';
 import { BountyJobList } from './BountyJobList';
+import { useEnrichedBounties } from '../hooks/useEnrichedBounties';
 
 // ── Static world lore ──────────────────────────────────────────────────────
 
@@ -245,6 +246,15 @@ export function CinematicCyclePanel({
   const { h, m, s } = formatMsParts(msRemaining);
 
   const hasBounties = !!syndicateMission && syndicateMission.jobs.length > 0;
+
+  // Phase 2: enrich bounties with real drop data + cycle context.
+  // Safe to call unconditionally — the hook no-ops for worlds without bounties.
+  const { bounties: enrichedBounties, cycleNote } = useEnrichedBounties(
+    syndicateMission,
+    cycle.id,
+    cycle.state,
+  );
+
   const resources   = KEY_RESOURCES[`${cycle.id}-${cycle.state}`] ?? [];
   const aboutText   = WORLD_ABOUT[cycle.id] ?? '';
   const hintText    = WORLD_HINT[`${cycle.id}-${cycle.state}`] ?? '';
@@ -430,11 +440,10 @@ export function CinematicCyclePanel({
           {/* ── BOUNTY BOARD ─────────────────────────────────────────────── */}
           {hasBounties ? (
             <BountyJobList
-              jobs={syndicateMission!.jobs}
+              bounties={enrichedBounties}
               accentColor={pres.color}
-              expiryMs={syndicateMission!.expiryMs}
-              now={now}
               worldId={cycle.id}
+              cycleNote={cycleNote}
             />
           ) : (
             <div>
