@@ -12,16 +12,23 @@
  *   - Rotation tabs (A / B / C) inside the terminal panel when multiple exist
  *   - Cycle-context note banner above the board
  *   - Graceful fallback pool rendering when Dexie has no match yet
+ *
+ * New in Phase 3:
+ *   - Icons resolved via build-time itemsAdapter (findByName → imageName → CDN)
+ *     instead of per-item search-API calls. Zero network overhead for icons.
+ *   - LazyItemIcon (IntersectionObserver) prevents off-screen icon fetches
+ *     in long reward pools, keeping older PCs snappy.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type CSSProperties } from 'react';
 import type {
   EnrichedBounty,
   EnrichedBountyRotation,
   EnrichedBountyReward,
   BountyRewardRarity,
 } from '@/core/domain/bounty';
-import { useItemIcon } from '../hooks/useItemIcon';
+import { findByName } from '@/adapters/items/itemsAdapter';
+import { LazyItemIcon } from '@/components/ui/LazyItemIcon';
 
 // ─── Static faction info per world ──────────────────────────────────────────
 
@@ -64,9 +71,16 @@ interface RewardIconCellProps {
 }
 
 function RewardIconCell({ reward }: RewardIconCellProps) {
-  const iconUrl = useItemIcon(reward.itemName);
-  const meta    = RARITY_META[reward.tier];
-  const pct     = formatChance(reward.chance);
+  // Phase 3: resolve imageName synchronously from the build-time static items
+  // map — no network call, no useItemIcon search-API round-trip.
+  const staticItem = findByName(reward.itemName);
+  const meta       = RARITY_META[reward.tier];
+  const pct        = formatChance(reward.chance);
+
+  const iconFilter =
+    reward.tier === 'Rare'
+      ? 'brightness(1.15) drop-shadow(0 0 4px rgba(227,195,114,0.45))'
+      : 'brightness(1.05)';
 
   return (
     <div
@@ -103,20 +117,16 @@ function RewardIconCell({ reward }: RewardIconCellProps) {
           transition:     'box-shadow 0.2s',
         }}
       >
-        {iconUrl ? (
-          <img
-            src={iconUrl}
-            alt={reward.itemName}
-            style={{
-              width:     42,
-              height:    42,
-              objectFit: 'contain',
-              filter:
-                reward.tier === 'Rare'
-                  ? 'brightness(1.15) drop-shadow(0 0 4px rgba(227,195,114,0.45))'
-                  : 'brightness(1.05)',
-            }}
-            onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+        {/* LazyItemIcon fires only when the cell scrolls into view.
+            When the static map has an imageName we skip any network lookup.
+            Falls back to the letter-avatar below when the item isn't found. */}
+        {staticItem?.imageName ? (
+          <LazyItemIcon
+            imageName={staticItem.imageName}
+            name={reward.itemName}
+            size={42}
+            className="object-contain"
+            style={{ filter: iconFilter } as CSSProperties}
           />
         ) : (
           <span
@@ -275,12 +285,12 @@ interface FallbackPoolViewProps {
 }
 
 function FallbackPoolView({ names }: FallbackPoolViewProps) {
-  // Use Unknown rarity so icons still render but no fake % appears
+  // Use Unknown tier so icons still render but no fake % appears
   const rewards: EnrichedBountyReward[] = names.map(n => ({
     itemName:  n,
     chance:    0,
     rawRarity: 'Unknown',
-    tier:      'Unknown',
+    tier:      'Unknown' as const,
   }));
 
   return (

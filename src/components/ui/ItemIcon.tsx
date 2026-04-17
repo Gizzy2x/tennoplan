@@ -9,7 +9,7 @@
  * Tinting applies a gold CSS filter matching the Orokin design system.
  */
 
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { cn } from '@/lib/utils';
 import { getIconUrl, getIconUrlByItem } from '@/lib/icons/IconResolver';
 import type { WarframeItem } from '@/core/domain/items';
@@ -42,6 +42,8 @@ export type ItemIconProps = ItemIconSource & {
   tint?: boolean;
   /** Additional class names. */
   className?: string;
+  /** Inline style — merged with internal sizing + filter styles. */
+  style?: CSSProperties;
 };
 
 // ─── Gold tint filter ────────────────────────────────────────────────────────
@@ -59,6 +61,7 @@ export function ItemIcon({
   size = 'md',
   tint = false,
   className,
+  style: styleProp,
 }: ItemIconProps) {
   const [errored, setErrored] = useState(false);
 
@@ -90,6 +93,7 @@ export function ItemIcon({
         width: px,
         height: px,
         filter: tint && !errored ? GOLD_TINT_FILTER : undefined,
+        ...styleProp,
       }}
     />
   );
