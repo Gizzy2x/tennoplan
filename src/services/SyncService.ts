@@ -10,7 +10,7 @@ const log = logger.scope('SyncService');
 // ---------------------------------------------------------------------------
 
 const CF_WORKER_URL   = import.meta.env.VITE_WORLDSTATE_WORKER_URL as string | undefined;
-const DIRECT_URL      = 'https://api.warframestat.us/pc';
+const DIRECT_URL      = 'https://api.warframestat.us/pc/';
 const PRIMARY_URL     = CF_WORKER_URL?.replace(/\/$/, '') ?? DIRECT_URL;
 const FALLBACK_URL    = CF_WORKER_URL ? DIRECT_URL : null;
 
