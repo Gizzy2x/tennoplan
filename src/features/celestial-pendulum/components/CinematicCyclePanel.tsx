@@ -5,6 +5,7 @@ import type { SyndicateMission } from '@/core/domain/syndicates';
 import { STATE, FALLBACK } from './CycleCard';
 import { BountyJobList } from './BountyJobList';
 import { useEnrichedBounties } from '../hooks/useEnrichedBounties';
+import { useIconPreloader }    from '../hooks/useIconPreloader';
 
 // ── Static world lore ──────────────────────────────────────────────────────
 
@@ -252,6 +253,10 @@ export function CinematicCyclePanel({
     cycle.id,
     cycle.state,
   );
+
+  // Phase 4: preload CDN icons for this world's bounty rewards so they're
+  // already in the browser cache before the user opens any tier.
+  useIconPreloader(enrichedBounties);
 
   const resources   = KEY_RESOURCES[`${cycle.id}-${cycle.state}`] ?? [];
   const aboutText   = WORLD_ABOUT[cycle.id] ?? '';

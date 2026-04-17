@@ -362,3 +362,9 @@ body {
 .somatic-pulse {
   animation: somaticPulse 2.4s ease-in-out infinite;
 }
+
+/* General-purpose rotation — used by the Refresh button spinner */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

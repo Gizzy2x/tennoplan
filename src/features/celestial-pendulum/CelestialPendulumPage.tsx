@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useWorldCycles }       from './hooks/useWorldCycles';
 import { useSyndicateMissions } from './hooks/useSyndicateMissions';
 import { useDropsLastSynced }   from './hooks/useDropsLastSynced';
+import { ItemsService }         from '@/adapters/api/ItemsService';
 import { CinematicCyclePanel }  from './components/CinematicCyclePanel';
 import { WorldBackground }      from './components/WorldBackground';
 import { STATE, FALLBACK, getCardGradient } from './components/CycleCard';
@@ -34,6 +35,8 @@ export function CelestialPendulumPage() {
   // Default to first world — tab strip is the world switcher
   const [selectedId, setSelectedId] = useState<CycleId>('cetus');
 
+  const [isSyncing, setIsSyncing] = useState(false);
+
   const {
     statuses,
     isLoading,
@@ -41,10 +44,26 @@ export function CelestialPendulumPage() {
     isStale,
     cacheAgeMs,
     hasEverLoaded,
+    forceRefetch: refetchWorldCycles,
   } = useWorldCycles();
 
-  const { missions } = useSyndicateMissions();
+  const { missions, forceRefetch: refetchMissions } = useSyndicateMissions();
   const { ageLabel: dropsAgeLabel, lastSynced: dropsLastSynced } = useDropsLastSynced();
+
+  /** Refresh drop data + worldstate simultaneously. */
+  const handleRefresh = useCallback(async () => {
+    if (isSyncing) return;
+    setIsSyncing(true);
+    try {
+      await Promise.all([
+        ItemsService.forceSync(),
+        refetchWorldCycles(),
+        refetchMissions(),
+      ]);
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [isSyncing, refetchWorldCycles, refetchMissions]);
 
   const missionByName    = Object.fromEntries(missions.map(m => [m.syndicate, m]));
   const missionByCycleId = Object.fromEntries(
@@ -259,6 +278,49 @@ export function CelestialPendulumPage() {
           >
             Drop data · {dropsAgeLabel}
           </p>
+
+          {/* Refresh button */}
+          <button
+            onClick={() => void handleRefresh()}
+            disabled={isSyncing}
+            title="Force-refresh drop data and worldstate"
+            style={{
+              display:       'flex',
+              alignItems:    'center',
+              gap:           4,
+              padding:       '2px 8px',
+              fontFamily:    'var(--font-body)',
+              fontSize:      '0.38rem',
+              fontWeight:    700,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color:         isSyncing
+                ? 'rgba(227,195,114,0.30)'
+                : 'rgba(227,195,114,0.55)',
+              border:        `1px solid ${isSyncing ? 'rgba(227,195,114,0.10)' : 'rgba(227,195,114,0.22)'}`,
+              background:    'transparent',
+              cursor:        isSyncing ? 'not-allowed' : 'pointer',
+              transition:    'color 0.15s, border-color 0.15s',
+              flexShrink:    0,
+            }}
+            onMouseEnter={e => {
+              if (!isSyncing) (e.currentTarget as HTMLButtonElement).style.color = 'rgba(227,195,114,0.85)';
+            }}
+            onMouseLeave={e => {
+              if (!isSyncing) (e.currentTarget as HTMLButtonElement).style.color = 'rgba(227,195,114,0.55)';
+            }}
+          >
+            <span
+              style={{
+                display:   'inline-block',
+                animation: isSyncing ? 'spin 1s linear infinite' : 'none',
+                lineHeight: 1,
+              }}
+            >
+              ↻
+            </span>
+            {isSyncing ? 'Syncing…' : 'Refresh'}
+          </button>
         </div>
       )}
 
