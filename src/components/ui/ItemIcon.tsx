@@ -4,14 +4,21 @@
  * Usage:
  *   <ItemIcon imageName="ash-f2c6f3ab3f.png" name="Ash" size="md" />
  *   <ItemIcon item={warframeItem} size={48} />
+ *   <ItemIcon uniqueName="/Lotus/Powersuits/Ninja/Ninja" name="Ash" />
  *
- * Falls back to lotus-placeholder.svg on load error.
- * Tinting applies a gold CSS filter matching the Orokin design system.
+ * Resolution order (sync, no Dexie):
+ *   1. item.imageName   → CDN URL
+ *   2. imageName (guard against empty string → placeholder)
+ *   3. uniqueName       → itemsAdapter.findByUniqueName → CDN URL
+ *   4. /lotus-placeholder.svg
+ *
+ * For Dexie-backed pre-resolved iconUrls, use LazyItemIcon with uniqueName.
  */
 
 import { useState, type CSSProperties } from 'react';
 import { cn } from '@/lib/utils';
 import { getIconUrl, getIconUrlByItem } from '@/lib/icons/IconResolver';
+import { findByUniqueName } from '@/adapters/items/itemsAdapter';
 import type { WarframeItem } from '@/core/domain/items';
 
 // ─── Size presets (px) ───────────────────────────────────────────────────────
@@ -30,8 +37,8 @@ type SizePreset = keyof typeof SIZE_MAP;
 
 type ItemIconSource =
   | { item: WarframeItem; imageName?: never; uniqueName?: never }
-  | { imageName: string; item?: never; uniqueName?: never }
-  | { uniqueName?: string; imageName?: never; item?: never };
+  | { imageName: string;  item?: never;      uniqueName?: never }
+  | { uniqueName: string; imageName?: never; item?: never };
 
 export type ItemIconProps = ItemIconSource & {
   /** Display name used as alt text. Defaults to "Warframe item". */
@@ -47,37 +54,47 @@ export type ItemIconProps = ItemIconSource & {
 };
 
 // ─── Gold tint filter ────────────────────────────────────────────────────────
-// Approximates --color-primary (#E3C372) as a CSS filter overlay.
-// sepia → saturate → hue-rotate shift gold hue.
-const GOLD_TINT_FILTER =
-  'sepia(1) saturate(3) hue-rotate(5deg) brightness(1.05)';
+
+const GOLD_TINT_FILTER = 'sepia(1) saturate(3) hue-rotate(5deg) brightness(1.05)';
+
+// ─── URL resolution (sync) ───────────────────────────────────────────────────
+
+function resolveSrc(
+  props: Pick<ItemIconProps, 'item' | 'imageName' | 'uniqueName'>,
+): string {
+  if ('item' in props && props.item) {
+    return props.item.imageName ? getIconUrlByItem(props.item) : '/lotus-placeholder.svg';
+  }
+  if ('imageName' in props && props.imageName) {
+    // Guard: empty imageName would produce a broken CDN URL ending in '/'
+    return props.imageName.trim() ? getIconUrl(props.imageName) : '/lotus-placeholder.svg';
+  }
+  if ('uniqueName' in props && props.uniqueName) {
+    const entry = findByUniqueName(props.uniqueName);
+    return entry?.imageName ? getIconUrl(entry.imageName) : '/lotus-placeholder.svg';
+  }
+  return '/lotus-placeholder.svg';
+}
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function ItemIcon({
   item,
   imageName,
+  uniqueName,
   name,
   size = 'md',
   tint = false,
   className,
   style: styleProp,
-}: ItemIconProps) {
+}: ItemIconProps & { item?: WarframeItem; imageName?: string; uniqueName?: string }) {
   const [errored, setErrored] = useState(false);
 
-  const px = typeof size === 'number' ? size : SIZE_MAP[size];
+  const px = typeof size === 'number' ? size : SIZE_MAP[size as SizePreset] ?? 48;
 
-  // Resolve the source URL from whatever identifier was provided.
-  let src: string;
-  if (errored) {
-    src = '/lotus-placeholder.svg';
-  } else if (item) {
-    src = getIconUrlByItem(item);
-  } else if (imageName) {
-    src = getIconUrl(imageName);
-  } else {
-    src = '/lotus-placeholder.svg';
-  }
+  const src = errored
+    ? '/lotus-placeholder.svg'
+    : resolveSrc({ item, imageName, uniqueName } as Parameters<typeof resolveSrc>[0]);
 
   return (
     <img
@@ -90,7 +107,7 @@ export function ItemIcon({
       onError={() => setErrored(true)}
       className={cn('object-contain shrink-0', className)}
       style={{
-        width: px,
+        width:  px,
         height: px,
         filter: tint && !errored ? GOLD_TINT_FILTER : undefined,
         ...styleProp,

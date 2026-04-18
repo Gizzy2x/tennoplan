@@ -3,6 +3,8 @@ import type { AssetRecord, SyncError } from "@/core/domain/assets";
 import type { ProgressionRecord } from "@/core/domain/progression";
 import type { ItemState } from "@/core/domain/itemState";
 import type { DropLocation } from "@/core/domain/drops";
+import type { StoredItem } from "@/core/domain/items";
+import type { DataSyncState } from "@/core/domain/sync";
 
 export interface Setting {
   key: string;
@@ -41,6 +43,14 @@ export class TennoplanDB extends Dexie {
   itemStates!: Table<ItemState, string>;
   /** Normalized drop locations from drops.warframestat.us. Wipe + bulkPut on sync. */
   dropLocations!: Table<DropLocation, string>;
+  /**
+   * Full item catalogue with pre-resolved icon URLs. Written by DropDataService
+   * from the build-time items-map.json. Survives cache clears — only wiped
+   * when the user hits "Clear Data" in Settings.
+   */
+  items!: Table<StoredItem, string>;
+  /** One row per synced dataset. Replaces the old drops:etag / drops:lastSynced settings keys. */
+  dataSyncState!: Table<DataSyncState, string>;
 
   constructor() {
     super("tennoplan");
@@ -101,6 +111,34 @@ export class TennoplanDB extends Dexie {
       itemStates: "uniqueName, markedAt",
       dropLocations:
         "locationKey, type, bountyLocation, relicTier, fetchedAt, [type+bountyLocation], [bountyLocation+bountyLevel]",
+    });
+
+    // Version 5 — Reliable Static Data Foundation (2026-04-18)
+    //
+    // items:
+    //   Primary key = uniqueName. One row per Warframe item.
+    //   `iconUrl` is pre-resolved at sync time so the UI never computes it per-render.
+    //   `category` indexed for fast filtering in Ascension Registry and search UIs.
+    //   `lastUpdated` indexed so the UI can surface the newest entries.
+    //
+    // dataSyncState:
+    //   Primary key = id ('items' | 'dropLocations'). One row per dataset.
+    //   Replaces the scattered drops:etag / drops:lastSynced settings keys.
+    //   `lastUpdated` indexed so "days old" banners can be queried cheaply.
+    //
+    // Additive migration — existing tables carry forward unchanged. No data loss.
+    this.version(5).stores({
+      settings: "key",
+      cache: "key, expiresAt",
+      userMarks: "++id, type, referenceId, [type+referenceId], updatedAt",
+      assetMeta: "uniqueName, cacheKey, status, priority, lastAccessedAt",
+      syncErrors: "++id, occurredAt, uniqueName",
+      progression: "++id, itemId, category, status, lastUpdated",
+      itemStates: "uniqueName, markedAt",
+      dropLocations:
+        "locationKey, type, bountyLocation, relicTier, fetchedAt, [type+bountyLocation], [bountyLocation+bountyLevel]",
+      items: "uniqueName, category, lastUpdated",
+      dataSyncState: "id, lastUpdated",
     });
   }
 }

@@ -24,7 +24,8 @@ export type NavTab =
   | "solar-rail-feed"
   | "platinum-ledger"
   | "neural-archive"
-  | "cephalon-weave";
+  | "cephalon-weave"
+  | "settings";
 
 export interface NavItem {
   id: NavTab;

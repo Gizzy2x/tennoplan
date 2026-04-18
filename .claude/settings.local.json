@@ -1,38 +1,4 @@
 {
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cat 'C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Context.md' 2>/dev/null || echo '(No context file found)'"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "if": "Bash(git commit*)",
-            "command": "bash -c 'echo \"\\n**$(date +\"%Y-%m-%d %H:%M\") - Auto-logged commit:**\" >> \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\" && git log -1 --pretty=format:\"- %s (%an)\" >> \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\"' 2>/dev/null || true"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'mkdir -p \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes\" && echo \"\\n## Session ended $(date +\"%Y-%m-%d %H:%M\")\" >> \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\"' 2>/dev/null || true"
-          }
-        ]
-      }
-    ]
-  },
   "permissions": {
     "allow": [
       "Bash(find . -maxdepth 2 -type f -name README.md -o -name .cursorrules -o -name CLAUDE.md -o -name next.config.* -o -name tsconfig.json)",
@@ -92,7 +58,44 @@
       "Bash(tar -xzf warframe-worldstate-parser-5.3.3.tgz)",
       "Bash(node test-parser.mjs)",
       "Skill(update-config)",
-      "Skill(update-config:*)"
+      "Skill(update-config:*)",
+      "Bash(node -e \"const fs = require\\('fs'\\); const data = JSON.parse\\(fs.readFileSync\\('src/lib/icons/items-map.json'\\)\\); const cats = {}; Object.values\\(data\\).forEach\\(v => { cats[v.category] = \\(cats[v.category] || 0\\) + 1; }\\); const sorted = Object.entries\\(cats\\).sort\\(\\(a,b\\) => b[1] - a[1]\\); sorted.forEach\\(\\([cat, count]\\) => console.log\\(cat + ': ' + count\\)\\);\")",
+      "mcp__obsidian__read-note",
+      "Bash(echo \"---EXIT:$?---\")"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat 'C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Context.md' 2>/dev/null || echo '(No context file found)'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'echo \"\\n**$(date +\"%Y-%m-%d %H:%M\") - Auto-logged commit:**\" >> \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\" && git log -1 --pretty=format:\"- %s (%an)\" >> \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\"' 2>/dev/null || true",
+            "if": "Bash(git commit*)"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'mkdir -p \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes\" && echo \"\\n## Session ended $(date +\"%Y-%m-%d %H:%M\")\" >> \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\"' 2>/dev/null || true"
+          }
+        ]
+      }
     ]
   }
 }

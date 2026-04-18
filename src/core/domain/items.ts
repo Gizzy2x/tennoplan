@@ -42,3 +42,17 @@ export interface WarframeItem {
   /** CDN filename, e.g. "ash-f2c6f3ab3f.png". Used to build the icon URL. */
   imageName: string;
 }
+
+/**
+ * StoredItem — Dexie-persisted item with a pre-resolved icon URL.
+ *
+ * The items-map.json is the build-time source; DropDataService copies it
+ * into the Dexie `items` table on sync and resolves `iconUrl` once so the
+ * UI never has to compute it per-render. Survives cache clears.
+ */
+export interface StoredItem extends WarframeItem {
+  /** Pre-resolved CDN URL: https://cdn.warframestat.us/img/<imageName>. */
+  iconUrl: string;
+  /** Unix ms of the last sync that touched this row. */
+  lastUpdated: number;
+}
