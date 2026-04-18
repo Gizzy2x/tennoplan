@@ -175,7 +175,16 @@ export function Header() {
           <button className="text-secondary hover:text-on-surface hover:bg-white/5 p-2 transition-colors">
             <Bell className="size-5" strokeWidth={1.5} />
           </button>
-          <button className="text-secondary hover:text-on-surface hover:bg-white/5 p-2 transition-colors">
+          <button
+            onClick={() => setActiveTab("settings")}
+            title="Settings"
+            className={cn(
+              "p-2 transition-colors",
+              activeTab === "settings"
+                ? "text-primary"
+                : "text-secondary hover:text-on-surface hover:bg-white/5"
+            )}
+          >
             <Settings className="size-5" strokeWidth={1.5} />
           </button>
           <button className="text-secondary hover:text-on-surface hover:bg-white/5 p-2 transition-colors">

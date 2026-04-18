@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useWorldCycles }       from './hooks/useWorldCycles';
 import { useSyndicateMissions } from './hooks/useSyndicateMissions';
 import { useDropsLastSynced }   from './hooks/useDropsLastSynced';
-import { ItemsService }         from '@/adapters/api/ItemsService';
+import { DropDataService }      from '@/adapters/api/DropDataService';
 import { CinematicCyclePanel }  from './components/CinematicCyclePanel';
 import { WorldBackground }      from './components/WorldBackground';
 import { STATE, FALLBACK, getCardGradient } from './components/CycleCard';
@@ -56,7 +56,7 @@ export function CelestialPendulumPage() {
     setIsSyncing(true);
     try {
       await Promise.all([
-        ItemsService.forceSync(),
+        DropDataService.fetchAndSync().catch(() => { /* stale rows preserved */ }),
         refetchWorldCycles(),
         refetchMissions(),
       ]);

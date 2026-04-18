@@ -1,16 +1,14 @@
 /**
  * useDropsLastSynced — live Dexie subscription for the drops sync timestamp.
  *
- * Reads the `drops:lastSynced` key from the `settings` table, which
- * ItemsService.sync() writes after every successful drop-data fetch.
+ * Reads the `dropLocations` row from the `dataSyncState` table, which
+ * DropDataService.fetchAndSync() writes after every successful sync.
  * useLiveQuery re-renders automatically when the value changes, so the
  * data-freshness footer stays in sync without polling.
  */
 
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/adapters/storage/db';
-
-const DROPS_LAST_SYNC_KEY = 'drops:lastSynced';
 
 export interface DropsLastSyncedResult {
   /** Unix ms of the last successful sync, or null if never synced. */
@@ -35,13 +33,13 @@ function formatAge(ms: number): string {
 
 export function useDropsLastSynced(): DropsLastSyncedResult {
   const row = useLiveQuery(
-    () => db.settings.get(DROPS_LAST_SYNC_KEY),
+    () => db.dataSyncState.get('dropLocations'),
     [],
   );
 
-  // undefined = loading; null/missing = not found; Setting = has value
+  // undefined = loading; null/missing row = not found; row = has value
   const isLoading  = row === undefined;
-  const lastSynced = row ? (row.value as number) : null;
+  const lastSynced = row?.lastUpdated && row.lastUpdated > 0 ? row.lastUpdated : null;
   const ageLabel   = lastSynced
     ? formatAge(Date.now() - lastSynced)
     : isLoading ? '…' : 'Never synced';

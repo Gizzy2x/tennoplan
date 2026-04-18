@@ -3,8 +3,8 @@
  *
  * Uses the compound index `[type+bountyLocation]` (db.ts v4) so the query is
  * O(rows-for-this-world), not a full-table scan. The table is wiped + refilled
- * by ItemsService.sync(), and useLiveQuery re-runs the query automatically
- * after each rewrite.
+ * by DropDataService.fetchAndSync(), and useLiveQuery re-runs the query
+ * automatically after each rewrite.
  *
  * The hook lives in the feature folder (not in src/core/) because it imports
  * Dexie — that's the intended seam between pure logic and storage.
