@@ -102,7 +102,7 @@ export function AppShell() {
           // Extra top padding when banner is visible so content isn't hidden behind it
           paddingTop: staleInfo?.isStale ? 96 + 32 : undefined,
         }}
-        className="pt-24 pb-12 px-12 min-h-screen relative overflow-hidden"
+        className="pt-24 pb-8 px-6 min-h-screen relative overflow-hidden"
       >
         <ActivePage />
       </main>

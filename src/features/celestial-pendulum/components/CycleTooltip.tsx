@@ -1,3 +1,5 @@
+import { useThemeStore } from '@/store/theme';
+import { getTypographyStyle } from '@/tokens/utils';
 import type { SyndicateJob } from '@/core/domain/syndicates';
 
 // ---------------------------------------------------------------------------
@@ -13,6 +15,7 @@ interface CycleTooltipProps {
 }
 
 export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps) {
+  const { tokens } = useThemeStore();
   const total = job.standingStages.reduce((s, n) => s + n, 0);
 
   return (
@@ -20,13 +23,12 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
 
       {/* Header label */}
       <p
-        className="font-label uppercase"
+        data-role="labelTiny"
         style={{
-          fontSize:      '0.47rem',
-          letterSpacing: '0.45em',
-          color:         accentColor,
-          opacity:       0.55,
-          marginBottom:  5,
+          ...getTypographyStyle(tokens, 'labelTiny'),
+          color:        accentColor,
+          opacity:      0.55,
+          marginBottom: 5,
         }}
       >
         {worldName} · Bounty Tier
@@ -34,13 +36,13 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
 
       {/* Tier name */}
       <p
-        className="font-headline font-bold"
+        data-role="hero"
         style={{
-          fontSize:      '0.9rem',
-          color:         accentColor,
-          marginBottom:  7,
-          letterSpacing: '0.04em',
-          lineHeight:    1.1,
+          ...getTypographyStyle(tokens, 'hero'),
+          fontSize:     '0.9rem',
+          color:        accentColor,
+          marginBottom: 7,
+          lineHeight:   1.1,
         }}
       >
         {job.type}
@@ -49,24 +51,22 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
       {/* Level + Standing row */}
       <div style={{ display: 'flex', gap: 14, marginBottom: 10 }}>
         <span
-          className="font-label"
+          data-role="labelSmall"
           style={{
-            fontSize:      '0.55rem',
-            letterSpacing: '0.1em',
-            color:         'rgba(198,198,199,0.58)',
-            border:        `1px solid ${accentColor}28`,
-            padding:       '1px 6px',
-            borderRadius:  '1px',
+            ...getTypographyStyle(tokens, 'labelSmall'),
+            color:        'rgba(198,198,199,0.58)',
+            border:       `1px solid ${accentColor}28`,
+            padding:      '1px 6px',
+            borderRadius: '1px',
           }}
         >
           LV {job.enemyLevels[0]}–{job.enemyLevels[1]}
         </span>
         <span
-          className="font-label"
+          data-role="labelSmall"
           style={{
-            fontSize:      '0.55rem',
-            letterSpacing: '0.1em',
-            color:         'rgba(198,198,199,0.38)',
+            ...getTypographyStyle(tokens, 'labelSmall'),
+            color: 'rgba(198,198,199,0.38)',
           }}
         >
           {total.toLocaleString()} STANDING
@@ -86,13 +86,12 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
       {job.rewardPool && job.rewardPool.length > 0 ? (
         <>
           <p
-            className="font-label uppercase"
+            data-role="labelTiny"
             style={{
-              fontSize:      '0.47rem',
-              letterSpacing: '0.38em',
-              color:         accentColor,
-              opacity:       0.45,
-              marginBottom:  6,
+              ...getTypographyStyle(tokens, 'labelTiny'),
+              color:        accentColor,
+              opacity:      0.45,
+              marginBottom: 6,
             }}
           >
             Reward Pool
@@ -110,9 +109,9 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
             {job.rewardPool.map((item, i) => (
               <li
                 key={i}
-                className="font-label"
+                data-role="labelSmall"
                 style={{
-                  fontSize:   '0.55rem',
+                  ...getTypographyStyle(tokens, 'labelSmall'),
                   color:      'rgba(198,198,199,0.68)',
                   display:    'flex',
                   gap:        7,
@@ -127,8 +126,11 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
         </>
       ) : (
         <p
-          className="font-label uppercase"
-          style={{ fontSize: '0.5rem', letterSpacing: '0.25em', color: 'rgba(198,198,199,0.28)' }}
+          data-role="labelTiny"
+          style={{
+            ...getTypographyStyle(tokens, 'labelTiny'),
+            color: 'rgba(198,198,199,0.28)',
+          }}
         >
           No reward data available
         </p>

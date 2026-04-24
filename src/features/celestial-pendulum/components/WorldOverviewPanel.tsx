@@ -1,9 +1,11 @@
+import { useThemeStore } from '@/store/theme';
+import { getTypographyStyle } from '@/tokens/utils';
 import { formatMsParts, nextCycleState } from '@/core/services/cycleService';
 import type { CycleStatus } from '@/core/domain/cycles';
 import { STATE, FALLBACK } from './CycleCard';
 import { getWorldBg } from '../worldAssets';
 
-// ── Descriptor text per world-state ───────────────────────────────────────
+// ── Descriptor text per world-state ──────────────────────────────────────────
 
 const DESCRIPTOR: Record<string, string> = {
   'cetus-day':       'CORE FOR BOUNTIES & MINING',
@@ -23,7 +25,7 @@ const DESCRIPTOR: Record<string, string> = {
   'earth-night':     'RARE FISHING ACTIVE',
 };
 
-// ── Key resources per world-state (icons only for compact display) ─────────
+// ── Key resources per world-state ─────────────────────────────────────────────
 
 const PANEL_ICONS: Record<string, string[]> = {
   'cetus-day':       ['◆', '✦', '◈', '◎', '◇', '◆'],
@@ -43,15 +45,11 @@ const PANEL_ICONS: Record<string, string[]> = {
   'earth-night':     ['◆', '◈', '◇'],
 };
 
-// ── State label override for special cases ────────────────────────────────
-
 function stateLabel(id: string, state: string, nextBadge: string): string {
-  if (id === 'duviri') return `CURRENT MOOD: ${state.toUpperCase()}`;
+  if (id === 'duviri')  return `CURRENT MOOD: ${state.toUpperCase()}`;
   if (id === 'zariman') return `FACTION: ${state.toUpperCase()}`;
   return `UNTIL ${nextBadge}`;
 }
-
-// ── Component ──────────────────────────────────────────────────────────────
 
 interface WorldOverviewPanelProps {
   status:   CycleStatus;
@@ -60,6 +58,7 @@ interface WorldOverviewPanelProps {
 }
 
 export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPanelProps) {
+  const { tokens } = useThemeStore();
   const { cycle, msRemaining, isExpired } = status;
   const pres      = STATE[cycle.state] ?? FALLBACK;
   const nextState = nextCycleState(cycle.id, cycle.state);
@@ -71,7 +70,6 @@ export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPa
   const icons      = PANEL_ICONS[`${cycle.id}-${cycle.state}`] ?? ['◆', '✦', '◈'];
   const label      = isExpired ? 'SYNCING…' : stateLabel(cycle.id, cycle.state, nextPres.badge);
 
-  // Timer: show hours+minutes if ≥ 1h, else minutes only
   const timerDisplay = h !== '00'
     ? `${parseInt(h, 10)}h ${parseInt(m, 10)}m`
     : `${parseInt(m, 10)}m`;
@@ -90,84 +88,61 @@ export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPa
       }}
       aria-label={`${cycle.name} — ${label}`}
     >
-      {/* ── Background image ──────────────────────────────────────────────── */}
+      {/* ── Background image ────────────────────────────────────────────── */}
       {bgUrl && (
         <img
           src={bgUrl}
           alt=""
           aria-hidden
           className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none transition-all duration-500"
-          style={{
-            zIndex:  0,
-            filter:  'brightness(0.55)',
-          }}
+          style={{ zIndex: 0, filter: 'brightness(0.55)' }}
         />
       )}
 
       {/* ── Hover brightening layer ──────────────────────────────────────── */}
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100"
-        style={{
-          background: 'rgba(227,195,114,0.06)',
-          zIndex:     1,
-        }}
+        style={{ background: 'rgba(227,195,114,0.06)', zIndex: 1 }}
       />
 
-      {/* ── Dark vignette — heavier at top and bottom ─────────────────────── */}
+      {/* ── Dark vignette ──────────────────────────────────────────────────── */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: [
-            'linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.10) 30%, rgba(0,0,0,0.10) 60%, rgba(0,0,0,0.82) 100%)',
-          ].join(', '),
-          zIndex: 2,
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.10) 30%, rgba(0,0,0,0.10) 60%, rgba(0,0,0,0.82) 100%)',
+          zIndex:     2,
         }}
       />
 
-      {/* ── Top: location label + state pill ─────────────────────────────── */}
-      <div
-        className="relative flex items-center justify-between px-4 pt-4"
-        style={{ zIndex: 3 }}
-      >
+      {/* ── Top: location label + state pill ──────────────────────────────── */}
+      <div className="relative flex items-center justify-between px-4 pt-4" style={{ zIndex: 3 }}>
         <span
-          style={{
-            fontFamily:    'var(--font-body)',
-            fontSize:      '0.50rem',
-            fontWeight:    700,
-            letterSpacing: '0.38em',
-            textTransform: 'uppercase',
-            color:         pres.color,
-            opacity:       0.70,
-          }}
+          data-role="labelSmall"
+          style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: pres.color, opacity: 0.70 }}
         >
           {cycle.location}
         </span>
 
         <span
+          data-role="labelTiny"
           style={{
-            fontFamily:    'var(--font-body)',
-            fontSize:      '0.46rem',
-            fontWeight:    700,
-            letterSpacing: '0.20em',
-            textTransform: 'uppercase',
-            color:         pres.color,
-            border:        `1px solid ${pres.color}40`,
-            background:    `${pres.color}10`,
-            padding:       '3px 8px',
+            ...getTypographyStyle(tokens, 'labelTiny'),
+            color:      pres.color,
+            border:     `1px solid ${pres.color}40`,
+            background: `${pres.color}10`,
+            padding:    '3px 8px',
           }}
         >
           {pres.badge}
         </span>
       </div>
 
-      {/* ── Centre: timer + label ─────────────────────────────────────────── */}
-      <div
-        className="relative flex-1 flex flex-col items-center justify-center gap-2 px-3"
-        style={{ zIndex: 3 }}
-      >
+      {/* ── Centre: timer + label ──────────────────────────────────────────── */}
+      <div className="relative flex-1 flex flex-col items-center justify-center gap-2 px-3" style={{ zIndex: 3 }}>
+        {/* Timer — font-mono, intentionally not a token role */}
         <p
+          className="font-mono font-bold tabular-nums"
           style={{
-            fontFamily:         'var(--font-headline)',
             fontWeight:         900,
             fontSize:           'clamp(1.8rem, 3.2vw, 3.4rem)',
             lineHeight:         1,
@@ -181,48 +156,24 @@ export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPa
         </p>
 
         <p
-          style={{
-            fontFamily:    'var(--font-body)',
-            fontSize:      '0.50rem',
-            fontWeight:    600,
-            letterSpacing: '0.30em',
-            textTransform: 'uppercase',
-            color:         pres.color,
-            opacity:       0.70,
-          }}
+          data-role="labelSmall"
+          style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: pres.color, opacity: 0.70 }}
         >
           {label}
         </p>
 
-        {/* Sub-label: world name */}
         <p
-          style={{
-            fontFamily:    'var(--font-body)',
-            fontSize:      '0.44rem',
-            letterSpacing: '0.28em',
-            textTransform: 'uppercase',
-            color:         'rgba(198,198,199,0.38)',
-            marginTop:     2,
-          }}
+          data-role="labelTiny"
+          style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: 'rgba(198,198,199,0.38)', marginTop: 2 }}
         >
           {cycle.name}
         </p>
       </div>
 
       {/* ── Resource icons strip ──────────────────────────────────────────── */}
-      <div
-        className="relative flex items-center justify-center gap-3 pb-2 px-3"
-        style={{ zIndex: 3 }}
-      >
+      <div className="relative flex items-center justify-center gap-3 pb-2 px-3" style={{ zIndex: 3 }}>
         {icons.map((icon, i) => (
-          <span
-            key={i}
-            style={{
-              fontSize: '0.68rem',
-              color:    pres.color,
-              opacity:  0.45,
-            }}
-          >
+          <span key={i} style={{ fontSize: '0.68rem', color: pres.color, opacity: 0.45 }}>
             {icon}
           </span>
         ))}
@@ -231,23 +182,12 @@ export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPa
       {/* ── Bottom descriptor bar ─────────────────────────────────────────── */}
       <div
         className="relative flex items-center justify-center px-3 py-2"
-        style={{
-          zIndex:     3,
-          background: 'rgba(0,0,0,0.62)',
-          borderTop:  `1px solid ${pres.color}14`,
-        }}
+        style={{ zIndex: 3, background: 'rgba(0,0,0,0.62)', borderTop: `1px solid ${pres.color}14` }}
       >
         <p
-          style={{
-            fontFamily:    'var(--font-body)',
-            fontSize:      '0.44rem',
-            fontWeight:    700,
-            letterSpacing: '0.30em',
-            textTransform: 'uppercase',
-            color:         pres.color,
-            opacity:       0.55,
-            textAlign:     'center',
-          }}
+          data-role="labelTiny"
+          className="text-center"
+          style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: pres.color, opacity: 0.55 }}
         >
           {descriptor}
         </p>

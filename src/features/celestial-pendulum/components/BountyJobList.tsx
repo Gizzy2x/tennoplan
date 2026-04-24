@@ -21,6 +21,8 @@
  */
 
 import { useState, useEffect, type CSSProperties } from 'react';
+import { useThemeStore } from '@/store/theme';
+import { getTypographyStyle } from '@/tokens/utils';
 import type {
   EnrichedBounty,
   EnrichedBountyRotation,
@@ -64,15 +66,16 @@ function formatChance(chance: number): string {
   return chance.toFixed(1) + '%';
 }
 
+type Tokens = ReturnType<typeof useThemeStore>['tokens'];
+
 // ─── Reward icon cell ────────────────────────────────────────────────────────
 
 interface RewardIconCellProps {
   reward: EnrichedBountyReward;
+  tokens: Tokens;
 }
 
-function RewardIconCell({ reward }: RewardIconCellProps) {
-  // Phase 3: resolve imageName synchronously from the build-time static items
-  // map — no network call, no useItemIcon search-API round-trip.
+function RewardIconCell({ reward, tokens }: RewardIconCellProps) {
   const staticItem = findByName(reward.itemName);
   const meta       = RARITY_META[reward.tier];
   const pct        = formatChance(reward.chance);
@@ -117,9 +120,6 @@ function RewardIconCell({ reward }: RewardIconCellProps) {
           transition:     'box-shadow 0.2s',
         }}
       >
-        {/* LazyItemIcon fires only when the cell scrolls into view.
-            When the static map has an imageName we skip any network lookup.
-            Falls back to the letter-avatar below when the item isn't found. */}
         {staticItem?.imageName ? (
           <LazyItemIcon
             imageName={staticItem.imageName}
@@ -131,11 +131,10 @@ function RewardIconCell({ reward }: RewardIconCellProps) {
         ) : (
           <span
             style={{
-              fontFamily: 'var(--font-headline)',
-              fontSize:   '1.2rem',
-              fontWeight: 900,
-              color:      meta.dot,
-              opacity:    0.55,
+              ...getTypographyStyle(tokens, 'hero'),
+              fontSize:  '1.2rem',
+              color:     meta.dot,
+              opacity:   0.55,
               lineHeight: 1,
             }}
           >
@@ -145,18 +144,18 @@ function RewardIconCell({ reward }: RewardIconCellProps) {
 
         {/* Drop % badge */}
         <span
+          data-role="labelTiny"
           style={{
-            position:      'absolute',
-            bottom:        2,
-            right:         3,
-            fontFamily:    'var(--font-body)',
-            fontSize:      '0.32rem',
-            fontWeight:    700,
-            color:         meta.dot,
-            letterSpacing: '0.02em',
-            opacity:       0.90,
-            lineHeight:    1,
-            textShadow:    '0 1px 2px rgba(0,0,0,0.80)',
+            ...getTypographyStyle(tokens, 'labelTiny'),
+            position:   'absolute',
+            bottom:     2,
+            right:      3,
+            fontSize:   '0.32rem',
+            fontWeight: 700,
+            color:      meta.dot,
+            opacity:    0.90,
+            lineHeight: 1,
+            textShadow: '0 1px 2px rgba(0,0,0,0.80)',
           }}
         >
           {pct}
@@ -165,8 +164,9 @@ function RewardIconCell({ reward }: RewardIconCellProps) {
 
       {/* Item name */}
       <p
+        data-role="labelTiny"
         style={{
-          fontFamily:      'var(--font-body)',
+          ...getTypographyStyle(tokens, 'labelTiny'),
           fontSize:        '0.40rem',
           color:
             reward.tier === 'Rare'     ? 'rgba(227,195,114,0.92)' :
@@ -192,10 +192,10 @@ function RewardIconCell({ reward }: RewardIconCellProps) {
 
 interface RotationViewProps {
   rotation: EnrichedBountyRotation;
+  tokens:   Tokens;
 }
 
-function RotationView({ rotation }: RotationViewProps) {
-  // Group rewards by rarity (preserve per-rotation chance sort)
+function RotationView({ rotation, tokens }: RotationViewProps) {
   const groups: Record<BountyRewardRarity, EnrichedBountyReward[]> = {
     Rare: [], Uncommon: [], Common: [], Unknown: [],
   };
@@ -238,25 +238,24 @@ function RotationView({ rotation }: RotationViewProps) {
                 }}
               />
               <span
+                data-role="labelTiny"
                 style={{
-                  fontFamily:    'var(--font-body)',
-                  fontSize:      '0.38rem',
-                  fontWeight:    700,
-                  letterSpacing: '0.32em',
-                  color:         meta.dot,
-                  textTransform: 'uppercase',
-                  opacity:       rarity === 'Common' || rarity === 'Unknown' ? 0.55 : 1,
+                  ...getTypographyStyle(tokens, 'labelTiny'),
+                  fontSize:   '0.38rem',
+                  fontWeight: 700,
+                  color:      meta.dot,
+                  opacity:    rarity === 'Common' || rarity === 'Unknown' ? 0.55 : 1,
                 }}
               >
                 {meta.label}
               </span>
               <span
+                data-role="labelTiny"
                 style={{
-                  fontFamily:    'var(--font-body)',
-                  fontSize:      '0.36rem',
-                  color:         'rgba(198,198,199,0.20)',
-                  letterSpacing: '0.08em',
-                  marginLeft:    'auto',
+                  ...getTypographyStyle(tokens, 'labelTiny'),
+                  fontSize:   '0.36rem',
+                  color:      'rgba(198,198,199,0.20)',
+                  marginLeft: 'auto',
                 }}
               >
                 {items.length} item{items.length !== 1 ? 's' : ''}
@@ -268,6 +267,7 @@ function RotationView({ rotation }: RotationViewProps) {
                 <RewardIconCell
                   key={reward.itemName + i}
                   reward={reward}
+                  tokens={tokens}
                 />
               ))}
             </div>
@@ -281,11 +281,11 @@ function RotationView({ rotation }: RotationViewProps) {
 // ─── Fallback pool renderer ──────────────────────────────────────────────────
 
 interface FallbackPoolViewProps {
-  names: string[];
+  names:  string[];
+  tokens: Tokens;
 }
 
-function FallbackPoolView({ names }: FallbackPoolViewProps) {
-  // Use Unknown tier so icons still render but no fake % appears
+function FallbackPoolView({ names, tokens }: FallbackPoolViewProps) {
   const rewards: EnrichedBountyReward[] = names.map(n => ({
     itemName:  n,
     chance:    0,
@@ -296,13 +296,12 @@ function FallbackPoolView({ names }: FallbackPoolViewProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <p
+        data-role="body"
         style={{
-          fontFamily:    'var(--font-body)',
-          fontSize:      '0.40rem',
-          color:         'rgba(198,198,199,0.50)',
-          letterSpacing: '0.08em',
-          fontStyle:     'italic',
-          lineHeight:    1.6,
+          ...getTypographyStyle(tokens, 'body'),
+          color:     'rgba(198,198,199,0.50)',
+          fontStyle: 'italic',
+          lineHeight: 1.6,
         }}
       >
         Drop data not yet synced — showing live reward pool without chances.
@@ -310,7 +309,7 @@ function FallbackPoolView({ names }: FallbackPoolViewProps) {
       </p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         {rewards.map((reward, i) => (
-          <RewardIconCell key={reward.itemName + i} reward={reward} />
+          <RewardIconCell key={reward.itemName + i} reward={reward} tokens={tokens} />
         ))}
       </div>
     </div>
@@ -323,13 +322,13 @@ interface TerminalPanelProps {
   bounty:      EnrichedBounty;
   accentColor: string;
   faction:     { label: string; color: string; icon: string };
+  tokens:      Tokens;
 }
 
-function TerminalPanel({ bounty, accentColor, faction }: TerminalPanelProps) {
-  const hasRotations  = bounty.rotations.length > 0;
-  const hasMultiple   = bounty.rotations.length > 1;
+function TerminalPanel({ bounty, accentColor, faction, tokens }: TerminalPanelProps) {
+  const hasRotations = bounty.rotations.length > 0;
+  const hasMultiple  = bounty.rotations.length > 1;
 
-  // Local tab state — reset when bounty changes (parent uses key prop)
   const [activeIdx, setActiveIdx] = useState(0);
   useEffect(() => { setActiveIdx(0); }, [bounty.jobType]);
   const activeRotation = hasRotations ? bounty.rotations[activeIdx] ?? bounty.rotations[0] : null;
@@ -362,22 +361,20 @@ function TerminalPanel({ bounty, accentColor, faction }: TerminalPanelProps) {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
           <span
+            data-role="emphasis"
             style={{
-              fontFamily:    'var(--font-body)',
-              fontSize:      '0.58rem',
-              fontWeight:    700,
-              color:         accentColor,
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              flex:          1,
+              ...getTypographyStyle(tokens, 'emphasis'),
+              fontSize:   '0.58rem',
+              color:      accentColor,
+              flex:       1,
             }}
           >
             {bounty.tierLabel}
           </span>
           <span
+            data-role="labelSmall"
             style={{
-              fontFamily: 'var(--font-body)',
-              fontSize:   '0.46rem',
+              ...getTypographyStyle(tokens, 'labelSmall'),
               color:      accentColor,
               opacity:    0.60,
               whiteSpace: 'nowrap',
@@ -389,11 +386,10 @@ function TerminalPanel({ bounty, accentColor, faction }: TerminalPanelProps) {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
           <span
+            data-role="labelTiny"
             style={{
-              fontFamily:    'var(--font-body)',
-              fontSize:      '0.42rem',
-              color:         'rgba(198,198,199,0.50)',
-              letterSpacing: '0.06em',
+              ...getTypographyStyle(tokens, 'labelTiny'),
+              color: 'rgba(198,198,199,0.50)',
             }}
           >
             Lv. {bounty.enemyLevels[0]}–{bounty.enemyLevels[1]}
@@ -402,14 +398,13 @@ function TerminalPanel({ bounty, accentColor, faction }: TerminalPanelProps) {
           <span style={{ color: 'rgba(198,198,199,0.20)', fontSize: '0.42rem' }}>·</span>
 
           <span
+            data-role="labelTiny"
             style={{
-              fontFamily:    'var(--font-body)',
-              fontSize:      '0.40rem',
-              color:         faction.color,
-              border:        `1px solid ${faction.color}30`,
-              padding:       '1px 5px',
-              letterSpacing: '0.08em',
-              whiteSpace:    'nowrap',
+              ...getTypographyStyle(tokens, 'labelTiny'),
+              color:      faction.color,
+              border:     `1px solid ${faction.color}30`,
+              padding:    '1px 5px',
+              whiteSpace: 'nowrap',
             }}
           >
             {faction.icon} {faction.label}
@@ -417,14 +412,13 @@ function TerminalPanel({ bounty, accentColor, faction }: TerminalPanelProps) {
 
           {bounty.isSteelPath && (
             <span
+              data-role="labelTiny"
               style={{
-                fontFamily:    'var(--font-body)',
-                fontSize:      '0.40rem',
-                fontWeight:    700,
-                color:         '#f87171',
-                border:        '1px solid rgba(248,113,113,0.30)',
-                padding:       '1px 5px',
-                letterSpacing: '0.08em',
+                ...getTypographyStyle(tokens, 'labelTiny'),
+                fontWeight: 700,
+                color:      '#f87171',
+                border:     '1px solid rgba(248,113,113,0.30)',
+                padding:    '1px 5px',
               }}
             >
               STEEL PATH
@@ -437,11 +431,11 @@ function TerminalPanel({ bounty, accentColor, faction }: TerminalPanelProps) {
       {hasMultiple && activeRotation && (
         <div
           style={{
-            display:       'flex',
-            gap:           0,
-            borderBottom:  `1px solid ${accentColor}18`,
-            background:    `${accentColor}04`,
-            flexShrink:    0,
+            display:      'flex',
+            gap:          0,
+            borderBottom: `1px solid ${accentColor}18`,
+            background:   `${accentColor}04`,
+            flexShrink:   0,
           }}
         >
           {bounty.rotations.map((rot, idx) => {
@@ -451,20 +445,18 @@ function TerminalPanel({ bounty, accentColor, faction }: TerminalPanelProps) {
                 key={rot.label}
                 onClick={() => setActiveIdx(idx)}
                 style={{
-                  flex:          1,
-                  padding:       '7px 10px',
-                  background:    isActive ? `${accentColor}10` : 'transparent',
-                  border:        'none',
-                  borderRight:   idx < bounty.rotations.length - 1 ? `1px solid ${accentColor}14` : 'none',
-                  borderBottom:  isActive ? `2px solid ${accentColor}` : '2px solid transparent',
-                  cursor:        'pointer',
-                  fontFamily:    'var(--font-body)',
-                  fontSize:      '0.44rem',
-                  fontWeight:    isActive ? 700 : 500,
-                  color:         isActive ? accentColor : 'rgba(229,226,225,0.55)',
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                  transition:    'background 0.15s, color 0.15s, border-bottom 0.15s',
+                  flex:         1,
+                  padding:      '7px 10px',
+                  background:   isActive ? `${accentColor}10` : 'transparent',
+                  border:       'none',
+                  borderRight:  idx < bounty.rotations.length - 1 ? `1px solid ${accentColor}14` : 'none',
+                  borderBottom: isActive ? `2px solid ${accentColor}` : '2px solid transparent',
+                  cursor:       'pointer',
+                  ...getTypographyStyle(tokens, 'labelTiny'),
+                  fontSize:     '0.44rem',
+                  fontWeight:   isActive ? 700 : 500,
+                  color:        isActive ? accentColor : 'rgba(229,226,225,0.55)',
+                  transition:   'background 0.15s, color 0.15s, border-bottom 0.15s',
                 }}
                 onMouseEnter={e => {
                   if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = `${accentColor}07`;
@@ -476,10 +468,9 @@ function TerminalPanel({ bounty, accentColor, faction }: TerminalPanelProps) {
                 {rot.label}
                 <span
                   style={{
-                    marginLeft:    6,
-                    fontSize:      '0.36rem',
-                    opacity:       0.55,
-                    letterSpacing: '0.08em',
+                    marginLeft: 6,
+                    fontSize:   '0.36rem',
+                    opacity:    0.55,
                   }}
                 >
                   {rot.rewards.length}
@@ -501,9 +492,9 @@ function TerminalPanel({ bounty, accentColor, faction }: TerminalPanelProps) {
         }}
       >
         {activeRotation ? (
-          <RotationView rotation={activeRotation} />
+          <RotationView rotation={activeRotation} tokens={tokens} />
         ) : bounty.fallbackPool && bounty.fallbackPool.length > 0 ? (
-          <FallbackPoolView names={bounty.fallbackPool} />
+          <FallbackPoolView names={bounty.fallbackPool} tokens={tokens} />
         ) : (
           <div
             style={{
@@ -515,13 +506,11 @@ function TerminalPanel({ bounty, accentColor, faction }: TerminalPanelProps) {
             }}
           >
             <p
+              data-role="labelSmall"
               style={{
-                fontFamily:    'var(--font-body)',
-                fontSize:      '0.52rem',
-                color:         'rgba(198,198,199,0.25)',
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                textAlign:     'center',
+                ...getTypographyStyle(tokens, 'labelSmall'),
+                color:     'rgba(198,198,199,0.25)',
+                textAlign: 'center',
               }}
             >
               No reward data
@@ -535,7 +524,7 @@ function TerminalPanel({ bounty, accentColor, faction }: TerminalPanelProps) {
 
 // ─── Empty-selection placeholder ─────────────────────────────────────────────
 
-function EmptyTerminalState() {
+function EmptyTerminalState({ tokens }: { tokens: Tokens }) {
   return (
     <div
       style={{
@@ -552,18 +541,21 @@ function EmptyTerminalState() {
     >
       <span style={{ fontSize: '1.4rem', color: 'rgba(227,195,114,0.15)', lineHeight: 1 }}>◈</span>
       <p
+        data-role="labelSmall"
         style={{
-          fontFamily:    'var(--font-body)',
-          fontSize:      '0.46rem',
-          color:         'rgba(198,198,199,0.22)',
-          letterSpacing: '0.22em',
-          textTransform: 'uppercase',
-          textAlign:     'center',
-          lineHeight:    1.8,
+          ...getTypographyStyle(tokens, 'labelSmall'),
+          color:     'rgba(198,198,199,0.22)',
+          textAlign: 'center',
+          lineHeight: 1.8,
         }}
       >
         Active Terminal<br />
-        <span style={{ opacity: 0.7 }}>Select a tier to power on</span>
+        <span
+          data-role="labelTiny"
+          style={{ ...getTypographyStyle(tokens, 'labelTiny'), opacity: 0.7 }}
+        >
+          Select a tier to power on
+        </span>
       </p>
     </div>
   );
@@ -585,9 +577,10 @@ export function BountyJobList({
   worldId = 'cetus',
   cycleNote = null,
 }: BountyJobListProps) {
-  const faction = WORLD_FACTION[worldId] ?? { label: 'Enemy', color: '#E3C372', icon: '◆' };
+  const { tokens } = useThemeStore();
+  const faction    = WORLD_FACTION[worldId] ?? { label: 'Enemy', color: '#E3C372', icon: '◆' };
 
-  // Highest tier first (same order convention as Phase 1)
+  // Highest tier first
   const reversed = [...bounties].reverse();
 
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
@@ -622,14 +615,12 @@ export function BountyJobList({
     <div>
       {/* Section heading */}
       <p
+        data-role="labelSmall"
         style={{
-          fontFamily:    'var(--font-body)',
-          fontSize:      '0.48rem',
-          fontWeight:    700,
-          letterSpacing: '0.55em',
-          color:         'rgba(227,195,114,0.50)',
-          textTransform: 'uppercase',
-          marginBottom:  cycleNote ? 6 : 10,
+          ...getTypographyStyle(tokens, 'labelSmall'),
+          fontWeight:   700,
+          color:        'rgba(227,195,114,0.50)',
+          marginBottom: cycleNote ? 6 : 10,
         }}
       >
         Bounty Board
@@ -638,16 +629,15 @@ export function BountyJobList({
       {/* Cycle context note */}
       {cycleNote && (
         <p
+          data-role="body"
           style={{
-            fontFamily:    'var(--font-body)',
-            fontSize:      '0.48rem',
-            color:         accentColor,
-            opacity:       0.75,
-            letterSpacing: '0.06em',
-            marginBottom:  10,
-            padding:       '5px 10px',
-            background:    `${accentColor}08`,
-            borderLeft:    `2px solid ${accentColor}55`,
+            ...getTypographyStyle(tokens, 'body'),
+            color:        accentColor,
+            opacity:      0.75,
+            marginBottom: 10,
+            padding:      '5px 10px',
+            background:   `${accentColor}08`,
+            borderLeft:   `2px solid ${accentColor}55`,
           }}
         >
           {cycleNote}
@@ -660,9 +650,9 @@ export function BountyJobList({
         {/* ══ MASTER — tier list (30%) ═════════════════════════════════ */}
         <div style={{ flex: '0 0 30%', display: 'flex', flexDirection: 'column' }}>
           {reversed.map((bounty, idx) => {
-            const isSelected  = selectedIdx === idx;
-            const rotCount    = bounty.rotations.length;
-            const rotSummary  =
+            const isSelected = selectedIdx === idx;
+            const rotCount   = bounty.rotations.length;
+            const rotSummary =
               rotCount === 0 ? null :
               rotCount === 1 && bounty.rotations[0]?.tier === null ? null :
               bounty.rotations.map(r => r.tier ?? '·').join('');
@@ -697,8 +687,7 @@ export function BountyJobList({
                 {/* Chevron */}
                 <span
                   style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize:   '0.42rem',
+                    ...getTypographyStyle(tokens, 'labelTiny'),
                     color:      accentColor,
                     opacity:    isSelected ? 0.80 : 0.18,
                     flexShrink: 0,
@@ -711,18 +700,17 @@ export function BountyJobList({
 
                 {/* Tier label */}
                 <span
+                  data-role="labelSmall"
                   style={{
-                    fontFamily:    'var(--font-body)',
-                    fontSize:      '0.54rem',
-                    fontWeight:    isSelected ? 700 : 500,
-                    color:         isSelected ? accentColor : 'rgba(229,226,225,0.65)',
-                    letterSpacing: '0.05em',
-                    textTransform: 'uppercase',
-                    flex:          1,
-                    overflow:      'hidden',
-                    textOverflow:  'ellipsis',
-                    whiteSpace:    'nowrap',
-                    transition:    'color 0.12s',
+                    ...getTypographyStyle(tokens, 'labelSmall'),
+                    fontSize:     '0.54rem',
+                    fontWeight:   isSelected ? 700 : 500,
+                    color:        isSelected ? accentColor : 'rgba(229,226,225,0.65)',
+                    flex:         1,
+                    overflow:     'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace:   'nowrap',
+                    transition:   'color 0.12s',
                   }}
                 >
                   {bounty.tierLabel}
@@ -731,16 +719,16 @@ export function BountyJobList({
                 {/* Rotation summary — only on selected row */}
                 {isSelected && rotSummary && !bounty.isSteelPath && (
                   <span
+                    data-role="labelTiny"
                     style={{
-                      fontFamily:    'var(--font-body)',
-                      fontSize:      '0.36rem',
-                      fontWeight:    700,
-                      letterSpacing: '0.08em',
-                      color:         accentColor,
-                      border:        `1px solid ${accentColor}45`,
-                      padding:       '1px 4px',
-                      flexShrink:    0,
-                      whiteSpace:    'nowrap',
+                      ...getTypographyStyle(tokens, 'labelTiny'),
+                      fontSize:   '0.36rem',
+                      fontWeight: 700,
+                      color:      accentColor,
+                      border:     `1px solid ${accentColor}45`,
+                      padding:    '1px 4px',
+                      flexShrink: 0,
+                      whiteSpace: 'nowrap',
                     }}
                   >
                     {rotSummary}
@@ -749,15 +737,15 @@ export function BountyJobList({
 
                 {bounty.isSteelPath && (
                   <span
+                    data-role="labelTiny"
                     style={{
-                      fontFamily:    'var(--font-body)',
-                      fontSize:      '0.34rem',
-                      fontWeight:    700,
-                      color:         '#f87171',
-                      border:        '1px solid rgba(248,113,113,0.22)',
-                      padding:       '1px 4px',
-                      letterSpacing: '0.06em',
-                      flexShrink:    0,
+                      ...getTypographyStyle(tokens, 'labelTiny'),
+                      fontSize:   '0.34rem',
+                      fontWeight: 700,
+                      color:      '#f87171',
+                      border:     '1px solid rgba(248,113,113,0.22)',
+                      padding:    '1px 4px',
+                      flexShrink: 0,
                     }}
                   >
                     SP
@@ -766,9 +754,9 @@ export function BountyJobList({
 
                 {/* Standing */}
                 <span
+                  data-role="labelTiny"
                   style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize:   '0.40rem',
+                    ...getTypographyStyle(tokens, 'labelTiny'),
                     color:      accentColor,
                     opacity:    isSelected ? 0.65 : 0.28,
                     flexShrink: 0,
@@ -785,15 +773,15 @@ export function BountyJobList({
         {/* ══ ACTIVE TERMINAL (70%) ════════════════════════════════════ */}
         <div style={{ flex: 1, minWidth: 0 }}>
           {selectedBounty ? (
-            /* key forces remount → re-triggers .terminal-power-on animation */
             <TerminalPanel
               key={selectedBounty.jobType}
               bounty={selectedBounty}
               accentColor={accentColor}
               faction={faction}
+              tokens={tokens}
             />
           ) : (
-            <EmptyTerminalState />
+            <EmptyTerminalState tokens={tokens} />
           )}
         </div>
       </div>

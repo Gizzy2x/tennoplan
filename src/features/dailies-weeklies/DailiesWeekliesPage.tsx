@@ -1,4 +1,7 @@
+import { useThemeStore } from '@/store/theme';
+import { getTypographyStyle } from '@/tokens/utils';
 import { useDailiesData } from './hooks/useDailiesData';
+import { PageHero } from '@/components/ui/PageHero';
 import { formatCacheAge } from '@/core/services/WorldstateService';
 import { ChallengeCard } from './components/ChallengeCard';
 import { CompletionToggle } from './components/CompletionToggle';
@@ -10,6 +13,8 @@ import {
 import { formatMsHuman } from '@/core/services/cycleService';
 import type { ChallengeKind, ChallengeStatus } from '@/core/domain/ascension';
 
+type Tokens = ReturnType<typeof useThemeStore>['tokens'];
+
 // ---------------------------------------------------------------------------
 // Reset counter pill
 // ---------------------------------------------------------------------------
@@ -18,14 +23,16 @@ function ResetCounter({
   label,
   msRemaining,
   urgentMs,
+  tokens,
 }: {
-  label:      string;
+  label:       string;
   msRemaining: number;
-  urgentMs:   number;
+  urgentMs:    number;
+  tokens:      Tokens;
 }) {
-  const isUrgent   = msRemaining > 0 && msRemaining < urgentMs;
-  const timeColor  = isUrgent ? '#fb923c' : '#E3C372';
-  const timeStr    = msRemaining > 0 ? formatMsHuman(msRemaining) : '—';
+  const isUrgent  = msRemaining > 0 && msRemaining < urgentMs;
+  const timeColor = isUrgent ? '#fb923c' : '#E3C372';
+  const timeStr   = msRemaining > 0 ? formatMsHuman(msRemaining) : '—';
 
   return (
     <div
@@ -37,16 +44,24 @@ function ResetCounter({
         className="absolute top-0 left-0 right-0 h-px pointer-events-none"
         style={{ background: `linear-gradient(90deg, transparent, ${timeColor}40, transparent)` }}
       />
-      <p className="font-label text-[9px] uppercase tracking-[0.35em] text-secondary/40">
+      <p
+        data-role="labelTiny"
+        style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.40 }}
+      >
         {label}
       </p>
+      {/* Countdown — font-mono, intentionally not a token role */}
       <p
         className={['font-mono text-xl font-bold tabular-nums leading-none', isUrgent ? 'orokin-countdown-glow' : ''].filter(Boolean).join(' ')}
         style={{ color: timeColor }}
       >
         {timeStr}
       </p>
-      <p className="font-label text-[8px] uppercase tracking-[0.25em] mt-0.5" style={{ color: timeColor, opacity: 0.35 }}>
+      <p
+        data-role="labelTiny"
+        className="mt-0.5"
+        style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: timeColor, opacity: 0.35 }}
+      >
         {isUrgent ? 'expires soon' : 'remaining'}
       </p>
     </div>
@@ -57,7 +72,6 @@ function ResetCounter({
 // Challenge group section header
 // ---------------------------------------------------------------------------
 
-// Per-kind display config for section headers
 const KIND_SECTION: Record<ChallengeKind, {
   bg:      string;
   bord:    string;
@@ -99,7 +113,7 @@ function KindHeader({
 
   return (
     <div className="flex items-center gap-3 mb-5 pb-0" style={{ paddingTop: '2px' }}>
-      {/* Handle tab */}
+      {/* Handle tab — decorative, uses CSS class for font */}
       <div
         className="fissure-variant-tag flex-shrink-0"
         style={{
@@ -115,7 +129,7 @@ function KindHeader({
         {label}
       </div>
 
-      {/* Completion fraction badge */}
+      {/* Completion fraction badge — font-mono, intentionally not a token role */}
       <span
         className="font-mono text-[10px] tabular-nums px-2 py-0.5 font-bold"
         style={{
@@ -154,6 +168,7 @@ function KindHeader({
 // ---------------------------------------------------------------------------
 
 export function DailiesWeekliesPage() {
+  const { tokens } = useThemeStore();
   const {
     grouped,
     weeklyEarned,
@@ -182,101 +197,42 @@ export function DailiesWeekliesPage() {
       })
     : '—';
 
-  const syncState  = isLoading ? 'SYNCING' : isError ? 'OFFLINE' : 'ONLINE';
-  const syncWidth  = isLoading ? '45%' : isError ? '12%' : '100%';
+  const syncState = isLoading ? 'SYNCING' : isError ? 'OFFLINE' : 'ONLINE';
 
   const seasonLabel = season > 0 ? `Season ${season}` : seasonTag || 'Nightwave';
 
-  // Weekly standing uses weeklyEarned (persisted across daily rotations) against the cap
-  const weeklyPct       = Math.min(1, weeklyEarned / NW_WEEKLY_STANDING_CAP);
-  const standingRemaining = Math.max(0, NW_WEEKLY_STANDING_CAP - weeklyEarned);
+  const weeklyPct          = Math.min(1, weeklyEarned / NW_WEEKLY_STANDING_CAP);
+  const standingRemaining  = Math.max(0, NW_WEEKLY_STANDING_CAP - weeklyEarned);
 
-  // Reset countdowns derived from first challenge in each bucket
   const dailyMs  = grouped.daily[0]?.msRemaining  ?? 0;
   const weeklyMs = grouped.weekly[0]?.msRemaining ?? grouped.elite[0]?.msRemaining ?? 0;
 
   const kindOrder: ChallengeKind[] = ['daily', 'weekly', 'elite'];
 
+  // Suppress unused variable warnings from destructuring
+  void lastSyncLabel; void syncState; void seasonLabel; void isError;
+
   return (
     <>
-      {/* ── Celestial Asymmetry Header ─────────────────────────────── */}
-      <section className="mb-10 grid grid-cols-12 gap-8 items-end">
-        <div className="col-span-8">
-          <span className="font-label text-xs uppercase tracking-[0.4em] text-primary mb-4 block">
-            Active Protocols
-          </span>
-          <h2 className="font-headline text-7xl font-black text-on-surface tracking-tighter leading-none">
-            DAILIES &amp;
-            <br />
-            <span className="text-primary italic">WEEKLIES</span>
-          </h2>
-          <span className="font-label text-xs uppercase tracking-[0.3em] text-primary/40 block mt-3">
-            — Nightwave &amp; Challenges
-          </span>
-        </div>
-
-        <div className="col-span-4 text-right">
-          <div className="inline-block p-4 border-l border-primary/20 text-left w-full">
-            <p className="font-label text-[10px] text-secondary opacity-40 uppercase tracking-widest">
-              {syncState === 'SYNCING' ? 'Chronometry Sync' : 'Weekly Cap'}
-            </p>
-            <p className="font-headline text-3xl font-bold text-primary">
-              {syncState === 'SYNCING' || syncState === 'OFFLINE'
-                ? syncState
-                : `${(weeklyEarned / 1000).toFixed(0)}k / ${(NW_WEEKLY_STANDING_CAP / 1000).toFixed(0)}k`}
-            </p>
-            <p className="font-label text-[10px] text-secondary/30 uppercase tracking-widest mt-0.5">
-              {syncState === 'ONLINE' ? seasonLabel : lastSync ? `Updated ${lastSyncLabel}` : 'No sync yet'}
-            </p>
-
-            {/* Standing progress bar */}
-            <div className="w-full h-px bg-surface-container-highest mt-2 relative overflow-hidden">
-              <div
-                className="absolute inset-y-0 left-0 h-full bg-primary shadow-[0_0_8px_#E3C372]"
-                style={{
-                  width:      syncState === 'ONLINE' ? `${weeklyPct * 100}%` : syncWidth,
-                  transition: 'width 0.5s ease',
-                }}
-              />
-            </div>
-
-            {/* Challenge summary row */}
-            {syncState === 'ONLINE' && totalChallenges > 0 && (
-              <div
-                className="flex gap-6 mt-5 pt-4"
-                style={{ borderTop: '1px solid rgba(77,70,56,0.2)' }}
-              >
-                <div className="flex flex-col gap-0.5">
-                  <p className="font-label text-[9px] uppercase tracking-[0.3em] text-primary/40">
-                    Completed
-                  </p>
-                  <p className="font-mono text-xl font-bold tabular-nums leading-none text-primary">
-                    {String(completedCount).padStart(2, '0')} / {String(totalChallenges).padStart(2, '0')}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Somatic divider */}
-      <div className="somatic-line mb-8" />
+      <PageHero prefix="NIGHTWAVE" title="FEED" subtitle="Challenges & Weekly Progress" />
 
       {/* ── Reset Counters ───────────────────────────────────────────── */}
       {totalChallenges > 0 && syncState === 'ONLINE' && (
         <div className="flex flex-wrap gap-4 mb-6">
           {dailyMs > 0 && (
-            <ResetCounter label="Daily Reset" msRemaining={dailyMs} urgentMs={6 * 3600_000} />
+            <ResetCounter label="Daily Reset"  msRemaining={dailyMs}  urgentMs={6 * 3600_000}  tokens={tokens} />
           )}
           {weeklyMs > 0 && (
-            <ResetCounter label="Weekly Reset" msRemaining={weeklyMs} urgentMs={24 * 3600_000} />
+            <ResetCounter label="Weekly Reset" msRemaining={weeklyMs} urgentMs={24 * 3600_000} tokens={tokens} />
           )}
 
           {/* Sync status chip */}
           <div className="ml-auto flex items-center gap-3 self-center">
             <div className="w-1.5 h-1.5 rounded-full bg-success" />
-            <span className="font-label text-[9px] uppercase tracking-[0.3em] text-secondary/35">
+            <span
+              data-role="labelTiny"
+              style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.35 }}
+            >
               LIVE
             </span>
           </div>
@@ -298,9 +254,14 @@ export function DailiesWeekliesPage() {
           <div className="relative flex items-end justify-between gap-8">
             {/* Left: standing numbers */}
             <div>
-              <p className="font-label text-[9px] uppercase tracking-[0.35em] text-primary/40 mb-1">
+              <p
+                data-role="labelTiny"
+                className="mb-1"
+                style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.primary, opacity: 0.40 }}
+              >
                 Weekly Standing
               </p>
+              {/* Large earned figure — font-mono */}
               <div className="flex items-end gap-3">
                 <p className="font-mono font-bold tabular-nums leading-none" style={{ fontSize: '2.4rem', color: '#E3C372' }}>
                   {(weeklyEarned / 1000).toFixed(0)}k
@@ -309,29 +270,42 @@ export function DailiesWeekliesPage() {
                   / {(NW_WEEKLY_STANDING_CAP / 1000).toFixed(0)}k
                 </p>
               </div>
-              <p className="font-label text-[9px] uppercase tracking-[0.25em] mt-1" style={{ color: 'rgba(227,195,114,0.35)' }}>
+              <p
+                data-role="labelTiny"
+                className="mt-1"
+                style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: 'rgba(227,195,114,0.35)' }}
+              >
                 earned toward weekly cap
               </p>
             </div>
 
             {/* Right: challenge completion count + pct */}
             <div className="text-right flex-shrink-0">
-              <p className="font-label text-[9px] uppercase tracking-[0.35em] text-primary/40 mb-1">
+              <p
+                data-role="labelTiny"
+                className="mb-1"
+                style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.primary, opacity: 0.40 }}
+              >
                 Challenges Complete
               </p>
+              {/* Large fraction — font-mono */}
               <p className="font-mono text-3xl font-bold tabular-nums leading-none text-primary">
                 {String(completedCount).padStart(2, '0')}
                 <span className="text-xl" style={{ color: 'rgba(227,195,114,0.35)' }}>
                   &nbsp;/ {String(totalChallenges).padStart(2, '0')}
                 </span>
               </p>
-              <p className="font-label text-[9px] uppercase tracking-[0.25em] mt-1" style={{ color: 'rgba(227,195,114,0.35)' }}>
+              <p
+                data-role="labelTiny"
+                className="mt-1"
+                style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: 'rgba(227,195,114,0.35)' }}
+              >
                 {Math.round(weeklyPct * 100)}% of weekly cap
               </p>
             </div>
           </div>
 
-          {/* Progress bar — full width, prominent */}
+          {/* Progress bar */}
           <div
             className="relative mt-5 overflow-hidden"
             style={{ height: 4, backgroundColor: 'rgba(197,192,190,0.07)' }}
@@ -347,8 +321,9 @@ export function DailiesWeekliesPage() {
           </div>
           {standingRemaining > 0 && (
             <p
-              className="font-label text-[8px] uppercase tracking-[0.28em] mt-2"
-              style={{ color: 'rgba(227,195,114,0.28)' }}
+              data-role="labelTiny"
+              className="mt-2"
+              style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: 'rgba(227,195,114,0.28)' }}
             >
               {(standingRemaining / 1000).toFixed(0)}k standing remaining toward cap
             </p>
@@ -360,7 +335,10 @@ export function DailiesWeekliesPage() {
       {isLoading && totalChallenges === 0 && (
         <div className="glass-panel p-8 flex items-center gap-4">
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
+          <p
+            data-role="labelTiny"
+            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.40 }}
+          >
             Querying Nora Night — fetching active challenges…
           </p>
         </div>
@@ -370,7 +348,10 @@ export function DailiesWeekliesPage() {
       {!hasEverLoaded && (
         <div className="glass-panel p-8 flex items-center gap-4">
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
+          <p
+            data-role="labelTiny"
+            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.40 }}
+          >
             Initializing Systems…
           </p>
         </div>
@@ -383,13 +364,19 @@ export function DailiesWeekliesPage() {
 
           {/* Section title */}
           <div className="flex items-center gap-4 mb-7">
-            <h3 className="font-headline text-2xl font-black text-on-surface tracking-tight leading-none">
-              Nightwave <span className="text-primary italic">Challenges</span>
+            <h3
+              data-role="hero"
+              className="leading-none"
+              style={{ ...getTypographyStyle(tokens, 'hero'), fontSize: '1.5rem', color: tokens.colors.onSurface }}
+            >
+              Nightwave <span style={{ color: tokens.colors.primary, fontStyle: 'italic' }}>Challenges</span>
             </h3>
             {season > 0 && (
               <span
-                className="font-label text-[9px] uppercase tracking-[0.3em] px-2 py-0.5"
+                data-role="labelTiny"
+                className="px-2 py-0.5"
                 style={{
+                  ...getTypographyStyle(tokens, 'labelTiny'),
                   color:           '#E3C372',
                   border:          '1px solid rgba(227,195,114,0.25)',
                   backgroundColor: 'rgba(227,195,114,0.06)',
@@ -408,7 +395,6 @@ export function DailiesWeekliesPage() {
                 <section key={kind}>
                   <KindHeader kind={kind} statuses={statuses} />
 
-                  {/* Responsive challenge card grid */}
                   <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
                     {statuses.map(s => (
                       <ChallengeCard
@@ -447,7 +433,10 @@ export function DailiesWeekliesPage() {
       {isStale && totalChallenges > 0 && (
         <div className="flex items-center gap-3 mt-6">
           <div className="w-1.5 h-1.5 rounded-full bg-error/50" />
-          <p className="font-label text-[10px] uppercase tracking-widest text-secondary/30">
+          <p
+            data-role="labelTiny"
+            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.30 }}
+          >
             Offline · Cached {formatCacheAge(cacheAgeMs)} · Local marks persist
           </p>
         </div>

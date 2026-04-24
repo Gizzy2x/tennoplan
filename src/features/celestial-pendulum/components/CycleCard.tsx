@@ -1,3 +1,5 @@
+import { useThemeStore } from '@/store/theme';
+import { getTypographyStyle } from '@/tokens/utils';
 import { formatMsParts, nextCycleState } from '@/core/services/cycleService';
 import type { CycleStatus } from '@/core/domain/cycles';
 
@@ -6,27 +8,22 @@ import type { CycleStatus } from '@/core/domain/cycles';
 // ---------------------------------------------------------------------------
 
 export interface StatePresentation {
-  label:     string;  // full state name
-  badge:     string;  // short indicator shown in the state pill
-  color:     string;  // hex — used for glow, ring, countdown digits
-  nextLabel: string;  // what the *next* state is called (shown in transition line)
-  icon:      string;  // unicode symbol for state medallion
+  label:     string;
+  badge:     string;
+  color:     string;
+  nextLabel: string;
+  icon:      string;
 }
 
 export const STATE: Record<string, StatePresentation> = {
-  // Cetus / Earth
   day:     { label: 'DAY CYCLE',          badge: 'DAY',     color: '#E3C372', nextLabel: 'NIGHT',           icon: '☀' },
   night:   { label: 'NIGHT CYCLE',        badge: 'NIGHT',   color: '#bac3fe', nextLabel: 'DAY',             icon: '☽' },
-  // Orb Vallis
   warm:    { label: 'THERMAL SURGE',      badge: 'WARM',    color: '#fb923c', nextLabel: 'COLD FRONT',      icon: '◎' },
   cold:    { label: 'COLD FRONT',         badge: 'COLD',    color: '#67e8f9', nextLabel: 'WARM SURGE',      icon: '❄' },
-  // Cambion Drift
   fass:    { label: 'FASS ASCENDANT',     badge: 'FASS',    color: '#fb923c', nextLabel: 'VOME',            icon: '✦' },
   vome:    { label: 'VOME ASCENDANT',     badge: 'VOME',    color: '#c084fc', nextLabel: 'FASS',            icon: '◈' },
-  // Zariman Ten Zero
   corpus:  { label: 'CORPUS CONTROL',     badge: 'CORPUS',  color: '#60a5fa', nextLabel: 'GRINEER ADV.',    icon: '⊕' },
   grineer: { label: 'GRINEER OCCUPATION', badge: 'GRINEER', color: '#f87171', nextLabel: 'CORPUS RET.',     icon: '☠' },
-  // Duviri moods
   joy:     { label: 'JOY',               badge: 'JOY',     color: '#E3C372', nextLabel: 'ANGER APPROACHES', icon: '◌' },
   anger:   { label: 'ANGER',             badge: 'ANGER',   color: '#ef4444', nextLabel: 'ENVY RISES',       icon: '△' },
   envy:    { label: 'ENVY',              badge: 'ENVY',    color: '#22c55e', nextLabel: 'SORROW FALLS',     icon: '◆' },
@@ -37,29 +34,23 @@ export const STATE: Record<string, StatePresentation> = {
 export const FALLBACK: StatePresentation = STATE.day;
 
 // ---------------------------------------------------------------------------
-// World background gradients — rich atmospheric gradients per world + state
+// World background gradients
 // ---------------------------------------------------------------------------
 
 const CARD_GRADIENT: Record<string, string> = {
-  // Plains of Eidolon — warm amber sunset / cold indigo night
   'cetus-day':       'radial-gradient(ellipse at 30% 85%, #6b3800 0%, #3d1c00 35%, #1a0c00 65%, #0a0800 100%)',
   'cetus-night':     'radial-gradient(ellipse at 60% 20%, #1a2a5e 0%, #0c1840 35%, #060d2a 65%, #020510 100%)',
-  // Orb Vallis — rust orange heat / icy steel blue
   'vallis-warm':     'radial-gradient(ellipse at 50% 90%, #5a2800 0%, #3a1800 35%, #1a0e00 65%, #0a0600 100%)',
   'vallis-cold':     'radial-gradient(ellipse at 50% 30%, #0d3550 0%, #082240 30%, #040e20 65%, #020610 100%)',
-  // Cambion Drift — burnt amber Fass / deep teal Vome
   'cambion-fass':    'radial-gradient(ellipse at 70% 70%, #5c2800 0%, #3a1500 35%, #1a0800 65%, #080400 100%)',
   'cambion-vome':    'radial-gradient(ellipse at 40% 60%, #082a1e 0%, #041a12 35%, #020e0a 65%, #010805 100%)',
-  // Zariman Ten Zero — Void blue / Grineer blood red
   'zariman-corpus':  'radial-gradient(ellipse at 50% 50%, #0c1e50 0%, #081440 35%, #040c28 65%, #020610 100%)',
   'zariman-grineer': 'radial-gradient(ellipse at 50% 50%, #4a0c08 0%, #300806 35%, #180402 65%, #0a0200 100%)',
-  // Duviri — rich moody per-emotion gradients
   'duviri-joy':      'radial-gradient(ellipse at 50% 70%, #4a3800 0%, #2a2000 35%, #141000 65%, #080600 100%)',
   'duviri-anger':    'radial-gradient(ellipse at 50% 70%, #4a0e00 0%, #2c0800 35%, #160400 65%, #080200 100%)',
   'duviri-envy':     'radial-gradient(ellipse at 50% 70%, #084a08 0%, #043004 35%, #021802 65%, #010801 100%)',
   'duviri-sorrow':   'radial-gradient(ellipse at 50% 30%, #082040 0%, #041428 35%, #020a18 65%, #010610 100%)',
   'duviri-fear':     'radial-gradient(ellipse at 50% 50%, #1e0640 0%, #120428 35%, #080218 65%, #040110 100%)',
-  // Earth — jungle green day / dark forest night
   'earth-day':       'radial-gradient(ellipse at 40% 80%, #1a3800 0%, #0e2200 35%, #060e00 65%, #030800 100%)',
   'earth-night':     'radial-gradient(ellipse at 50% 20%, #0c1430 0%, #060c20 35%, #030612 65%, #010408 100%)',
 };
@@ -70,7 +61,7 @@ export function getCardGradient(id: string, state: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// Static rewards — hardcoded game knowledge per world + state
+// Static rewards
 // ---------------------------------------------------------------------------
 
 const STATIC_REWARDS: Record<string, string> = {
@@ -101,10 +92,11 @@ export function getStaticRewards(id: string, state: string): string {
 
 export interface CycleCardProps {
   status:    CycleStatus;
-  featured?: boolean;  // Row-1 cards: taller (≥280px). Row-2: standard (≥220px).
+  featured?: boolean;
 }
 
 export function CycleCard({ status, featured = false }: CycleCardProps) {
+  const { tokens } = useThemeStore();
   const { cycle, msRemaining, progress, isExpired } = status;
   const pres        = STATE[cycle.state] ?? FALLBACK;
   const { h, m, s } = formatMsParts(msRemaining);
@@ -115,9 +107,7 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
   const rewards   = getStaticRewards(cycle.id, cycle.state);
   const minHeight = featured ? '280px' : '220px';
 
-  // Right-to-left state tint overlay (10–14% opacity)
-  const tintOverlay = `linear-gradient(to left, ${pres.color}24 0%, ${pres.color}0A 55%, transparent 100%)`;
-
+  const tintOverlay    = `linear-gradient(to left, ${pres.color}24 0%, ${pres.color}0A 55%, transparent 100%)`;
   const isEidolonNight = cycle.id === 'cetus' && cycle.state === 'night';
 
   return (
@@ -133,11 +123,7 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
           : `0 0 40px rgba(0,0,0,0.6), inset 0 0 60px rgba(0,0,0,0.3)`,
       }}
     >
-      {/* Right-to-left state tint overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ background: tintOverlay }}
-      />
+      <div className="absolute inset-0 pointer-events-none" style={{ background: tintOverlay }} />
 
       {/* Filigree corners */}
       <span
@@ -149,18 +135,20 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
         style={{ borderBottom: `1px solid ${pres.color}22`, borderRight: `1px solid ${pres.color}22` }}
       />
 
-      {/* ── TOP BAR: location label + state pill ───────────────────── */}
+      {/* ── TOP BAR: location label + state pill ─────────────────────── */}
       <div className="relative flex items-center justify-between px-4 pt-3 pb-1">
         <p
-          className="font-label text-[9px] uppercase tracking-[0.35em]"
-          style={{ color: pres.color, opacity: 0.55 }}
+          data-role="labelTiny"
+          style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: pres.color, opacity: 0.55 }}
         >
           {cycle.location}
         </p>
 
         <span
-          className="font-label text-[8px] uppercase tracking-[0.18em] px-2 py-0.5"
+          data-role="labelTiny"
+          className="px-2 py-0.5"
           style={{
+            ...getTypographyStyle(tokens, 'labelTiny'),
             color:           pres.color,
             border:          `1px solid ${pres.color}40`,
             backgroundColor: `${pres.color}12`,
@@ -174,12 +162,14 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
       {/* ── HERO SECTION: world name + countdown + medallion ─────────── */}
       <div className="relative flex-1 flex flex-col items-center justify-center px-4 py-3 gap-2">
 
-        {/* World name — smaller, sits above the countdown */}
-        <p className="font-headline text-[10px] font-bold uppercase tracking-[0.3em] text-on-surface/35">
+        <p
+          data-role="labelSmall"
+          style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: tokens.colors.onSurface, opacity: 0.35 }}
+        >
           {cycle.name}
         </p>
 
-        {/* HERO countdown */}
+        {/* HERO countdown — font-mono, intentionally not a token role */}
         <div className="flex items-baseline gap-0.5 leading-none">
           {h !== '00' && (
             <>
@@ -236,11 +226,14 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
         </div>
 
         {/* Transition label */}
-        <p className="font-label text-[9px] uppercase tracking-[0.28em] text-secondary/35">
+        <p
+          data-role="labelTiny"
+          style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.35 }}
+        >
           {isExpired ? 'SYNCING…' : `UNTIL ${nextPres.badge}`}
         </p>
 
-        {/* State medallion — circular badge */}
+        {/* State medallion */}
         <div
           className="flex items-center justify-center mt-1"
           style={{
@@ -254,10 +247,11 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
           }}
         >
           <span
-            className="font-label font-bold uppercase text-center leading-tight"
+            data-role="labelTiny"
+            className="text-center leading-tight"
             style={{
+              ...getTypographyStyle(tokens, 'labelTiny'),
               fontSize:      featured ? '0.6rem' : '0.55rem',
-              letterSpacing: '0.12em',
               color:         pres.color,
               padding:       '0 8px',
             }}
@@ -269,8 +263,10 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
         {/* Eidolon Night special badge */}
         {isEidolonNight && (
           <span
-            className="font-label text-[8px] uppercase tracking-widest px-2 py-0.5 mt-0.5"
+            data-role="labelTiny"
+            className="mt-0.5 px-2 py-0.5"
             style={{
+              ...getTypographyStyle(tokens, 'labelTiny'),
               color:           pres.color,
               border:          `1px solid ${pres.color}50`,
               backgroundColor: `${pres.color}12`,
@@ -283,10 +279,8 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
 
       </div>
 
-      {/* ── BOTTOM: progress strip + rewards footer ─────────────────── */}
+      {/* ── BOTTOM: progress strip + rewards footer ──────────────────── */}
       <div className="relative px-4 pb-3 pt-1">
-
-        {/* Thin progress strip */}
         <div className="relative w-full h-px mb-2 overflow-hidden" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
           <div
             className="absolute inset-y-0 left-0 h-full"
@@ -299,22 +293,20 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
           />
         </div>
 
-        {/* Next state footer */}
         <div className="flex items-center justify-between">
           <p
-            className="font-label text-[8px] uppercase tracking-[0.18em]"
-            style={{ color: pres.color, opacity: 0.35 }}
+            data-role="labelTiny"
+            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: pres.color, opacity: 0.35 }}
           >
             ACTIVE: {rewards}
           </p>
           <p
-            className="font-label text-[8px] uppercase tracking-[0.15em]"
-            style={{ color: nextPres.color, opacity: 0.5 }}
+            data-role="labelTiny"
+            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: nextPres.color, opacity: 0.5 }}
           >
             → {nextPres.badge}
           </p>
         </div>
-
       </div>
     </div>
   );

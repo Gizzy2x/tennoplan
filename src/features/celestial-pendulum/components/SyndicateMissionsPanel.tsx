@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { useThemeStore } from '@/store/theme';
+import { getTypographyStyle } from '@/tokens/utils';
 import { useSyndicateMissions } from '../hooks/useSyndicateMissions';
 import { formatMsHuman } from '@/core/services/cycleService';
 import type { SyndicateMission } from '@/core/domain/syndicates';
@@ -32,12 +34,14 @@ function SyndicateCard({
   now,
   isLoading,
   isError,
+  tokens,
 }: {
   name:      string;
   mission:   SyndicateMission | null;
   now:       number;
   isLoading: boolean;
   isError:   boolean;
+  tokens:    ReturnType<typeof useThemeStore>['tokens'];
 }) {
   const meta   = SYNDICATE_META[name];
   const msLeft = mission && mission.expiryMs > 0
@@ -58,14 +62,15 @@ function SyndicateCard({
       {/* Syndicate name */}
       <div>
         <p
-          className="font-label text-[9px] uppercase tracking-[0.3em]"
-          style={{ color: meta.color, opacity: 0.55 }}
+          data-role="labelSmall"
+          style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: meta.color, opacity: 0.55 }}
         >
           {meta.subtitle}
         </p>
         <p
-          className="font-headline text-base font-bold orokin-etched leading-tight mt-0.5"
-          style={{ color: meta.color }}
+          data-role="hero"
+          className="orokin-etched leading-tight mt-0.5"
+          style={{ ...getTypographyStyle(tokens, 'hero'), color: meta.color }}
         >
           {meta.displayName}
         </p>
@@ -76,21 +81,28 @@ function SyndicateCard({
 
       {mission ? (
         <>
-          {/* Expiry countdown */}
+          {/* Expiry countdown — font-mono, intentionally not a token role */}
           {msLeft !== null && msLeft > 0 ? (
             <div>
               <p
-                className="font-headline text-xl font-bold tabular-nums"
+                className="font-mono text-xl font-bold tabular-nums"
                 style={{ color: meta.color, textShadow: `0 0 16px ${meta.color}40` }}
               >
                 {formatMsHuman(msLeft)}
               </p>
-              <p className="font-label text-[8px] uppercase tracking-widest text-secondary/30 mt-0.5">
+              <p
+                data-role="labelTiny"
+                className="mt-0.5"
+                style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.30 }}
+              >
                 UNTIL ROTATION
               </p>
             </div>
           ) : (
-            <p className="font-label text-[8px] uppercase tracking-widest text-secondary/25">
+            <p
+              data-role="labelTiny"
+              style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.25 }}
+            >
               ROTATING…
             </p>
           )}
@@ -98,15 +110,19 @@ function SyndicateCard({
           {/* Job tier count */}
           {mission.jobs.length > 0 && (
             <p
-              className="font-label text-[8px] uppercase tracking-[0.18em] mt-auto"
-              style={{ color: meta.color, opacity: 0.4 }}
+              data-role="labelTiny"
+              className="mt-auto"
+              style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: meta.color, opacity: 0.4 }}
             >
               {mission.jobs.length} JOB TIER{mission.jobs.length !== 1 ? 'S' : ''} AVAILABLE
             </p>
           )}
         </>
       ) : (
-        <p className="font-label text-[8px] uppercase tracking-widest text-secondary/25">
+        <p
+          data-role="labelTiny"
+          style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.25 }}
+        >
           {isLoading ? 'ESTABLISHING LINK…' : isError ? 'DISPATCH UNAVAILABLE' : 'NO ACTIVE DISPATCH'}
         </p>
       )}
@@ -119,6 +135,7 @@ function SyndicateCard({
 // ---------------------------------------------------------------------------
 
 export function SyndicateMissionsPanel() {
+  const { tokens } = useThemeStore();
   const { missions, isLoading, isError, isStale } = useSyndicateMissions();
 
   // Local 1-second clock for expiry countdowns
@@ -137,10 +154,16 @@ export function SyndicateMissionsPanel() {
 
       {/* Section header */}
       <div className="flex items-center gap-4 mb-4">
-        <p className="font-label text-[10px] uppercase tracking-[0.4em] text-primary/50">
+        <p
+          data-role="sectionHeader"
+          style={{ ...getTypographyStyle(tokens, 'sectionHeader'), color: tokens.colors.primary, opacity: 0.50 }}
+        >
           Syndicate Dispatches
         </p>
-        <span className="font-label text-[9px] uppercase tracking-[0.25em] text-secondary/25">
+        <span
+          data-role="labelTiny"
+          style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.25 }}
+        >
           — Daily Bounty Rotations
         </span>
       </div>
@@ -155,13 +178,18 @@ export function SyndicateMissionsPanel() {
             now={now}
             isLoading={isLoading}
             isError={isError}
+            tokens={tokens}
           />
         ))}
       </div>
 
       {/* Stale cache banner */}
       {isStale && (
-        <p className="font-label text-[8px] uppercase tracking-widest text-secondary/25 mt-3">
+        <p
+          data-role="labelTiny"
+          className="mt-3"
+          style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.25 }}
+        >
           Stale cache · Syndicate data may be outdated
         </p>
       )}

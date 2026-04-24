@@ -1,4 +1,6 @@
 import { Tag } from 'lucide-react';
+import { useThemeStore } from '@/store/theme';
+import { getTypographyStyle } from '@/tokens/utils';
 import { formatMsHuman } from '@/core/services/cycleService';
 import type { DarvoDealStatus } from '@/core/domain/railFeed';
 
@@ -7,6 +9,7 @@ export interface DarvoDealCardProps {
 }
 
 export function DarvoDealCard({ status }: DarvoDealCardProps) {
+  const { tokens } = useThemeStore();
   const { deal, msRemaining, stockPct } = status;
 
   const stockFilled = Math.min(1, deal.total > 0 ? deal.sold / deal.total : 0);
@@ -28,13 +31,20 @@ export function DarvoDealCard({ status }: DarvoDealCardProps) {
       {/* Header label */}
       <div className="flex items-center gap-2">
         <Tag size={14} strokeWidth={1.5} style={{ color: '#E3C372', opacity: 0.60 }} />
-        <p className="font-label text-[9px] uppercase tracking-[0.35em] text-primary/40">
+        <p
+          data-role="labelTiny"
+          style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.primary, opacity: 0.40 }}
+        >
           Darvo Deal
         </p>
       </div>
 
       {/* Item name */}
-      <p className="font-headline text-lg font-black leading-tight orokin-etched" style={{ color: '#E3C372' }}>
+      <p
+        data-role="hero"
+        className="leading-tight orokin-etched"
+        style={{ ...getTypographyStyle(tokens, 'hero'), color: '#E3C372' }}
+      >
         {deal.item}
       </p>
 
@@ -48,8 +58,14 @@ export function DarvoDealCard({ status }: DarvoDealCardProps) {
         </p>
         {deal.discount > 0 && (
           <span
-            className="font-label text-[9px] uppercase tracking-[0.2em] px-2 py-0.5 font-bold mb-0.5"
-            style={{ color: '#ffb4ab', border: '1px solid rgba(255,180,171,0.35)', backgroundColor: 'rgba(255,180,171,0.10)' }}
+            data-role="labelTiny"
+            className="mb-0.5 px-2 py-0.5"
+            style={{
+              ...getTypographyStyle(tokens, 'labelTiny'),
+              color:           '#ffb4ab',
+              border:          '1px solid rgba(255,180,171,0.35)',
+              backgroundColor: 'rgba(255,180,171,0.10)',
+            }}
           >
             -{deal.discount}%
           </span>
@@ -59,7 +75,10 @@ export function DarvoDealCard({ status }: DarvoDealCardProps) {
       {/* Stock bar */}
       <div>
         <div className="flex justify-between mb-1">
-          <p className="font-label text-[9px] uppercase tracking-[0.25em]" style={{ color: '#C6C6C7', opacity: 0.35 }}>
+          <p
+            data-role="labelTiny"
+            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: '#C6C6C7', opacity: 0.35 }}
+          >
             Stock
           </p>
           <p className="font-mono text-[9px] tabular-nums" style={{ color: '#C6C6C7', opacity: 0.45 }}>
@@ -72,7 +91,6 @@ export function DarvoDealCard({ status }: DarvoDealCardProps) {
             style={{ width: `${stockFilled * 100}%`, backgroundColor: 'rgba(227,195,114,0.60)' }}
           />
         </div>
-        {/* Suppress unused variable warning */}
         {stockPct > 0 && null}
       </div>
 
