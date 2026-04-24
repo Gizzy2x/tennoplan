@@ -22,6 +22,7 @@
 
 import { useState, useEffect, type CSSProperties } from 'react';
 import { useThemeStore } from '@/store/theme';
+import type { DesignTokens } from '@/tokens/index';
 import { getTypographyStyle } from '@/tokens/utils';
 import type {
   EnrichedBounty,
@@ -66,7 +67,7 @@ function formatChance(chance: number): string {
   return chance.toFixed(1) + '%';
 }
 
-type Tokens = ReturnType<typeof useThemeStore>['tokens'];
+type Tokens = DesignTokens;
 
 // ─── Reward icon cell ────────────────────────────────────────────────────────
 

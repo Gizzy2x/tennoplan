@@ -1,4 +1,5 @@
 import { useThemeStore } from '@/store/theme';
+import type { DesignTokens } from '@/tokens/index';
 import { getTypographyStyle } from '@/tokens/utils';
 import { useDailiesData } from './hooks/useDailiesData';
 import { PageHero } from '@/components/ui/PageHero';
@@ -13,7 +14,7 @@ import {
 import { formatMsHuman } from '@/core/services/cycleService';
 import type { ChallengeKind, ChallengeStatus } from '@/core/domain/ascension';
 
-type Tokens = ReturnType<typeof useThemeStore>['tokens'];
+type Tokens = DesignTokens;
 
 // ---------------------------------------------------------------------------
 // Reset counter pill

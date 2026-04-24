@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useThemeStore } from '@/store/theme';
+import type { DesignTokens } from '@/tokens/index';
 import { getTypographyStyle } from '@/tokens/utils';
 import { formatMsParts, nextCycleState } from '@/core/services/cycleService';
 import type { CycleStatus } from '@/core/domain/cycles';
@@ -128,7 +129,7 @@ const SPECIAL_MISSIONS: Partial<Record<string, SpecialMission[]>> = {
 
 // ── Info Popover ───────────────────────────────────────────────────────────
 
-type Tokens = ReturnType<typeof useThemeStore>['tokens'];
+type Tokens = DesignTokens;
 
 interface InfoPopoverProps {
   text:        string;

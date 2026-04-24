@@ -238,7 +238,6 @@ export function CelestialPendulumPage() {
     );
   }
 
-  const typo = typography(tokens);
 
   return (
     <div style={{ color: tokens.colors.primary, position: 'relative' }}>
@@ -301,7 +300,7 @@ export function CelestialPendulumPage() {
                 <div>
                   <div
                     style={{
-                      fontFamily:    tokens.typography.fontBodyFamily,
+                      fontFamily:    tokens.typography.roles.body.fontFamily,
                       fontSize:      '0.92rem',
                       fontWeight:    700,
                       letterSpacing: '0.10em',
@@ -314,7 +313,7 @@ export function CelestialPendulumPage() {
                   </div>
                   <div
                     style={{
-                      fontFamily:    tokens.typography.fontLabelFamily,
+                      fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
                       fontSize:      '0.62rem',
                       color:         'rgba(198,198,199,0.48)',
                       marginTop:     3,
@@ -335,7 +334,7 @@ export function CelestialPendulumPage() {
         <div style={{ marginBottom: 4 }}>
           <div
             style={{
-              fontFamily:    tokens.typography.fontLabelFamily,
+              fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
               fontSize:      '0.55rem',
               fontWeight:    700,
               letterSpacing: '0.28em',
@@ -365,7 +364,7 @@ export function CelestialPendulumPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 <div
                   style={{
-                    fontFamily:    tokens.typography.fontBodyFamily,
+                    fontFamily:    tokens.typography.roles.body.fontFamily,
                     fontSize:      '2.6rem',
                     fontWeight:    900,
                     color:         tokens.colors.primary,
@@ -377,7 +376,7 @@ export function CelestialPendulumPage() {
                 </div>
                 <div
                   style={{
-                    fontFamily:    tokens.typography.fontLabelFamily,
+                    fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
                     fontSize:      '0.48rem',
                     letterSpacing: '0.26em',
                     color:         tokens.colors.secondary,
@@ -394,7 +393,7 @@ export function CelestialPendulumPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                 <div
                   style={{
-                    fontFamily:    tokens.typography.fontLabelFamily,
+                    fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
                     fontSize:      '0.48rem',
                     letterSpacing: '0.20em',
                     color:         tokens.colors.secondary,
@@ -406,7 +405,7 @@ export function CelestialPendulumPage() {
                 </div>
                 <div
                   style={{
-                    fontFamily:    tokens.typography.fontBodyFamily,
+                    fontFamily:    tokens.typography.roles.body.fontFamily,
                     fontSize:      '2.6rem',
                     fontWeight:    900,
                     color:         tokens.colors.primary,
@@ -444,7 +443,7 @@ export function CelestialPendulumPage() {
               >
                 <span
                   style={{
-                    fontFamily:    tokens.typography.fontLabelFamily,
+                    fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
                     fontSize:      '0.55rem',
                     letterSpacing: '0.28em',
                     color:         'rgba(227,195,114,0.12)',
@@ -488,7 +487,7 @@ export function CelestialPendulumPage() {
               <div
                 style={{
                   padding:    '14px 12px',
-                  fontFamily: tokens.typography.fontLabelFamily,
+                  fontFamily: tokens.typography.roles.labelSmall.fontFamily,
                   fontSize:   '0.50rem',
                   color:      'rgba(198,198,199,0.30)',
                   fontStyle:  'italic',
@@ -516,7 +515,7 @@ export function CelestialPendulumPage() {
                   <div>
                     <div
                       style={{
-                        fontFamily:    tokens.typography.fontLabelFamily,
+                        fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
                         fontSize:      '0.58rem',
                         fontWeight:    700,
                         color:         'rgba(198,198,199,0.72)',
@@ -528,7 +527,7 @@ export function CelestialPendulumPage() {
                     </div>
                     <div
                       style={{
-                        fontFamily:  tokens.typography.fontLabelFamily,
+                        fontFamily:  tokens.typography.roles.labelSmall.fontFamily,
                         fontSize:    '0.48rem',
                         color:       'rgba(198,198,199,0.35)',
                         marginTop:   1,
@@ -566,7 +565,7 @@ export function CelestialPendulumPage() {
 
                   <div
                     style={{
-                      fontFamily: tokens.typography.fontLabelFamily,
+                      fontFamily: tokens.typography.roles.labelSmall.fontFamily,
                       fontSize:   '0.62rem',
                       fontWeight: 700,
                       color:      pct === '—' ? 'rgba(198,198,199,0.25)' : tokens.colors.primary,
@@ -589,7 +588,7 @@ export function CelestialPendulumPage() {
               {resources.length === 0 ? (
                 <p
                   style={{
-                    fontFamily: tokens.typography.fontLabelFamily,
+                    fontFamily: tokens.typography.roles.labelSmall.fontFamily,
                     fontSize:   '0.50rem',
                     color:      'rgba(198,198,199,0.28)',
                     fontStyle:  'italic',
@@ -623,7 +622,7 @@ export function CelestialPendulumPage() {
                         </span>
                         <div
                           style={{
-                            fontFamily:    tokens.typography.fontLabelFamily,
+                            fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
                             fontSize:      '0.52rem',
                             fontWeight:    600,
                             color:         'rgba(229,226,225,0.88)',
@@ -636,7 +635,7 @@ export function CelestialPendulumPage() {
                       </div>
                       <div
                         style={{
-                          fontFamily:    tokens.typography.fontLabelFamily,
+                          fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
                           fontSize:      '0.44rem',
                           color:         'rgba(198,198,199,0.38)',
                           textTransform: 'uppercase',
@@ -663,7 +662,7 @@ export function CelestialPendulumPage() {
               <div style={{ marginBottom: 14 }}>
                 <div
                   style={{
-                    fontFamily:    tokens.typography.fontLabelFamily,
+                    fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
                     fontSize:      '0.56rem',
                     fontWeight:    700,
                     letterSpacing: '0.14em',
@@ -690,7 +689,7 @@ export function CelestialPendulumPage() {
                       >
                         <span
                           style={{
-                            fontFamily:    tokens.typography.fontLabelFamily,
+                            fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
                             fontSize:      '0.50rem',
                             fontWeight:    700,
                             letterSpacing: '0.08em',
@@ -706,7 +705,7 @@ export function CelestialPendulumPage() {
                         </span>
                         <span
                           style={{
-                            fontFamily:    tokens.typography.fontLabelFamily,
+                            fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
                             fontSize:      '0.48rem',
                             color:         'rgba(198,198,199,0.55)',
                             textTransform: 'capitalize',
@@ -717,7 +716,7 @@ export function CelestialPendulumPage() {
                         <span style={{ color: 'rgba(227,195,114,0.20)', fontSize: '0.44rem' }}>·</span>
                         <span
                           style={{
-                            fontFamily: tokens.typography.fontLabelFamily,
+                            fontFamily: tokens.typography.roles.labelSmall.fontFamily,
                             fontSize:   '0.48rem',
                             color:      'rgba(198,198,199,0.38)',
                           }}
@@ -735,7 +734,7 @@ export function CelestialPendulumPage() {
                 <div style={{ borderTop: '1px solid rgba(227,195,114,0.08)', paddingTop: parseInt(tokens.spacing.md) }}>
                   <div
                     style={{
-                      fontFamily:    tokens.typography.fontLabelFamily,
+                      fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
                       fontSize:      '0.56rem',
                       fontWeight:    700,
                       letterSpacing: '0.14em',
@@ -751,7 +750,7 @@ export function CelestialPendulumPage() {
                       <span style={{ color: 'rgba(227,195,114,0.50)', flexShrink: 0, fontSize: '0.50rem', lineHeight: 1.6 }}>•</span>
                       <span
                         style={{
-                          fontFamily: tokens.typography.fontLabelFamily,
+                          fontFamily: tokens.typography.roles.labelSmall.fontFamily,
                           fontSize:   '0.48rem',
                           color:      'rgba(198,198,199,0.48)',
                           lineHeight: 1.65,
@@ -770,7 +769,7 @@ export function CelestialPendulumPage() {
         {/* ── Footer ─────────────────────────────────────────────────────── */}
         <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: parseInt(tokens.spacing.gapSmall) }}>
           <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(227,195,114,0.45)', flexShrink: 0 }} />
-          <span style={{ fontFamily: tokens.typography.fontLabelFamily, fontSize: '0.50rem', color: 'rgba(198,198,199,0.28)', letterSpacing: '0.18em' }}>
+          <span style={{ fontFamily: tokens.typography.roles.labelSmall.fontFamily, fontSize: '0.50rem', color: 'rgba(198,198,199,0.28)', letterSpacing: '0.18em' }}>
             Drop data · {dropsAgeLabel}
           </span>
           <div style={{ flex: 1 }} />
@@ -779,7 +778,7 @@ export function CelestialPendulumPage() {
             disabled={isSyncing}
             style={{
               padding:       '3px 10px',
-              fontFamily:    tokens.typography.fontLabelFamily,
+              fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
               fontSize:      '0.50rem',
               fontWeight:    700,
               letterSpacing: '0.14em',

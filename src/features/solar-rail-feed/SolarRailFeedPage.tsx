@@ -40,15 +40,9 @@ export function SolarRailFeedPage() {
     isStale,
     hasEverLoaded,
     cacheAgeMs,
-    lastSync,
   } = useSolarRailFeed();
 
-  const lastSyncLabel = lastSync
-    ? new Date(lastSync).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-    : '—';
-
   const syncState = isLoading ? 'SYNCING' : isError ? 'OFFLINE' : 'LIVE';
-  const syncWidth = isLoading ? '45%' : isError ? '12%' : '100%';
 
   const totalSections =
     (totalAlerts > 0 ? 1 : 0) +
@@ -60,8 +54,6 @@ export function SolarRailFeedPage() {
     (newsItems.length > 0 ? 1 : 0) +
     (sortieStatus ? 1 : 0) +
     (archonHuntStatus ? 1 : 0);
-
-  const hasSomeData = totalSections > 1; // more than just void trader
 
   return (
     <>
