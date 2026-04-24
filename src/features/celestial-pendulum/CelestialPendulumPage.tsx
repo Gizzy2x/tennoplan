@@ -14,10 +14,8 @@ import type { EnrichedBounty }    from '@/core/domain/bounty';
 
 // ─── Hardcoded design constants (replaces runtime token access) ────────────────
 const FONT_SANS   = '"Noto Sans", -apple-system, sans-serif';
-const FONT_SERIF  = '"Noto Serif", Georgia, serif';
 const COLOR_PRIMARY   = '#E3C372';
 const COLOR_SECONDARY = 'rgba(198,198,199,1)';
-const COLOR_ON_SURFACE = 'rgba(229,226,225,1)';
 const RADIUS_LG  = '6px';
 const RADIUS_MD  = '4px';
 const RADIUS_SM  = '2px';

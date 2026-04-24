@@ -317,8 +317,7 @@ export function DailiesWeekliesPage() {
           {standingRemaining > 0 && (
             <p
               data-role="labelTiny"
-              className="mt-2"
-              className="typo-label-xs"
+              className="mt-2 typo-label-xs"
               style={{ color: 'rgba(227,195,114,0.28)' }}
             >
               {(standingRemaining / 1000).toFixed(0)}k standing remaining toward cap
@@ -367,7 +366,7 @@ export function DailiesWeekliesPage() {
               className="typo-hero leading-none"
               style={{ fontSize: '1.5rem', color: 'rgba(229,226,225,1)' }}
             >
-              Nightwave <span style={{ color: tokens.colors.primary, fontStyle: 'italic' }}>Challenges</span>
+              Nightwave <span style={{ color: '#E3C372', fontStyle: 'italic' }}>Challenges</span>
             </h3>
             {season > 0 && (
               <span

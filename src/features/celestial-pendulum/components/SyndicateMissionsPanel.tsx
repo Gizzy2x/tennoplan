@@ -186,8 +186,7 @@ export function SyndicateMissionsPanel() {
       {isStale && (
         <p
           data-role="labelTiny"
-          className="mt-3"
-          className="typo-label-xs"
+          className="mt-3 typo-label-xs"
           style={{ color: 'rgba(198,198,199,0.25)' }}
         >
           Stale cache · Syndicate data may be outdated
