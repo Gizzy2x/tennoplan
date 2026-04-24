@@ -67,7 +67,21 @@
       "Bash(node .agents/skills/impeccable/scripts/cleanup-deprecated.mjs)",
       "Bash(git push *)",
       "Bash(git add *)",
-      "Bash(git commit -m 'WIP: Design system setup, component refinement, and skill installation *)"
+      "Bash(git commit -m 'WIP: Design system setup, component refinement, and skill installation *)",
+      "Bash(sed -i \"1,/^import/a import type { DesignTokens } from '@/tokens/index';\" src/features/celestial-pendulum/components/BountyJobList.tsx)",
+      "Bash(sed -i \"s/type Tokens = ReturnType<typeof useThemeStore>\\\\['tokens'\\\\];/type Tokens = DesignTokens;/\" src/features/celestial-pendulum/components/BountyJobList.tsx)",
+      "Bash(sed -i \"1,/^import/a import type { DesignTokens } from '@/tokens/index';\" src/features/celestial-pendulum/components/CinematicCyclePanel.tsx)",
+      "Bash(sed -i \"s/type Tokens = ReturnType<typeof useThemeStore>\\\\['tokens'\\\\];/type Tokens = DesignTokens;/\" src/features/celestial-pendulum/components/CinematicCyclePanel.tsx)",
+      "Bash(sed -i \"1,/^import/a import type { DesignTokens } from '@/tokens/index';\" src/features/celestial-pendulum/components/SyndicateMissionsPanel.tsx)",
+      "Bash(sed -i \"1,/^import/a import type { DesignTokens } from '@/tokens/index';\" src/features/dailies-weeklies/DailiesWeekliesPage.tsx)",
+      "Bash(sed -i \"s/type Tokens = ReturnType<typeof useThemeStore>\\\\['tokens'\\\\];/type Tokens = DesignTokens;/\" src/features/dailies-weeklies/DailiesWeekliesPage.tsx)",
+      "Bash(sed -i \"1,/^import/a import type { DesignTokens } from '@/tokens/index';\" src/features/settings/SettingsPage.tsx)",
+      "Bash(sed -i \"s/type Tokens = ReturnType<typeof useThemeStore>\\\\['tokens'\\\\];/type Tokens = DesignTokens;/\" src/features/settings/SettingsPage.tsx)",
+      "Bash(sed -i \"1,/^import/a import type { DesignTokens } from '@/tokens/index';\" src/features/solar-rail-feed/components/SortieCard.tsx)",
+      "Bash(sed -i 's/import { useCallback, useState, useRef }/import { useState, useRef }/' src/components/dev/ThemeEditor.tsx)",
+      "Bash(sed -i \"s/import React from 'react';//\" src/features/void-reliquaries/VoidReliquariesPage.tsx)",
+      "Bash(sed -i \"s/import { Star }/import {/\" src/features/void-reliquaries/VoidReliquariesPage.tsx)",
+      "Bash(sed -i \"s/import { Zap }/import {/\" src/features/solar-rail-feed/components/AlertCard.tsx)"
     ]
   },
   "hooks": {

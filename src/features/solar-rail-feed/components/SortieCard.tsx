@@ -4,6 +4,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useThemeStore } from '@/store/theme';
+import type { DesignTokens } from '@/tokens/index';
 import { getTypographyStyle } from '@/tokens/utils';
 import { SORTIE_FACTION_COLOR } from '@/core/services/ascensionService';
 import type { SortieMission } from '@/core/domain/ascension';
@@ -29,7 +30,7 @@ function getMissionIcon(missionType: string): LucideIcon {
   return MISSION_ICON[missionType] ?? Hexagon;
 }
 
-function ModifierChip({ label, faction, tokens }: { label: string; faction: string; tokens: ReturnType<typeof useThemeStore>['tokens'] }) {
+function ModifierChip({ label, faction, tokens }: { label: string; faction: string; tokens: DesignTokens }) {
   const color = SORTIE_FACTION_COLOR[faction] ?? '#C6C6C7';
   return (
     <span

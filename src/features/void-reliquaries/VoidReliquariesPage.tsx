@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Search, RefreshCw, Star } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Search, RefreshCw } from 'lucide-react';
 import { PageHero } from '@/components/ui/PageHero';
 import { useThemeStore } from '@/store/theme';
 import { getTypographyStyle } from '@/tokens/utils';

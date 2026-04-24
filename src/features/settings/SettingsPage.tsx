@@ -10,6 +10,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useThemeStore } from '@/store/theme';
+import type { DesignTokens } from '@/tokens/index';
 import { getTypographyStyle } from '@/tokens/utils';
 import { PageHero } from '@/components/ui/PageHero';
 import { DropDataService, type FetchProgress } from '@/adapters/api/DropDataService';
@@ -19,7 +20,7 @@ import { db } from '@/adapters/storage/db';
 // ── Status pill helpers ───────────────────────────────────────────────────────
 
 type SyncStatus = 'idle' | 'syncing' | 'success' | 'error';
-type Tokens = ReturnType<typeof useThemeStore>['tokens'];
+type Tokens = DesignTokens;
 
 function statusColor(s: SyncStatus): string {
   if (s === 'success') return 'rgba(134,239,172,0.80)';

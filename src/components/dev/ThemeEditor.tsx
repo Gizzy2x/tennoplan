@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useThemeStore } from '@/store/theme';
 import type { CardOverride } from '@/store/theme';
 import {
@@ -116,7 +116,7 @@ function runAudit(editorRoot: HTMLElement | null): AuditItem[] {
 // Shared Orokin editor styles
 // ─────────────────────────────────────────────────────────────────────────────
 
-const ED: Record<string, React.CSSProperties> = {
+const ED =  {
   panel: {
     background: 'rgba(8,8,6,0.97)',
     border: '1px solid rgba(227,195,114,0.25)',
@@ -877,7 +877,7 @@ export function ThemeEditor() {
 
   const {
     tokens, overrides, past, future, modes, activeMode,
-    cardEditModeEnabled, selectedCardId,
+    cardEditModeEnabled,
     undo, redo, resetTokens, setActiveMode, exportJSON, importJSON,
     toggleCardEditMode, setSelectedCardId,
   } = useThemeStore();

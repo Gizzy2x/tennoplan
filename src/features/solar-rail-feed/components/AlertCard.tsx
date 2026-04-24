@@ -1,5 +1,5 @@
 import {
-  Zap, Shield, Heart, Radio, Crosshair, LogOut, Skull, Eye,
+  Shield, Heart, Radio, Crosshair, LogOut, Skull, Eye,
   ShieldCheck, Shovel, KeyRound, Bomb, Swords, Hexagon,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';

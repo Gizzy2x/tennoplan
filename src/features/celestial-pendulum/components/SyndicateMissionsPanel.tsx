@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useThemeStore } from '@/store/theme';
+import type { DesignTokens } from '@/tokens/index';
 import { getTypographyStyle } from '@/tokens/utils';
 import { useSyndicateMissions } from '../hooks/useSyndicateMissions';
 import { formatMsHuman } from '@/core/services/cycleService';
@@ -41,7 +42,7 @@ function SyndicateCard({
   now:       number;
   isLoading: boolean;
   isError:   boolean;
-  tokens:    ReturnType<typeof useThemeStore>['tokens'];
+  tokens:    DesignTokens;
 }) {
   const meta   = SYNDICATE_META[name];
   const msLeft = mission && mission.expiryMs > 0
