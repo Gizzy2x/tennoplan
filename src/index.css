@@ -86,12 +86,12 @@
   /* === Success (custom for Tennoplan) === */
   --color-success: #4ade80;
 
-  /* === Border Radius (Orokin: sharp, precise) === */
-  --radius-sm: 0.125rem;
-  --radius-md: 0.125rem;
-  --radius-lg: 0.25rem;
-  --radius-xl: 0.5rem;
-  --radius-2xl: 0.75rem;
+  /* === Border Radius === */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --radius-2xl: 12px;
 
   /* === Font Families === */
   --font-headline: "Noto Serif", serif;
@@ -367,4 +367,121 @@ body {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
+}
+
+/* ================================================================
+   Page Hero — Universal cinematic page title header
+   ================================================================ */
+
+.page-hero-heading {
+  font-family: var(--font-headline);
+  font-size: 2.4rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.page-hero-subtitle {
+  font-family: var(--font-label);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.30em;
+  color: rgba(227, 195, 114, 0.45);
+}
+
+/* ================================================================
+   Content Card — Standard dark card with thin gold border
+   ================================================================ */
+
+.content-card {
+  position: relative;
+  background: rgba(14, 13, 11, 0.78);
+  border: 1px solid rgba(200, 170, 80, 0.15);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.content-card-interactive {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.content-card-interactive:hover {
+  border-color: rgba(200, 170, 80, 0.30);
+  box-shadow: 0 0 24px rgba(200, 170, 80, 0.06);
+}
+
+/* ================================================================
+   Tab Nav — Horizontal gold-underline tab strip
+   ================================================================ */
+
+.tab-nav {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(77, 70, 56, 0.25);
+}
+
+.tab-nav-item {
+  font-family: var(--font-label);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  padding: 8px 16px 10px;
+  border-bottom: 2px solid transparent;
+  background: none;
+  cursor: pointer;
+  color: rgba(198, 198, 199, 0.38);
+  transition: color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+  margin-bottom: -1px;
+}
+
+.tab-nav-item:hover {
+  color: rgba(198, 198, 199, 0.65);
+}
+
+.tab-nav-item[data-active='true'] {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.tab-nav-count {
+  margin-left: 6px;
+  font-size: 0.5625rem;
+  opacity: 0.65;
+}
+
+/* ================================================================
+   Section Divider — icon + label + horizontal rule
+   ================================================================ */
+
+.section-header-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(200, 170, 80, 0.18);
+}
+
+/* ================================================================
+   Coming Soon Placeholder — for stub pages below the PageHero
+   ================================================================ */
+
+.coming-soon-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  border: 1px solid rgba(77, 70, 56, 0.2);
+  border-radius: var(--radius-sm);
+  background: rgba(14, 13, 11, 0.4);
+}
+
+.coming-soon-label {
+  font-family: var(--font-label);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.30em;
+  color: rgba(198, 198, 199, 0.22);
 }

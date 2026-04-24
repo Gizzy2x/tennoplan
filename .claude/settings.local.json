@@ -61,7 +61,13 @@
       "Skill(update-config:*)",
       "Bash(node -e \"const fs = require\\('fs'\\); const data = JSON.parse\\(fs.readFileSync\\('src/lib/icons/items-map.json'\\)\\); const cats = {}; Object.values\\(data\\).forEach\\(v => { cats[v.category] = \\(cats[v.category] || 0\\) + 1; }\\); const sorted = Object.entries\\(cats\\).sort\\(\\(a,b\\) => b[1] - a[1]\\); sorted.forEach\\(\\([cat, count]\\) => console.log\\(cat + ': ' + count\\)\\);\")",
       "mcp__obsidian__read-note",
-      "Bash(echo \"---EXIT:$?---\")"
+      "Bash(echo \"---EXIT:$?---\")",
+      "Bash(awk '{print $NF}')",
+      "Bash(npx skills *)",
+      "Bash(node .agents/skills/impeccable/scripts/cleanup-deprecated.mjs)",
+      "Bash(git push *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'WIP: Design system setup, component refinement, and skill installation *)"
     ]
   },
   "hooks": {

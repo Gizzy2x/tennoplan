@@ -3,6 +3,8 @@ import {
   ShieldCheck, Shovel, KeyRound, Bomb, Swords, Hexagon,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { useThemeStore } from '@/store/theme';
+import { getTypographyStyle } from '@/tokens/utils';
 import { getFactionColor } from '@/core/services/railService';
 import { formatMs } from '@/core/services/cycleService';
 import type { AlertStatus } from '@/core/domain/railFeed';
@@ -31,6 +33,7 @@ export interface AlertCardProps {
 }
 
 export function AlertCard({ status }: AlertCardProps) {
+  const { tokens } = useThemeStore();
   const { alert, msRemaining } = status;
 
   const factionColor = getFactionColor(alert.faction);
@@ -58,7 +61,7 @@ export function AlertCard({ status }: AlertCardProps) {
         borderTop:   '1px solid rgba(227,195,114,0.20)',
       }}
     >
-      {/* Tint overlay */}
+      {/* Color tint overlay */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: tintOverlay }} />
 
       {/* Top-left filigree corner */}
@@ -66,89 +69,67 @@ export function AlertCard({ status }: AlertCardProps) {
         style={{ borderTop: '1px solid rgba(227,195,114,0.35)', borderLeft: '1px solid rgba(227,195,114,0.35)' }}
       />
 
-      {/* Top row: icon + mission type + node */}
+      {/* Top row: icon + node + reward */}
       <div className="flex items-start gap-3">
-        {/* Icon with faction dot */}
-        <div className="relative flex-shrink-0">
-          <Zap size={56} strokeWidth={1.0} style={{ color: '#E3C372', opacity: 0.85 }} />
-          {/* Faction dot */}
-          <span
-            className="absolute bottom-0 right-0 w-3.5 h-3.5 flex items-center justify-center"
-            style={{ backgroundColor: factionColor, boxShadow: `0 0 6px ${factionColor}60` }}
+        <MissionIcon size={48} strokeWidth={1.1} style={{ color: factionColor, opacity: 0.85, flexShrink: 0 }} />
+        <div className="flex-1 min-w-0">
+          <p
+            data-role="hero"
+            className="leading-tight orokin-etched truncate"
+            style={{ ...getTypographyStyle(tokens, 'hero'), color: tokens.colors.onSurface }}
           >
-            <MissionIcon size={8} strokeWidth={2} style={{ color: '#131313' }} />
-          </span>
-        </div>
-
-        <div className="flex-1 min-w-0 pt-1">
-          <p className="font-headline text-2xl font-black leading-tight orokin-etched" style={{ color: '#E3C372' }}>
+            {nodeName}
+            {nodeRegion && (
+              <span
+                data-role="labelTiny"
+                className="ml-1.5 not-italic"
+                style={{ ...getTypographyStyle(tokens, 'labelTiny'), opacity: 0.40 }}
+              >
+                ({nodeRegion})
+              </span>
+            )}
+          </p>
+          <p
+            data-role="labelSmall"
+            className="mt-0.5"
+            style={{ ...getTypographyStyle(tokens, 'labelSmall'), opacity: 0.40 }}
+          >
             {alert.missionType}
           </p>
-          <p className="font-label text-[10px] leading-tight mt-0.5 truncate" style={{ color: '#C6C6C7', opacity: 0.45 }}>
-            {nodeName}
-            {nodeRegion && <span className="ml-1 opacity-70">({nodeRegion})</span>}
-          </p>
-          {/* Level range */}
-          <span
-            className="inline-block font-label text-[9px] uppercase tracking-[0.2em] px-1.5 py-0.5 mt-1"
-            style={{ color: factionColor, border: `1px solid ${factionColor}30`, backgroundColor: `${factionColor}0A` }}
+          {alert.reward && (
+            <p
+              data-role="emphasis"
+              className="mt-1"
+              style={{ ...getTypographyStyle(tokens, 'emphasis'), color: factionColor }}
+            >
+              {alert.reward}
+            </p>
+          )}
+        </div>
+
+        {/* Countdown */}
+        <div className="text-right flex-shrink-0">
+          <p
+            data-role="labelTiny"
+            className="mb-0.5"
+            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.primary, opacity: 0.40 }}
           >
-            Lv {alert.minLevel}–{alert.maxLevel}
-          </span>
-        </div>
-      </div>
-
-      {/* Modifier badges */}
-      {(alert.nightmare || alert.archwingRequired) && (
-        <div className="flex gap-2 flex-wrap">
-          {alert.nightmare && (
-            <span className="font-label text-[8px] uppercase tracking-[0.2em] px-2 py-0.5 font-semibold"
-              style={{ color: '#ffb4ab', border: '1px solid rgba(255,180,171,0.35)', backgroundColor: 'rgba(255,180,171,0.08)' }}>
-              Nightmare
-            </span>
-          )}
-          {alert.archwingRequired && (
-            <span className="font-label text-[8px] uppercase tracking-[0.2em] px-2 py-0.5 font-semibold"
-              style={{ color: '#bac3fe', border: '1px solid rgba(186,195,254,0.35)', backgroundColor: 'rgba(186,195,254,0.08)' }}>
-              Archwing
-            </span>
-          )}
-        </div>
-      )}
-
-      {/* Faction + reward */}
-      <div>
-        <p className="font-label text-[10px] uppercase tracking-[0.25em] mb-1" style={{ color: factionColor, opacity: 0.70 }}>
-          {alert.faction}
-        </p>
-        <p className="font-label text-sm font-semibold" style={{ color: '#E3C372' }}>
-          {alert.reward || 'Mission Reward'}
-        </p>
-        {alert.rewardCredits > 0 && (
-          <p className="font-mono text-[10px] tabular-nums mt-0.5" style={{ color: '#C6C6C7', opacity: 0.45 }}>
-            +{alert.rewardCredits.toLocaleString()} cr
+            Expires in
           </p>
-        )}
+          <p
+            className={`font-mono text-lg font-bold tabular-nums leading-none ${isUrgent ? 'orokin-countdown-glow' : ''}`}
+            style={{ color: isUrgent ? '#fb923c' : tokens.colors.primary }}
+          >
+            {msRemaining > 0 ? formatMs(msRemaining) : 'EXPIRED'}
+          </p>
+        </div>
       </div>
 
-      {/* Countdown */}
-      <p
-        className={['font-mono text-2xl font-bold tabular-nums leading-none', isUrgent ? 'orokin-countdown-glow' : ''].filter(Boolean).join(' ')}
-        style={{ color: isUrgent ? '#E3C372' : 'rgba(227,195,114,0.75)' }}
-      >
-        {msRemaining > 0 ? formatMs(msRemaining) : 'EXPIRED'}
-      </p>
-
-      {/* Time bar */}
-      <div className="relative overflow-hidden mt-auto" style={{ height: 4, backgroundColor: 'rgba(197,192,190,0.07)' }}>
+      {/* Progress bar */}
+      <div className="relative overflow-hidden" style={{ height: 3, backgroundColor: 'rgba(197,192,190,0.07)' }}>
         <div
-          className="absolute inset-y-0 left-0 h-full"
-          style={{
-            width:      `${progressPct}%`,
-            backgroundColor: factionColor,
-            opacity:    0.65,
-            transition: 'width 1s linear',
-          }}
+          className="absolute inset-y-0 left-0 h-full transition-all duration-700"
+          style={{ width: `${progressPct}%`, backgroundColor: factionColor, opacity: 0.60 }}
         />
       </div>
     </div>

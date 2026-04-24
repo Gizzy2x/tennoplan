@@ -1,4 +1,6 @@
 import { Crosshair, MapPin } from 'lucide-react';
+import { useThemeStore } from '@/store/theme';
+import { getTypographyStyle } from '@/tokens/utils';
 import type { PersistentEnemyStatus } from '@/core/domain/railFeed';
 
 export interface PersistentEnemyCardProps {
@@ -6,15 +8,15 @@ export interface PersistentEnemyCardProps {
 }
 
 export function PersistentEnemyCard({ status }: PersistentEnemyCardProps) {
+  const { tokens } = useThemeStore();
   const { enemy } = status;
 
-  // Health bar: 100% = danger red, low% = dim
   const healthPct = Math.max(0, Math.min(100, enemy.health));
   const healthColor = healthPct > 66
     ? '#f87171'
     : healthPct > 33
       ? '#fb923c'
-      : '#86efac'; // near-dead = green (almost defeated)
+      : '#86efac';
 
   const nodeMatch  = enemy.lastNode.match(/^(.+?)\s*\((.+)\)$/);
   const nodeName   = nodeMatch ? nodeMatch[1] : enemy.lastNode;
@@ -29,13 +31,9 @@ export function PersistentEnemyCard({ status }: PersistentEnemyCardProps) {
         borderTop:   `1px solid ${healthColor}28`,
       }}
     >
-      {/* Tint overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none"
+      <div className="absolute inset-0 pointer-events-none"
         style={{ background: `linear-gradient(to right, transparent 42%, ${healthColor}0A 100%)` }}
       />
-
-      {/* Top-left filigree corner */}
       <span className="absolute top-0 left-0 w-4 h-4 pointer-events-none"
         style={{ borderTop: `1px solid ${healthColor}30`, borderLeft: `1px solid ${healthColor}30` }}
       />
@@ -44,8 +42,10 @@ export function PersistentEnemyCard({ status }: PersistentEnemyCardProps) {
       <div className="flex items-center gap-2">
         <Crosshair size={12} strokeWidth={1.8} style={{ color: healthColor, opacity: 0.70 }} />
         <span
-          className="font-label text-[8px] uppercase tracking-[0.3em] font-semibold px-2 py-0.5"
+          data-role="labelTiny"
+          className="px-2 py-0.5"
           style={{
+            ...getTypographyStyle(tokens, 'labelTiny'),
             color:           healthColor,
             border:          `1px solid ${healthColor}35`,
             backgroundColor: `${healthColor}0A`,
@@ -56,14 +56,21 @@ export function PersistentEnemyCard({ status }: PersistentEnemyCardProps) {
       </div>
 
       {/* Agent name */}
-      <p className="font-headline text-lg font-black leading-tight orokin-etched text-on-surface">
+      <p
+        data-role="hero"
+        className="leading-tight orokin-etched"
+        style={{ ...getTypographyStyle(tokens, 'hero'), color: tokens.colors.onSurface }}
+      >
         {enemy.agentType}
       </p>
 
       {/* Health bar */}
       <div>
         <div className="flex justify-between mb-1">
-          <p className="font-label text-[9px] uppercase tracking-[0.25em]" style={{ color: healthColor, opacity: 0.55 }}>
+          <p
+            data-role="labelTiny"
+            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: healthColor, opacity: 0.55 }}
+          >
             Hull Integrity
           </p>
           <p className="font-mono text-[9px] tabular-nums font-bold" style={{ color: healthColor }}>
@@ -74,9 +81,9 @@ export function PersistentEnemyCard({ status }: PersistentEnemyCardProps) {
           <div
             className="absolute inset-y-0 left-0 h-full transition-all duration-700"
             style={{
-              width:      `${healthPct}%`,
+              width:           `${healthPct}%`,
               backgroundColor: healthColor,
-              boxShadow:  `0 0 8px ${healthColor}50`,
+              boxShadow:       `0 0 8px ${healthColor}50`,
             }}
           />
         </div>
@@ -86,7 +93,11 @@ export function PersistentEnemyCard({ status }: PersistentEnemyCardProps) {
       {enemy.lastNode && (
         <div className="flex items-center gap-1.5 mt-auto">
           <MapPin size={10} strokeWidth={1.5} style={{ color: '#C6C6C7', opacity: 0.35, flexShrink: 0 }} />
-          <p className="font-label text-[10px] truncate" style={{ color: '#C6C6C7', opacity: 0.40 }}>
+          <p
+            data-role="labelSmall"
+            className="truncate"
+            style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: '#C6C6C7', opacity: 0.40 }}
+          >
             {nodeName}
             {nodeRegion && <span className="ml-1 opacity-70">({nodeRegion})</span>}
           </p>

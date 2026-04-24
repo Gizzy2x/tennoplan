@@ -1,18 +1,9 @@
+import { useThemeStore } from '@/store/theme';
+import { getTypographyStyle } from '@/tokens/utils';
 import { useSimaris } from '../hooks/useSimaris';
 
-// ---------------------------------------------------------------------------
-// SimarisPanel
-// ---------------------------------------------------------------------------
-
-/**
- * Displays the active Simaris synthesis target.
- * Single full-width card — this is the right layout for one atomic piece of data.
- * No countdown: the API provides no expiry; we surface "Resets Daily" instead.
- *
- * standaloneSection (default true): when false, omits the leading somatic-line
- * divider and section header so the page can provide its own spacing.
- */
 export function SimarisPanel({ standaloneSection = true }: { standaloneSection?: boolean }) {
+  const { tokens } = useThemeStore();
   const { data, isLoading, isError, isStale } = useSimaris();
   const target = data?.activeSynthesisTarget;
 
@@ -20,24 +11,27 @@ export function SimarisPanel({ standaloneSection = true }: { standaloneSection?:
     <section>
       {standaloneSection && <div className="somatic-line mb-6" />}
 
-      {/* Section header */}
       {standaloneSection && (
         <div className="flex items-center gap-4 mb-4">
-          <p className="font-label text-[10px] uppercase tracking-[0.4em] text-primary/50">
+          <p
+            data-role="sectionHeader"
+            style={{ ...getTypographyStyle(tokens, 'sectionHeader'), color: tokens.colors.primary, opacity: 0.50 }}
+          >
             Simaris Sanctuary
           </p>
-          <span className="font-label text-[9px] uppercase tracking-[0.25em] text-secondary/25">
+          <span
+            data-role="labelTiny"
+            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.25 }}
+          >
             — Synthesis Targets
           </span>
         </div>
       )}
 
-      {/* Single full-width card */}
       <div
         className="glass-panel relative overflow-hidden p-5"
         style={{ borderColor: 'rgba(186,195,254,0.12)' }}
       >
-        {/* Filigree corners */}
         <span
           className="absolute top-0 left-0 w-6 h-6 pointer-events-none"
           style={{ borderTop: '1px solid rgba(186,195,254,0.25)', borderLeft: '1px solid rgba(186,195,254,0.25)' }}
@@ -49,21 +43,28 @@ export function SimarisPanel({ standaloneSection = true }: { standaloneSection?:
 
         {target ? (
           <div className="flex items-start justify-between gap-6">
-
-            {/* Left: target info */}
             <div className="flex-1 min-w-0">
-              <p className="font-label text-[9px] uppercase tracking-[0.3em] text-tertiary/50 mb-1">
+              <p
+                data-role="labelSmall"
+                className="mb-1"
+                style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: tokens.colors.tertiary, opacity: 0.50 }}
+              >
                 Active Synthesis Target
               </p>
-              <h4 className="font-headline text-2xl font-bold orokin-etched text-on-surface leading-tight truncate">
+              <h4
+                data-role="hero"
+                className="orokin-etched leading-tight truncate"
+                style={{ ...getTypographyStyle(tokens, 'hero'), color: tokens.colors.onSurface }}
+              >
                 {target.name}
               </h4>
 
-              {/* Modifier badges */}
               <div className="flex gap-2 mt-2 flex-wrap">
                 <span
-                  className="font-label text-[8px] uppercase tracking-[0.18em] px-2 py-0.5"
+                  data-role="labelTiny"
+                  className="px-2 py-0.5"
                   style={{
+                    ...getTypographyStyle(tokens, 'labelTiny'),
                     color:           '#bac3fe',
                     border:          '1px solid rgba(186,195,254,0.25)',
                     backgroundColor: 'rgba(186,195,254,0.06)',
@@ -74,8 +75,10 @@ export function SimarisPanel({ standaloneSection = true }: { standaloneSection?:
                 </span>
                 {target.isArchwing && (
                   <span
-                    className="font-label text-[8px] uppercase tracking-[0.18em] px-2 py-0.5"
+                    data-role="labelTiny"
+                    className="px-2 py-0.5"
                     style={{
+                      ...getTypographyStyle(tokens, 'labelTiny'),
                       color:           '#bac3fe',
                       border:          '1px solid rgba(186,195,254,0.3)',
                       backgroundColor: 'rgba(186,195,254,0.08)',
@@ -87,8 +90,10 @@ export function SimarisPanel({ standaloneSection = true }: { standaloneSection?:
                 )}
                 {target.isBoss && (
                   <span
-                    className="font-label text-[8px] uppercase tracking-[0.18em] px-2 py-0.5"
+                    data-role="labelTiny"
+                    className="px-2 py-0.5"
                     style={{
+                      ...getTypographyStyle(tokens, 'labelTiny'),
                       color:           '#ef4444',
                       border:          '1px solid rgba(239,68,68,0.3)',
                       backgroundColor: 'rgba(239,68,68,0.08)',
@@ -101,19 +106,27 @@ export function SimarisPanel({ standaloneSection = true }: { standaloneSection?:
               </div>
             </div>
 
-            {/* Right: reset info */}
             <div className="text-right flex-shrink-0">
-              <p className="font-label text-[9px] uppercase tracking-widest text-secondary/35">
+              <p
+                data-role="labelTiny"
+                style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.35 }}
+              >
                 Resets Daily
               </p>
-              <p className="font-label text-[8px] uppercase tracking-widest text-secondary/20 mt-0.5">
+              <p
+                data-role="labelTiny"
+                className="mt-0.5"
+                style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.20 }}
+              >
                 AT UTC MIDNIGHT
               </p>
             </div>
-
           </div>
         ) : (
-          <p className="font-label text-[9px] uppercase tracking-widest text-secondary/25">
+          <p
+            data-role="labelSmall"
+            style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: tokens.colors.secondary, opacity: 0.25 }}
+          >
             {isLoading
               ? 'ESTABLISHING LINK TO SANCTUARY…'
               : isError
@@ -122,9 +135,12 @@ export function SimarisPanel({ standaloneSection = true }: { standaloneSection?:
           </p>
         )}
 
-        {/* Stale cache indicator */}
         {isStale && (
-          <p className="font-label text-[8px] uppercase tracking-widest text-secondary/20 mt-3">
+          <p
+            data-role="labelTiny"
+            className="mt-3"
+            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.20 }}
+          >
             Stale cache · Simaris data may be outdated
           </p>
         )}

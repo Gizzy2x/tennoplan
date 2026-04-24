@@ -1,4 +1,6 @@
 import { useRef, useState } from 'react';
+import { useThemeStore } from '@/store/theme';
+import { getTypographyStyle } from '@/tokens/utils';
 import { formatMsParts, nextCycleState } from '@/core/services/cycleService';
 import type { CycleStatus } from '@/core/domain/cycles';
 import type { SyndicateMission } from '@/core/domain/syndicates';
@@ -125,15 +127,17 @@ const SPECIAL_MISSIONS: Partial<Record<string, SpecialMission[]>> = {
 };
 
 // ── Info Popover ───────────────────────────────────────────────────────────
-// Uses position:fixed so it escapes any overflow:hidden ancestor.
+
+type Tokens = ReturnType<typeof useThemeStore>['tokens'];
 
 interface InfoPopoverProps {
   text:        string;
   worldName:   string;
   accentColor: string;
+  tokens:      Tokens;
 }
 
-function InfoPopover({ text, worldName, accentColor }: InfoPopoverProps) {
+function InfoPopover({ text, worldName, accentColor, tokens }: InfoPopoverProps) {
   const [visible, setVisible] = useState(false);
   const [pos, setPos]         = useState({ top: 0, left: 0 });
   const btnRef                = useRef<HTMLButtonElement>(null);
@@ -162,7 +166,7 @@ function InfoPopover({ text, worldName, accentColor }: InfoPopoverProps) {
           alignSelf:       'flex-end',
           marginBottom:    '0.28em',
           marginLeft:      10,
-          fontFamily:      'var(--font-body)',
+          ...getTypographyStyle(tokens, 'body'),
           fontSize:        '0.68rem',
           fontWeight:      700,
           color:           accentColor,
@@ -183,38 +187,35 @@ function InfoPopover({ text, worldName, accentColor }: InfoPopoverProps) {
       {visible && (
         <div
           style={{
-            position:           'fixed',
-            top:                pos.top,
-            left:               pos.left,
-            zIndex:             9999,
-            maxWidth:           340,
-            background:         'rgba(10,10,12,0.92)',
-            backdropFilter:     'blur(14px)',
+            position:             'fixed',
+            top:                  pos.top,
+            left:                 pos.left,
+            zIndex:               9999,
+            maxWidth:             340,
+            background:           'rgba(10,10,12,0.92)',
+            backdropFilter:       'blur(14px)',
             WebkitBackdropFilter: 'blur(14px)',
-            border:             `1px solid ${accentColor}28`,
-            boxShadow:          `0 8px 40px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.04) inset`,
-            padding:            '14px 16px',
-            pointerEvents:      'none',
+            border:               `1px solid ${accentColor}28`,
+            boxShadow:            `0 8px 40px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.04) inset`,
+            padding:              '14px 16px',
+            pointerEvents:        'none',
           }}
         >
           <p
+            data-role="labelSmall"
             style={{
-              fontFamily:    'var(--font-body)',
-              fontSize:      '0.46rem',
-              fontWeight:    700,
-              letterSpacing: '0.38em',
-              color:         accentColor,
-              opacity:       0.65,
-              textTransform: 'uppercase',
-              marginBottom:  8,
+              ...getTypographyStyle(tokens, 'labelSmall'),
+              color:        accentColor,
+              opacity:      0.65,
+              marginBottom: 8,
             }}
           >
             About {worldName}
           </p>
           <p
+            data-role="body"
             style={{
-              fontFamily: 'var(--font-body)',
-              fontSize:   '0.68rem',
+              ...getTypographyStyle(tokens, 'body'),
               color:      'rgba(198,198,199,0.84)',
               lineHeight: 1.65,
             }}
@@ -238,6 +239,7 @@ export function CinematicCyclePanel({
   status,
   syndicateMission,
 }: CinematicCyclePanelProps) {
+  const { tokens } = useThemeStore();
   const { cycle, msRemaining, isExpired } = status;
   const pres      = STATE[cycle.state] ?? FALLBACK;
   const nextState = nextCycleState(cycle.id, cycle.state);
@@ -246,22 +248,18 @@ export function CinematicCyclePanel({
 
   const hasBounties = !!syndicateMission && syndicateMission.jobs.length > 0;
 
-  // Phase 2: enrich bounties with real drop data + cycle context.
-  // Safe to call unconditionally — the hook no-ops for worlds without bounties.
   const { bounties: enrichedBounties, cycleNote } = useEnrichedBounties(
     syndicateMission,
     cycle.id,
     cycle.state,
   );
 
-  // Phase 4: preload CDN icons for this world's bounty rewards so they're
-  // already in the browser cache before the user opens any tier.
   useIconPreloader(enrichedBounties);
 
-  const resources   = KEY_RESOURCES[`${cycle.id}-${cycle.state}`] ?? [];
-  const aboutText   = WORLD_ABOUT[cycle.id] ?? '';
-  const hintText    = WORLD_HINT[`${cycle.id}-${cycle.state}`] ?? '';
-  const specials    = SPECIAL_MISSIONS[cycle.id] ?? [];
+  const resources = KEY_RESOURCES[`${cycle.id}-${cycle.state}`] ?? [];
+  const aboutText = WORLD_ABOUT[cycle.id] ?? '';
+  const hintText  = WORLD_HINT[`${cycle.id}-${cycle.state}`] ?? '';
+  const specials  = SPECIAL_MISSIONS[cycle.id] ?? [];
 
   const timerParts: { val: string; unit: string }[] = [];
   if (h !== '00') timerParts.push({ val: h, unit: 'H' });
@@ -284,18 +282,17 @@ export function CinematicCyclePanel({
           style={{ flex: '0 0 60%', minWidth: 0, overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'none', height: '100%' }}
         >
 
-          {/* World title + info icon */}
+          {/* World title + info icon — cinematic hero, preserve clamp size */}
           <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: 8 }}>
             <h2
+              data-role="hero"
               style={{
-                fontFamily:    'var(--font-headline)',
-                fontWeight:    900,
+                ...getTypographyStyle(tokens, 'hero'),
                 fontSize:      'clamp(2.4rem, 4.8vw, 5.2rem)',
                 lineHeight:    1,
                 color:         '#E3C372',
                 textShadow:    '0 2px 32px rgba(0,0,0,0.98), 0 0 80px rgba(227,195,114,0.12)',
                 letterSpacing: '0.05em',
-                textTransform: 'uppercase',
               }}
             >
               {cycle.name}
@@ -305,26 +302,25 @@ export function CinematicCyclePanel({
                 text={aboutText}
                 worldName={cycle.name}
                 accentColor={pres.color}
+                tokens={tokens}
               />
             )}
           </div>
 
           {/* Location subtitle */}
           <p
+            data-role="labelSmall"
             style={{
-              fontFamily:    'var(--font-body)',
-              fontSize:      '0.62rem',
-              fontWeight:    500,
-              letterSpacing: '0.45em',
-              color:         'rgba(227,195,114,0.50)',
-              textTransform: 'uppercase',
-              marginBottom:  18,
+              ...getTypographyStyle(tokens, 'labelSmall'),
+              fontWeight:   500,
+              color:        'rgba(227,195,114,0.50)',
+              marginBottom: 18,
             }}
           >
             {cycle.location}
           </p>
 
-          {/* Countdown timer */}
+          {/* Countdown timer — cinematic display, use hero font via token, preserve clamp size */}
           <div
             style={{
               display:      'flex',
@@ -338,7 +334,7 @@ export function CinematicCyclePanel({
               <div key={unit} style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
                 <span
                   style={{
-                    fontFamily:         'var(--font-headline)',
+                    fontFamily:         getTypographyStyle(tokens, 'hero').fontFamily,
                     fontWeight:         900,
                     fontSize:           'clamp(2.2rem, 4.2vw, 4.8rem)',
                     lineHeight:         0.9,
@@ -351,7 +347,7 @@ export function CinematicCyclePanel({
                 </span>
                 <span
                   style={{
-                    fontFamily:    'var(--font-headline)',
+                    fontFamily:    getTypographyStyle(tokens, 'hero').fontFamily,
                     fontWeight:    700,
                     fontSize:      'clamp(1rem, 2vw, 2rem)',
                     color:         '#E3C372',
@@ -370,9 +366,9 @@ export function CinematicCyclePanel({
           {/* Hint text */}
           {hintText && (
             <p
+              data-role="body"
               style={{
-                fontFamily:   'var(--font-body)',
-                fontSize:     '0.72rem',
+                ...getTypographyStyle(tokens, 'body'),
                 fontStyle:    'italic',
                 color:        'rgba(198,198,199,0.78)',
                 textShadow:   '0 1px 6px rgba(0,0,0,0.90)',
@@ -388,14 +384,12 @@ export function CinematicCyclePanel({
           {resources.length > 0 && (
             <div style={{ marginBottom: 20 }}>
               <p
+                data-role="labelSmall"
                 style={{
-                  fontFamily:    'var(--font-body)',
-                  fontSize:      '0.48rem',
-                  fontWeight:    700,
-                  letterSpacing: '0.55em',
-                  color:         'rgba(227,195,114,0.50)',
-                  textTransform: 'uppercase',
-                  marginBottom:  12,
+                  ...getTypographyStyle(tokens, 'labelSmall'),
+                  fontWeight:   700,
+                  color:        'rgba(227,195,114,0.50)',
+                  marginBottom: 12,
                 }}
               >
                 Key Resources
@@ -417,10 +411,26 @@ export function CinematicCyclePanel({
                       {res.icon}
                     </span>
                     <div>
-                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.68rem', fontWeight: 500, color: 'rgba(229,226,225,0.95)', lineHeight: 1.2, textShadow: '0 1px 4px rgba(0,0,0,0.85)' }}>
+                      <p
+                        data-role="body"
+                        style={{
+                          ...getTypographyStyle(tokens, 'body'),
+                          fontWeight: 500,
+                          color:      'rgba(229,226,225,0.95)',
+                          lineHeight: 1.2,
+                          textShadow: '0 1px 4px rgba(0,0,0,0.85)',
+                        }}
+                      >
                         {res.name}
                       </p>
-                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.52rem', color: 'rgba(198,198,199,0.62)', letterSpacing: '0.04em', marginTop: 2 }}>
+                      <p
+                        data-role="labelTiny"
+                        style={{
+                          ...getTypographyStyle(tokens, 'labelTiny'),
+                          color:     'rgba(198,198,199,0.62)',
+                          marginTop: 2,
+                        }}
+                      >
                         {res.source}
                       </p>
                     </div>
@@ -450,10 +460,26 @@ export function CinematicCyclePanel({
             />
           ) : (
             <div>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.48rem', fontWeight: 700, letterSpacing: '0.55em', color: 'rgba(227,195,114,0.45)', textTransform: 'uppercase', marginBottom: 8 }}>
+              <p
+                data-role="labelSmall"
+                style={{
+                  ...getTypographyStyle(tokens, 'labelSmall'),
+                  fontWeight:   700,
+                  color:        'rgba(227,195,114,0.45)',
+                  marginBottom: 8,
+                }}
+              >
                 Bounty Board
               </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.65rem', color: 'rgba(198,198,199,0.55)', fontStyle: 'italic', textShadow: '0 1px 4px rgba(0,0,0,0.80)' }}>
+              <p
+                data-role="body"
+                style={{
+                  ...getTypographyStyle(tokens, 'body'),
+                  color:     'rgba(198,198,199,0.55)',
+                  fontStyle: 'italic',
+                  textShadow: '0 1px 4px rgba(0,0,0,0.80)',
+                }}
+              >
                 No active bounties for this cycle
               </p>
             </div>
@@ -463,14 +489,12 @@ export function CinematicCyclePanel({
           {specials.length > 0 && (
             <div style={{ marginTop: 20 }}>
               <p
+                data-role="labelSmall"
                 style={{
-                  fontFamily:    'var(--font-body)',
-                  fontSize:      '0.48rem',
-                  fontWeight:    700,
-                  letterSpacing: '0.55em',
-                  color:         'rgba(227,195,114,0.50)',
-                  textTransform: 'uppercase',
-                  marginBottom:  10,
+                  ...getTypographyStyle(tokens, 'labelSmall'),
+                  fontWeight:   700,
+                  color:        'rgba(227,195,114,0.50)',
+                  marginBottom: 10,
                 }}
               >
                 Special Missions
@@ -489,14 +513,14 @@ export function CinematicCyclePanel({
                   >
                     <div
                       style={{
-                        width:           28,
-                        height:          28,
-                        flexShrink:      0,
-                        display:         'flex',
-                        alignItems:      'center',
-                        justifyContent:  'center',
-                        background:      `${pres.color}12`,
-                        border:          `1px solid ${pres.color}28`,
+                        width:          28,
+                        height:         28,
+                        flexShrink:     0,
+                        display:        'flex',
+                        alignItems:     'center',
+                        justifyContent: 'center',
+                        background:     `${pres.color}12`,
+                        border:         `1px solid ${pres.color}28`,
                       }}
                     >
                       <span style={{ fontSize: '0.70rem', color: pres.color, opacity: 0.75 }}>
@@ -505,35 +529,39 @@ export function CinematicCyclePanel({
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p
+                        data-role="emphasis"
                         style={{
-                          fontFamily:    'var(--font-body)',
-                          fontSize:      '0.64rem',
-                          fontWeight:    700,
-                          color:         'rgba(229,226,225,0.95)',
-                          letterSpacing: '0.06em',
-                          textTransform: 'uppercase',
-                          textShadow:    '0 1px 4px rgba(0,0,0,0.85)',
+                          ...getTypographyStyle(tokens, 'emphasis'),
+                          fontWeight:  700,
+                          color:       'rgba(229,226,225,0.95)',
+                          textShadow:  '0 1px 4px rgba(0,0,0,0.85)',
                         }}
                       >
                         {m.name}
                       </p>
-                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.52rem', color: 'rgba(198,198,199,0.45)', marginTop: 2 }}>
+                      <p
+                        data-role="labelTiny"
+                        style={{
+                          ...getTypographyStyle(tokens, 'labelTiny'),
+                          color:     'rgba(198,198,199,0.45)',
+                          marginTop: 2,
+                        }}
+                      >
                         {m.type}
                         {m.rotation && (
-                          <span style={{ marginLeft: 6, color: pres.color, opacity: 0.70, letterSpacing: '0.08em' }}>
+                          <span style={{ marginLeft: 6, color: pres.color, opacity: 0.70 }}>
                             · ⊕ {m.rotation}
                           </span>
                         )}
                       </p>
                     </div>
                     <span
+                      data-role="labelTiny"
                       style={{
-                        fontFamily:    'var(--font-body)',
-                        fontSize:      '0.50rem',
-                        color:         'rgba(198,198,199,0.40)',
-                        letterSpacing: '0.06em',
-                        flexShrink:    0,
-                        whiteSpace:    'nowrap',
+                        ...getTypographyStyle(tokens, 'labelTiny'),
+                        color:      'rgba(198,198,199,0.40)',
+                        flexShrink: 0,
+                        whiteSpace: 'nowrap',
                       }}
                     >
                       {m.levels}
@@ -551,39 +579,35 @@ export function CinematicCyclePanel({
           {/* State badge — top right */}
           <div style={{ alignSelf: 'flex-end', textAlign: 'right', marginBottom: 10 }}>
             <span
+              data-role="labelSmall"
               style={{
-                display:       'inline-flex',
-                alignItems:    'center',
-                gap:           7,
-                fontFamily:    'var(--font-body)',
-                fontSize:      '0.58rem',
-                fontWeight:    700,
-                letterSpacing: '0.28em',
-                color:         pres.color,
-                border:        `1px solid ${pres.color}48`,
-                background:    `${pres.color}0D`,
-                padding:       '5px 14px',
-                textTransform: 'uppercase',
+                ...getTypographyStyle(tokens, 'labelSmall'),
+                display:     'inline-flex',
+                alignItems:  'center',
+                gap:         7,
+                fontWeight:  700,
+                color:       pres.color,
+                border:      `1px solid ${pres.color}48`,
+                background:  `${pres.color}0D`,
+                padding:     '5px 14px',
               }}
             >
               <span style={{ fontSize: '0.80rem', lineHeight: 1 }}>{pres.icon}</span>
               {pres.badge}
             </span>
             <p
+              data-role="labelTiny"
               style={{
-                fontFamily:    'var(--font-body)',
-                fontSize:      '0.46rem',
-                letterSpacing: '0.32em',
-                color:         'rgba(198,198,199,0.30)',
-                textTransform: 'uppercase',
-                marginTop:     6,
+                ...getTypographyStyle(tokens, 'labelTiny'),
+                color:     'rgba(198,198,199,0.30)',
+                marginTop: 6,
               }}
             >
               {isExpired ? 'SYNCING…' : `UNTIL ${nextPres.badge}`}
             </p>
           </div>
 
-          {/* Right column: spacer — about section is now in info popover */}
+          {/* Right column spacer */}
           <div style={{ flex: 1 }} />
         </div>
       </div>

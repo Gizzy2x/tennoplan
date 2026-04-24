@@ -11,15 +11,9 @@ All cinematic reference images are now stored in tab-specific folders under:
 1. **Layout is ALWAYS the highest priority**
    - When the user shows ANY reference (Lovable URL, screenshot, image filenames, or mentions the reference folder), replicate the **exact layout** from the reference first — panel arrangement, grid structure, full-bleed behavior, title placement, column splits, spacing, and flow — before anything else.
 
-2. **Interviewer Prompting Rule (mandatory)**
-   - As soon as the user provides a reference (Lovable link, screenshot description, image names, or folder mention), **immediately stop** and ask clarifying questions like an interviewer.
-   - Use this exact style (or extremely close):
-
-     > "I see the reference you provided for [feature/tab] (Lovable URL / screenshot / images in the [tab-name] folder).  
-     > How would you like me to use it?  
-     > Please tell me which parts are most important (exact layout, background treatment, title position, panel proportions, etc.). Should I follow it as closely as possible with zero creative changes to the layout?"
-
-   - Do **not** start designing, suggesting layouts, or writing any code until the user answers.
+2. **Reference Implementation Rule**
+   - When the user provides a reference, implement it directly and as closely as possible — matching layout, sizing, spacing, typography scale, and composition.
+   - Only ask a clarifying question if the reference is genuinely ambiguous (e.g. two conflicting layouts). Otherwise just build it.
 
 3. **No creative liberties on layout**
    - Never replace the reference layout with tabs, bento cards, glass panels, extra borders, stitched frames, or any other structure unless the reference itself shows them.
@@ -70,7 +64,7 @@ Design System
 User-provided reference has absolute priority over everything else.
 
 When the user gives any reference (Lovable URL, screenshot, or images from the tab folder), follow its layout exactly. Style comes second. Background comes third.
-Typography rule remains: Noto Serif for large headlines, Noto Sans for body (never CameraPlainVariable).
+Typography rule: Noto Serif for large headlines, Noto Sans for body. These fonts align perfectly with Orokin's elegant, sophisticated aesthetic—Noto Serif carries the cinematic gravitas, Noto Sans provides clean readability.
 Only use Orokin Digital Standard / glass-panel / clean style when the user explicitly asks for it.
 When no reference is provided, default to general cinematic style (full-bleed backgrounds, heavy etched gold typography, vignette overlays).
 

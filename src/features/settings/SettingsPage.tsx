@@ -9,6 +9,9 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
+import { useThemeStore } from '@/store/theme';
+import { getTypographyStyle } from '@/tokens/utils';
+import { PageHero } from '@/components/ui/PageHero';
 import { DropDataService, type FetchProgress } from '@/adapters/api/DropDataService';
 import type { StaleInfo } from '@/adapters/api/DropDataService';
 import { db } from '@/adapters/storage/db';
@@ -16,6 +19,7 @@ import { db } from '@/adapters/storage/db';
 // ── Status pill helpers ───────────────────────────────────────────────────────
 
 type SyncStatus = 'idle' | 'syncing' | 'success' | 'error';
+type Tokens = ReturnType<typeof useThemeStore>['tokens'];
 
 function statusColor(s: SyncStatus): string {
   if (s === 'success') return 'rgba(134,239,172,0.80)';
@@ -26,18 +30,16 @@ function statusColor(s: SyncStatus): string {
 
 // ── Subcomponents ─────────────────────────────────────────────────────────────
 
-function SectionDivider({ label }: { label: string }) {
+function SectionDivider({ label, tokens }: { label: string; tokens: Tokens }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '28px 0 16px' }}>
       <span
+        data-role="labelTiny"
         style={{
-          fontFamily:    'var(--font-label)',
-          fontSize:      '0.38rem',
-          fontWeight:    700,
-          letterSpacing: '0.30em',
-          textTransform: 'uppercase',
-          color:         'rgba(227,195,114,0.45)',
-          whiteSpace:    'nowrap',
+          ...getTypographyStyle(tokens, 'labelTiny'),
+          fontWeight: 700,
+          color:      'rgba(227,195,114,0.45)',
+          whiteSpace: 'nowrap',
         }}
       >
         {label}
@@ -51,10 +53,12 @@ function DataStatusRow({
   label,
   value,
   accent = false,
+  tokens,
 }: {
-  label: string;
-  value: string;
+  label:   string;
+  value:   string;
   accent?: boolean;
+  tokens:  Tokens;
 }) {
   return (
     <div
@@ -67,22 +71,19 @@ function DataStatusRow({
       }}
     >
       <span
+        data-role="labelTiny"
         style={{
-          fontFamily:    'var(--font-label)',
-          fontSize:      '0.38rem',
-          letterSpacing: '0.16em',
-          textTransform: 'uppercase',
-          color:         'rgba(198,198,199,0.45)',
+          ...getTypographyStyle(tokens, 'labelTiny'),
+          color: 'rgba(198,198,199,0.45)',
         }}
       >
         {label}
       </span>
       <span
+        data-role="labelTiny"
         style={{
-          fontFamily:    'var(--font-label)',
-          fontSize:      '0.38rem',
-          letterSpacing: '0.10em',
-          color:         accent ? 'rgba(227,195,114,0.80)' : 'rgba(198,198,199,0.70)',
+          ...getTypographyStyle(tokens, 'labelTiny'),
+          color: accent ? 'rgba(227,195,114,0.80)' : 'rgba(198,198,199,0.70)',
         }}
       >
         {value}
@@ -106,12 +107,12 @@ function ProgressBar({ percent }: { percent: number | null }) {
     >
       <div
         style={{
-          height:           '100%',
-          width:            percent === null ? '40%' : `${pct}%`,
-          background:       'rgba(227,195,114,0.60)',
-          borderRadius:     2,
-          transition:       'width 0.25s ease-out',
-          animation:        percent === null ? 'pulse-bar 1.2s ease-in-out infinite' : 'none',
+          height:       '100%',
+          width:        percent === null ? '40%' : `${pct}%`,
+          background:   'rgba(227,195,114,0.60)',
+          borderRadius: 2,
+          transition:   'width 0.25s ease-out',
+          animation:    percent === null ? 'pulse-bar 1.2s ease-in-out infinite' : 'none',
         }}
       />
     </div>
@@ -121,6 +122,7 @@ function ProgressBar({ percent }: { percent: number | null }) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function SettingsPage() {
+  const { tokens } = useThemeStore();
   const [staleInfo,    setStaleInfo]    = useState<StaleInfo | null>(null);
   const [dropsCount,   setDropsCount]   = useState<number | null>(null);
   const [syncStatus,   setSyncStatus]   = useState<SyncStatus>('idle');
@@ -188,23 +190,10 @@ export function SettingsPage() {
   return (
     <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 0 60px' }}>
 
-      {/* ── Page heading ───────────────────────────────────────────────────── */}
-      <p
-        style={{
-          fontFamily:    'var(--font-body)',
-          fontWeight:    700,
-          fontSize:      '0.52rem',
-          letterSpacing: '0.42em',
-          color:         '#E3C372',
-          textTransform: 'uppercase',
-          marginBottom:  28,
-        }}
-      >
-        Settings
-      </p>
+      <PageHero prefix="SYSTEM" title="SETTINGS" subtitle="Configuration & Preferences" />
 
       {/* ── Static Data status ─────────────────────────────────────────────── */}
-      <SectionDivider label="Static Data" />
+      <SectionDivider label="Static Data" tokens={tokens} />
 
       <div
         style={{
@@ -214,10 +203,10 @@ export function SettingsPage() {
           marginBottom: 16,
         }}
       >
-        <DataStatusRow label="Last synced"        value={daysLabel} accent={staleInfo?.isStale} />
-        <DataStatusRow label="Drop locations"     value={dropsCount ? `~${dropsCount.toLocaleString()} locations` : '—'} />
-        <DataStatusRow label="Item catalogue"     value={staleInfo ? '~17 000 entries' : '—'} />
-        <DataStatusRow label="Source"             value="drops.warframestat.us" />
+        <DataStatusRow label="Last synced"    value={daysLabel} accent={staleInfo?.isStale} tokens={tokens} />
+        <DataStatusRow label="Drop locations" value={dropsCount ? `~${dropsCount.toLocaleString()} locations` : '—'} tokens={tokens} />
+        <DataStatusRow label="Item catalogue" value={staleInfo ? '~17 000 entries' : '—'} tokens={tokens} />
+        <DataStatusRow label="Source"         value="drops.warframestat.us" tokens={tokens} />
       </div>
 
       {/* Progress bar — visible during sync */}
@@ -225,13 +214,11 @@ export function SettingsPage() {
         <div style={{ marginBottom: 12 }}>
           <ProgressBar percent={progress.percent} />
           <p
+            data-role="labelTiny"
             style={{
-              fontFamily:    'var(--font-label)',
-              fontSize:      '0.38rem',
-              letterSpacing: '0.14em',
-              color:         'rgba(227,195,114,0.55)',
-              marginTop:     6,
-              textTransform: 'uppercase',
+              ...getTypographyStyle(tokens, 'labelTiny'),
+              color:     'rgba(227,195,114,0.55)',
+              marginTop: 6,
             }}
           >
             {progress.status}
@@ -242,13 +229,11 @@ export function SettingsPage() {
       {/* Result message */}
       {resultMsg && !isSyncing && (
         <p
+          data-role="labelTiny"
           style={{
-            fontFamily:    'var(--font-label)',
-            fontSize:      '0.38rem',
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color:         statusColor(syncStatus),
-            marginBottom:  12,
+            ...getTypographyStyle(tokens, 'labelTiny'),
+            color:        statusColor(syncStatus),
+            marginBottom: 12,
           }}
         >
           {syncStatus === 'success' ? '✓ ' : syncStatus === 'error' ? '✗ ' : ''}{resultMsg}
@@ -260,20 +245,18 @@ export function SettingsPage() {
         onClick={() => void handleRefresh()}
         disabled={isSyncing}
         style={{
-          display:       'flex',
-          alignItems:    'center',
-          gap:           6,
-          padding:       '8px 20px',
-          fontFamily:    'var(--font-label)',
-          fontSize:      '0.42rem',
-          fontWeight:    700,
-          letterSpacing: '0.20em',
-          textTransform: 'uppercase',
-          color:         isSyncing ? 'rgba(227,195,114,0.30)' : '#131313',
-          background:    isSyncing ? 'rgba(227,195,114,0.15)' : 'rgba(227,195,114,0.85)',
-          border:        'none',
-          cursor:        isSyncing ? 'not-allowed' : 'pointer',
-          transition:    'background 0.15s, color 0.15s',
+          display:    'flex',
+          alignItems: 'center',
+          gap:        6,
+          padding:    '8px 20px',
+          ...getTypographyStyle(tokens, 'labelTiny'),
+          fontSize:   '0.42rem',
+          fontWeight: 700,
+          color:      isSyncing ? 'rgba(227,195,114,0.30)' : '#131313',
+          background: isSyncing ? 'rgba(227,195,114,0.15)' : 'rgba(227,195,114,0.85)',
+          border:     'none',
+          cursor:     isSyncing ? 'not-allowed' : 'pointer',
+          transition: 'background 0.15s, color 0.15s',
         }}
         onMouseEnter={(e) => {
           if (!isSyncing) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(227,195,114,1)';
@@ -294,24 +277,22 @@ export function SettingsPage() {
       </button>
 
       {/* ── Danger zone ────────────────────────────────────────────────────── */}
-      <SectionDivider label="Danger Zone" />
+      <SectionDivider label="Danger Zone" tokens={tokens} />
 
       <div
         style={{
-          background:   'rgba(255,60,60,0.03)',
-          border:       '1px solid rgba(255,100,100,0.10)',
-          padding:      '14px 18px',
+          background: 'rgba(255,60,60,0.03)',
+          border:     '1px solid rgba(255,100,100,0.10)',
+          padding:    '14px 18px',
         }}
       >
         <p
+          data-role="labelTiny"
           style={{
-            fontFamily:    'var(--font-label)',
-            fontSize:      '0.38rem',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color:         'rgba(252,165,165,0.50)',
-            marginBottom:  12,
-            lineHeight:    1.6,
+            ...getTypographyStyle(tokens, 'labelTiny'),
+            color:        'rgba(252,165,165,0.50)',
+            marginBottom: 12,
+            lineHeight:   1.6,
           }}
         >
           Removes all cached items, drop locations, and sync state.
@@ -323,16 +304,14 @@ export function SettingsPage() {
             <button
               onClick={() => void handleClear()}
               style={{
-                padding:       '6px 16px',
-                fontFamily:    'var(--font-label)',
-                fontSize:      '0.38rem',
-                fontWeight:    700,
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                color:         'rgba(252,165,165,0.90)',
-                border:        '1px solid rgba(252,165,165,0.35)',
-                background:    'transparent',
-                cursor:        'pointer',
+                padding:    '6px 16px',
+                ...getTypographyStyle(tokens, 'labelTiny'),
+                fontWeight: 700,
+                fontSize:   '0.38rem',
+                color:      'rgba(252,165,165,0.90)',
+                border:     '1px solid rgba(252,165,165,0.35)',
+                background: 'transparent',
+                cursor:     'pointer',
               }}
             >
               Confirm Clear
@@ -340,16 +319,14 @@ export function SettingsPage() {
             <button
               onClick={() => setShowClearConfirm(false)}
               style={{
-                padding:       '6px 16px',
-                fontFamily:    'var(--font-label)',
-                fontSize:      '0.38rem',
-                fontWeight:    700,
-                letterSpacing: '0.18em',
-                textTransform: 'uppercase',
-                color:         'rgba(198,198,199,0.45)',
-                border:        '1px solid rgba(198,198,199,0.12)',
-                background:    'transparent',
-                cursor:        'pointer',
+                padding:    '6px 16px',
+                ...getTypographyStyle(tokens, 'labelTiny'),
+                fontWeight: 700,
+                fontSize:   '0.38rem',
+                color:      'rgba(198,198,199,0.45)',
+                border:     '1px solid rgba(198,198,199,0.12)',
+                background: 'transparent',
+                cursor:     'pointer',
               }}
             >
               Cancel
@@ -359,17 +336,15 @@ export function SettingsPage() {
           <button
             onClick={handleClear}
             style={{
-              padding:       '6px 16px',
-              fontFamily:    'var(--font-label)',
-              fontSize:      '0.38rem',
-              fontWeight:    700,
-              letterSpacing: '0.18em',
-              textTransform: 'uppercase',
-              color:         'rgba(252,165,165,0.55)',
-              border:        '1px solid rgba(252,165,165,0.18)',
-              background:    'transparent',
-              cursor:        'pointer',
-              transition:    'color 0.15s, border-color 0.15s',
+              padding:    '6px 16px',
+              ...getTypographyStyle(tokens, 'labelTiny'),
+              fontWeight: 700,
+              fontSize:   '0.38rem',
+              color:      'rgba(252,165,165,0.55)',
+              border:     '1px solid rgba(252,165,165,0.18)',
+              background: 'transparent',
+              cursor:     'pointer',
+              transition: 'color 0.15s, border-color 0.15s',
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.color = 'rgba(252,165,165,0.85)';
