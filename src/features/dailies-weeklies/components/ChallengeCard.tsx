@@ -4,8 +4,6 @@ import {
   FlaskConical, Swords, Hammer, Rocket, Home, Target, Check,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 import { formatMsHuman } from '@/core/services/cycleService';
 import { KIND_COLOR } from '@/core/services/ascensionService';
 import type { ChallengeKind, ChallengeStatus } from '@/core/domain/ascension';
@@ -82,7 +80,6 @@ export interface ChallengeCardProps {
 }
 
 export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
-  const { tokens } = useThemeStore();
   const { raw, kind, completed, msRemaining } = status;
   const color    = KIND_COLOR[kind];
   const ChalIcon = getChallengeIcon(raw.title);
@@ -159,9 +156,8 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
 
             <p
               data-role="hero"
-              className="text-center leading-tight px-4 line-clamp-2"
+              className="typo-hero text-center leading-tight px-4 line-clamp-2"
               style={{
-                ...getTypographyStyle(tokens, 'hero'),
                 color:               'rgba(197,192,190,0.30)',
                 textDecoration:      'line-through',
                 textDecorationColor: 'rgba(197,192,190,0.16)',
@@ -172,8 +168,8 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
 
             <p
               data-role="labelTiny"
-              className="tabular-nums"
-              style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: `${color}50` }}
+              className="typo-label-xs tabular-nums"
+              style={{ color: `${color}50` }}
             >
               {standingK}k earned
             </p>
@@ -234,8 +230,8 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
           </p>
           <p
             data-role="labelTiny"
+            className="typo-label-xs"
             style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
               color,
               opacity:    completed ? 0.10 : 0.38,
               marginTop:  '0.125rem',
@@ -256,9 +252,8 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
         >
           <p
             data-role="hero"
-            className="leading-tight line-clamp-2"
+            className="typo-hero leading-tight line-clamp-2"
             style={{
-              ...getTypographyStyle(tokens, 'hero'),
               color:      completed ? 'rgba(197,192,190,0.20)' : '#E5E2E1',
               textShadow: completed ? 'none' : '0 1px 3px rgba(227,195,114,0.25), 0 2px 4px rgba(0,0,0,0.70)',
               transition: 'color 0.35s ease',
@@ -269,9 +264,8 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
           {raw.desc && raw.desc !== raw.title && (
             <p
               data-role="labelSmall"
-              className="mt-0.5 line-clamp-1"
+              className="typo-label-sm mt-0.5 line-clamp-1"
               style={{
-                ...getTypographyStyle(tokens, 'labelSmall'),
                 color:      '#C6C6C7',
                 opacity:    completed ? 0.10 : 0.38,
                 transition: 'opacity 0.35s ease',

@@ -1,6 +1,4 @@
 import { ExternalLink } from 'lucide-react';
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 import type { NewsItem } from '@/core/domain/railFeed';
 
 export interface NewsCardProps {
@@ -8,15 +6,12 @@ export interface NewsCardProps {
 }
 
 function NewsTypeTag({ item }: { item: NewsItem }) {
-  const { tokens } = useThemeStore();
-
   if (item.isUpdate) {
     return (
       <span
         data-role="labelTiny"
-        className="px-2 py-0.5 flex-shrink-0"
+        className="typo-label-xs px-2 py-0.5 flex-shrink-0"
         style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
           color:           '#E3C372',
           border:          '1px solid rgba(227,195,114,0.35)',
           backgroundColor: 'rgba(227,195,114,0.08)',
@@ -30,9 +25,8 @@ function NewsTypeTag({ item }: { item: NewsItem }) {
     return (
       <span
         data-role="labelTiny"
-        className="px-2 py-0.5 flex-shrink-0"
+        className="typo-label-xs px-2 py-0.5 flex-shrink-0"
         style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
           color:           '#bac3fe',
           border:          '1px solid rgba(186,195,254,0.35)',
           backgroundColor: 'rgba(186,195,254,0.08)',
@@ -46,9 +40,8 @@ function NewsTypeTag({ item }: { item: NewsItem }) {
     return (
       <span
         data-role="labelTiny"
-        className="px-2 py-0.5 flex-shrink-0"
+        className="typo-label-xs px-2 py-0.5 flex-shrink-0"
         style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
           color:           '#C6C6C7',
           border:          '1px solid rgba(198,198,199,0.25)',
           backgroundColor: 'rgba(198,198,199,0.06)',
@@ -61,9 +54,8 @@ function NewsTypeTag({ item }: { item: NewsItem }) {
   return (
     <span
       data-role="labelTiny"
-      className="flex-shrink-0 px-2 py-0.5"
+      className="typo-label-xs flex-shrink-0 px-2 py-0.5"
       style={{
-        ...getTypographyStyle(tokens, 'labelTiny'),
         color:   '#C6C6C7',
         opacity: 0.40,
         border:  '1px solid rgba(197,192,190,0.10)',
@@ -84,15 +76,12 @@ function formatDate(ms: number): string {
 }
 
 export function NewsItemRow({ item }: { item: NewsItem }) {
-  const { tokens } = useThemeStore();
-
   return (
     <div className="flex items-center gap-3 py-2.5" style={{ borderBottom: '1px solid rgba(197,192,190,0.06)' }}>
       <NewsTypeTag item={item} />
       <p
         data-role="body"
-        className="flex-1 min-w-0 truncate text-on-surface"
-        style={getTypographyStyle(tokens, 'body')}
+        className="typo-body flex-1 min-w-0 truncate text-on-surface"
       >
         {item.headline}
       </p>

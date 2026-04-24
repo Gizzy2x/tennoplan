@@ -1,6 +1,4 @@
 import { Crosshair, MapPin } from 'lucide-react';
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 import type { PersistentEnemyStatus } from '@/core/domain/railFeed';
 
 export interface PersistentEnemyCardProps {
@@ -8,7 +6,6 @@ export interface PersistentEnemyCardProps {
 }
 
 export function PersistentEnemyCard({ status }: PersistentEnemyCardProps) {
-  const { tokens } = useThemeStore();
   const { enemy } = status;
 
   const healthPct = Math.max(0, Math.min(100, enemy.health));
@@ -43,9 +40,8 @@ export function PersistentEnemyCard({ status }: PersistentEnemyCardProps) {
         <Crosshair size={12} strokeWidth={1.8} style={{ color: healthColor, opacity: 0.70 }} />
         <span
           data-role="labelTiny"
-          className="px-2 py-0.5"
+          className="typo-label-xs px-2 py-0.5"
           style={{
-            ...getTypographyStyle(tokens, 'labelTiny'),
             color:           healthColor,
             border:          `1px solid ${healthColor}35`,
             backgroundColor: `${healthColor}0A`,
@@ -58,8 +54,8 @@ export function PersistentEnemyCard({ status }: PersistentEnemyCardProps) {
       {/* Agent name */}
       <p
         data-role="hero"
-        className="leading-tight orokin-etched"
-        style={{ ...getTypographyStyle(tokens, 'hero'), color: tokens.colors.onSurface }}
+        className="typo-hero leading-tight orokin-etched"
+        style={{ color: '#e5e2e1' }}
       >
         {enemy.agentType}
       </p>
@@ -67,10 +63,7 @@ export function PersistentEnemyCard({ status }: PersistentEnemyCardProps) {
       {/* Health bar */}
       <div>
         <div className="flex justify-between mb-1">
-          <p
-            data-role="labelTiny"
-            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: healthColor, opacity: 0.55 }}
-          >
+          <p data-role="labelTiny" className="typo-label-xs" style={{ color: healthColor, opacity: 0.55 }}>
             Hull Integrity
           </p>
           <p className="font-mono text-[9px] tabular-nums font-bold" style={{ color: healthColor }}>
@@ -95,8 +88,8 @@ export function PersistentEnemyCard({ status }: PersistentEnemyCardProps) {
           <MapPin size={10} strokeWidth={1.5} style={{ color: '#C6C6C7', opacity: 0.35, flexShrink: 0 }} />
           <p
             data-role="labelSmall"
-            className="truncate"
-            style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: '#C6C6C7', opacity: 0.40 }}
+            className="typo-label-sm truncate"
+            style={{ color: '#C6C6C7', opacity: 0.40 }}
           >
             {nodeName}
             {nodeRegion && <span className="ml-1 opacity-70">({nodeRegion})</span>}

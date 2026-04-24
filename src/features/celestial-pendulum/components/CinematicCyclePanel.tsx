@@ -1,7 +1,4 @@
 import { useRef, useState } from 'react';
-import { useThemeStore } from '@/store/theme';
-import type { DesignTokens } from '@/tokens/index';
-import { getTypographyStyle } from '@/tokens/utils';
 import { formatMsParts, nextCycleState } from '@/core/services/cycleService';
 import type { CycleStatus } from '@/core/domain/cycles';
 import type { SyndicateMission } from '@/core/domain/syndicates';
@@ -129,16 +126,13 @@ const SPECIAL_MISSIONS: Partial<Record<string, SpecialMission[]>> = {
 
 // ── Info Popover ───────────────────────────────────────────────────────────
 
-type Tokens = DesignTokens;
-
 interface InfoPopoverProps {
   text:        string;
   worldName:   string;
   accentColor: string;
-  tokens:      Tokens;
 }
 
-function InfoPopover({ text, worldName, accentColor, tokens }: InfoPopoverProps) {
+function InfoPopover({ text, worldName, accentColor }: InfoPopoverProps) {
   const [visible, setVisible] = useState(false);
   const [pos, setPos]         = useState({ top: 0, left: 0 });
   const btnRef                = useRef<HTMLButtonElement>(null);
@@ -157,6 +151,7 @@ function InfoPopover({ text, worldName, accentColor, tokens }: InfoPopoverProps)
         ref={btnRef}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={() => setVisible(false)}
+        className="typo-body"
         style={{
           display:        'inline-flex',
           alignItems:     'center',
@@ -167,7 +162,6 @@ function InfoPopover({ text, worldName, accentColor, tokens }: InfoPopoverProps)
           alignSelf:       'flex-end',
           marginBottom:    '0.28em',
           marginLeft:      10,
-          ...getTypographyStyle(tokens, 'body'),
           fontSize:        '0.68rem',
           fontWeight:      700,
           color:           accentColor,
@@ -204,8 +198,8 @@ function InfoPopover({ text, worldName, accentColor, tokens }: InfoPopoverProps)
         >
           <p
             data-role="labelSmall"
+            className="typo-label-sm"
             style={{
-              ...getTypographyStyle(tokens, 'labelSmall'),
               color:        accentColor,
               opacity:      0.65,
               marginBottom: 8,
@@ -215,8 +209,8 @@ function InfoPopover({ text, worldName, accentColor, tokens }: InfoPopoverProps)
           </p>
           <p
             data-role="body"
+            className="typo-body"
             style={{
-              ...getTypographyStyle(tokens, 'body'),
               color:      'rgba(198,198,199,0.84)',
               lineHeight: 1.65,
             }}
@@ -240,7 +234,6 @@ export function CinematicCyclePanel({
   status,
   syndicateMission,
 }: CinematicCyclePanelProps) {
-  const { tokens } = useThemeStore();
   const { cycle, msRemaining, isExpired } = status;
   const pres      = STATE[cycle.state] ?? FALLBACK;
   const nextState = nextCycleState(cycle.id, cycle.state);
@@ -287,8 +280,8 @@ export function CinematicCyclePanel({
           <div style={{ display: 'flex', alignItems: 'flex-end', marginBottom: 8 }}>
             <h2
               data-role="hero"
+              className="typo-hero"
               style={{
-                ...getTypographyStyle(tokens, 'hero'),
                 fontSize:      'clamp(2.4rem, 4.8vw, 5.2rem)',
                 lineHeight:    1,
                 color:         '#E3C372',
@@ -303,7 +296,6 @@ export function CinematicCyclePanel({
                 text={aboutText}
                 worldName={cycle.name}
                 accentColor={pres.color}
-                tokens={tokens}
               />
             )}
           </div>
@@ -311,8 +303,8 @@ export function CinematicCyclePanel({
           {/* Location subtitle */}
           <p
             data-role="labelSmall"
+            className="typo-label-sm"
             style={{
-              ...getTypographyStyle(tokens, 'labelSmall'),
               fontWeight:   500,
               color:        'rgba(227,195,114,0.50)',
               marginBottom: 18,
@@ -335,7 +327,7 @@ export function CinematicCyclePanel({
               <div key={unit} style={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
                 <span
                   style={{
-                    fontFamily:         getTypographyStyle(tokens, 'hero').fontFamily,
+                    fontFamily:         '"Noto Serif", Georgia, serif',
                     fontWeight:         900,
                     fontSize:           'clamp(2.2rem, 4.2vw, 4.8rem)',
                     lineHeight:         0.9,
@@ -348,7 +340,7 @@ export function CinematicCyclePanel({
                 </span>
                 <span
                   style={{
-                    fontFamily:    getTypographyStyle(tokens, 'hero').fontFamily,
+                    fontFamily:    '"Noto Serif", Georgia, serif',
                     fontWeight:    700,
                     fontSize:      'clamp(1rem, 2vw, 2rem)',
                     color:         '#E3C372',
@@ -368,8 +360,8 @@ export function CinematicCyclePanel({
           {hintText && (
             <p
               data-role="body"
+              className="typo-body"
               style={{
-                ...getTypographyStyle(tokens, 'body'),
                 fontStyle:    'italic',
                 color:        'rgba(198,198,199,0.78)',
                 textShadow:   '0 1px 6px rgba(0,0,0,0.90)',
@@ -386,8 +378,8 @@ export function CinematicCyclePanel({
             <div style={{ marginBottom: 20 }}>
               <p
                 data-role="labelSmall"
+                className="typo-label-sm"
                 style={{
-                  ...getTypographyStyle(tokens, 'labelSmall'),
                   fontWeight:   700,
                   color:        'rgba(227,195,114,0.50)',
                   marginBottom: 12,
@@ -414,8 +406,8 @@ export function CinematicCyclePanel({
                     <div>
                       <p
                         data-role="body"
+                        className="typo-body"
                         style={{
-                          ...getTypographyStyle(tokens, 'body'),
                           fontWeight: 500,
                           color:      'rgba(229,226,225,0.95)',
                           lineHeight: 1.2,
@@ -426,8 +418,8 @@ export function CinematicCyclePanel({
                       </p>
                       <p
                         data-role="labelTiny"
+                        className="typo-label-xs"
                         style={{
-                          ...getTypographyStyle(tokens, 'labelTiny'),
                           color:     'rgba(198,198,199,0.62)',
                           marginTop: 2,
                         }}
@@ -463,8 +455,8 @@ export function CinematicCyclePanel({
             <div>
               <p
                 data-role="labelSmall"
+                className="typo-label-sm"
                 style={{
-                  ...getTypographyStyle(tokens, 'labelSmall'),
                   fontWeight:   700,
                   color:        'rgba(227,195,114,0.45)',
                   marginBottom: 8,
@@ -474,8 +466,8 @@ export function CinematicCyclePanel({
               </p>
               <p
                 data-role="body"
+                className="typo-body"
                 style={{
-                  ...getTypographyStyle(tokens, 'body'),
                   color:     'rgba(198,198,199,0.55)',
                   fontStyle: 'italic',
                   textShadow: '0 1px 4px rgba(0,0,0,0.80)',
@@ -491,8 +483,8 @@ export function CinematicCyclePanel({
             <div style={{ marginTop: 20 }}>
               <p
                 data-role="labelSmall"
+                className="typo-label-sm"
                 style={{
-                  ...getTypographyStyle(tokens, 'labelSmall'),
                   fontWeight:   700,
                   color:        'rgba(227,195,114,0.50)',
                   marginBottom: 10,
@@ -531,8 +523,8 @@ export function CinematicCyclePanel({
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <p
                         data-role="emphasis"
+                        className="typo-emphasis"
                         style={{
-                          ...getTypographyStyle(tokens, 'emphasis'),
                           fontWeight:  700,
                           color:       'rgba(229,226,225,0.95)',
                           textShadow:  '0 1px 4px rgba(0,0,0,0.85)',
@@ -542,8 +534,8 @@ export function CinematicCyclePanel({
                       </p>
                       <p
                         data-role="labelTiny"
+                        className="typo-label-xs"
                         style={{
-                          ...getTypographyStyle(tokens, 'labelTiny'),
                           color:     'rgba(198,198,199,0.45)',
                           marginTop: 2,
                         }}
@@ -558,8 +550,8 @@ export function CinematicCyclePanel({
                     </div>
                     <span
                       data-role="labelTiny"
+                      className="typo-label-xs"
                       style={{
-                        ...getTypographyStyle(tokens, 'labelTiny'),
                         color:      'rgba(198,198,199,0.40)',
                         flexShrink: 0,
                         whiteSpace: 'nowrap',
@@ -581,8 +573,8 @@ export function CinematicCyclePanel({
           <div style={{ alignSelf: 'flex-end', textAlign: 'right', marginBottom: 10 }}>
             <span
               data-role="labelSmall"
+              className="typo-label-sm"
               style={{
-                ...getTypographyStyle(tokens, 'labelSmall'),
                 display:     'inline-flex',
                 alignItems:  'center',
                 gap:         7,
@@ -598,8 +590,8 @@ export function CinematicCyclePanel({
             </span>
             <p
               data-role="labelTiny"
+              className="typo-label-xs"
               style={{
-                ...getTypographyStyle(tokens, 'labelTiny'),
                 color:     'rgba(198,198,199,0.30)',
                 marginTop: 6,
               }}

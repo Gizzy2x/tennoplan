@@ -1,5 +1,3 @@
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 import { formatMsParts, nextCycleState } from '@/core/services/cycleService';
 import type { CycleStatus } from '@/core/domain/cycles';
 import { STATE, FALLBACK } from './CycleCard';
@@ -58,7 +56,6 @@ interface WorldOverviewPanelProps {
 }
 
 export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPanelProps) {
-  const { tokens } = useThemeStore();
   const { cycle, msRemaining, isExpired } = status;
   const pres      = STATE[cycle.state] ?? FALLBACK;
   const nextState = nextCycleState(cycle.id, cycle.state);
@@ -118,15 +115,16 @@ export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPa
       <div className="relative flex items-center justify-between px-4 pt-4" style={{ zIndex: 3 }}>
         <span
           data-role="labelSmall"
-          style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: pres.color, opacity: 0.70 }}
+          className="typo-label-sm"
+          style={{ color: pres.color, opacity: 0.70 }}
         >
           {cycle.location}
         </span>
 
         <span
           data-role="labelTiny"
+          className="typo-label-xs"
           style={{
-            ...getTypographyStyle(tokens, 'labelTiny'),
             color:      pres.color,
             border:     `1px solid ${pres.color}40`,
             background: `${pres.color}10`,
@@ -157,14 +155,16 @@ export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPa
 
         <p
           data-role="labelSmall"
-          style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: pres.color, opacity: 0.70 }}
+          className="typo-label-sm"
+          style={{ color: pres.color, opacity: 0.70 }}
         >
           {label}
         </p>
 
         <p
           data-role="labelTiny"
-          style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: 'rgba(198,198,199,0.38)', marginTop: 2 }}
+          className="typo-label-xs"
+          style={{ color: 'rgba(198,198,199,0.38)', marginTop: 2 }}
         >
           {cycle.name}
         </p>
@@ -186,8 +186,8 @@ export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPa
       >
         <p
           data-role="labelTiny"
-          className="text-center"
-          style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: pres.color, opacity: 0.55 }}
+          className="typo-label-xs text-center"
+          style={{ color: pres.color, opacity: 0.55 }}
         >
           {descriptor}
         </p>

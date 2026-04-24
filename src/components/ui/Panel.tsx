@@ -1,22 +1,4 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { useThemeStore } from '@/store/theme';
-import {
-  panelStyle,
-  panelHeaderStyle,
-  panelLabelStyle,
-  panelBodyStyle,
-  dataRowStyle,
-  dataRowLabelStyle,
-  dataRowValueStyle,
-  sectionDividerStyle,
-  sectionDividerLabelStyle,
-  sectionDividerLineStyle,
-} from '@/tokens/utils';
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared panel primitives — use these across the whole app for consistent
-// dark panels with gold Orokin borders. All styles now driven by design tokens.
-// ─────────────────────────────────────────────────────────────────────────────
 
 interface PanelProps {
   children: ReactNode;
@@ -26,15 +8,10 @@ interface PanelProps {
 }
 
 export function Panel({ children, style, className = '', highlight = false }: PanelProps) {
-  const { tokens } = useThemeStore();
-
   return (
     <div
-      className={className}
-      style={{
-        ...panelStyle(tokens, highlight),
-        ...style,
-      }}
+      className={`panel ${highlight ? 'panel-highlight' : ''} ${className}`.trim()}
+      style={style}
     >
       {children}
     </div>
@@ -42,48 +19,15 @@ export function Panel({ children, style, className = '', highlight = false }: Pa
 }
 
 export function PanelHeader({ children, style }: { children: ReactNode; style?: CSSProperties }) {
-  const { tokens } = useThemeStore();
-
-  return (
-    <div
-      style={{
-        ...panelHeaderStyle(tokens),
-        ...style,
-      }}
-    >
-      {children}
-    </div>
-  );
+  return <div className="panel-header" style={style}>{children}</div>;
 }
 
 export function PanelLabel({ children, style }: { children: ReactNode; style?: CSSProperties }) {
-  const { tokens } = useThemeStore();
-
-  return (
-    <span
-      style={{
-        ...panelLabelStyle(tokens),
-        ...style,
-      }}
-    >
-      {children}
-    </span>
-  );
+  return <span className="panel-label" style={style}>{children}</span>;
 }
 
 export function PanelBody({ children, style }: { children: ReactNode; style?: CSSProperties }) {
-  const { tokens } = useThemeStore();
-
-  return (
-    <div
-      style={{
-        ...panelBodyStyle(tokens),
-        ...style,
-      }}
-    >
-      {children}
-    </div>
-  );
+  return <div className="panel-body" style={style}>{children}</div>;
 }
 
 export function DataRow({
@@ -95,29 +39,19 @@ export function DataRow({
   value: string;
   accent?: boolean;
 }) {
-  const { tokens } = useThemeStore();
-
   return (
-    <div style={dataRowStyle(tokens)}>
-      <span style={dataRowLabelStyle(tokens)}>
-        {label}
-      </span>
-      <span style={dataRowValueStyle(tokens, accent)}>
-        {value}
-      </span>
+    <div className="data-row">
+      <span className="data-row-label">{label}</span>
+      <span className={`data-row-value ${accent ? 'data-row-value-accent' : ''}`.trim()}>{value}</span>
     </div>
   );
 }
 
 export function SectionDivider({ label }: { label: string }) {
-  const { tokens } = useThemeStore();
-
   return (
-    <div style={sectionDividerStyle(tokens)}>
-      <span style={sectionDividerLabelStyle(tokens)}>
-        {label}
-      </span>
-      <div style={sectionDividerLineStyle(tokens)} />
+    <div className="section-divider">
+      <span className="section-divider-label">{label}</span>
+      <div className="section-divider-line" />
     </div>
   );
 }

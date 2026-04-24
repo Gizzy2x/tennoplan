@@ -9,9 +9,6 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import { useThemeStore } from '@/store/theme';
-import type { DesignTokens } from '@/tokens/index';
-import { getTypographyStyle } from '@/tokens/utils';
 import { PageHero } from '@/components/ui/PageHero';
 import { DropDataService, type FetchProgress } from '@/adapters/api/DropDataService';
 import type { StaleInfo } from '@/adapters/api/DropDataService';
@@ -20,7 +17,6 @@ import { db } from '@/adapters/storage/db';
 // ── Status pill helpers ───────────────────────────────────────────────────────
 
 type SyncStatus = 'idle' | 'syncing' | 'success' | 'error';
-type Tokens = DesignTokens;
 
 function statusColor(s: SyncStatus): string {
   if (s === 'success') return 'rgba(134,239,172,0.80)';
@@ -31,13 +27,13 @@ function statusColor(s: SyncStatus): string {
 
 // ── Subcomponents ─────────────────────────────────────────────────────────────
 
-function SectionDivider({ label, tokens }: { label: string; tokens: Tokens }) {
+function SectionDivider({ label }: { label: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '28px 0 16px' }}>
       <span
         data-role="labelTiny"
+        className="typo-label-xs"
         style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
           fontWeight: 700,
           color:      'rgba(227,195,114,0.45)',
           whiteSpace: 'nowrap',
@@ -54,12 +50,10 @@ function DataStatusRow({
   label,
   value,
   accent = false,
-  tokens,
 }: {
   label:   string;
   value:   string;
   accent?: boolean;
-  tokens:  Tokens;
 }) {
   return (
     <div
@@ -73,19 +67,15 @@ function DataStatusRow({
     >
       <span
         data-role="labelTiny"
-        style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
-          color: 'rgba(198,198,199,0.45)',
-        }}
+        className="typo-label-xs"
+        style={{ color: 'rgba(198,198,199,0.45)' }}
       >
         {label}
       </span>
       <span
         data-role="labelTiny"
-        style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
-          color: accent ? 'rgba(227,195,114,0.80)' : 'rgba(198,198,199,0.70)',
-        }}
+        className="typo-label-xs"
+        style={{ color: accent ? 'rgba(227,195,114,0.80)' : 'rgba(198,198,199,0.70)' }}
       >
         {value}
       </span>
@@ -123,7 +113,6 @@ function ProgressBar({ percent }: { percent: number | null }) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function SettingsPage() {
-  const { tokens } = useThemeStore();
   const [staleInfo,    setStaleInfo]    = useState<StaleInfo | null>(null);
   const [dropsCount,   setDropsCount]   = useState<number | null>(null);
   const [syncStatus,   setSyncStatus]   = useState<SyncStatus>('idle');
@@ -194,7 +183,7 @@ export function SettingsPage() {
       <PageHero prefix="SYSTEM" title="SETTINGS" subtitle="Configuration & Preferences" />
 
       {/* ── Static Data status ─────────────────────────────────────────────── */}
-      <SectionDivider label="Static Data" tokens={tokens} />
+      <SectionDivider label="Static Data" />
 
       <div
         style={{
@@ -204,10 +193,10 @@ export function SettingsPage() {
           marginBottom: 16,
         }}
       >
-        <DataStatusRow label="Last synced"    value={daysLabel} accent={staleInfo?.isStale} tokens={tokens} />
-        <DataStatusRow label="Drop locations" value={dropsCount ? `~${dropsCount.toLocaleString()} locations` : '—'} tokens={tokens} />
-        <DataStatusRow label="Item catalogue" value={staleInfo ? '~17 000 entries' : '—'} tokens={tokens} />
-        <DataStatusRow label="Source"         value="drops.warframestat.us" tokens={tokens} />
+        <DataStatusRow label="Last synced"    value={daysLabel} accent={staleInfo?.isStale} />
+        <DataStatusRow label="Drop locations" value={dropsCount ? `~${dropsCount.toLocaleString()} locations` : '—'} />
+        <DataStatusRow label="Item catalogue" value={staleInfo ? '~17 000 entries' : '—'} />
+        <DataStatusRow label="Source"         value="drops.warframestat.us" />
       </div>
 
       {/* Progress bar — visible during sync */}
@@ -216,8 +205,8 @@ export function SettingsPage() {
           <ProgressBar percent={progress.percent} />
           <p
             data-role="labelTiny"
+            className="typo-label-xs"
             style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
               color:     'rgba(227,195,114,0.55)',
               marginTop: 6,
             }}
@@ -231,8 +220,8 @@ export function SettingsPage() {
       {resultMsg && !isSyncing && (
         <p
           data-role="labelTiny"
+          className="typo-label-xs"
           style={{
-            ...getTypographyStyle(tokens, 'labelTiny'),
             color:        statusColor(syncStatus),
             marginBottom: 12,
           }}
@@ -245,12 +234,12 @@ export function SettingsPage() {
       <button
         onClick={() => void handleRefresh()}
         disabled={isSyncing}
+        className="typo-label-xs"
         style={{
           display:    'flex',
           alignItems: 'center',
           gap:        6,
           padding:    '8px 20px',
-          ...getTypographyStyle(tokens, 'labelTiny'),
           fontSize:   '0.42rem',
           fontWeight: 700,
           color:      isSyncing ? 'rgba(227,195,114,0.30)' : '#131313',
@@ -278,7 +267,7 @@ export function SettingsPage() {
       </button>
 
       {/* ── Danger zone ────────────────────────────────────────────────────── */}
-      <SectionDivider label="Danger Zone" tokens={tokens} />
+      <SectionDivider label="Danger Zone" />
 
       <div
         style={{
@@ -289,8 +278,8 @@ export function SettingsPage() {
       >
         <p
           data-role="labelTiny"
+          className="typo-label-xs"
           style={{
-            ...getTypographyStyle(tokens, 'labelTiny'),
             color:        'rgba(252,165,165,0.50)',
             marginBottom: 12,
             lineHeight:   1.6,
@@ -304,9 +293,9 @@ export function SettingsPage() {
           <div style={{ display: 'flex', gap: 10 }}>
             <button
               onClick={() => void handleClear()}
+              className="typo-label-xs"
               style={{
                 padding:    '6px 16px',
-                ...getTypographyStyle(tokens, 'labelTiny'),
                 fontWeight: 700,
                 fontSize:   '0.38rem',
                 color:      'rgba(252,165,165,0.90)',
@@ -319,9 +308,9 @@ export function SettingsPage() {
             </button>
             <button
               onClick={() => setShowClearConfirm(false)}
+              className="typo-label-xs"
               style={{
                 padding:    '6px 16px',
-                ...getTypographyStyle(tokens, 'labelTiny'),
                 fontWeight: 700,
                 fontSize:   '0.38rem',
                 color:      'rgba(198,198,199,0.45)',
@@ -336,9 +325,9 @@ export function SettingsPage() {
         ) : (
           <button
             onClick={handleClear}
+            className="typo-label-xs"
             style={{
               padding:    '6px 16px',
-              ...getTypographyStyle(tokens, 'labelTiny'),
               fontWeight: 700,
               fontSize:   '0.38rem',
               color:      'rgba(252,165,165,0.55)',

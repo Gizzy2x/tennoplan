@@ -1,5 +1,3 @@
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 import type { SyndicateJob } from '@/core/domain/syndicates';
 
 // ---------------------------------------------------------------------------
@@ -15,7 +13,6 @@ interface CycleTooltipProps {
 }
 
 export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps) {
-  const { tokens } = useThemeStore();
   const total = job.standingStages.reduce((s, n) => s + n, 0);
 
   return (
@@ -24,8 +21,8 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
       {/* Header label */}
       <p
         data-role="labelTiny"
+        className="typo-label-xs"
         style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
           color:        accentColor,
           opacity:      0.55,
           marginBottom: 5,
@@ -37,8 +34,8 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
       {/* Tier name */}
       <p
         data-role="hero"
+        className="typo-hero"
         style={{
-          ...getTypographyStyle(tokens, 'hero'),
           fontSize:     '0.9rem',
           color:        accentColor,
           marginBottom: 7,
@@ -52,8 +49,8 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
       <div style={{ display: 'flex', gap: 14, marginBottom: 10 }}>
         <span
           data-role="labelSmall"
+          className="typo-label-sm"
           style={{
-            ...getTypographyStyle(tokens, 'labelSmall'),
             color:        'rgba(198,198,199,0.58)',
             border:       `1px solid ${accentColor}28`,
             padding:      '1px 6px',
@@ -64,10 +61,8 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
         </span>
         <span
           data-role="labelSmall"
-          style={{
-            ...getTypographyStyle(tokens, 'labelSmall'),
-            color: 'rgba(198,198,199,0.38)',
-          }}
+          className="typo-label-sm"
+          style={{ color: 'rgba(198,198,199,0.38)' }}
         >
           {total.toLocaleString()} STANDING
         </span>
@@ -87,8 +82,8 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
         <>
           <p
             data-role="labelTiny"
+            className="typo-label-xs"
             style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
               color:        accentColor,
               opacity:      0.45,
               marginBottom: 6,
@@ -110,8 +105,8 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
               <li
                 key={i}
                 data-role="labelSmall"
+                className="typo-label-sm"
                 style={{
-                  ...getTypographyStyle(tokens, 'labelSmall'),
                   color:      'rgba(198,198,199,0.68)',
                   display:    'flex',
                   gap:        7,
@@ -127,10 +122,8 @@ export function CycleTooltip({ job, accentColor, worldName }: CycleTooltipProps)
       ) : (
         <p
           data-role="labelTiny"
-          style={{
-            ...getTypographyStyle(tokens, 'labelTiny'),
-            color: 'rgba(198,198,199,0.28)',
-          }}
+          className="typo-label-xs"
+          style={{ color: 'rgba(198,198,199,0.28)' }}
         >
           No reward data available
         </p>

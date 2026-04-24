@@ -464,6 +464,161 @@ body {
 }
 
 /* ================================================================
+   Typography Roles — replaces the runtime token system
+   Use these classes instead of typography(tokens).X() calls.
+   ================================================================ */
+
+.typo-hero {
+  font-family: "Noto Serif", Georgia, serif;
+  font-size: 2.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+}
+
+.typo-tab-title {
+  font-family: "Noto Serif", Georgia, serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.typo-section-header {
+  font-family: "Noto Serif", Georgia, serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+.typo-emphasis {
+  font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}
+
+.typo-body {
+  font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.typo-label-sm {
+  font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+.typo-label-xs {
+  font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+/* ================================================================
+   Panel Primitives — replaces panelStyle(), panelHeaderStyle() etc.
+   ================================================================ */
+
+.panel {
+  background: rgba(28, 27, 27, 0.6);
+  border: 1px solid rgba(227, 195, 114, 0.15);
+  border-radius: 4px;
+}
+
+.panel-highlight {
+  border-color: rgba(227, 195, 114, 0.35);
+}
+
+.panel-header {
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(227, 195, 114, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-body {
+  padding: 10px 12px;
+}
+
+.panel-label {
+  font-family: "Noto Serif", Georgia, serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: rgba(227, 195, 114, 0.70);
+}
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.data-row-label {
+  font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: rgba(198, 198, 199, 0.45);
+}
+
+.data-row-value {
+  font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  color: rgba(198, 198, 199, 0.70);
+}
+
+.data-row-value-accent {
+  color: #e3c372;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 16px;
+}
+
+.section-divider-label {
+  font-family: "Noto Serif", Georgia, serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: rgba(227, 195, 114, 0.45);
+  white-space: nowrap;
+}
+
+.section-divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(227, 195, 114, 0.08);
+}
+
+/* ================================================================
    Coming Soon Placeholder — for stub pages below the PageHero
    ================================================================ */
 

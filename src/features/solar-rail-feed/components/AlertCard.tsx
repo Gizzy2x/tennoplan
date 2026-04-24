@@ -3,8 +3,6 @@ import {
   ShieldCheck, Shovel, KeyRound, Bomb, Swords, Hexagon,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 import { getFactionColor } from '@/core/services/railService';
 import { formatMs } from '@/core/services/cycleService';
 import type { AlertStatus } from '@/core/domain/railFeed';
@@ -33,7 +31,6 @@ export interface AlertCardProps {
 }
 
 export function AlertCard({ status }: AlertCardProps) {
-  const { tokens } = useThemeStore();
   const { alert, msRemaining } = status;
 
   const factionColor = getFactionColor(alert.faction);
@@ -75,15 +72,15 @@ export function AlertCard({ status }: AlertCardProps) {
         <div className="flex-1 min-w-0">
           <p
             data-role="hero"
-            className="leading-tight orokin-etched truncate"
-            style={{ ...getTypographyStyle(tokens, 'hero'), color: tokens.colors.onSurface }}
+            className="typo-hero leading-tight orokin-etched truncate"
+            style={{ color: 'rgba(229,226,225,1)' }}
           >
             {nodeName}
             {nodeRegion && (
               <span
                 data-role="labelTiny"
-                className="ml-1.5 not-italic"
-                style={{ ...getTypographyStyle(tokens, 'labelTiny'), opacity: 0.40 }}
+                className="typo-label-xs ml-1.5 not-italic"
+                style={{ opacity: 0.40 }}
               >
                 ({nodeRegion})
               </span>
@@ -91,16 +88,16 @@ export function AlertCard({ status }: AlertCardProps) {
           </p>
           <p
             data-role="labelSmall"
-            className="mt-0.5"
-            style={{ ...getTypographyStyle(tokens, 'labelSmall'), opacity: 0.40 }}
+            className="typo-label-sm mt-0.5"
+            style={{ opacity: 0.40 }}
           >
             {alert.missionType}
           </p>
           {alert.reward && (
             <p
               data-role="emphasis"
-              className="mt-1"
-              style={{ ...getTypographyStyle(tokens, 'emphasis'), color: factionColor }}
+              className="typo-emphasis mt-1"
+              style={{ color: factionColor }}
             >
               {alert.reward}
             </p>
@@ -111,14 +108,14 @@ export function AlertCard({ status }: AlertCardProps) {
         <div className="text-right flex-shrink-0">
           <p
             data-role="labelTiny"
-            className="mb-0.5"
-            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.primary, opacity: 0.40 }}
+            className="typo-label-xs mb-0.5"
+            style={{ color: '#E3C372', opacity: 0.40 }}
           >
             Expires in
           </p>
           <p
             className={`font-mono text-lg font-bold tabular-nums leading-none ${isUrgent ? 'orokin-countdown-glow' : ''}`}
-            style={{ color: isUrgent ? '#fb923c' : tokens.colors.primary }}
+            style={{ color: isUrgent ? '#fb923c' : '#E3C372' }}
           >
             {msRemaining > 0 ? formatMs(msRemaining) : 'EXPIRED'}
           </p>

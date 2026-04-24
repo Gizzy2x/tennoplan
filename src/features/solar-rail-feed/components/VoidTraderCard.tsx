@@ -1,5 +1,3 @@
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 import { formatMs, formatMsHuman } from '@/core/services/cycleService';
 import type { VoidTraderStatus } from '@/core/domain/railFeed';
 
@@ -8,11 +6,9 @@ export interface VoidTraderCardProps {
 }
 
 export function VoidTraderCard({ status }: VoidTraderCardProps) {
-  const { tokens } = useThemeStore();
   const { trader, msUntilArrival, msUntilDeparture, isActive } = status;
 
   if (!isActive) {
-    // ── AWAY state ─────────────────────────────────────────────────────────
     return (
       <div
         className="glass-panel relative overflow-hidden p-6 flex items-center gap-8"
@@ -31,46 +27,26 @@ export function VoidTraderCard({ status }: VoidTraderCardProps) {
 
         {/* Left: labels */}
         <div className="flex-1 min-w-0">
-          <p
-            data-role="labelTiny"
-            className="mb-1"
-            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.primary, opacity: 0.40 }}
-          >
+          <p data-role="labelTiny" className="typo-label-xs mb-1" style={{ color: '#e3c372', opacity: 0.40 }}>
             Void Trader
           </p>
-          <h3
-            data-role="hero"
-            className="orokin-etched"
-            style={{ ...getTypographyStyle(tokens, 'hero'), color: tokens.colors.onSurface }}
-          >
+          <h3 data-role="hero" className="typo-hero orokin-etched" style={{ color: '#e5e2e1' }}>
             {trader.character.toUpperCase()}
           </h3>
-          <p
-            data-role="body"
-            className="mt-1"
-            style={{ ...getTypographyStyle(tokens, 'body'), color: '#C6C6C7', opacity: 0.45 }}
-          >
+          <p data-role="body" className="typo-body mt-1" style={{ color: '#C6C6C7', opacity: 0.45 }}>
             Next visit: {trader.location}
           </p>
         </div>
 
         {/* Right: arrival countdown */}
         <div className="text-right flex-shrink-0">
-          <p
-            data-role="labelTiny"
-            className="mb-1"
-            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.primary, opacity: 0.40 }}
-          >
+          <p data-role="labelTiny" className="typo-label-xs mb-1" style={{ color: '#e3c372', opacity: 0.40 }}>
             Arrives in
           </p>
           <p className="font-mono text-4xl font-bold tabular-nums leading-none text-primary">
             {formatMsHuman(msUntilArrival)}
           </p>
-          <p
-            data-role="labelTiny"
-            className="mt-1"
-            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.primary, opacity: 0.30 }}
-          >
+          <p data-role="labelTiny" className="typo-label-xs mt-1" style={{ color: '#e3c372', opacity: 0.30 }}>
             not yet on station
           </p>
         </div>
@@ -78,7 +54,6 @@ export function VoidTraderCard({ status }: VoidTraderCardProps) {
     );
   }
 
-  // ── ACTIVE state ──────────────────────────────────────────────────────────
   return (
     <div
       className="glass-panel relative overflow-hidden p-6"
@@ -98,34 +73,18 @@ export function VoidTraderCard({ status }: VoidTraderCardProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <p
-            data-role="labelTiny"
-            className="mb-0.5"
-            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.primary, opacity: 0.40 }}
-          >
+          <p data-role="labelTiny" className="typo-label-xs mb-0.5" style={{ color: '#e3c372', opacity: 0.40 }}>
             Void Trader · On Station
           </p>
-          <h3
-            data-role="hero"
-            className="orokin-etched"
-            style={{ ...getTypographyStyle(tokens, 'hero'), color: tokens.colors.primary }}
-          >
+          <h3 data-role="hero" className="typo-hero orokin-etched" style={{ color: '#e3c372' }}>
             {trader.character.toUpperCase()}
           </h3>
-          <p
-            data-role="labelSmall"
-            className="mt-0.5"
-            style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: '#C6C6C7', opacity: 0.45 }}
-          >
+          <p data-role="labelSmall" className="typo-label-sm mt-0.5" style={{ color: '#C6C6C7', opacity: 0.45 }}>
             {trader.location}
           </p>
         </div>
         <div className="text-right">
-          <p
-            data-role="labelTiny"
-            className="mb-0.5"
-            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.primary, opacity: 0.40 }}
-          >
+          <p data-role="labelTiny" className="typo-label-xs mb-0.5" style={{ color: '#e3c372', opacity: 0.40 }}>
             Departs in
           </p>
           <p className="font-mono text-2xl font-bold tabular-nums leading-none text-primary">
@@ -148,8 +107,8 @@ export function VoidTraderCard({ status }: VoidTraderCardProps) {
             >
               <p
                 data-role="body"
-                className="leading-snug mb-2 line-clamp-2"
-                style={{ ...getTypographyStyle(tokens, 'body'), color: tokens.colors.onSurface }}
+                className="typo-body leading-snug mb-2 line-clamp-2"
+                style={{ color: '#e5e2e1' }}
               >
                 {item.item}
               </p>
@@ -166,22 +125,14 @@ export function VoidTraderCard({ status }: VoidTraderCardProps) {
           ))}
           {trader.inventory.length > 12 && (
             <div className="col-span-12 text-center">
-              <p
-                data-role="labelTiny"
-                className="opacity-30"
-                style={getTypographyStyle(tokens, 'labelTiny')}
-              >
+              <p data-role="labelTiny" className="typo-label-xs opacity-30">
                 +{trader.inventory.length - 12} more items
               </p>
             </div>
           )}
         </div>
       ) : (
-        <p
-          data-role="body"
-          className="text-secondary/30"
-          style={getTypographyStyle(tokens, 'body')}
-        >
+        <p data-role="body" className="typo-body text-secondary/30">
           No inventory data available.
         </p>
       )}

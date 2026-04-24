@@ -1,5 +1,3 @@
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 import { formatMsParts, nextCycleState } from '@/core/services/cycleService';
 import type { CycleStatus } from '@/core/domain/cycles';
 
@@ -96,7 +94,6 @@ export interface CycleCardProps {
 }
 
 export function CycleCard({ status, featured = false }: CycleCardProps) {
-  const { tokens } = useThemeStore();
   const { cycle, msRemaining, progress, isExpired } = status;
   const pres        = STATE[cycle.state] ?? FALLBACK;
   const { h, m, s } = formatMsParts(msRemaining);
@@ -139,16 +136,16 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
       <div className="relative flex items-center justify-between px-4 pt-3 pb-1">
         <p
           data-role="labelTiny"
-          style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: pres.color, opacity: 0.55 }}
+          className="typo-label-xs"
+          style={{ color: pres.color, opacity: 0.55 }}
         >
           {cycle.location}
         </p>
 
         <span
           data-role="labelTiny"
-          className="px-2 py-0.5"
+          className="typo-label-xs px-2 py-0.5"
           style={{
-            ...getTypographyStyle(tokens, 'labelTiny'),
             color:           pres.color,
             border:          `1px solid ${pres.color}40`,
             backgroundColor: `${pres.color}12`,
@@ -164,7 +161,8 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
 
         <p
           data-role="labelSmall"
-          style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: tokens.colors.onSurface, opacity: 0.35 }}
+          className="typo-label-sm"
+          style={{ color: 'rgba(229,226,225,1)', opacity: 0.35 }}
         >
           {cycle.name}
         </p>
@@ -228,7 +226,8 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
         {/* Transition label */}
         <p
           data-role="labelTiny"
-          style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.35 }}
+          className="typo-label-xs"
+          style={{ color: 'rgba(198,198,199,1)', opacity: 0.35 }}
         >
           {isExpired ? 'SYNCING…' : `UNTIL ${nextPres.badge}`}
         </p>
@@ -248,12 +247,11 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
         >
           <span
             data-role="labelTiny"
-            className="text-center leading-tight"
+            className="typo-label-xs text-center leading-tight"
             style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
-              fontSize:      featured ? '0.6rem' : '0.55rem',
-              color:         pres.color,
-              padding:       '0 8px',
+              fontSize: featured ? '0.6rem' : '0.55rem',
+              color:    pres.color,
+              padding:  '0 8px',
             }}
           >
             {pres.label}
@@ -264,9 +262,8 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
         {isEidolonNight && (
           <span
             data-role="labelTiny"
-            className="mt-0.5 px-2 py-0.5"
+            className="typo-label-xs mt-0.5 px-2 py-0.5"
             style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
               color:           pres.color,
               border:          `1px solid ${pres.color}50`,
               backgroundColor: `${pres.color}12`,
@@ -296,13 +293,15 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
         <div className="flex items-center justify-between">
           <p
             data-role="labelTiny"
-            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: pres.color, opacity: 0.35 }}
+            className="typo-label-xs"
+            style={{ color: pres.color, opacity: 0.35 }}
           >
             ACTIVE: {rewards}
           </p>
           <p
             data-role="labelTiny"
-            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: nextPres.color, opacity: 0.5 }}
+            className="typo-label-xs"
+            style={{ color: nextPres.color, opacity: 0.5 }}
           >
             → {nextPres.badge}
           </p>
