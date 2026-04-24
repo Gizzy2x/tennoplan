@@ -3,8 +3,6 @@ import {
   ShieldCheck, Shovel, KeyRound, Zap, Bomb, Swords, Hexagon,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 import { SORTIE_FACTION_COLOR } from '@/core/services/ascensionService';
 import type { ArchonHuntMission } from '@/core/domain/ascension';
 
@@ -36,7 +34,6 @@ export interface ArchonHuntCardProps {
 }
 
 export function ArchonHuntCard({ mission, index, faction }: ArchonHuntCardProps) {
-  const { tokens } = useThemeStore();
   const factionColor = SORTIE_FACTION_COLOR[faction] ?? '#C6C6C7';
   const MissionIcon  = getMissionIcon(mission.type);
 
@@ -67,9 +64,8 @@ export function ArchonHuntCard({ mission, index, faction }: ArchonHuntCardProps)
         <div className="flex-shrink-0 relative">
           <span
             data-role="labelTiny"
-            className="absolute -top-1 -left-1 w-5 h-5 flex items-center justify-center z-10"
+            className="typo-label-xs absolute -top-1 -left-1 w-5 h-5 flex items-center justify-center z-10"
             style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
               backgroundColor: `${factionColor}22`,
               border:          `1px solid ${factionColor}45`,
               color:           factionColor,
@@ -83,15 +79,15 @@ export function ArchonHuntCard({ mission, index, faction }: ArchonHuntCardProps)
         <div className="flex-1 min-w-0 pt-1">
           <p
             data-role="hero"
-            className="leading-tight orokin-etched"
-            style={{ ...getTypographyStyle(tokens, 'hero'), color: factionColor }}
+            className="typo-hero leading-tight orokin-etched"
+            style={{ color: factionColor }}
           >
             {mission.type}
           </p>
           <p
             data-role="labelSmall"
-            className="leading-tight mt-0.5 truncate"
-            style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: '#C6C6C7', opacity: 0.45 }}
+            className="typo-label-sm leading-tight mt-0.5 truncate"
+            style={{ color: '#C6C6C7', opacity: 0.45 }}
           >
             {nodeName}
             {nodeRegion && <span className="ml-1 opacity-70">({nodeRegion})</span>}

@@ -9,14 +9,26 @@ import { DropDataService }        from '@/adapters/api/DropDataService';
 import { formatMsParts }          from '@/core/services/cycleService';
 import { getWorldBg }             from './worldAssets';
 import { Panel, PanelHeader, PanelLabel, PanelBody } from '@/components/ui/Panel';
-import { useThemeStore }          from '@/store/theme';
-import {
-  typography,
-  pulseLoaderStyle,
-  pulseDotStyle,
-} from '@/tokens/utils';
 import type { CycleId, CycleState } from '@/core/domain/cycles';
 import type { EnrichedBounty }    from '@/core/domain/bounty';
+
+// ─── Hardcoded design constants (replaces runtime token access) ────────────────
+const FONT_SANS   = '"Noto Sans", -apple-system, sans-serif';
+const FONT_SERIF  = '"Noto Serif", Georgia, serif';
+const COLOR_PRIMARY   = '#E3C372';
+const COLOR_SECONDARY = 'rgba(198,198,199,1)';
+const COLOR_ON_SURFACE = 'rgba(229,226,225,1)';
+const RADIUS_LG  = '6px';
+const RADIUS_MD  = '4px';
+const RADIUS_SM  = '2px';
+const TRANSITION_FAST = '0.15s';
+const SPACING_SM = '8px';
+const SPACING_MD = '12px';
+const GAP_SMALL  = '6px';
+const GAP_MEDIUM = '4';    // used in parseInt() contexts
+const GAP_TINY   = '3px';
+const PANEL_PADDING_X = '12px';
+const HEADER_PADDING_Y = '7px';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Static config
@@ -183,7 +195,6 @@ function getBountyRow(bounty: EnrichedBounty): { sub: string; pct: string } {
 export function CelestialPendulumPage() {
   const [selectedId, setSelectedId] = useState<CycleId>('cetus');
   const [isSyncing,  setIsSyncing]  = useState(false);
-  const { tokens } = useThemeStore();
 
   const { statuses, hasEverLoaded, isError, forceRefetch: refetchCycles } = useWorldCycles();
   const { missions, forceRefetch: refetchMissions } = useSyndicateMissions();
@@ -227,11 +238,10 @@ export function CelestialPendulumPage() {
   const heroState = selectedStatus?.cycle.state?.toUpperCase() ?? '—';
 
   if (!hasEverLoaded && !isError) {
-    const typo = typography(tokens);
     return (
-      <div style={pulseLoaderStyle(tokens)}>
-        <div style={pulseDotStyle(tokens)} />
-        <span style={typo.labelTiny()}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '24px', color: 'rgba(198,198,199,0.40)' }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#e3c372', animation: 'pulse 1.5s ease-in-out infinite' }} />
+        <span className="typo-label-xs">
           Initializing Systems…
         </span>
       </div>
@@ -240,7 +250,7 @@ export function CelestialPendulumPage() {
 
 
   return (
-    <div style={{ color: tokens.colors.primary, position: 'relative' }}>
+    <div style={{ color: COLOR_PRIMARY, position: 'relative' }}>
 
       {/* Cinematic world background */}
       <WorldBackground url={bgUrl} />
@@ -272,10 +282,10 @@ export function CelestialPendulumPage() {
                   background:  isActive ? 'rgba(227,195,114,0.07)' : 'rgba(10,10,8,0.80)',
                   border:      `1px solid ${isActive ? 'rgba(227,195,114,0.28)' : 'rgba(227,195,114,0.12)'}`,
                   borderLeft:  isActive ? '3px solid rgba(227,195,114,0.75)' : '3px solid transparent',
-                  borderRadius: tokens.borders.radiusLarge,
+                  borderRadius: RADIUS_LG,
                   cursor:      'pointer',
                   textAlign:   'left',
-                  transition:  'all ' + tokens.animations.transitionFast + ' ease',
+                  transition:  `all ${TRANSITION_FAST} ease`,
                 }}
               >
                 {/* Icon circle */}
@@ -300,11 +310,11 @@ export function CelestialPendulumPage() {
                 <div>
                   <div
                     style={{
-                      fontFamily:    tokens.typography.roles.body.fontFamily,
+                      fontFamily:    FONT_SANS,
                       fontSize:      '0.92rem',
                       fontWeight:    700,
                       letterSpacing: '0.10em',
-                      color:         isActive ? tokens.colors.primary : 'rgba(227,195,114,0.52)',
+                      color:         isActive ? COLOR_PRIMARY : 'rgba(227,195,114,0.52)',
                       textTransform: 'uppercase',
                       lineHeight:    1.2,
                     }}
@@ -313,7 +323,7 @@ export function CelestialPendulumPage() {
                   </div>
                   <div
                     style={{
-                      fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+                      fontFamily:    FONT_SANS,
                       fontSize:      '0.62rem',
                       color:         'rgba(198,198,199,0.48)',
                       marginTop:     3,
@@ -334,7 +344,7 @@ export function CelestialPendulumPage() {
         <div style={{ marginBottom: 4 }}>
           <div
             style={{
-              fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+              fontFamily:    FONT_SANS,
               fontSize:      '0.55rem',
               fontWeight:    700,
               letterSpacing: '0.28em',
@@ -364,10 +374,10 @@ export function CelestialPendulumPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 <div
                   style={{
-                    fontFamily:    tokens.typography.roles.body.fontFamily,
+                    fontFamily:    FONT_SANS,
                     fontSize:      '2.6rem',
                     fontWeight:    900,
-                    color:         tokens.colors.primary,
+                    color:         COLOR_PRIMARY,
                     lineHeight:    1.1,
                     letterSpacing: '-0.01em',
                   }}
@@ -376,10 +386,10 @@ export function CelestialPendulumPage() {
                 </div>
                 <div
                   style={{
-                    fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+                    fontFamily:    FONT_SANS,
                     fontSize:      '0.48rem',
                     letterSpacing: '0.26em',
-                    color:         tokens.colors.secondary,
+                    color:         COLOR_SECONDARY,
                     textTransform: 'uppercase',
                     opacity:       0.55,
                   }}
@@ -393,10 +403,10 @@ export function CelestialPendulumPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                 <div
                   style={{
-                    fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+                    fontFamily:    FONT_SANS,
                     fontSize:      '0.48rem',
                     letterSpacing: '0.20em',
-                    color:         tokens.colors.secondary,
+                    color:         COLOR_SECONDARY,
                     textTransform: 'uppercase',
                     opacity:       0.55,
                   }}
@@ -405,10 +415,10 @@ export function CelestialPendulumPage() {
                 </div>
                 <div
                   style={{
-                    fontFamily:    tokens.typography.roles.body.fontFamily,
+                    fontFamily:    FONT_SANS,
                     fontSize:      '2.6rem',
                     fontWeight:    900,
-                    color:         tokens.colors.primary,
+                    color:         COLOR_PRIMARY,
                     lineHeight:    1.1,
                     letterSpacing: '0.04em',
                     textTransform: 'uppercase',
@@ -443,13 +453,13 @@ export function CelestialPendulumPage() {
               >
                 <span
                   style={{
-                    fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+                    fontFamily:    FONT_SANS,
                     fontSize:      '0.55rem',
                     letterSpacing: '0.28em',
                     color:         'rgba(227,195,114,0.12)',
                     textTransform: 'uppercase',
                     textAlign:     'center',
-                    padding:       tokens.spacing.md,
+                    padding:       SPACING_MD,
                   }}
                 >
                   MAP REGION · {WORLD_TABS.find(w => w.id === selectedId)?.label ?? selectedId.toUpperCase()}
@@ -472,8 +482,8 @@ export function CelestialPendulumPage() {
               style={{
                 display:             'grid',
                 gridTemplateColumns: '1fr 68px 54px',
-                gap:                 parseInt(tokens.spacing.gapMedium),
-                padding:             `${tokens.spacing.headerPaddingY} ${tokens.spacing.panelPaddingX}`,
+                gap:                 parseInt(GAP_MEDIUM),
+                padding:             `${HEADER_PADDING_Y} ${PANEL_PADDING_X}`,
                 borderBottom:        `1px solid rgba(227,195,114,0.15)`,
                 alignItems:          'center',
               }}
@@ -487,7 +497,7 @@ export function CelestialPendulumPage() {
               <div
                 style={{
                   padding:    '14px 12px',
-                  fontFamily: tokens.typography.roles.labelSmall.fontFamily,
+                  fontFamily: FONT_SANS,
                   fontSize:   '0.50rem',
                   color:      'rgba(198,198,199,0.30)',
                   fontStyle:  'italic',
@@ -505,8 +515,8 @@ export function CelestialPendulumPage() {
                   style={{
                     display:             'grid',
                     gridTemplateColumns: '1fr 68px 54px',
-                    gap:                 parseInt(tokens.spacing.gapMedium),
-                    padding:             `${tokens.spacing.gapTiny} ${tokens.spacing.panelPaddingX}`,
+                    gap:                 parseInt(GAP_MEDIUM),
+                    padding:             `${GAP_TINY} ${PANEL_PADDING_X}`,
                     borderBottom:        '1px solid rgba(255,255,255,0.04)',
                     background:          i % 2 !== 0 ? 'rgba(255,255,255,0.018)' : 'transparent',
                     alignItems:          'center',
@@ -515,7 +525,7 @@ export function CelestialPendulumPage() {
                   <div>
                     <div
                       style={{
-                        fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+                        fontFamily:    FONT_SANS,
                         fontSize:      '0.58rem',
                         fontWeight:    700,
                         color:         'rgba(198,198,199,0.72)',
@@ -527,7 +537,7 @@ export function CelestialPendulumPage() {
                     </div>
                     <div
                       style={{
-                        fontFamily:  tokens.typography.roles.labelSmall.fontFamily,
+                        fontFamily:  FONT_SANS,
                         fontSize:    '0.48rem',
                         color:       'rgba(198,198,199,0.35)',
                         marginTop:   1,
@@ -550,7 +560,7 @@ export function CelestialPendulumPage() {
                           height:         14,
                           background:     rot.tier ? 'rgba(227,195,114,0.18)' : 'rgba(227,195,114,0.08)',
                           border:         `1px solid rgba(227,195,114,${rot.tier ? '0.30' : '0.14'})`,
-                          borderRadius:   tokens.borders.radiusSmall,
+                          borderRadius:   RADIUS_SM,
                           display:        'flex',
                           alignItems:     'center',
                           justifyContent: 'center',
@@ -565,10 +575,10 @@ export function CelestialPendulumPage() {
 
                   <div
                     style={{
-                      fontFamily: tokens.typography.roles.labelSmall.fontFamily,
+                      fontFamily: FONT_SANS,
                       fontSize:   '0.62rem',
                       fontWeight: 700,
-                      color:      pct === '—' ? 'rgba(198,198,199,0.25)' : tokens.colors.primary,
+                      color:      pct === '—' ? 'rgba(198,198,199,0.25)' : COLOR_PRIMARY,
                       textAlign:  'right',
                     }}
                   >
@@ -584,11 +594,11 @@ export function CelestialPendulumPage() {
             <PanelHeader>
               <PanelLabel>KEY RESOURCES</PanelLabel>
             </PanelHeader>
-            <PanelBody style={{ padding: parseInt(tokens.spacing.sm) }}>
+            <PanelBody style={{ padding: parseInt(SPACING_SM) }}>
               {resources.length === 0 ? (
                 <p
                   style={{
-                    fontFamily: tokens.typography.roles.labelSmall.fontFamily,
+                    fontFamily: FONT_SANS,
                     fontSize:   '0.50rem',
                     color:      'rgba(198,198,199,0.28)',
                     fontStyle:  'italic',
@@ -622,7 +632,7 @@ export function CelestialPendulumPage() {
                         </span>
                         <div
                           style={{
-                            fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+                            fontFamily:    FONT_SANS,
                             fontSize:      '0.52rem',
                             fontWeight:    600,
                             color:         'rgba(229,226,225,0.88)',
@@ -635,7 +645,7 @@ export function CelestialPendulumPage() {
                       </div>
                       <div
                         style={{
-                          fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+                          fontFamily:    FONT_SANS,
                           fontSize:      '0.44rem',
                           color:         'rgba(198,198,199,0.38)',
                           textTransform: 'uppercase',
@@ -662,7 +672,7 @@ export function CelestialPendulumPage() {
               <div style={{ marginBottom: 14 }}>
                 <div
                   style={{
-                    fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+                    fontFamily:    FONT_SANS,
                     fontSize:      '0.56rem',
                     fontWeight:    700,
                     letterSpacing: '0.14em',
@@ -689,7 +699,7 @@ export function CelestialPendulumPage() {
                       >
                         <span
                           style={{
-                            fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+                            fontFamily:    FONT_SANS,
                             fontSize:      '0.50rem',
                             fontWeight:    700,
                             letterSpacing: '0.08em',
@@ -705,7 +715,7 @@ export function CelestialPendulumPage() {
                         </span>
                         <span
                           style={{
-                            fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+                            fontFamily:    FONT_SANS,
                             fontSize:      '0.48rem',
                             color:         'rgba(198,198,199,0.55)',
                             textTransform: 'capitalize',
@@ -716,7 +726,7 @@ export function CelestialPendulumPage() {
                         <span style={{ color: 'rgba(227,195,114,0.20)', fontSize: '0.44rem' }}>·</span>
                         <span
                           style={{
-                            fontFamily: tokens.typography.roles.labelSmall.fontFamily,
+                            fontFamily: FONT_SANS,
                             fontSize:   '0.48rem',
                             color:      'rgba(198,198,199,0.38)',
                           }}
@@ -731,10 +741,10 @@ export function CelestialPendulumPage() {
 
               {/* Farming Tips */}
               {tips.length > 0 && (
-                <div style={{ borderTop: '1px solid rgba(227,195,114,0.08)', paddingTop: parseInt(tokens.spacing.md) }}>
+                <div style={{ borderTop: '1px solid rgba(227,195,114,0.08)', paddingTop: parseInt(SPACING_MD) }}>
                   <div
                     style={{
-                      fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+                      fontFamily:    FONT_SANS,
                       fontSize:      '0.56rem',
                       fontWeight:    700,
                       letterSpacing: '0.14em',
@@ -750,7 +760,7 @@ export function CelestialPendulumPage() {
                       <span style={{ color: 'rgba(227,195,114,0.50)', flexShrink: 0, fontSize: '0.50rem', lineHeight: 1.6 }}>•</span>
                       <span
                         style={{
-                          fontFamily: tokens.typography.roles.labelSmall.fontFamily,
+                          fontFamily: FONT_SANS,
                           fontSize:   '0.48rem',
                           color:      'rgba(198,198,199,0.48)',
                           lineHeight: 1.65,
@@ -767,9 +777,9 @@ export function CelestialPendulumPage() {
         </div>
 
         {/* ── Footer ─────────────────────────────────────────────────────── */}
-        <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: parseInt(tokens.spacing.gapSmall) }}>
+        <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: parseInt(GAP_SMALL) }}>
           <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(227,195,114,0.45)', flexShrink: 0 }} />
-          <span style={{ fontFamily: tokens.typography.roles.labelSmall.fontFamily, fontSize: '0.50rem', color: 'rgba(198,198,199,0.28)', letterSpacing: '0.18em' }}>
+          <span style={{ fontFamily: FONT_SANS, fontSize: '0.50rem', color: 'rgba(198,198,199,0.28)', letterSpacing: '0.18em' }}>
             Drop data · {dropsAgeLabel}
           </span>
           <div style={{ flex: 1 }} />
@@ -778,14 +788,14 @@ export function CelestialPendulumPage() {
             disabled={isSyncing}
             style={{
               padding:       '3px 10px',
-              fontFamily:    tokens.typography.roles.labelSmall.fontFamily,
+              fontFamily:    FONT_SANS,
               fontSize:      '0.50rem',
               fontWeight:    700,
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
               color:         isSyncing ? 'rgba(227,195,114,0.28)' : 'rgba(227,195,114,0.55)',
               border:        `1px solid ${isSyncing ? 'rgba(227,195,114,0.10)' : 'rgba(227,195,114,0.22)'}`,
-              borderRadius:  tokens.borders.radiusMedium,
+              borderRadius:  RADIUS_MD,
               background:    'transparent',
               cursor:        isSyncing ? 'not-allowed' : 'pointer',
             }}

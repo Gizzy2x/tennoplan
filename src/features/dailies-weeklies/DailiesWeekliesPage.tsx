@@ -1,6 +1,3 @@
-import { useThemeStore } from '@/store/theme';
-import type { DesignTokens } from '@/tokens/index';
-import { getTypographyStyle } from '@/tokens/utils';
 import { useDailiesData } from './hooks/useDailiesData';
 import { PageHero } from '@/components/ui/PageHero';
 import { formatCacheAge } from '@/core/services/WorldstateService';
@@ -14,8 +11,6 @@ import {
 import { formatMsHuman } from '@/core/services/cycleService';
 import type { ChallengeKind, ChallengeStatus } from '@/core/domain/ascension';
 
-type Tokens = DesignTokens;
-
 // ---------------------------------------------------------------------------
 // Reset counter pill
 // ---------------------------------------------------------------------------
@@ -24,12 +19,10 @@ function ResetCounter({
   label,
   msRemaining,
   urgentMs,
-  tokens,
 }: {
   label:       string;
   msRemaining: number;
   urgentMs:    number;
-  tokens:      Tokens;
 }) {
   const isUrgent  = msRemaining > 0 && msRemaining < urgentMs;
   const timeColor = isUrgent ? '#fb923c' : '#E3C372';
@@ -47,7 +40,8 @@ function ResetCounter({
       />
       <p
         data-role="labelTiny"
-        style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.40 }}
+        className="typo-label-xs"
+        style={{ color: 'rgba(198,198,199,0.40)' }}
       >
         {label}
       </p>
@@ -60,8 +54,8 @@ function ResetCounter({
       </p>
       <p
         data-role="labelTiny"
-        className="mt-0.5"
-        style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: timeColor, opacity: 0.35 }}
+        className="typo-label-xs mt-0.5"
+        style={{ color: timeColor, opacity: 0.35 }}
       >
         {isUrgent ? 'expires soon' : 'remaining'}
       </p>
@@ -169,7 +163,6 @@ function KindHeader({
 // ---------------------------------------------------------------------------
 
 export function DailiesWeekliesPage() {
-  const { tokens } = useThemeStore();
   const {
     grouped,
     weeklyEarned,
@@ -221,10 +214,10 @@ export function DailiesWeekliesPage() {
       {totalChallenges > 0 && syncState === 'ONLINE' && (
         <div className="flex flex-wrap gap-4 mb-6">
           {dailyMs > 0 && (
-            <ResetCounter label="Daily Reset"  msRemaining={dailyMs}  urgentMs={6 * 3600_000}  tokens={tokens} />
+            <ResetCounter label="Daily Reset"  msRemaining={dailyMs}  urgentMs={6 * 3600_000} />
           )}
           {weeklyMs > 0 && (
-            <ResetCounter label="Weekly Reset" msRemaining={weeklyMs} urgentMs={24 * 3600_000} tokens={tokens} />
+            <ResetCounter label="Weekly Reset" msRemaining={weeklyMs} urgentMs={24 * 3600_000} />
           )}
 
           {/* Sync status chip */}
@@ -232,7 +225,8 @@ export function DailiesWeekliesPage() {
             <div className="w-1.5 h-1.5 rounded-full bg-success" />
             <span
               data-role="labelTiny"
-              style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.35 }}
+              className="typo-label-xs"
+              style={{ color: 'rgba(198,198,199,0.35)' }}
             >
               LIVE
             </span>
@@ -257,8 +251,8 @@ export function DailiesWeekliesPage() {
             <div>
               <p
                 data-role="labelTiny"
-                className="mb-1"
-                style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.primary, opacity: 0.40 }}
+                className="typo-label-xs mb-1"
+                style={{ color: 'rgba(227,195,114,0.40)' }}
               >
                 Weekly Standing
               </p>
@@ -273,8 +267,8 @@ export function DailiesWeekliesPage() {
               </div>
               <p
                 data-role="labelTiny"
-                className="mt-1"
-                style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: 'rgba(227,195,114,0.35)' }}
+                className="typo-label-xs mt-1"
+                style={{ color: 'rgba(227,195,114,0.35)' }}
               >
                 earned toward weekly cap
               </p>
@@ -284,8 +278,8 @@ export function DailiesWeekliesPage() {
             <div className="text-right flex-shrink-0">
               <p
                 data-role="labelTiny"
-                className="mb-1"
-                style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.primary, opacity: 0.40 }}
+                className="typo-label-xs mb-1"
+                style={{ color: 'rgba(227,195,114,0.40)' }}
               >
                 Challenges Complete
               </p>
@@ -298,8 +292,8 @@ export function DailiesWeekliesPage() {
               </p>
               <p
                 data-role="labelTiny"
-                className="mt-1"
-                style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: 'rgba(227,195,114,0.35)' }}
+                className="typo-label-xs mt-1"
+                style={{ color: 'rgba(227,195,114,0.35)' }}
               >
                 {Math.round(weeklyPct * 100)}% of weekly cap
               </p>
@@ -324,7 +318,8 @@ export function DailiesWeekliesPage() {
             <p
               data-role="labelTiny"
               className="mt-2"
-              style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: 'rgba(227,195,114,0.28)' }}
+              className="typo-label-xs"
+              style={{ color: 'rgba(227,195,114,0.28)' }}
             >
               {(standingRemaining / 1000).toFixed(0)}k standing remaining toward cap
             </p>
@@ -338,7 +333,8 @@ export function DailiesWeekliesPage() {
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
           <p
             data-role="labelTiny"
-            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.40 }}
+            className="typo-label-xs"
+            style={{ color: 'rgba(198,198,199,0.40)' }}
           >
             Querying Nora Night — fetching active challenges…
           </p>
@@ -351,7 +347,8 @@ export function DailiesWeekliesPage() {
           <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
           <p
             data-role="labelTiny"
-            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.40 }}
+            className="typo-label-xs"
+            style={{ color: 'rgba(198,198,199,0.40)' }}
           >
             Initializing Systems…
           </p>
@@ -367,17 +364,16 @@ export function DailiesWeekliesPage() {
           <div className="flex items-center gap-4 mb-7">
             <h3
               data-role="hero"
-              className="leading-none"
-              style={{ ...getTypographyStyle(tokens, 'hero'), fontSize: '1.5rem', color: tokens.colors.onSurface }}
+              className="typo-hero leading-none"
+              style={{ fontSize: '1.5rem', color: 'rgba(229,226,225,1)' }}
             >
               Nightwave <span style={{ color: tokens.colors.primary, fontStyle: 'italic' }}>Challenges</span>
             </h3>
             {season > 0 && (
               <span
                 data-role="labelTiny"
-                className="px-2 py-0.5"
+                className="typo-label-xs px-2 py-0.5"
                 style={{
-                  ...getTypographyStyle(tokens, 'labelTiny'),
                   color:           '#E3C372',
                   border:          '1px solid rgba(227,195,114,0.25)',
                   backgroundColor: 'rgba(227,195,114,0.06)',
@@ -436,7 +432,8 @@ export function DailiesWeekliesPage() {
           <div className="w-1.5 h-1.5 rounded-full bg-error/50" />
           <p
             data-role="labelTiny"
-            style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: tokens.colors.secondary, opacity: 0.30 }}
+            className="typo-label-xs"
+            style={{ color: 'rgba(198,198,199,0.30)' }}
           >
             Offline · Cached {formatCacheAge(cacheAgeMs)} · Local marks persist
           </p>

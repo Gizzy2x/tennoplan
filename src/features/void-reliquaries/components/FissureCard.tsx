@@ -4,8 +4,6 @@ import {
   Zap, Bomb, FlaskConical, Swords, Droplet, Orbit,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 import { formatMs } from '@/core/services/cycleService';
 import { TIER_COLOR, ENEMY_COLOR } from '@/core/services/fissureService';
 import type { FissureStatus } from '@/core/domain/relics';
@@ -60,7 +58,6 @@ export interface FissureCardProps {
 }
 
 export function FissureCard({ status }: FissureCardProps) {
-  const { tokens } = useThemeStore();
   const { fissure, msRemaining, progress, isExpired } = status;
   const tierColor   = TIER_COLOR[fissure.tier]   ?? '#E3C372';
   const enemyColor  = ENEMY_COLOR[fissure.enemy] ?? '#C6C6C7';
@@ -169,24 +166,23 @@ export function FissureCard({ status }: FissureCardProps) {
           <div className="flex-1 min-w-0">
             <p
               data-role="hero"
-              className="leading-tight truncate orokin-etched"
-              style={{ ...getTypographyStyle(tokens, 'hero'), color: tierColor }}
+              className="typo-hero leading-tight truncate orokin-etched"
+              style={{ color: tierColor }}
             >
               {fissure.missionType}
             </p>
             <p
               data-role="labelSmall"
-              className="truncate leading-tight mt-0.5"
-              style={{ ...getTypographyStyle(tokens, 'labelSmall'), opacity: 0.4, color: '#E5E2E1' }}
+              className="typo-label-sm truncate leading-tight mt-0.5"
+              style={{ opacity: 0.4, color: '#E5E2E1' }}
             >
               {nodeName}
               {nodeRegion && <span className="ml-1">({nodeRegion})</span>}
             </p>
             <span
               data-role="labelTiny"
-              className="inline-block mt-1 px-1.5 py-0.5"
+              className="typo-label-xs inline-block mt-1 px-1.5 py-0.5"
               style={{
-                ...getTypographyStyle(tokens, 'labelTiny'),
                 color:           tierColor,
                 border:          `1px solid ${tierColor}45`,
                 backgroundColor: `${tierColor}0D`,
@@ -200,8 +196,8 @@ export function FissureCard({ status }: FissureCardProps) {
         {/* ── Enemy faction ─────────────────────────────────────────── */}
         <p
           data-role="labelSmall"
-          className="mb-2"
-          style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: enemyColor, opacity: 0.7 }}
+          className="typo-label-sm mb-2"
+          style={{ color: enemyColor, opacity: 0.7 }}
         >
           {fissure.enemy}
         </p>

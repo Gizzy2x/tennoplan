@@ -1,6 +1,4 @@
 import { Check } from 'lucide-react';
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 
 export interface CompletionToggleProps {
   label:    string;
@@ -10,7 +8,6 @@ export interface CompletionToggleProps {
 }
 
 export function CompletionToggle({ label, sublabel, checked, onToggle }: CompletionToggleProps) {
-  const { tokens } = useThemeStore();
   const color = '#E3C372';
 
   return (
@@ -48,22 +45,15 @@ export function CompletionToggle({ label, sublabel, checked, onToggle }: Complet
       <div className="flex-1 min-w-0">
         <p
           data-role="body"
-          className="leading-snug transition-colors duration-300"
-          style={{
-            ...getTypographyStyle(tokens, 'body'),
-            color: checked ? color : 'rgba(229,226,225,0.65)',
-          }}
+          className="typo-body leading-snug transition-colors duration-300"
+          style={{ color: checked ? color : 'rgba(229,226,225,0.65)' }}
         >
           {label}
         </p>
         <p
           data-role="labelTiny"
-          className="mt-0.5"
-          style={{
-            ...getTypographyStyle(tokens, 'labelTiny'),
-            color: '#C6C6C7',
-            opacity: 0.30,
-          }}
+          className="typo-label-xs mt-0.5"
+          style={{ color: '#C6C6C7', opacity: 0.30 }}
         >
           {sublabel}
         </p>
@@ -73,9 +63,8 @@ export function CompletionToggle({ label, sublabel, checked, onToggle }: Complet
       {checked && (
         <span
           data-role="labelTiny"
-          className="flex-shrink-0 px-2 py-0.5"
+          className="typo-label-xs flex-shrink-0 px-2 py-0.5"
           style={{
-            ...getTypographyStyle(tokens, 'labelTiny'),
             color,
             border:          `1px solid ${color}35`,
             backgroundColor: `${color}0A`,

@@ -21,9 +21,6 @@
  */
 
 import { useState, useEffect, type CSSProperties } from 'react';
-import { useThemeStore } from '@/store/theme';
-import type { DesignTokens } from '@/tokens/index';
-import { getTypographyStyle } from '@/tokens/utils';
 import type {
   EnrichedBounty,
   EnrichedBountyRotation,
@@ -67,16 +64,13 @@ function formatChance(chance: number): string {
   return chance.toFixed(1) + '%';
 }
 
-type Tokens = DesignTokens;
-
 // ─── Reward icon cell ────────────────────────────────────────────────────────
 
 interface RewardIconCellProps {
   reward: EnrichedBountyReward;
-  tokens: Tokens;
 }
 
-function RewardIconCell({ reward, tokens }: RewardIconCellProps) {
+function RewardIconCell({ reward }: RewardIconCellProps) {
   const staticItem = findByName(reward.itemName);
   const meta       = RARITY_META[reward.tier];
   const pct        = formatChance(reward.chance);
@@ -131,8 +125,8 @@ function RewardIconCell({ reward, tokens }: RewardIconCellProps) {
           />
         ) : (
           <span
+            className="typo-hero"
             style={{
-              ...getTypographyStyle(tokens, 'hero'),
               fontSize:  '1.2rem',
               color:     meta.dot,
               opacity:   0.55,
@@ -146,8 +140,8 @@ function RewardIconCell({ reward, tokens }: RewardIconCellProps) {
         {/* Drop % badge */}
         <span
           data-role="labelTiny"
+          className="typo-label-xs"
           style={{
-            ...getTypographyStyle(tokens, 'labelTiny'),
             position:   'absolute',
             bottom:     2,
             right:      3,
@@ -166,8 +160,8 @@ function RewardIconCell({ reward, tokens }: RewardIconCellProps) {
       {/* Item name */}
       <p
         data-role="labelTiny"
+        className="typo-label-xs"
         style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
           fontSize:        '0.40rem',
           color:
             reward.tier === 'Rare'     ? 'rgba(227,195,114,0.92)' :
@@ -193,10 +187,9 @@ function RewardIconCell({ reward, tokens }: RewardIconCellProps) {
 
 interface RotationViewProps {
   rotation: EnrichedBountyRotation;
-  tokens:   Tokens;
 }
 
-function RotationView({ rotation, tokens }: RotationViewProps) {
+function RotationView({ rotation }: RotationViewProps) {
   const groups: Record<BountyRewardRarity, EnrichedBountyReward[]> = {
     Rare: [], Uncommon: [], Common: [], Unknown: [],
   };
@@ -240,8 +233,8 @@ function RotationView({ rotation, tokens }: RotationViewProps) {
               />
               <span
                 data-role="labelTiny"
+                className="typo-label-xs"
                 style={{
-                  ...getTypographyStyle(tokens, 'labelTiny'),
                   fontSize:   '0.38rem',
                   fontWeight: 700,
                   color:      meta.dot,
@@ -252,8 +245,8 @@ function RotationView({ rotation, tokens }: RotationViewProps) {
               </span>
               <span
                 data-role="labelTiny"
+                className="typo-label-xs"
                 style={{
-                  ...getTypographyStyle(tokens, 'labelTiny'),
                   fontSize:   '0.36rem',
                   color:      'rgba(198,198,199,0.20)',
                   marginLeft: 'auto',
@@ -268,7 +261,6 @@ function RotationView({ rotation, tokens }: RotationViewProps) {
                 <RewardIconCell
                   key={reward.itemName + i}
                   reward={reward}
-                  tokens={tokens}
                 />
               ))}
             </div>
@@ -282,11 +274,10 @@ function RotationView({ rotation, tokens }: RotationViewProps) {
 // ─── Fallback pool renderer ──────────────────────────────────────────────────
 
 interface FallbackPoolViewProps {
-  names:  string[];
-  tokens: Tokens;
+  names: string[];
 }
 
-function FallbackPoolView({ names, tokens }: FallbackPoolViewProps) {
+function FallbackPoolView({ names }: FallbackPoolViewProps) {
   const rewards: EnrichedBountyReward[] = names.map(n => ({
     itemName:  n,
     chance:    0,
@@ -298,8 +289,8 @@ function FallbackPoolView({ names, tokens }: FallbackPoolViewProps) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <p
         data-role="body"
+        className="typo-body"
         style={{
-          ...getTypographyStyle(tokens, 'body'),
           color:     'rgba(198,198,199,0.50)',
           fontStyle: 'italic',
           lineHeight: 1.6,
@@ -310,7 +301,7 @@ function FallbackPoolView({ names, tokens }: FallbackPoolViewProps) {
       </p>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         {rewards.map((reward, i) => (
-          <RewardIconCell key={reward.itemName + i} reward={reward} tokens={tokens} />
+          <RewardIconCell key={reward.itemName + i} reward={reward} />
         ))}
       </div>
     </div>
@@ -323,10 +314,9 @@ interface TerminalPanelProps {
   bounty:      EnrichedBounty;
   accentColor: string;
   faction:     { label: string; color: string; icon: string };
-  tokens:      Tokens;
 }
 
-function TerminalPanel({ bounty, accentColor, faction, tokens }: TerminalPanelProps) {
+function TerminalPanel({ bounty, accentColor, faction }: TerminalPanelProps) {
   const hasRotations = bounty.rotations.length > 0;
   const hasMultiple  = bounty.rotations.length > 1;
 
@@ -363,19 +353,19 @@ function TerminalPanel({ bounty, accentColor, faction, tokens }: TerminalPanelPr
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
           <span
             data-role="emphasis"
+            className="typo-emphasis"
             style={{
-              ...getTypographyStyle(tokens, 'emphasis'),
-              fontSize:   '0.58rem',
-              color:      accentColor,
-              flex:       1,
+              fontSize: '0.58rem',
+              color:    accentColor,
+              flex:     1,
             }}
           >
             {bounty.tierLabel}
           </span>
           <span
             data-role="labelSmall"
+            className="typo-label-sm"
             style={{
-              ...getTypographyStyle(tokens, 'labelSmall'),
               color:      accentColor,
               opacity:    0.60,
               whiteSpace: 'nowrap',
@@ -388,10 +378,8 @@ function TerminalPanel({ bounty, accentColor, faction, tokens }: TerminalPanelPr
         <div style={{ display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
           <span
             data-role="labelTiny"
-            style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
-              color: 'rgba(198,198,199,0.50)',
-            }}
+            className="typo-label-xs"
+            style={{ color: 'rgba(198,198,199,0.50)' }}
           >
             Lv. {bounty.enemyLevels[0]}–{bounty.enemyLevels[1]}
           </span>
@@ -400,8 +388,8 @@ function TerminalPanel({ bounty, accentColor, faction, tokens }: TerminalPanelPr
 
           <span
             data-role="labelTiny"
+            className="typo-label-xs"
             style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
               color:      faction.color,
               border:     `1px solid ${faction.color}30`,
               padding:    '1px 5px',
@@ -414,8 +402,8 @@ function TerminalPanel({ bounty, accentColor, faction, tokens }: TerminalPanelPr
           {bounty.isSteelPath && (
             <span
               data-role="labelTiny"
+              className="typo-label-xs"
               style={{
-                ...getTypographyStyle(tokens, 'labelTiny'),
                 fontWeight: 700,
                 color:      '#f87171',
                 border:     '1px solid rgba(248,113,113,0.30)',
@@ -445,6 +433,7 @@ function TerminalPanel({ bounty, accentColor, faction, tokens }: TerminalPanelPr
               <button
                 key={rot.label}
                 onClick={() => setActiveIdx(idx)}
+                className="typo-label-xs"
                 style={{
                   flex:         1,
                   padding:      '7px 10px',
@@ -453,7 +442,6 @@ function TerminalPanel({ bounty, accentColor, faction, tokens }: TerminalPanelPr
                   borderRight:  idx < bounty.rotations.length - 1 ? `1px solid ${accentColor}14` : 'none',
                   borderBottom: isActive ? `2px solid ${accentColor}` : '2px solid transparent',
                   cursor:       'pointer',
-                  ...getTypographyStyle(tokens, 'labelTiny'),
                   fontSize:     '0.44rem',
                   fontWeight:   isActive ? 700 : 500,
                   color:        isActive ? accentColor : 'rgba(229,226,225,0.55)',
@@ -493,9 +481,9 @@ function TerminalPanel({ bounty, accentColor, faction, tokens }: TerminalPanelPr
         }}
       >
         {activeRotation ? (
-          <RotationView rotation={activeRotation} tokens={tokens} />
+          <RotationView rotation={activeRotation} />
         ) : bounty.fallbackPool && bounty.fallbackPool.length > 0 ? (
-          <FallbackPoolView names={bounty.fallbackPool} tokens={tokens} />
+          <FallbackPoolView names={bounty.fallbackPool} />
         ) : (
           <div
             style={{
@@ -508,8 +496,8 @@ function TerminalPanel({ bounty, accentColor, faction, tokens }: TerminalPanelPr
           >
             <p
               data-role="labelSmall"
+              className="typo-label-sm"
               style={{
-                ...getTypographyStyle(tokens, 'labelSmall'),
                 color:     'rgba(198,198,199,0.25)',
                 textAlign: 'center',
               }}
@@ -525,7 +513,7 @@ function TerminalPanel({ bounty, accentColor, faction, tokens }: TerminalPanelPr
 
 // ─── Empty-selection placeholder ─────────────────────────────────────────────
 
-function EmptyTerminalState({ tokens }: { tokens: Tokens }) {
+function EmptyTerminalState() {
   return (
     <div
       style={{
@@ -543,8 +531,8 @@ function EmptyTerminalState({ tokens }: { tokens: Tokens }) {
       <span style={{ fontSize: '1.4rem', color: 'rgba(227,195,114,0.15)', lineHeight: 1 }}>◈</span>
       <p
         data-role="labelSmall"
+        className="typo-label-sm"
         style={{
-          ...getTypographyStyle(tokens, 'labelSmall'),
           color:     'rgba(198,198,199,0.22)',
           textAlign: 'center',
           lineHeight: 1.8,
@@ -553,7 +541,8 @@ function EmptyTerminalState({ tokens }: { tokens: Tokens }) {
         Active Terminal<br />
         <span
           data-role="labelTiny"
-          style={{ ...getTypographyStyle(tokens, 'labelTiny'), opacity: 0.7 }}
+          className="typo-label-xs"
+          style={{ opacity: 0.7 }}
         >
           Select a tier to power on
         </span>
@@ -578,8 +567,7 @@ export function BountyJobList({
   worldId = 'cetus',
   cycleNote = null,
 }: BountyJobListProps) {
-  const { tokens } = useThemeStore();
-  const faction    = WORLD_FACTION[worldId] ?? { label: 'Enemy', color: '#E3C372', icon: '◆' };
+  const faction = WORLD_FACTION[worldId] ?? { label: 'Enemy', color: '#E3C372', icon: '◆' };
 
   // Highest tier first
   const reversed = [...bounties].reverse();
@@ -617,8 +605,8 @@ export function BountyJobList({
       {/* Section heading */}
       <p
         data-role="labelSmall"
+        className="typo-label-sm"
         style={{
-          ...getTypographyStyle(tokens, 'labelSmall'),
           fontWeight:   700,
           color:        'rgba(227,195,114,0.50)',
           marginBottom: cycleNote ? 6 : 10,
@@ -631,8 +619,8 @@ export function BountyJobList({
       {cycleNote && (
         <p
           data-role="body"
+          className="typo-body"
           style={{
-            ...getTypographyStyle(tokens, 'body'),
             color:        accentColor,
             opacity:      0.75,
             marginBottom: 10,
@@ -687,8 +675,8 @@ export function BountyJobList({
               >
                 {/* Chevron */}
                 <span
+                  className="typo-label-xs"
                   style={{
-                    ...getTypographyStyle(tokens, 'labelTiny'),
                     color:      accentColor,
                     opacity:    isSelected ? 0.80 : 0.18,
                     flexShrink: 0,
@@ -702,8 +690,8 @@ export function BountyJobList({
                 {/* Tier label */}
                 <span
                   data-role="labelSmall"
+                  className="typo-label-sm"
                   style={{
-                    ...getTypographyStyle(tokens, 'labelSmall'),
                     fontSize:     '0.54rem',
                     fontWeight:   isSelected ? 700 : 500,
                     color:        isSelected ? accentColor : 'rgba(229,226,225,0.65)',
@@ -721,8 +709,8 @@ export function BountyJobList({
                 {isSelected && rotSummary && !bounty.isSteelPath && (
                   <span
                     data-role="labelTiny"
+                    className="typo-label-xs"
                     style={{
-                      ...getTypographyStyle(tokens, 'labelTiny'),
                       fontSize:   '0.36rem',
                       fontWeight: 700,
                       color:      accentColor,
@@ -739,8 +727,8 @@ export function BountyJobList({
                 {bounty.isSteelPath && (
                   <span
                     data-role="labelTiny"
+                    className="typo-label-xs"
                     style={{
-                      ...getTypographyStyle(tokens, 'labelTiny'),
                       fontSize:   '0.34rem',
                       fontWeight: 700,
                       color:      '#f87171',
@@ -756,8 +744,8 @@ export function BountyJobList({
                 {/* Standing */}
                 <span
                   data-role="labelTiny"
+                  className="typo-label-xs"
                   style={{
-                    ...getTypographyStyle(tokens, 'labelTiny'),
                     color:      accentColor,
                     opacity:    isSelected ? 0.65 : 0.28,
                     flexShrink: 0,
@@ -779,10 +767,9 @@ export function BountyJobList({
               bounty={selectedBounty}
               accentColor={accentColor}
               faction={faction}
-              tokens={tokens}
             />
           ) : (
-            <EmptyTerminalState tokens={tokens} />
+            <EmptyTerminalState />
           )}
         </div>
       </div>

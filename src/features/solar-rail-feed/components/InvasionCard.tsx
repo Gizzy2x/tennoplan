@@ -1,6 +1,4 @@
 import { Sword } from 'lucide-react';
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 import { getFactionColor } from '@/core/services/railService';
 import type { InvasionStatus } from '@/core/domain/railFeed';
 
@@ -9,7 +7,6 @@ export interface InvasionCardProps {
 }
 
 export function InvasionCard({ status }: InvasionCardProps) {
-  const { tokens } = useThemeStore();
   const { invasion, completion } = status;
 
   const attackerColor = getFactionColor(invasion.attackingFaction);
@@ -45,15 +42,15 @@ export function InvasionCard({ status }: InvasionCardProps) {
         <div className="flex-1 min-w-0">
           <p
             data-role="hero"
-            className="leading-tight orokin-etched truncate"
-            style={{ ...getTypographyStyle(tokens, 'hero'), color: tokens.colors.onSurface }}
+            className="typo-hero leading-tight orokin-etched truncate"
+            style={{ color: '#e5e2e1' }}
           >
             {nodeName}
             {nodeRegion && (
               <span
                 data-role="labelTiny"
-                className="ml-1.5 not-italic"
-                style={{ ...getTypographyStyle(tokens, 'labelTiny'), opacity: 0.40 }}
+                className="typo-label-xs ml-1.5 not-italic"
+                style={{ opacity: 0.40 }}
               >
                 ({nodeRegion})
               </span>
@@ -61,8 +58,8 @@ export function InvasionCard({ status }: InvasionCardProps) {
           </p>
           <p
             data-role="labelSmall"
-            className="mt-0.5"
-            style={{ ...getTypographyStyle(tokens, 'labelSmall'), opacity: 0.40 }}
+            className="typo-label-sm mt-0.5"
+            style={{ opacity: 0.40 }}
           >
             {invasion.desc}
           </p>
@@ -70,28 +67,30 @@ export function InvasionCard({ status }: InvasionCardProps) {
           <div className="flex items-center gap-1.5 mt-1.5">
             <p
               data-role="emphasis"
-              style={{ ...getTypographyStyle(tokens, 'emphasis'), color: attackerColor }}
+              className="typo-emphasis"
+              style={{ color: attackerColor }}
             >
               {invasion.attackingFaction}
             </p>
             <span
               data-role="labelTiny"
-              style={{ ...getTypographyStyle(tokens, 'labelTiny'), opacity: 0.30 }}
+              className="typo-label-xs"
+              style={{ opacity: 0.30 }}
             >
               vs
             </span>
             <p
               data-role="emphasis"
-              style={{ ...getTypographyStyle(tokens, 'emphasis'), color: defenderColor }}
+              className="typo-emphasis"
+              style={{ color: defenderColor }}
             >
               {invasion.defendingFaction}
             </p>
             {invasion.vsInfestation && (
               <span
                 data-role="labelTiny"
-                className="ml-1 px-1.5 py-0.5"
+                className="typo-label-xs ml-1 px-1.5 py-0.5"
                 style={{
-                  ...getTypographyStyle(tokens, 'labelTiny'),
                   color:           '#86efac',
                   border:          '1px solid rgba(134,239,172,0.30)',
                   backgroundColor: 'rgba(134,239,172,0.07)',
@@ -113,15 +112,15 @@ export function InvasionCard({ status }: InvasionCardProps) {
           <div key={label}>
             <p
               data-role="labelTiny"
-              className="mb-0.5"
-              style={{ ...getTypographyStyle(tokens, 'labelTiny'), color, opacity: 0.45 }}
+              className="typo-label-xs mb-0.5"
+              style={{ color, opacity: 0.45 }}
             >
               {label}
             </p>
             <p
               data-role="body"
-              className="leading-snug"
-              style={{ ...getTypographyStyle(tokens, 'body'), color: tokens.colors.onSurface }}
+              className="typo-body leading-snug"
+              style={{ color: '#e5e2e1' }}
             >
               {reward || (credits > 0 ? `${credits.toLocaleString()} cr` : '—')}
             </p>

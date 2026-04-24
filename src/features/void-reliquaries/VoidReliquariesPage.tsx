@@ -1,14 +1,13 @@
 import { useState, useMemo } from 'react';
 import { Search, RefreshCw } from 'lucide-react';
 import { PageHero } from '@/components/ui/PageHero';
-import { useThemeStore } from '@/store/theme';
-import { getTypographyStyle } from '@/tokens/utils';
 import { useFissures, DEFAULT_FILTERS } from './hooks/useFissures';
 import { TIER_COLOR } from '@/core/services/fissureService';
 import { TIER_ORDER } from '@/core/domain/relics';
 import { formatMs } from '@/core/services/cycleService';
 import { formatCacheAge } from '@/core/services/WorldstateService';
 import type { FissureStatus, FissureTier } from '@/core/domain/relics';
+
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -94,7 +93,6 @@ function RelicCard({
   isHighlighted: boolean;
   onClick:       () => void;
 }) {
-  const { tokens } = useThemeStore();
   const [hovered, setHovered] = useState(false);
   const c  = TIER_COLOR[relic.tier];
   const rc = REFINEMENT_COLOR[relic.refinement];
@@ -146,10 +144,7 @@ function RelicCard({
             border: '1px solid rgba(227,195,114,0.22)',
             borderRadius: '3px', padding: '2px 7px',
           }}>
-            <span style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
-              color: 'rgba(227,195,114,0.85)',
-            }}>
+            <span className="typo-label-xs" style={{ color: 'rgba(227,195,114,0.85)' }}>
               ×{relic.owned} OWNED
             </span>
           </div>
@@ -159,7 +154,7 @@ function RelicCard({
             border: '1px solid rgba(198,198,199,0.10)',
             borderRadius: '3px', padding: '2px 7px',
           }}>
-            <span style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: 'rgba(198,198,199,0.30)' }}>
+            <span className="typo-label-xs" style={{ color: 'rgba(198,198,199,0.30)' }}>
               UNOWNED
             </span>
           </div>
@@ -170,7 +165,7 @@ function RelicCard({
           background: `${c}18`, border: `1px solid ${c}38`,
           borderRadius: '3px', padding: '2px 7px',
         }}>
-          <span style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: c }}>
+          <span className="typo-label-xs" style={{ color: c }}>
             {relic.tier.toUpperCase()}
           </span>
         </div>
@@ -180,8 +175,7 @@ function RelicCard({
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
         <RelicOrb tier={relic.tier} size={64} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{
-            ...getTypographyStyle(tokens, 'sectionHeader'),
+          <div className="typo-section-header" style={{
             color: c,
             lineHeight: 1.25,
             marginBottom: '5px',
@@ -194,7 +188,7 @@ function RelicCard({
             background: `${rc}12`, border: `1px solid ${rc}30`,
             borderRadius: '3px', padding: '2px 7px',
           }}>
-            <span style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: rc }}>
+            <span className="typo-label-xs" style={{ color: rc }}>
               {relic.refinement.toUpperCase()}
             </span>
           </div>
@@ -207,8 +201,7 @@ function RelicCard({
         paddingTop: '10px',
         display: 'flex', flexDirection: 'column', gap: '4px',
       }}>
-        <span style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
+        <span className="typo-label-xs" style={{
           color: 'rgba(198,198,199,0.30)',
           marginBottom: '2px',
         }}>
@@ -220,8 +213,7 @@ function RelicCard({
               width: 4, height: 4, borderRadius: '50%', flexShrink: 0,
               background: i === 0 ? '#fbbf24' : 'rgba(198,198,199,0.25)',
             }} />
-            <span style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
+            <span className="typo-label-xs" style={{
               color: i === 0 ? 'rgba(251,191,36,0.75)' : 'rgba(198,198,199,0.45)',
               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
             }}>
@@ -245,7 +237,6 @@ function FissureRow({
   isHighlighted: boolean;
   onClick:       () => void;
 }) {
-  const { tokens } = useThemeStore();
   const [hovered, setHovered] = useState(false);
   const { fissure, msRemaining } = status;
   const c        = TIER_COLOR[fissure.tier];
@@ -273,8 +264,7 @@ function FissureRow({
         background: `${c}18`, border: `1px solid ${c}35`,
         borderRadius: '2px', padding: '2px 3px',
       }}>
-        <span style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
+        <span className="typo-label-xs" style={{
           color: c, display: 'block',
           fontSize: '0.6rem',
         }}>
@@ -284,16 +274,14 @@ function FissureRow({
 
       {/* Mission info */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          ...getTypographyStyle(tokens, 'labelSmall'),
+        <div className="typo-label-sm" style={{
           color: 'rgba(229,226,225,0.82)',
           whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
           fontSize: '0.6875rem',
         }}>
           {nodeName}
         </div>
-        <div style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
+        <div className="typo-label-xs" style={{
           color: 'rgba(198,198,199,0.38)',
           fontSize: '0.6rem',
         }}>
@@ -334,7 +322,6 @@ function FissuresSidebar({
   forceRefetch:    () => Promise<void>;
   isLoading:       boolean;
 }) {
-  const { tokens } = useThemeStore();
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = async () => {
@@ -362,11 +349,10 @@ function FissuresSidebar({
         padding: '9px 12px',
         borderBottom: '1px solid rgba(227,195,114,0.08)',
       }}>
-        <span style={{ ...getTypographyStyle(tokens, 'sectionHeader'), color: 'rgba(227,195,114,0.75)', flex: 1 }}>
+        <span className="typo-section-header" style={{ color: 'rgba(227,195,114,0.75)', flex: 1 }}>
           ACTIVE FISSURES
         </span>
-        <span style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
+        <span className="typo-label-xs" style={{
           background: 'rgba(227,195,114,0.10)', border: '1px solid rgba(227,195,114,0.20)',
           borderRadius: '2px', padding: '1px 6px',
           color: 'rgba(227,195,114,0.70)',
@@ -393,8 +379,7 @@ function FissuresSidebar({
           const c      = TIER_COLOR[tier];
           const active = highlightedTier === tier;
           return (
-            <button key={tier} onClick={() => count > 0 && onTierClick(active ? null : tier)} style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
+            <button key={tier} onClick={() => count > 0 && onTierClick(active ? null : tier)} className="typo-label-xs" style={{
               fontSize: '0.575rem',
               padding: '2px 6px',
               background: active ? `${c}18` : 'transparent',
@@ -415,14 +400,14 @@ function FissuresSidebar({
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {isLoading && allActive.length === 0 && (
           <div style={{ padding: '20px', textAlign: 'center' }}>
-            <span style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: 'rgba(198,198,199,0.35)' }}>
+            <span className="typo-label-xs" style={{ color: 'rgba(198,198,199,0.35)' }}>
               Syncing…
             </span>
           </div>
         )}
         {!isLoading && allActive.length === 0 && (
           <div style={{ padding: '20px', textAlign: 'center' }}>
-            <span style={{ ...getTypographyStyle(tokens, 'body'), color: 'rgba(198,198,199,0.22)' }}>
+            <span className="typo-body" style={{ color: 'rgba(198,198,199,0.22)' }}>
               No active fissures
             </span>
           </div>
@@ -443,8 +428,7 @@ function FissuresSidebar({
                 padding: '5px 10px 3px',
               }}>
                 <div style={{ width: 3, height: 3, borderRadius: '50%', background: c, flexShrink: 0 }} />
-                <span style={{
-                  ...getTypographyStyle(tokens, 'labelTiny'),
+                <span className="typo-label-xs" style={{
                   color: c, opacity: 0.65, fontSize: '0.575rem',
                 }}>
                   {tier.toUpperCase()}
@@ -471,7 +455,7 @@ function FissuresSidebar({
         borderTop: '1px solid rgba(227,195,114,0.05)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
-        <span style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: 'rgba(198,198,199,0.22)', fontSize: '0.575rem' }}>
+        <span className="typo-label-xs" style={{ color: 'rgba(198,198,199,0.22)', fontSize: '0.575rem' }}>
           {formatCacheAge(cacheAgeMs)}
         </span>
       </div>
@@ -482,8 +466,6 @@ function FissuresSidebar({
 // ─── VoidReliquariesPage ──────────────────────────────────────────────────────
 
 export function VoidReliquariesPage() {
-  const { tokens } = useThemeStore();
-
   const [activeView,        setActiveView]       = useState<'myRelics' | 'allRelics'>('myRelics');
   const [activeEras,        setActiveEras]        = useState<Set<FissureTier>>(new Set(TIER_ORDER));
   const [activeRefinements, setActiveRefinements] = useState<Set<Refinement>>(new Set(REFINEMENT_LEVELS));
@@ -515,7 +497,7 @@ export function VoidReliquariesPage() {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '24px', color: 'rgba(198,198,199,0.40)' }}>
         <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#E3C372', animation: 'pulse 1.5s ease-in-out infinite' }} />
-        <span style={{ ...getTypographyStyle(tokens, 'labelSmall'), color: 'rgba(198,198,199,0.38)' }}>
+        <span className="typo-label-sm" style={{ color: 'rgba(198,198,199,0.38)' }}>
           Initializing Void Reliquaries…
         </span>
       </div>
@@ -539,13 +521,12 @@ export function VoidReliquariesPage() {
         {(['myRelics', 'allRelics'] as const).map(view => {
           const active = activeView === view;
           return (
-            <button key={view} onClick={() => setActiveView(view)} style={{
-              ...getTypographyStyle(tokens, 'labelSmall'),
+            <button key={view} onClick={() => setActiveView(view)} className="typo-label-sm" style={{
               padding: '4px 12px',
               background: active ? 'rgba(227,195,114,0.08)' : 'transparent',
               border: `1px solid ${active ? 'rgba(227,195,114,0.30)' : 'rgba(198,198,199,0.10)'}`,
               borderRadius: '3px',
-              color: active ? tokens.colors.primary : 'rgba(198,198,199,0.40)',
+              color: active ? '#E3C372' : 'rgba(198,198,199,0.40)',
               cursor: 'pointer', transition: 'all 0.15s',
             }}>
               {view === 'myRelics' ? 'MY RELICS' : 'ALL RELICS'}
@@ -554,8 +535,7 @@ export function VoidReliquariesPage() {
         })}
 
         {/* Fissures tab */}
-        <button style={{
-          ...getTypographyStyle(tokens, 'labelSmall'),
+        <button className="typo-label-sm" style={{
           padding: '4px 12px',
           background: 'transparent',
           border: '1px solid rgba(198,198,199,0.10)',
@@ -573,8 +553,7 @@ export function VoidReliquariesPage() {
           const active = activeEras.has(tier);
           const c      = TIER_COLOR[tier];
           return (
-            <button key={tier} onClick={() => toggleEra(tier)} style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
+            <button key={tier} onClick={() => toggleEra(tier)} className="typo-label-xs" style={{
               padding: '3px 9px',
               background: active ? `${c}12` : 'transparent',
               border: `1px solid ${active ? `${c}40` : 'rgba(198,198,199,0.08)'}`,
@@ -594,8 +573,7 @@ export function VoidReliquariesPage() {
           const active = activeRefinements.has(ref);
           const c      = REFINEMENT_COLOR[ref];
           return (
-            <button key={ref} onClick={() => toggleRefinement(ref)} style={{
-              ...getTypographyStyle(tokens, 'labelTiny'),
+            <button key={ref} onClick={() => toggleRefinement(ref)} className="typo-label-xs" style={{
               padding: '3px 9px',
               background: active ? `${c}10` : 'transparent',
               border: `1px solid ${active ? `${c}35` : 'rgba(198,198,199,0.07)'}`,
@@ -622,8 +600,8 @@ export function VoidReliquariesPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search relics…"
+            className="typo-label-sm"
             style={{
-              ...getTypographyStyle(tokens, 'labelSmall'),
               background: 'transparent', border: 'none', outline: 'none',
               color: 'rgba(198,198,199,0.70)', width: 120,
             }}
@@ -633,19 +611,17 @@ export function VoidReliquariesPage() {
 
       {/* ── Results count ─────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ ...getTypographyStyle(tokens, 'sectionHeader'), color: 'rgba(227,195,114,0.65)' }}>
+        <span className="typo-section-header" style={{ color: 'rgba(227,195,114,0.65)' }}>
           {activeView === 'myRelics' ? 'MY RELICS' : 'ALL RELICS'}
         </span>
-        <span style={{
-          ...getTypographyStyle(tokens, 'labelTiny'),
+        <span className="typo-label-xs" style={{
           background: 'rgba(227,195,114,0.08)', border: '1px solid rgba(227,195,114,0.18)',
           borderRadius: '2px', padding: '1px 6px', color: 'rgba(227,195,114,0.55)',
         }}>
           {filteredRelics.length}
         </span>
         {highlightedTier && (
-          <span style={{
-            ...getTypographyStyle(tokens, 'labelTiny'),
+          <span className="typo-label-xs" style={{
             color: TIER_COLOR[highlightedTier],
             background: `${TIER_COLOR[highlightedTier]}10`,
             border: `1px solid ${TIER_COLOR[highlightedTier]}30`,
@@ -673,7 +649,7 @@ export function VoidReliquariesPage() {
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px',
             }}>
               <span style={{ fontSize: '24px', opacity: 0.18 }}>◈</span>
-              <span style={{ ...getTypographyStyle(tokens, 'sectionHeader'), color: 'rgba(198,198,199,0.30)' }}>
+              <span className="typo-section-header" style={{ color: 'rgba(198,198,199,0.30)' }}>
                 {activeView === 'myRelics' ? 'NO OWNED RELICS MATCH FILTERS' : 'NO RELICS MATCH FILTERS'}
               </span>
             </div>
@@ -705,15 +681,15 @@ export function VoidReliquariesPage() {
               padding: '8px 14px',
               borderBottom: '1px solid rgba(227,195,114,0.07)',
             }}>
-              <span style={{ ...getTypographyStyle(tokens, 'sectionHeader'), color: 'rgba(227,195,114,0.65)' }}>
+              <span className="typo-section-header" style={{ color: 'rgba(227,195,114,0.65)' }}>
                 VAULT DEFICIENCIES
               </span>
-              <span style={{ ...getTypographyStyle(tokens, 'labelTiny'), color: 'rgba(198,198,199,0.22)' }}>
+              <span className="typo-label-xs" style={{ color: 'rgba(198,198,199,0.22)' }}>
                 PRIME PARTS NEEDED
               </span>
             </div>
             <div style={{ padding: '12px 14px' }}>
-              <span style={{ ...getTypographyStyle(tokens, 'body'), color: 'rgba(198,198,199,0.25)' }}>
+              <span className="typo-body" style={{ color: 'rgba(198,198,199,0.25)' }}>
                 Add your owned relics to reveal missing prime parts from your collection.
               </span>
             </div>
