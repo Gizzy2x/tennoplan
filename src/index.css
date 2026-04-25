@@ -51,6 +51,22 @@
   --color-accent-gold:    #e3c372;
   --color-accent-teal:    #00d4ff;
 
+  /* Status Colors */
+  --color-status-urgent:  #fb923c;
+  --color-status-error:   #f87171;
+  --color-status-success: #4ade80;
+
+  /* Challenge Kind Colors (Nightwave) */
+  --color-kind-daily-bg:  rgba(229,226,225,0.92);
+  --color-kind-daily-border: rgba(227,195,114,0.45);
+  --color-kind-daily-top: rgba(227,195,114,0.70);
+  --color-kind-weekly-bg: rgba(198,198,199,0.88);
+  --color-kind-weekly-border: rgba(186,195,254,0.40);
+  --color-kind-weekly-top: rgba(186,195,254,0.65);
+  --color-kind-elite-bg:  rgba(200,158,8,0.90);
+  --color-kind-elite-border: rgba(255,220,80,0.55);
+  --color-kind-elite-top: rgba(255,220,80,0.80);
+
   /* Spacing — 4pt modular scale */
   --space-xs:  4px;
   --space-sm:  8px;
@@ -90,6 +106,13 @@
 
   /* Border radius */
   --radius-card: 6px;
+  --radius-sm:   4px;
+
+  /* Semantic aliases — resolve old token names */
+  --color-primary:                   var(--color-accent-gold);
+  --font-label:                      var(--font-sans);
+  --font-headline:                   var(--font-serif);
+  --color-surface-container-lowest:  var(--color-bg-secondary);
 }
 
 /* ================================================================
@@ -106,6 +129,31 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ================================================================
+   Accessibility — Focus Indicators
+   ================================================================ */
+
+button:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 ::selection {

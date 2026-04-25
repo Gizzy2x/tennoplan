@@ -31,18 +31,17 @@ function ResetCounter({
   urgentMs:    number;
 }) {
   const isUrgent  = msRemaining > 0 && msRemaining < urgentMs;
-  const timeColor = isUrgent ? '#fb923c' : '#E3C372';
   const timeStr   = msRemaining > 0 ? formatMsHuman(msRemaining) : '—';
 
   return (
     <div
       className="glass-panel px-5 py-3 flex flex-col gap-0.5 relative overflow-hidden"
-      style={{ borderColor: `${timeColor}18` }}
+      style={{ borderColor: isUrgent ? 'rgba(251,146,60,0.09)' : 'rgba(227,195,114,0.09)' }}
     >
       {/* Top accent line */}
       <div
         className="absolute top-0 left-0 right-0 h-px pointer-events-none"
-        style={{ background: `linear-gradient(90deg, transparent, ${timeColor}40, transparent)` }}
+        style={{ background: isUrgent ? 'linear-gradient(90deg, transparent, rgba(251,146,60,0.25), transparent)' : 'linear-gradient(90deg, transparent, rgba(227,195,114,0.25), transparent)' }}
       />
       <p
         data-role="labelTiny"
@@ -54,16 +53,16 @@ function ResetCounter({
       {/* Countdown — font-mono, intentionally not a token role */}
       <p
         className={['font-mono text-xl font-bold tabular-nums leading-none', isUrgent ? 'orokin-countdown-glow' : ''].filter(Boolean).join(' ')}
-        style={{ color: timeColor }}
+        style={{ color: isUrgent ? 'var(--color-status-urgent)' : 'var(--color-accent-gold)' }}
       >
         {timeStr}
       </p>
       <p
         data-role="labelTiny"
         className="typo-label-xs mt-0.5"
-        style={{ color: timeColor, opacity: 0.35 }}
+        style={{ color: isUrgent ? 'var(--color-status-urgent)' : 'var(--color-accent-gold)', opacity: 0.35 }}
       >
-        {isUrgent ? 'expires soon' : 'remaining'}
+        {isUrgent ? 'expires soon' : 'time left'}
       </p>
     </div>
   );
@@ -80,21 +79,21 @@ const KIND_SECTION: Record<ChallengeKind, {
   color:   string;
 }> = {
   daily: {
-    bg:      'rgba(229,226,225,0.92)',
-    bord:    'rgba(227,195,114,0.45)',
-    topBord: 'rgba(227,195,114,0.70)',
+    bg:      'var(--color-kind-daily-bg)',
+    bord:    'var(--color-kind-daily-border)',
+    topBord: 'var(--color-kind-daily-top)',
     color:   '#1a1a1a',
   },
   weekly: {
-    bg:      'rgba(198,198,199,0.88)',
-    bord:    'rgba(186,195,254,0.40)',
-    topBord: 'rgba(186,195,254,0.65)',
+    bg:      'var(--color-kind-weekly-bg)',
+    bord:    'var(--color-kind-weekly-border)',
+    topBord: 'var(--color-kind-weekly-top)',
     color:   '#1a1a1a',
   },
   elite: {
-    bg:      'rgba(200,158,8,0.90)',
-    bord:    'rgba(255,220,80,0.55)',
-    topBord: 'rgba(255,220,80,0.80)',
+    bg:      'var(--color-kind-elite-bg)',
+    bord:    'var(--color-kind-elite-border)',
+    topBord: 'var(--color-kind-elite-top)',
     color:   '#131313',
   },
 };
@@ -181,30 +180,18 @@ export function DailiesWeekliesPage() {
     archonHuntStatus,
     deepArchimedeaStatus,
     season,
-    seasonTag,
     isLoading,
     isError,
     isStale,
     cacheAgeMs,
     hasEverLoaded,
-    lastSync,
     toggleComplete,
     toggleSortieCompleted,
     toggleArchonCompleted,
     toggleEdaCompleted,
   } = useDailiesData();
 
-  const lastSyncLabel = lastSync
-    ? new Date(lastSync).toLocaleTimeString([], {
-        hour:   '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      })
-    : '—';
-
   const syncState = isLoading ? 'SYNCING' : isError ? 'OFFLINE' : 'ONLINE';
-
-  const seasonLabel = season > 0 ? `Season ${season}` : seasonTag || 'Nightwave';
 
   const weeklyPct          = Math.min(1, weeklyEarned / NW_WEEKLY_STANDING_CAP);
   const standingRemaining  = Math.max(0, NW_WEEKLY_STANDING_CAP - weeklyEarned);
@@ -213,8 +200,6 @@ export function DailiesWeekliesPage() {
   const weeklyMs = grouped.weekly[0]?.msRemaining ?? grouped.elite[0]?.msRemaining ?? 0;
 
   const kindOrder: ChallengeKind[] = ['daily', 'weekly', 'elite'];
-
-  void lastSyncLabel; void seasonLabel; void isError;
 
   return (
     <>
@@ -243,7 +228,7 @@ export function DailiesWeekliesPage() {
           {/* Background gold glow */}
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: 'radial-gradient(ellipse at 30% 50%, rgba(227,195,114,0.04), transparent 70%)' }}
+            style={{ background: 'radial-gradient(ellipse at 30% 50%, var(--color-accent-gold) 0%, transparent 70%)' }}
           />
 
           <div className="relative flex items-end justify-between gap-8">
@@ -258,7 +243,7 @@ export function DailiesWeekliesPage() {
               </p>
               {/* Large earned figure — font-mono */}
               <div className="flex items-end gap-3">
-                <p className="font-mono font-bold tabular-nums leading-none" style={{ fontSize: '2.4rem', color: '#E3C372' }}>
+                <p className="font-mono font-bold tabular-nums leading-none" style={{ fontSize: '2.4rem', color: 'var(--color-accent-gold)' }}>
                   {(weeklyEarned / 1000).toFixed(0)}k
                 </p>
                 <p className="font-mono text-xl font-bold tabular-nums leading-none mb-0.5" style={{ color: 'rgba(227,195,114,0.40)' }}>
@@ -358,14 +343,14 @@ export function DailiesWeekliesPage() {
               className="typo-hero leading-none"
               style={{ fontSize: '1.5rem', color: 'rgba(229,226,225,1)' }}
             >
-              Nightwave <span style={{ color: '#E3C372', fontStyle: 'italic' }}>Challenges</span>
+              Nightwave <span style={{ color: 'var(--color-accent-gold)', fontStyle: 'italic' }}>Challenges</span>
             </h3>
             {season > 0 && (
               <span
                 data-role="labelTiny"
                 className="typo-label-xs px-2 py-0.5"
                 style={{
-                  color:           '#E3C372',
+                  color:           'var(--color-accent-gold)',
                   border:          '1px solid rgba(227,195,114,0.25)',
                   backgroundColor: 'rgba(227,195,114,0.06)',
                 }}
@@ -375,7 +360,7 @@ export function DailiesWeekliesPage() {
             )}
           </div>
 
-          <div className="space-y-10">
+          <div className="space-y-12">
             {kindOrder.map(kind => {
               const statuses = grouped[kind];
               if (statuses.length === 0) return null;

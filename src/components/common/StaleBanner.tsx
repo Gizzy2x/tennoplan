@@ -59,8 +59,8 @@ export function StaleBanner({ staleInfo }: StaleBannerProps) {
         }}
       >
         {isNeverSynced
-          ? 'Drop data unavailable — sync required for accurate bounty drops'
-          : `Drop data ${staleInfo.daysOld}d old — refresh recommended`}
+          ? 'Drop data missing — sync now to see accurate bounty drops'
+          : `Drop data is ${staleInfo.daysOld}d old — sync to refresh`}
       </p>
 
       {/* CTA */}
@@ -89,7 +89,7 @@ export function StaleBanner({ staleInfo }: StaleBannerProps) {
           (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(227,195,114,0.22)';
         }}
       >
-        Open Settings →
+        Sync →
       </button>
     </div>
   );

@@ -39,10 +39,10 @@ function SystemPulse() {
   const isDisabled  = isSyncing || inCooldown;
 
   const title = isSyncing
-    ? 'Somatic link syncing…'
+    ? 'Syncing data…'
     : inCooldown
-      ? `Next sync available in ${secondsLeft}s`
-      : `Last Link: ${ageLabel} · Click to sync`;
+      ? `Try again in ${secondsLeft}s`
+      : `Last synced: ${ageLabel} · Click to sync`;
 
   async function handleSync() {
     if (isDisabled) return;
@@ -108,7 +108,7 @@ function SystemPulse() {
           transition:    'color 0.3s',
         }}
       >
-        {isSyncing ? 'Linking…' : `Last Link: ${ageLabel}`}
+        {isSyncing ? 'Syncing…' : `Last synced: ${ageLabel}`}
       </span>
     </div>
   );
@@ -221,7 +221,7 @@ export function Header() {
           />
           <input
             type="text"
-            placeholder="SEARCH SYSTEMS..."
+            placeholder="SEARCH..."
             style={{
               backgroundColor: "transparent",
               border: "none",

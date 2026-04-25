@@ -9,8 +9,14 @@ import {
 } from '../adapters/storage/worldstateCache';
 import { logger } from '../core/utils/logger';
 import { useHeartbeatStore } from '../store/heartbeat';
+import { generateMockWorldstate } from '@/lib/mockdata/fixtures';
 
 const log = logger.scope('SyncService');
+
+/** Check if mock mode is enabled via environment variable. */
+function isMockModeEnabled(): boolean {
+  return import.meta.env.VITE_USE_MOCK_DATA === 'true';
+}
 
 // ---------------------------------------------------------------------------
 // Endpoint config
@@ -126,6 +132,17 @@ interface FetchResult {
 }
 
 async function fetchWorldstate(storedEtag: string | null): Promise<FetchResult> {
+  // If mock mode is enabled, return mock worldstate data
+  if (isMockModeEnabled()) {
+    log.info('📦 Mock mode enabled — returning mock worldstate data.');
+    return {
+      data: generateMockWorldstate(),
+      endpoint: 'Direct',
+      source: 'warframestat',
+      etag: null,
+    };
+  }
+
   const primaryEndpoint: FetchEndpoint = CF_WORKER_URL ? 'Worker' : 'Direct';
 
   try {

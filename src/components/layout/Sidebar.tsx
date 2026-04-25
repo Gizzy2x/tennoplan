@@ -54,7 +54,7 @@ export function Sidebar() {
             className="font-headline text-[10px] uppercase tracking-[0.1em] whitespace-nowrap"
             style={{ color: colors.accentGold, opacity: 0.7 }}
           >
-            SOMATIC LINK ACTIVE
+            READY
           </p>
         </div>
 
