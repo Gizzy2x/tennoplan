@@ -3,6 +3,8 @@ import type {
   SortieRaw,
   ArchonHuntRaw,
   ArchonHuntStatus,
+  ArchimedeaRaw,
+  ArchimedeaStatus,
   ChallengeKind,
   ChallengeStatus,
   SortieStatus,
@@ -45,6 +47,13 @@ export function computeSortieStatus(raw: SortieRaw, now: number): SortieStatus {
 }
 
 export function computeArchonHuntStatus(raw: ArchonHuntRaw, now: number): ArchonHuntStatus {
+  return {
+    raw,
+    msRemaining: Math.max(0, new Date(raw.expiry).getTime() - now),
+  };
+}
+
+export function computeArchimedeaStatus(raw: ArchimedeaRaw, now: number): ArchimedeaStatus {
   return {
     raw,
     msRemaining: Math.max(0, new Date(raw.expiry).getTime() - now),

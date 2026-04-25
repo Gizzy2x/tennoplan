@@ -81,7 +81,8 @@
       "Bash(sed -i 's/import { useCallback, useState, useRef }/import { useState, useRef }/' src/components/dev/ThemeEditor.tsx)",
       "Bash(sed -i \"s/import React from 'react';//\" src/features/void-reliquaries/VoidReliquariesPage.tsx)",
       "Bash(sed -i \"s/import { Star }/import {/\" src/features/void-reliquaries/VoidReliquariesPage.tsx)",
-      "Bash(sed -i \"s/import { Zap }/import {/\" src/features/solar-rail-feed/components/AlertCard.tsx)"
+      "Bash(sed -i \"s/import { Zap }/import {/\" src/features/solar-rail-feed/components/AlertCard.tsx)",
+      "Bash(git commit -m 'docs: Add design system and component architecture *)"
     ]
   },
   "hooks": {

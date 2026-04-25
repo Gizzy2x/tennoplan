@@ -6,6 +6,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { formatMs } from '@/core/services/cycleService';
 import { TIER_COLOR, ENEMY_COLOR } from '@/core/services/fissureService';
+import { ProgressBar } from '@/components/ui/ProgressBar';
 import type { FissureStatus } from '@/core/domain/relics';
 
 // ---------------------------------------------------------------------------
@@ -220,17 +221,12 @@ export function FissureCard({ status }: FissureCardProps) {
         </p>
 
         {/* ── Progress bar ──────────────────────────────────────────── */}
-        <div className="w-full h-1 bg-surface-container-highest mt-auto relative overflow-hidden">
-          <div
-            className="absolute inset-y-0 left-0 h-full"
-            style={{
-              width:           `${(1 - progress) * 100}%`,
-              backgroundColor: isExpired ? 'transparent' : '#E3C372',
-              boxShadow:       isExpired ? 'none' : `0 0 6px #E3C37280, 0 0 12px ${tierColor}40`,
-              transition:      'width 1s linear',
-            }}
-          />
-        </div>
+        <ProgressBar
+          value={1 - progress}
+          color={isExpired ? 'transparent' : tierColor}
+          glow={!isExpired}
+          style={{ marginTop: 'auto' }}
+        />
       </div>
     </div>
   );
