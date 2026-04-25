@@ -1,88 +1,56 @@
 {
   "permissions": {
     "allow": [
-      "Bash(find . -maxdepth 2 -type f -name README.md -o -name .cursorrules -o -name CLAUDE.md -o -name next.config.* -o -name tsconfig.json)",
-      "Bash(find . -not -path ./.git/* -type d)",
-      "Bash(npm update:*)",
+      "Bash(npm run:*)",
+      "Bash(npm install:*)",
+      "Bash(npm audit:*)",
+      "Bash(npm pack *)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vite:*)",
+      "Bash(npx wrangler:*)",
+      "Bash(npx skills *)",
+      "Bash(node *)",
+      "Bash(git add *)",
+      "Bash(git push *)",
+      "Bash(git commit -m *)",
+      "Bash(git log *)",
+      "Bash(git diff *)",
+      "Bash(git status*)",
+      "Bash(find . *)",
+      "Bash(rm -f *)",
+      "Bash(rm -rf *)",
+      "Bash(mkdir -p *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(curl *)",
+      "Bash(echo *)",
+      "Bash(awk *)",
+      "Bash(sed *)",
+      "Bash(xxd*)",
+      "Bash(tar *)",
       "Bash(claude mcp:*)",
       "Bash(claude --version)",
-      "Bash(npx tsc:*)",
-      "Bash(npm run:*)",
+      "Bash(find 'C:/Users/Nuclear Spaceship/.claude' *)",
       "mcp__Claude_Preview__preview_start",
-      "Bash(find 'C:/Users/Nuclear Spaceship/.claude' -name settings*.json)",
-      "Bash(find 'C:/Users/Nuclear Spaceship/.claude' -name *.json)",
-      "Bash(xargs grep:*)",
-      "Bash(\"C:\\\\Users\\\\Nuclear Spaceship\\\\Documents\\\\GitHub\\\\tennoplan\\\\src\\\\adapters\\\\api\\\\WorldstateAdapter.ts\")",
-      "Bash(\"C:\\\\Users\\\\Nuclear Spaceship\\\\Documents\\\\GitHub\\\\tennoplan\\\\src\\\\features\\\\dailies-weeklies\\\\hooks\\\\useDailiesData.ts\")",
-      "Bash(npx vite:*)",
-      "Bash(\"C:\\\\Users\\\\Nuclear Spaceship\\\\Documents\\\\GitHub\\\\tennoplan\\\\src\\\\adapters\\\\api\\\\dailiesAdapter.ts\")",
-      "Bash(npm install:*)",
-      "Bash(find src/features/celestial-pendulum src/core/domain src/adapters/api/syndic* src/adapters/api/simarisAdapter.ts -type f)",
-      "mcp__context-mode__ctx_batch_execute",
-      "mcp__context-mode__ctx_fetch_and_index",
-      "mcp__Claude_in_Chrome__tabs_context_mcp",
-      "WebFetch(domain:warframe.wiki.gg)",
-      "mcp__context-mode__ctx_execute",
-      "Bash(python3 \"C:/Users/Nuclear Spaceship/.claude/plugins/cache/ui-ux-pro-max-skill/ui-ux-pro-max/2.5.0/.claude/skills/ui-ux-pro-max/scripts/search.py\" \"gaming companion dark cinematic immersive data dashboard\" --design-system -p \"Tennoplan Celestial Pendulum\" -f markdown)",
-      "Bash(python3 cli/assets/scripts/search.py \"gaming companion dark cinematic immersive real-time dashboard\" --design-system -p \"Tennoplan\" -f markdown)",
-      "Bash(npm audit:*)",
-      "Bash(New-Item -ItemType File -Path \"src/adapters/api/worldstate/index.ts\" -Force)",
-      "mcp__obsidian__search-vault",
+      "mcp__Claude_Preview__preview_screenshot",
+      "mcp__Claude_Preview__preview_snapshot",
+      "mcp__Claude_Preview__preview_console_logs",
+      "mcp__Claude_Preview__preview_logs",
+      "mcp__Claude_Preview__preview_network",
+      "mcp__Claude_Preview__preview_eval",
+      "mcp__obsidian__read-note",
       "mcp__obsidian__edit-note",
       "mcp__obsidian__create-note",
-      "Bash(rm -f src/adapters/api/worldstateFetcher.ts src/adapters/api/fissureAdapter.ts src/adapters/api/cyclesAdapter.ts src/adapters/api/ascensionAdapter.ts src/adapters/api/dailiesAdapter.ts src/adapters/api/railAdapter.ts src/adapters/api/simarisAdapter.ts src/adapters/api/syndicatesAdapter.ts)",
-      "Bash(rm -rf src/adapters/legacy/)",
-      "Bash(curl -L -o 'C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/tennoplan/public/fonts/noto-serif-vf.woff2' https://fonts.gstatic.com/s/notoserif/v23/ga6iaw1J5X9T9RW6j9bNVls-hfgvz8brpZ-BEA.woff2 --user-agent Mozilla/5.0)",
-      "Bash(curl -L -o 'C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/tennoplan/public/fonts/inter-vf.woff2' https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2 --user-agent Mozilla/5.0)",
-      "Bash(xxd)",
-      "Bash(curl -s 'https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900&display=swap' -H 'User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36')",
-      "Bash(xxd \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/tennoplan/public/fonts/inter-vf.woff2\")",
-      "Bash(curl -s -L -o 'C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/tennoplan/public/fonts/noto-serif-vf.woff2' https://fonts.gstatic.com/s/notoserif/v33/ga6daw1J5X9T9RW6j9bNVls-hfgvz8JcMofYTYf6D30.woff2 --user-agent 'Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36')",
+      "mcp__obsidian__search-vault",
+      "mcp__obsidian__list-available-vaults",
+      "WebFetch(domain:warframe.wiki.gg)",
       "WebFetch(domain:hub.warframestat.us)",
       "WebFetch(domain:docs.warframestat.us)",
-      "WebSearch",
-      "Bash(npx wrangler:*)",
-      "Bash(VITE_WORLDSTATE_WORKER_URL=\"https://app.test.workers.dev\" npm run build)",
-      "mcp__obsidian__list-available-vaults",
-      "Bash(curl -s \"https://api.warframestat.us/pc/\")",
-      "Bash(curl -v \"https://api.warframestat.us/pc/\")",
-      "Bash(curl -s \"https://api.warframestat.us/\")",
-      "Bash(curl -s \"https://api.warframestat.us/v2/pc\")",
-      "Bash(curl -s \"https://api.warframestat.us/v2/pc/\")",
       "WebFetch(domain:www.npmjs.com)",
-      "Bash(curl -s \"https://registry.npmjs.org/warframe-worldstate-parser/latest\")",
-      "Bash(python3 -c \"import json, sys; d = json.load\\(sys.stdin\\); print\\('Version:', d.get\\('version'\\)\\); print\\('Main:', d.get\\('main'\\)\\); print\\('Module:', d.get\\('module'\\)\\); print\\('Type:', d.get\\('type'\\)\\); print\\('Dependencies:'\\); [print\\(' ', k, v\\) for k, v in d.get\\('dependencies', {}\\).items\\(\\)]; print\\('Browser field:', d.get\\('browser', 'not set'\\)\\)\")",
-      "Bash(mkdir -p /tmp/wfparser-test)",
+      "WebSearch",
       "Read(//tmp/**)",
-      "Bash(npm pack *)",
-      "Bash(tar -xzf warframe-worldstate-parser-5.3.3.tgz)",
-      "Bash(node test-parser.mjs)",
       "Skill(update-config)",
-      "Skill(update-config:*)",
-      "Bash(node -e \"const fs = require\\('fs'\\); const data = JSON.parse\\(fs.readFileSync\\('src/lib/icons/items-map.json'\\)\\); const cats = {}; Object.values\\(data\\).forEach\\(v => { cats[v.category] = \\(cats[v.category] || 0\\) + 1; }\\); const sorted = Object.entries\\(cats\\).sort\\(\\(a,b\\) => b[1] - a[1]\\); sorted.forEach\\(\\([cat, count]\\) => console.log\\(cat + ': ' + count\\)\\);\")",
-      "mcp__obsidian__read-note",
-      "Bash(echo \"---EXIT:$?---\")",
-      "Bash(awk '{print $NF}')",
-      "Bash(npx skills *)",
-      "Bash(node .agents/skills/impeccable/scripts/cleanup-deprecated.mjs)",
-      "Bash(git push *)",
-      "Bash(git add *)",
-      "Bash(git commit -m 'WIP: Design system setup, component refinement, and skill installation *)",
-      "Bash(sed -i \"1,/^import/a import type { DesignTokens } from '@/tokens/index';\" src/features/celestial-pendulum/components/BountyJobList.tsx)",
-      "Bash(sed -i \"s/type Tokens = ReturnType<typeof useThemeStore>\\\\['tokens'\\\\];/type Tokens = DesignTokens;/\" src/features/celestial-pendulum/components/BountyJobList.tsx)",
-      "Bash(sed -i \"1,/^import/a import type { DesignTokens } from '@/tokens/index';\" src/features/celestial-pendulum/components/CinematicCyclePanel.tsx)",
-      "Bash(sed -i \"s/type Tokens = ReturnType<typeof useThemeStore>\\\\['tokens'\\\\];/type Tokens = DesignTokens;/\" src/features/celestial-pendulum/components/CinematicCyclePanel.tsx)",
-      "Bash(sed -i \"1,/^import/a import type { DesignTokens } from '@/tokens/index';\" src/features/celestial-pendulum/components/SyndicateMissionsPanel.tsx)",
-      "Bash(sed -i \"1,/^import/a import type { DesignTokens } from '@/tokens/index';\" src/features/dailies-weeklies/DailiesWeekliesPage.tsx)",
-      "Bash(sed -i \"s/type Tokens = ReturnType<typeof useThemeStore>\\\\['tokens'\\\\];/type Tokens = DesignTokens;/\" src/features/dailies-weeklies/DailiesWeekliesPage.tsx)",
-      "Bash(sed -i \"1,/^import/a import type { DesignTokens } from '@/tokens/index';\" src/features/settings/SettingsPage.tsx)",
-      "Bash(sed -i \"s/type Tokens = ReturnType<typeof useThemeStore>\\\\['tokens'\\\\];/type Tokens = DesignTokens;/\" src/features/settings/SettingsPage.tsx)",
-      "Bash(sed -i \"1,/^import/a import type { DesignTokens } from '@/tokens/index';\" src/features/solar-rail-feed/components/SortieCard.tsx)",
-      "Bash(sed -i 's/import { useCallback, useState, useRef }/import { useState, useRef }/' src/components/dev/ThemeEditor.tsx)",
-      "Bash(sed -i \"s/import React from 'react';//\" src/features/void-reliquaries/VoidReliquariesPage.tsx)",
-      "Bash(sed -i \"s/import { Star }/import {/\" src/features/void-reliquaries/VoidReliquariesPage.tsx)",
-      "Bash(sed -i \"s/import { Zap }/import {/\" src/features/solar-rail-feed/components/AlertCard.tsx)",
-      "Bash(git commit -m 'docs: Add design system and component architecture *)"
+      "Skill(update-config:*)"
     ]
   },
   "hooks": {
@@ -91,19 +59,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat 'C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Context.md' 2>/dev/null || echo '(No context file found)'"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash -c 'echo \"\\n**$(date +\"%Y-%m-%d %H:%M\") - Auto-logged commit:**\" >> \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\" && git log -1 --pretty=format:\"- %s (%an)\" >> \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\"' 2>/dev/null || true",
-            "if": "Bash(git commit*)"
+            "command": "bash -c 'echo \"=== TENNOPLAN CONTEXT ===\"; cat \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Context.md\" 2>/dev/null || echo \"(context file missing)\"; echo; echo \"=== RECENT SESSIONS (last 20 lines) ===\"; tail -20 \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\" 2>/dev/null || echo \"(no session log yet)\"'"
           }
         ]
       }
@@ -113,7 +69,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'mkdir -p \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes\" && echo \"\\n## Session ended $(date +\"%Y-%m-%d %H:%M\")\" >> \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Sessions.md\"' 2>/dev/null || true"
+            "command": "bash -c 'VAULT=\"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes\"; mkdir -p \"$VAULT\"; LAST_COMMIT=$(git -C \"C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/tennoplan\" log -1 --pretty=format:\"%s\" 2>/dev/null || echo \"no commit\"); echo \"\" >> \"$VAULT/Tennoplan-Sessions.md\"; echo \"## Session ended $(date +\"%Y-%m-%d %H:%M\")\" >> \"$VAULT/Tennoplan-Sessions.md\"; echo \"Last commit: $LAST_COMMIT\" >> \"$VAULT/Tennoplan-Sessions.md\"' 2>/dev/null || true"
           }
         ]
       }

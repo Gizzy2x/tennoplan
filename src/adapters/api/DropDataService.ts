@@ -33,6 +33,7 @@ import { getIconUrl } from '@/lib/icons/IconResolver';
 import type { StoredItem, ItemCategory } from '@/core/domain/items';
 import type { DataSyncId } from '@/core/domain/sync';
 import itemsMap from '@/lib/icons/items-map.json';
+import { MOCK_DROP_LOCATIONS, MOCK_ITEMS } from '@/lib/mockdata/fixtures';
 
 const log = logger.scope('DropDataService');
 
@@ -40,6 +41,11 @@ const log = logger.scope('DropDataService');
 
 /** Authoritative drop-data source. drops.warframestat.us mirrors WFCD/warframe-drop-data. */
 const DROPS_URL = 'https://drops.warframestat.us/data/all.json';
+
+/** Check if mock mode is enabled via environment variable. */
+function isMockModeEnabled(): boolean {
+  return import.meta.env.VITE_USE_MOCK_DATA === 'true';
+}
 
 /** 14 days — the plan's stale threshold. Beyond this, the banner surfaces. */
 const STALE_AFTER_MS = 14 * 24 * 60 * 60 * 1000;
@@ -199,6 +205,8 @@ export const DropDataService = {
   /**
    * Manually fetch + store drop data and rebuild the items catalogue.
    *
+   * If VITE_USE_MOCK_DATA=true, loads fixtures instead of calling the live API.
+   *
    * Emits progress updates via `options.onProgress`. Retries failed fetches
    * with exponential backoff. On total failure, existing Dexie rows are
    * preserved untouched — callers can still serve stale data.
@@ -209,6 +217,60 @@ export const DropDataService = {
   async fetchAndSync(options: FetchOptions = {}): Promise<FetchResult> {
     const { onProgress, maxRetries = 3, timeoutMs = REQUEST_TIMEOUT_MS } = options;
     const startedAt = Date.now();
+    const mockMode = isMockModeEnabled();
+
+    if (mockMode) {
+      emit(onProgress, '📦 Using mock data (VITE_USE_MOCK_DATA=true)…', 10);
+
+      const now = Date.now();
+      const itemRows = MOCK_ITEMS;
+      const dropRows = MOCK_DROP_LOCATIONS;
+
+      emit(onProgress, 'Writing mock data to local database…', 50);
+
+      try {
+        await db.transaction(
+          'rw',
+          [db.items, db.dropLocations, db.dataSyncState],
+          async () => {
+            await db.items.clear();
+            await db.dropLocations.clear();
+            await db.items.bulkPut(itemRows);
+            await db.dropLocations.bulkPut(dropRows);
+            await db.dataSyncState.put({
+              id: 'items',
+              lastUpdated: now,
+              rowCount: itemRows.length,
+              lastErrorMessage: undefined,
+            });
+            await db.dataSyncState.put({
+              id: 'dropLocations',
+              lastUpdated: now,
+              rowCount: dropRows.length,
+              lastErrorMessage: undefined,
+            });
+          },
+        );
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        log.error('Mock data write failed', err);
+        emit(onProgress, `Failed: ${msg}`, null);
+        throw err;
+      }
+
+      const durationMs = Date.now() - startedAt;
+      log.success(
+        `Mock: Loaded ${itemRows.length} items + ${dropRows.length} drop locations in ${(durationMs / 1000).toFixed(1)} s.`,
+      );
+      emit(onProgress, '✓ Mock data ready.', 100);
+
+      return {
+        itemsCount: itemRows.length,
+        dropsCount: dropRows.length,
+        durationMs,
+        fetchedAt: now,
+      };
+    }
 
     emit(onProgress, 'Connecting to drop-data source…', 5);
 

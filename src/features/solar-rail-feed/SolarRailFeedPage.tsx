@@ -97,15 +97,15 @@ export function SolarRailFeedPage() {
       )}
 
       {hasEverLoaded && !isError && (
-        <div className="space-y-10">
+        <div className="space-y-12">
 
           {/* ── 1. Alerts ──────────────────────────────────────────────── */}
           {alertStatuses.length > 0 && (
             <section>
               <SectionHeader icon={AlertTriangle} label="Active Alerts" count={alertStatuses.length} color="#E3C372" />
-              <div className="grid grid-cols-12 gap-5">
+              <div className="grid gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
                 {alertStatuses.map(s => (
-                  <div key={s.alert.id} className="col-span-6">
+                  <div key={s.alert.id}>
                     <AlertCard status={s} />
                   </div>
                 ))}
@@ -119,9 +119,9 @@ export function SolarRailFeedPage() {
               {alertStatuses.length > 0 && <div className="somatic-line" />}
               <section>
                 <SectionHeader icon={Sword} label="Active Invasions" count={invasionStatuses.length} color="#C6C6C7" />
-                <div className="grid grid-cols-12 gap-5">
+                <div className="grid gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
                   {invasionStatuses.map(s => (
-                    <div key={s.invasion.id} className="col-span-6">
+                    <div key={s.invasion.id}>
                       <InvasionCard status={s} />
                     </div>
                   ))}
@@ -136,9 +136,9 @@ export function SolarRailFeedPage() {
               <div className="somatic-line" />
               <section>
                 <SectionHeader icon={Tag} label="Darvo Deals" count={darvoDealStatuses.length} color="#E3C372" />
-                <div className="grid grid-cols-12 gap-5">
+                <div className="grid gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                   {darvoDealStatuses.map(s => (
-                    <div key={s.deal.id} className="col-span-4">
+                    <div key={s.deal.id}>
                       <DarvoDealCard status={s} />
                     </div>
                   ))}
@@ -171,10 +171,8 @@ export function SolarRailFeedPage() {
               <div className="somatic-line" />
               <section>
                 <SectionHeader icon={Skull} label="Steel Path" color="#f87171" />
-                <div className="grid grid-cols-12 gap-5">
-                  <div className="col-span-6">
-                    <SteelPathCard status={steelPathStatus} />
-                  </div>
+                <div className="grid gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+                  <SteelPathCard status={steelPathStatus} />
                 </div>
               </section>
             </>
@@ -186,9 +184,9 @@ export function SolarRailFeedPage() {
               <div className="somatic-line" />
               <section>
                 <SectionHeader icon={Skull} label="Persistent Enemies" count={enemyStatuses.length} color="#f87171" />
-                <div className="grid grid-cols-12 gap-5">
+                <div className="grid gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                   {enemyStatuses.map(s => (
-                    <div key={s.enemy.id} className="col-span-4">
+                    <div key={s.enemy.id}>
                       <PersistentEnemyCard status={s} />
                     </div>
                   ))}
@@ -238,9 +236,9 @@ export function SolarRailFeedPage() {
                       {formatMsHuman(sortieStatus.msRemaining)}
                     </span>
                   </div>
-                  <div className="grid grid-cols-12 gap-5">
+                  <div className="grid gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {sortieStatus.raw.variants.map((mission, i) => (
-                      <div key={i} className="col-span-4">
+                      <div key={i}>
                         <SortieCard mission={mission} index={i} faction={sortieStatus.raw.faction} />
                       </div>
                     ))}
@@ -273,9 +271,9 @@ export function SolarRailFeedPage() {
                       {formatMsHuman(archonHuntStatus.msRemaining)}
                     </span>
                   </div>
-                  <div className="grid grid-cols-12 gap-5">
+                  <div className="grid gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {archonHuntStatus.raw.missions.map((mission, i) => (
-                      <div key={i} className="col-span-4">
+                      <div key={i}>
                         <ArchonHuntCard mission={mission} index={i} faction={archonHuntStatus.raw.faction} />
                       </div>
                     ))}

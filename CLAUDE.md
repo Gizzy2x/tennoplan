@@ -1,100 +1,129 @@
-> **Self-maintenance rule:** After every major phase or significant UI change, update this file to reflect new patterns so future work stays consistent.
-
-## Cinematic Reference System (STRICT ENFORCEMENT — Highest Priority)
-
-All cinematic reference images are now stored in tab-specific folders under:  
-`/Reference-for-Tennoplan/cinematic-variants/[tab-name]/`  
-(Example: celestial-pendulum/, dailies-weeklies/, etc. — images sit directly inside the folder.)
-
-**These rules override ALL other instructions in this file.**
-
-1. **Layout is ALWAYS the highest priority**
-   - When the user shows ANY reference (Lovable URL, screenshot, image filenames, or mentions the reference folder), replicate the **exact layout** from the reference first — panel arrangement, grid structure, full-bleed behavior, title placement, column splits, spacing, and flow — before anything else.
-
-2. **Reference Implementation Rule**
-   - When the user provides a reference, implement it directly and as closely as possible — matching layout, sizing, spacing, typography scale, and composition.
-   - Only ask a clarifying question if the reference is genuinely ambiguous (e.g. two conflicting layouts). Otherwise just build it.
-
-3. **No creative liberties on layout**
-   - Never replace the reference layout with tabs, bento cards, glass panels, extra borders, stitched frames, or any other structure unless the reference itself shows them.
-   - Over-use of borders, decorative elements, or "Orokin Digital Standard" panels is explicitly forbidden when a reference is provided.
-
-4. **Reference priority order (strict)**
-   1. User-provided reference (Lovable URL, screenshot, images from the tab folder, or description) → highest authority
-   2. Images in the relevant tab folder under cinematic-variants/
-   3. General cinematic utilities only as supporting elements (vignette, gold text shadow, etc.)
-
-5. **Background is secondary**
-   - After layout is matched exactly, apply the background shown in the reference (local asset or visual style). Do not substitute unless the user says so.
-
-6. **Self-maintenance**
-   - After every major UI change, update this file so the rules stay current.
+> **Self-maintenance rule:** Update this file after every major phase or significant change. This is the single source of truth.
 
 ## Project
 
-Tennoplan: offline-first Warframe companion desktop app built with Tauri 2 + React 19.
+**Tennoplan** — offline-first Warframe companion desktop app. Stack: Tauri 2 + React 19 + Vite + Cloudflare Pages/Workers.
 
 ## Commands
 
 ```bash
 npm run dev          # Vite dev server (frontend only)
 npm run build        # tsc -b && vite build
-npx tsc --noEmit     # Type-check
+npx tsc --noEmit     # Type-check (run before every commit)
+npm run deploy       # Build + wrangler deploy (Cloudflare)
+```
 
-Architecture
-Hexagonal (Clean Architecture). src/core/ has zero imports from React, Dexie, or fetch.
+## Architecture
+
+Hexagonal (Clean Architecture). `src/core/` has zero imports from React, Dexie, or fetch.
+
+```
 src/core/domain/       — pure TS types & entities
 src/core/services/     — pure business logic
 src/adapters/api/      — fetch + Dexie cache
-src/adapters/storage/  — Dexie schema
+src/adapters/storage/  — Dexie schema (db.ts)
 src/features/<tab>/    — vertical slice per tab
 src/store/             — Zustand stores
 src/components/layout/ — AppShell, Sidebar, Header
-Navigation: No router. Zustand useNavigationStore drives sidebar + top-bar tabs.
-Tab Strategy
-Tab,Purpose
-Dailies & Weeklies,"Killer feature — Nightwave challenges, Pulse tracker, Netracell, EDA/ETA, weekly checklist. Persistent top-bar access. All completion state lives here."
-Ascension Registry,"Mastery & Progression Tracker — MR rank, unlock/check off Warframes, weapons, companions, archwings, etc."
-Celestial Pendulum,"Live world cycle timers. Simple focused view + small ""Completed"" flag linking to Dailies & Weeklies."
-Void Reliquaries,"Active fissures. Simple focused view + small ""Completed"" flag linking to Dailies & Weeklies."
-Solar Rail Feed,"Invasions, alerts, events. Simple focused view."
-All others,Placeholder or future vertical slices.
-Rule: Side tabs are simple and focused. They may only show a small "Completed" flag + link to the Dailies & Weeklies tab. Completion state is owned only by the Dailies & Weeklies tab (and synced to Dexie).
-Design System
-User-provided reference has absolute priority over everything else.
+src/tokens/            — TS token exports (colors, spacing, typography, shadows)
+```
 
-When the user gives any reference (Lovable URL, screenshot, or images from the tab folder), follow its layout exactly. Style comes second. Background comes third.
-Typography rule: Noto Serif for large headlines, Noto Sans for body. These fonts align perfectly with Orokin's elegant, sophisticated aesthetic—Noto Serif carries the cinematic gravitas, Noto Sans provides clean readability.
-Only use Orokin Digital Standard / glass-panel / clean style when the user explicitly asks for it.
-When no reference is provided, default to general cinematic style (full-bleed backgrounds, heavy etched gold typography, vignette overlays).
+**Navigation:** No router. `useNavigationStore` (Zustand) drives sidebar + top-bar tabs.
 
-Core Tokens (Always Available)
+**Deployment:** Cloudflare Pages (frontend) + Cloudflare Workers (backend KV proxy). No Vercel.
 
-Background: #131313
-Primary gold: #E3C372
-Secondary: #C6C6C7
-Etched gold text-shadow: 0 1px 3px rgba(227,195,114,0.25), 0 0 8px rgba(227,195,114,0.15)
-Fonts: Noto Serif (headlines), Noto Sans (body/labels)
+---
 
-Reusable cinematic utilities should be added to src/index.css (e.g. .cinematic-hero, .etched-gold, .cinematic-panel, .cinematic-timer).
-Implemented Features
-Tab,Status,Notes
-celestial-pendulum,Phase 1 complete,Live timers
-void-reliquaries,UI polished,FissureCard with top tags
-ascension-registry,Stub,Mastery & Progression Tracker
-dailies-weeklies,Not started,Killer feature — will receive current challenge cards
-All others,Placeholder,features/<tab>/<Tab>Page.tsx
-Data Sources
-Worldstate / Nightwave / Fissures: https://api.warframestat.us/
-Market: https://api.warframe.market/v2/
-EE.log: Future Tauri Rust parser
+## Tab Strategy
 
-# Workflow: Post-Mortem Logging
-- When I say "Archive this bug," "Log this," or "Post-mortem," you must:
-  1. Identify the root cause and the final working solution.
-  2. Use the Obsidian MCP to create or append to a note at `Notes/Post_Mortems.md`.
-  3. Format the entry with:
-     - **Date:** [Current Date]
-     - **The Bug:** Short description.
-     - **The "Gotcha":** Why it happened (the logic failure).
-     - **The Fix:** The exact code or command that solved it.
+| Tab | Purpose | Status |
+|-----|---------|--------|
+| **Dailies & Weeklies** | Killer feature — Nightwave, Pulse tracker, Netracell, EDA/ETA, weekly checklist | Not started |
+| **Celestial Pendulum** | Live world cycle timers | Phase 1 complete |
+| **Void Reliquaries** | Active fissures | UI polished |
+| **Ascension Registry** | Mastery & Progression Tracker | Stub |
+| **Solar Rail Feed** | Invasions, alerts, events | Stub |
+| All others | Placeholder vertical slices | — |
+
+**Rule:** Side tabs are simple and focused. Completion state is owned exclusively by Dailies & Weeklies (synced to Dexie). Other tabs may show a small "Completed" flag + link there, nothing more.
+
+---
+
+## Design System
+
+**Canonical spec: `.impeccable.md`** (root of project). Read it before building any UI.
+
+### Reference Priority (strict order)
+1. User-provided reference image, URL, or description → highest authority, implement exactly
+2. Images in `/Reference-for-Tennoplan/cinematic-variants/[tab-name]/`
+3. `.impeccable.md` design principles as defaults
+
+**Layout always wins.** Match panel arrangement, grid structure, title placement, column splits, spacing — before thinking about colors or backgrounds. Never substitute tabs, bento grids, glass panels, or extra borders when a reference shows something else.
+
+### Core Tokens (always available via CSS variables)
+
+```
+Background primary:  #0a1117  (--color-bg-primary)
+Background cards:    #161b22  (--color-bg-secondary)
+Accent gold:         #e3c372  (--color-accent-gold)
+Accent teal:         #00d4ff  (--color-accent-teal)
+Text primary:        #e5e2e1  (--color-text-primary)
+Text muted:          #a8a5a0  (--color-text-muted)
+Border:              #2d333b  (--color-border-default)
+
+Font serif (headlines):  var(--font-serif)   → "Noto Serif"
+Font sans  (body):       var(--font-sans)    → "Inter"
+```
+
+### Design Rules (enforced)
+- Use CSS variables or `.typo-*` / `.panel-*` classes — never hardcode hex values
+- Noto Serif for headlines, Inter for body/labels
+- No glassmorphism, no gradient text, no side-stripe card borders
+- Gold is accent (10–15% visual weight), not a background color
+- Spacing from the 4pt scale: 4/8/12/16/24/32/48/64px only
+- Motion: ease-out, 150–300ms, no bounce/elastic easing
+
+### CSS Class System (`src/index.css`)
+- `.typo-hero`, `.typo-tab-title`, `.typo-section-header`, `.typo-emphasis`, `.typo-body`, `.typo-label-sm`, `.typo-label-xs`
+- `.panel`, `.panel-header`, `.panel-body`, `.panel-label`, `.panel-highlight`
+- `.data-row`, `.data-row-label`, `.data-row-value`, `.data-row-value-accent`
+- `.section-divider`, `.section-divider-label`, `.section-divider-line`
+- `.content-card`, `.content-card-interactive`
+- `.tab-nav`, `.tab-nav-item`, `.tab-nav-count`
+- `.page-hero-heading`, `.page-hero-subtitle`
+- `.coming-soon-body`, `.coming-soon-label`
+- Animations: `.heartbeat-dot-pulse`, `.system-pulse-ring`, `.somatic-pulse`, `.terminal-power-on`
+
+---
+
+## Data Sources
+
+| Source | Use |
+|--------|-----|
+| `https://api.warframestat.us/` | Worldstate, Nightwave, Fissures (live) |
+| `https://api.warframe.market/v2/` | Market prices |
+| Cloudflare Worker (KV) | Worldstate proxy + cache |
+| Dexie (IndexedDB) | Drop data, items, icons (download-once) |
+| EE.log | Future Tauri Rust parser |
+
+---
+
+## Workflow: Post-Mortem Logging
+
+When I say "Archive this bug," "Log this," or "Post-mortem":
+1. Identify the root cause and final working solution.
+2. Use the Obsidian MCP to create or append to `Notes/Post_Mortems.md`.
+3. Format:
+   - **Date:** [Current Date]
+   - **The Bug:** Short description.
+   - **The "Gotcha":** Why it happened.
+   - **The Fix:** The exact code or command that solved it.
+
+## Workflow: Session Context Sync
+
+At the end of a significant session, use Obsidian MCP to update `Notes/Tennoplan-Context.md` with:
+- Current phase and what was just completed
+- Any active blockers
+- Concrete next steps
+
+This note is auto-read at session start (via hook) so future sessions have instant context without token-expensive re-exploration.
