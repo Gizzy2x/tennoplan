@@ -1,8 +1,14 @@
 import { useDailiesData } from './hooks/useDailiesData';
-import { PageHero } from '@/components/ui/PageHero';
-import { formatCacheAge } from '@/core/services/WorldstateService';
-import { ChallengeCard } from './components/ChallengeCard';
+import { PageHero }         from '@/components/ui/PageHero';
+import { ProgressBar }      from '@/components/ui/ProgressBar';
+import { StatusIndicator }  from '@/components/ui/StatusIndicator';
+import { SectionHeader }    from '@/components/ui/SectionHeader';
+import { formatCacheAge }   from '@/core/services/WorldstateService';
+import { ChallengeCard }    from './components/ChallengeCard';
 import { CompletionToggle } from './components/CompletionToggle';
+import { SortieCard }            from './components/SortieCard';
+import { ArchonHuntCard }        from './components/ArchonHuntCard';
+import { DeepArchimedeaCard }    from './components/DeepArchimedeaCard';
 import {
   KIND_COLOR,
   KIND_LABEL,
@@ -170,6 +176,10 @@ export function DailiesWeekliesPage() {
     completedCount,
     sortieCompleted,
     archonCompleted,
+    edaCompleted,
+    sortieStatus,
+    archonHuntStatus,
+    deepArchimedeaStatus,
     season,
     seasonTag,
     isLoading,
@@ -181,6 +191,7 @@ export function DailiesWeekliesPage() {
     toggleComplete,
     toggleSortieCompleted,
     toggleArchonCompleted,
+    toggleEdaCompleted,
   } = useDailiesData();
 
   const lastSyncLabel = lastSync
@@ -203,8 +214,7 @@ export function DailiesWeekliesPage() {
 
   const kindOrder: ChallengeKind[] = ['daily', 'weekly', 'elite'];
 
-  // Suppress unused variable warnings from destructuring
-  void lastSyncLabel; void syncState; void seasonLabel; void isError;
+  void lastSyncLabel; void seasonLabel; void isError;
 
   return (
     <>
@@ -220,17 +230,7 @@ export function DailiesWeekliesPage() {
             <ResetCounter label="Weekly Reset" msRemaining={weeklyMs} urgentMs={24 * 3600_000} />
           )}
 
-          {/* Sync status chip */}
-          <div className="ml-auto flex items-center gap-3 self-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-success" />
-            <span
-              data-role="labelTiny"
-              className="typo-label-xs"
-              style={{ color: 'rgba(198,198,199,0.35)' }}
-            >
-              LIVE
-            </span>
-          </div>
+          <StatusIndicator status="live" className="ml-auto self-center" />
         </div>
       )}
 
@@ -300,20 +300,12 @@ export function DailiesWeekliesPage() {
             </div>
           </div>
 
-          {/* Progress bar */}
-          <div
-            className="relative mt-5 overflow-hidden"
-            style={{ height: 4, backgroundColor: 'rgba(197,192,190,0.07)' }}
-          >
-            <div
-              className="absolute inset-y-0 left-0 h-full transition-all duration-700"
-              style={{
-                width:      `${weeklyPct * 100}%`,
-                background: 'linear-gradient(90deg, rgba(227,195,114,0.7), #E3C372)',
-                boxShadow:  '0 0 10px rgba(227,195,114,0.50)',
-              }}
-            />
-          </div>
+          <ProgressBar
+            value={weeklyPct}
+            glow={weeklyPct >= 1}
+            height="md"
+            style={{ marginTop: 'var(--space-xl)' }}
+          />
           {standingRemaining > 0 && (
             <p
               data-role="labelTiny"
@@ -405,23 +397,138 @@ export function DailiesWeekliesPage() {
             })}
           </div>
 
-          {/* ── Completion Toggles ─────────────────────────────────────── */}
-          <div className="somatic-line mt-10 mb-6" />
-          <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(227,195,114,0.08)' }}>
-            <CompletionToggle
-              label="Sortie Completed Today"
-              sublabel="Resets daily"
-              checked={sortieCompleted}
-              onToggle={toggleSortieCompleted}
-            />
-            <div style={{ borderTop: '1px solid rgba(197,192,190,0.06)' }} />
-            <CompletionToggle
-              label="Archon Hunt Completed This Week"
-              sublabel="Resets weekly"
-              checked={archonCompleted}
-              onToggle={toggleArchonCompleted}
-            />
-          </div>
+          {/* ── Sortie ────────────────────────────────────────────────── */}
+          {sortieStatus && (
+            <>
+              <div className="somatic-line mt-10 mb-6" />
+              <SectionHeader label="Daily Sortie" color="#E3C372" className="mb-5" />
+              <div
+                className="grid gap-3 mb-4"
+                style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}
+              >
+                {sortieStatus.raw.variants.map((mission, i) => (
+                  <SortieCard
+                    key={i}
+                    mission={mission}
+                    index={i}
+                    faction={sortieStatus.raw.faction}
+                  />
+                ))}
+              </div>
+              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(227,195,114,0.08)' }}>
+                <CompletionToggle
+                  label="Sortie Completed Today"
+                  sublabel="Resets daily"
+                  checked={sortieCompleted}
+                  onToggle={toggleSortieCompleted}
+                />
+              </div>
+            </>
+          )}
+
+          {/* ── Archon Hunt ───────────────────────────────────────────── */}
+          {archonHuntStatus && (
+            <>
+              <div className="somatic-line mt-10 mb-6" />
+              <SectionHeader label="Archon Hunt" color="#E3C372" className="mb-5" />
+              <div
+                className="grid gap-3 mb-4"
+                style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}
+              >
+                {archonHuntStatus.raw.missions.map((mission, i) => (
+                  <ArchonHuntCard
+                    key={i}
+                    mission={mission}
+                    index={i}
+                    faction={archonHuntStatus.raw.faction}
+                  />
+                ))}
+              </div>
+              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(227,195,114,0.08)' }}>
+                <CompletionToggle
+                  label="Archon Hunt Completed This Week"
+                  sublabel="Resets weekly"
+                  checked={archonCompleted}
+                  onToggle={toggleArchonCompleted}
+                />
+              </div>
+            </>
+          )}
+
+          {/* ── Deep Archimedea (Netracell) ───────────────────────────── */}
+          {deepArchimedeaStatus && (
+            <>
+              <div className="somatic-line mt-10 mb-6" />
+              <SectionHeader label="Deep Archimedea" color="#00d4ff" className="mb-5" />
+              <div
+                className="grid gap-3 mb-4"
+                style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}
+              >
+                {deepArchimedeaStatus.raw.missions.map((mission, i) => (
+                  <DeepArchimedeaCard key={i} mission={mission} index={i} />
+                ))}
+              </div>
+
+              {/* Personal modifiers */}
+              {(deepArchimedeaStatus.raw.personalModifiers?.length ?? 0) > 0 && (
+                <div
+                  className="glass-panel px-5 py-4 mb-4 flex flex-col gap-2"
+                  style={{ borderColor: 'rgba(0,212,255,0.10)' }}
+                >
+                  <p
+                    data-role="labelTiny"
+                    className="typo-label-xs mb-1"
+                    style={{ color: 'rgba(0,212,255,0.45)' }}
+                  >
+                    Personal Modifiers
+                  </p>
+                  {deepArchimedeaStatus.raw.personalModifiers!.map((mod, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <p
+                        data-role="labelSmall"
+                        className="typo-label-sm"
+                        style={{ color: '#a8a5a0', opacity: 0.75 }}
+                      >
+                        <span style={{ color: 'rgba(0,212,255,0.75)' }}>{mod.name} · </span>
+                        {mod.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(0,212,255,0.08)' }}>
+                <CompletionToggle
+                  label="Deep Archimedea Completed"
+                  sublabel="Resets weekly · Awards Netracells"
+                  checked={edaCompleted}
+                  onToggle={toggleEdaCompleted}
+                />
+              </div>
+            </>
+          )}
+
+          {/* ── Fallback toggles when API data unavailable ──────────── */}
+          {!sortieStatus && !archonHuntStatus && (
+            <>
+              <div className="somatic-line mt-10 mb-6" />
+              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(227,195,114,0.08)' }}>
+                <CompletionToggle
+                  label="Sortie Completed Today"
+                  sublabel="Resets daily"
+                  checked={sortieCompleted}
+                  onToggle={toggleSortieCompleted}
+                />
+                <div style={{ borderTop: '1px solid rgba(197,192,190,0.06)' }} />
+                <CompletionToggle
+                  label="Archon Hunt Completed This Week"
+                  sublabel="Resets weekly"
+                  checked={archonCompleted}
+                  onToggle={toggleArchonCompleted}
+                />
+              </div>
+            </>
+          )}
         </>
       )}
 

@@ -85,6 +85,40 @@ export interface ArchonHuntStatus {
 }
 
 // ---------------------------------------------------------------------------
+// Deep Archimedea (archimedeas) — weekly Netracell content
+// ---------------------------------------------------------------------------
+
+export interface ArchimedeaModifier {
+  key:         string;
+  name:        string;
+  description: string;
+  isHard?:     boolean;
+}
+
+export interface ArchimedeaMission {
+  faction:        string;
+  factionKey?:    string;
+  missionType:    string;
+  missionTypeKey?: string;
+  deviation?:     ArchimedeaModifier;
+  risks:          ArchimedeaModifier[];
+}
+
+export interface ArchimedeaRaw {
+  id?:                string;
+  activation?:        string;
+  expiry:             string;
+  type?:              string;
+  missions:           ArchimedeaMission[];
+  personalModifiers?: ArchimedeaModifier[];
+}
+
+export interface ArchimedeaStatus {
+  raw:         ArchimedeaRaw;
+  msRemaining: number;
+}
+
+// ---------------------------------------------------------------------------
 
 /** Weekly standing summary for the header metric block. */
 export interface StandingSummary {

@@ -3,15 +3,15 @@ import { Terminal, Search, Bell, Settings, Power, ListChecks, Activity } from "l
 import { NAV_ITEMS, useNavigationStore } from "@/store/navigation";
 import { useHeartbeatStore } from "@/store/heartbeat";
 import { SyncService } from "@/services/SyncService";
+import { colorValues } from "@/tokens";
 import { DataSourceBadge } from "./DataSourceBadge";
-import { cn } from "@/lib/utils";
 
 const EXPANDED_W = 260;
 const RAIL_W = 72;
 
 // ── SystemPulse ─────────────────────────────────────────────────────────────
 
-const GOLD = '#E3C372';
+const GOLD = colorValues['accent-gold'];
 const COOLDOWN_MS = 60_000;
 
 function formatAge(ms: number): string {
@@ -127,11 +127,27 @@ export function Header() {
         marginLeft: sidebarW,
         width: `calc(100% - ${sidebarW}px)`,
         transition: "margin-left 250ms ease-in-out, width 250ms ease-in-out",
+        borderBottom: `1px solid var(--color-accent-gold)15`,
+        backgroundColor: `var(--color-bg-primary)cc`,
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        height: 64,
+        paddingLeft: 32,
+        paddingRight: 32,
+        position: "fixed",
+        top: 0,
+        right: 0,
+        zIndex: 40,
       }}
-      className="fixed top-0 right-0 border-b border-primary-container/20 bg-surface-container-lowest/80 backdrop-blur-md flex justify-between items-center h-16 px-8 z-40"
     >
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-primary opacity-50">
+      <div
+        className="flex items-center gap-2"
+        style={{ color: GOLD, opacity: 0.5 }}
+      >
         <Terminal className="size-4" strokeWidth={1.5} />
         <span className="font-label text-[10px] uppercase tracking-widest font-bold">
           ROOT@TENNOPLAN:~/{activeItem?.breadcrumb ?? "HOME"}
@@ -143,12 +159,43 @@ export function Header() {
         {/* Persistent Dailies & Weeklies quick-access */}
         <button
           onClick={() => setActiveTab("dailies-weeklies")}
-          className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 font-label text-[9px] uppercase tracking-widest border transition-all duration-200 whitespace-nowrap",
-            activeTab === "dailies-weeklies"
-              ? "text-primary border-primary/40 bg-primary/[0.08] shadow-[0_0_10px_rgba(227,195,114,0.15)]"
-              : "text-secondary/40 border-primary/10 hover:text-primary/70 hover:border-primary/25 hover:bg-primary/[0.04]"
-          )}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            paddingLeft: 12,
+            paddingRight: 12,
+            paddingTop: 6,
+            paddingBottom: 6,
+            fontFamily: "var(--font-label)",
+            fontSize: "9px",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.18em",
+            border: `1px solid ${activeTab === "dailies-weeklies" ? `${GOLD}66` : `${GOLD}1a`}`,
+            backgroundColor: activeTab === "dailies-weeklies" ? `${GOLD}14` : "transparent",
+            color: activeTab === "dailies-weeklies" ? GOLD : `var(--color-text-muted)66`,
+            transition: "all 200ms",
+            cursor: "pointer",
+            whiteSpace: "nowrap",
+            boxShadow: activeTab === "dailies-weeklies" ? `0 0 10px ${GOLD}26` : "none",
+          }}
+          onMouseEnter={(e) => {
+            if (activeTab !== "dailies-weeklies") {
+              const btn = e.currentTarget as HTMLButtonElement;
+              btn.style.color = `${GOLD}b3`;
+              btn.style.borderColor = `${GOLD}40`;
+              btn.style.backgroundColor = `${GOLD}0a`;
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (activeTab !== "dailies-weeklies") {
+              const btn = e.currentTarget as HTMLButtonElement;
+              btn.style.color = `var(--color-text-muted)66`;
+              btn.style.borderColor = `${GOLD}1a`;
+              btn.style.backgroundColor = "transparent";
+            }
+          }}
         >
           <ListChecks className="size-3.5" strokeWidth={1.5} />
           Dailies &amp; Weeklies
@@ -161,33 +208,108 @@ export function Header() {
         <DataSourceBadge />
 
         {/* Search */}
-        <div className="relative flex items-center border-b border-primary/20 pb-1">
-          <Search className="size-4 text-primary/40 mr-2" strokeWidth={1.5} />
+        <div
+          className="relative flex items-center pb-1"
+          style={{
+            borderBottom: `1px solid ${GOLD}33`,
+          }}
+        >
+          <Search
+            className="size-4 mr-2"
+            strokeWidth={1.5}
+            style={{ color: `${GOLD}66` }}
+          />
           <input
             type="text"
             placeholder="SEARCH SYSTEMS..."
-            className="bg-transparent border-none focus:ring-0 focus:outline-none p-0 text-[10px] font-label uppercase tracking-widest text-primary placeholder:text-primary/20 w-48"
+            style={{
+              backgroundColor: "transparent",
+              border: "none",
+              padding: 0,
+              fontSize: "10px",
+              fontFamily: "var(--font-label)",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.18em",
+              color: GOLD,
+              outline: "none",
+              width: "192px",
+            } as any}
+            onFocus={(e) => {
+              (e.currentTarget as HTMLInputElement).style.color = GOLD;
+            }}
+            onBlur={(e) => {
+              (e.currentTarget as HTMLInputElement).style.color = GOLD;
+            }}
           />
         </div>
 
         {/* Icon buttons */}
         <div className="flex items-center gap-4">
-          <button className="text-secondary hover:text-on-surface hover:bg-white/5 p-2 transition-colors">
+          <button
+            style={{
+              padding: 8,
+              color: `var(--color-text-muted)99`,
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
+              transition: "color 200ms",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.color = `var(--color-text-primary)`;
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = `${GOLD}0a`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.color = `var(--color-text-muted)99`;
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
+            }}
+          >
             <Bell className="size-5" strokeWidth={1.5} />
           </button>
           <button
             onClick={() => setActiveTab("settings")}
             title="Settings"
-            className={cn(
-              "p-2 transition-colors",
-              activeTab === "settings"
-                ? "text-primary"
-                : "text-secondary hover:text-on-surface hover:bg-white/5"
-            )}
+            style={{
+              padding: 8,
+              color: activeTab === "settings" ? GOLD : `var(--color-text-muted)99`,
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
+              transition: "color 200ms",
+            }}
+            onMouseEnter={(e) => {
+              if (activeTab !== "settings") {
+                (e.currentTarget as HTMLButtonElement).style.color = `var(--color-text-primary)`;
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor = `${GOLD}0a`;
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (activeTab !== "settings") {
+                (e.currentTarget as HTMLButtonElement).style.color = `var(--color-text-muted)99`;
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
+              }
+            }}
           >
             <Settings className="size-5" strokeWidth={1.5} />
           </button>
-          <button className="text-secondary hover:text-on-surface hover:bg-white/5 p-2 transition-colors">
+          <button
+            style={{
+              padding: 8,
+              color: `var(--color-text-muted)99`,
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
+              transition: "color 200ms",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.color = `var(--color-text-primary)`;
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = `${GOLD}0a`;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.color = `var(--color-text-muted)99`;
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
+            }}
+          >
             <Power className="size-5" strokeWidth={1.5} />
           </button>
         </div>

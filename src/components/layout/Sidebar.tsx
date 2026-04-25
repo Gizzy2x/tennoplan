@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { NAV_ITEMS, useNavigationStore } from "@/store/navigation";
+import { colors } from "@/tokens";
 import { cn } from "@/lib/utils";
 import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
@@ -19,11 +20,14 @@ export function Sidebar() {
       style={{
         width: showExpanded ? EXPANDED_W : RAIL_W,
         transition: "width 250ms ease-in-out",
+        backgroundColor: colors.bgPrimary,
+        borderRight: `1px solid ${colors.borderDefault}`,
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        boxShadow: `0 0 32px rgba(227, 195, 114, 0.06)`,
       }}
       className={cn(
-        "fixed left-0 top-0 h-screen border-r border-primary-container/20",
-        "bg-surface-dim/90 backdrop-blur-xl flex flex-col py-8 overflow-hidden",
-        "shadow-[0_0_32px_rgba(193,163,85,0.06)]",
+        "fixed left-0 top-0 h-screen flex flex-col py-8 overflow-hidden",
         // Peek overlays content; locked expansion pushes it (handled by AppShell margin)
         isPeeking && isCollapsed ? "z-[60]" : "z-50"
       )}
@@ -40,10 +44,16 @@ export function Sidebar() {
             showExpanded ? "opacity-100 delay-75" : "opacity-0"
           )}
         >
-          <h1 className="font-headline text-2xl font-black tracking-[0.2em] text-primary whitespace-nowrap">
+          <h1
+            className="font-headline text-2xl font-black tracking-[0.2em] whitespace-nowrap"
+            style={{ color: colors.accentGold }}
+          >
             TENNOPLAN
           </h1>
-          <p className="font-headline text-[10px] uppercase tracking-[0.1em] text-primary/70 whitespace-nowrap">
+          <p
+            className="font-headline text-[10px] uppercase tracking-[0.1em] whitespace-nowrap"
+            style={{ color: colors.accentGold, opacity: 0.7 }}
+          >
             SOMATIC LINK ACTIVE
           </p>
         </div>
@@ -56,11 +66,17 @@ export function Sidebar() {
             !showExpanded ? "opacity-100" : "opacity-0"
           )}
         >
-          <span className="font-headline text-xl font-black tracking-[0.15em] text-primary somatic-pulse">
+          <span
+            className="font-headline text-xl font-black tracking-[0.15em] somatic-pulse"
+            style={{ color: colors.accentGold }}
+          >
             T
           </span>
           {/* Pulsing somatic dot */}
-          <span className="size-1 rounded-full bg-primary/60 somatic-pulse" />
+          <span
+            className="size-1 rounded-full somatic-pulse"
+            style={{ backgroundColor: colors.accentGold, opacity: 0.6 }}
+          />
         </div>
       </div>
 
@@ -74,28 +90,31 @@ export function Sidebar() {
             <div key={item.id} className="relative group/navitem">
               <button
                 onClick={() => setActiveTab(item.id)}
+                style={{
+                  color: isActive ? colors.accentGold : colors.textMuted,
+                  backgroundColor: isActive ? "rgba(227, 195, 114, 0.08)" : "transparent",
+                }}
                 className={cn(
                   "relative flex items-center w-full py-3 text-left",
                   "transition-all duration-200",
-                  showExpanded ? "px-5" : "px-0 justify-center",
-                  isActive
-                    ? "text-primary bg-primary-container/10"
-                    : "text-secondary/55 hover:text-on-surface hover:bg-primary-container/5"
+                  showExpanded ? "px-5" : "px-0 justify-center"
                 )}
               >
                 {/* Left accent bar — always rendered, only visible when active */}
                 <span
-                  className={cn(
-                    "absolute left-0 top-0 bottom-0 w-0.5 transition-all duration-200",
-                    isActive
-                      ? "bg-primary shadow-[0_0_10px_rgba(227,195,114,0.55)]"
-                      : "bg-transparent"
-                  )}
+                  className="absolute left-0 top-0 bottom-0 w-0.5 transition-all duration-200"
+                  style={{
+                    backgroundColor: isActive ? colors.accentGold : "transparent",
+                    boxShadow: isActive ? `0 0 10px rgba(227, 195, 114, 0.55)` : "none",
+                  }}
                 />
 
                 {/* Active background glow */}
                 {isActive && (
-                  <span className="absolute inset-0 pointer-events-none shadow-[inset_0_0_20px_rgba(227,195,114,0.06)]" />
+                  <span
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ boxShadow: `inset 0 0 20px rgba(227, 195, 114, 0.06)` }}
+                  />
                 )}
 
                 <Icon
@@ -127,10 +146,15 @@ export function Sidebar() {
                   )}
                   style={{ left: RAIL_W + 8 }}
                 >
-                  <div className="bg-surface-container-lowest border border-primary/25 px-3 py-1.5 shadow-xl">
-                    <span className="font-label text-[10px] uppercase tracking-widest text-primary">
-                      {item.label}
-                    </span>
+                  <div
+                    className="font-label text-[10px] uppercase tracking-widest px-3 py-1.5 shadow-xl"
+                    style={{
+                      backgroundColor: colors.bgPrimary,
+                      border: `1px solid ${colors.accentGold}40`,
+                      color: colors.accentGold,
+                    }}
+                  >
+                    {item.label}
                   </div>
                 </div>
               )}
@@ -142,17 +166,22 @@ export function Sidebar() {
       {/* ── Collapse Toggle ──────────────────────────────────────── */}
       <div
         className={cn(
-          "shrink-0 mt-6 pt-4 border-t border-primary-container/10",
+          "shrink-0 mt-6 pt-4",
           showExpanded ? "px-4" : "flex justify-center"
         )}
+        style={{
+          borderTop: `1px solid ${colors.accentGold}15`,
+        }}
       >
         <button
           onClick={toggleCollapsed}
           title={isCollapsed ? "Lock sidebar open" : "Collapse to rail"}
+          style={{
+            color: colors.textMuted,
+          }}
           className={cn(
             "flex items-center gap-2 py-2 px-2 rounded-sm",
-            "text-secondary/35 hover:text-primary/70",
-            "transition-colors duration-200"
+            "transition-colors duration-200 hover:opacity-70"
           )}
         >
           {isCollapsed ? (

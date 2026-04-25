@@ -5,6 +5,9 @@ import { SyncService } from '@/services/SyncService';
 import { getCacheAgeMs } from '@/core/services/WorldstateService';
 import {
   computeChallengeStatus,
+  computeSortieStatus,
+  computeArchonHuntStatus,
+  computeArchimedeaStatus,
   groupChallenges,
   computeStanding,
 } from '@/core/services/ascensionService';
@@ -12,6 +15,12 @@ import { getWeekStart } from '@/core/services/cycleService';
 import type {
   NightwaveChallengeRaw,
   NightwaveRaw,
+  SortieRaw,
+  ArchonHuntRaw,
+  ArchimedeaRaw,
+  ArchimedeaStatus,
+  SortieStatus,
+  ArchonHuntStatus,
   ChallengeKind,
   ChallengeStatus,
   StandingSummary,
@@ -108,24 +117,24 @@ export function useDailiesData() {
     await loadMarks();
   }
 
-  // ── Sortie / Archon completion toggles ────────────────────────────────
-  const [sortieCompleted, setSortieCompleted] = useState(false);
-  const [archonCompleted, setArchonCompleted] = useState(false);
+  // ── Sortie / Archon / Deep Archimedea completion toggles ─────────────
+  const [sortieCompleted,  setSortieCompleted]  = useState(false);
+  const [archonCompleted,  setArchonCompleted]  = useState(false);
+  const [edaCompleted,     setEdaCompleted]     = useState(false);
 
-  function todayKey(): string {
-    return 'sortie:' + new Date().toISOString().slice(0, 10);
-  }
-  function archonKey(): string {
-    return 'archon:' + getWeekStart(Date.now());
-  }
+  function todayKey():  string { return 'sortie:' + new Date().toISOString().slice(0, 10); }
+  function archonKey(): string { return 'archon:' + getWeekStart(Date.now()); }
+  function edaKey():    string { return 'eda:'    + getWeekStart(Date.now()); }
 
   async function loadCompletionToggles() {
-    const [sortieRow, archonRow] = await Promise.all([
+    const [sortieRow, archonRow, edaRow] = await Promise.all([
       db.userMarks.where('[type+referenceId]').equals(['sortie', todayKey()]).first(),
       db.userMarks.where('[type+referenceId]').equals(['archon', archonKey()]).first(),
+      db.userMarks.where('[type+referenceId]').equals(['eda',    edaKey()]).first(),
     ]);
     setSortieCompleted(!!sortieRow);
     setArchonCompleted(!!archonRow);
+    setEdaCompleted(!!edaRow);
   }
 
   useEffect(() => { loadCompletionToggles(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -156,6 +165,19 @@ export function useDailiesData() {
     await loadCompletionToggles();
   }
 
+  async function toggleEdaCompleted() {
+    setEdaCompleted(prev => !prev);
+    const key = edaKey();
+    const existing = await db.userMarks.where('[type+referenceId]').equals(['eda', key]).first();
+    if (existing?.id != null) {
+      await db.userMarks.delete(existing.id);
+    } else {
+      const ts = Date.now();
+      await db.userMarks.add({ type: 'eda', referenceId: key, status: 'completed', createdAt: ts, updatedAt: ts });
+    }
+    await loadCompletionToggles();
+  }
+
   // ── Force refresh ──────────────────────────────────────────────────────
   async function forceRefetch() {
     await SyncService.performSync(true);
@@ -168,7 +190,7 @@ export function useDailiesData() {
     return () => clearInterval(id);
   }, []);
 
-  // ── Derived state ──────────────────────────────────────────────────────
+  // ── Derived state — Nightwave challenges ──────────────────────────────
   const { grouped, standing, totalChallenges, completedCount } = useMemo(() => {
     if (!nwData) {
       return {
@@ -191,6 +213,25 @@ export function useDailiesData() {
     };
   }, [nwData, completedIds, now]);
 
+  // ── Derived state — Sortie + Archon Hunt + Archimedea ────────────────
+  const { sortieStatus, archonHuntStatus, deepArchimedeaStatus } = useMemo((): {
+    sortieStatus:          SortieStatus | null;
+    archonHuntStatus:      ArchonHuntStatus | null;
+    deepArchimedeaStatus:  ArchimedeaStatus | null;
+  } => {
+    if (!ws) return { sortieStatus: null, archonHuntStatus: null, deepArchimedeaStatus: null };
+    const sortieRaw = ws['sortie']       as SortieRaw       | undefined;
+    const archonRaw = ws['archonHunt']   as ArchonHuntRaw   | undefined;
+    // archimedeas is an array; take the first active entry
+    const archList  = ws['archimedeas']  as ArchimedeaRaw[] | undefined;
+    const archRaw   = Array.isArray(archList) && archList.length > 0 ? archList[0] : undefined;
+    return {
+      sortieStatus:         sortieRaw ? computeSortieStatus(sortieRaw, now)     : null,
+      archonHuntStatus:     archonRaw ? computeArchonHuntStatus(archonRaw, now) : null,
+      deepArchimedeaStatus: archRaw   ? computeArchimedeaStatus(archRaw, now)   : null,
+    };
+  }, [ws, now]);
+
   return {
     grouped,
     standing,
@@ -199,6 +240,10 @@ export function useDailiesData() {
     completedCount,
     sortieCompleted,
     archonCompleted,
+    edaCompleted,
+    sortieStatus,
+    archonHuntStatus,
+    deepArchimedeaStatus,
     season:    nwData?.season ?? 0,
     seasonTag: nwData?.tag    ?? '',
     isLoading,
@@ -211,6 +256,7 @@ export function useDailiesData() {
     toggleComplete,
     toggleSortieCompleted,
     toggleArchonCompleted,
+    toggleEdaCompleted,
     forceRefetch,
   };
 }

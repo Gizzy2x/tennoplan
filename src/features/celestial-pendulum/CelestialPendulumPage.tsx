@@ -9,23 +9,26 @@ import { DropDataService }        from '@/adapters/api/DropDataService';
 import { formatMsParts }          from '@/core/services/cycleService';
 import { getWorldBg }             from './worldAssets';
 import { Panel, PanelHeader, PanelLabel, PanelBody } from '@/components/ui/Panel';
+import { Card }    from '@/components/ui/Card';
+import { Grid }    from '@/components/ui/Grid';
+import { Divider } from '@/components/ui/Divider';
 import type { CycleId, CycleState } from '@/core/domain/cycles';
 import type { EnrichedBounty }    from '@/core/domain/bounty';
 
-// ─── Hardcoded design constants (replaces runtime token access) ────────────────
-const FONT_SANS   = '"Noto Sans", -apple-system, sans-serif';
-const COLOR_PRIMARY   = '#E3C372';
-const COLOR_SECONDARY = 'rgba(198,198,199,1)';
-const RADIUS_LG  = '6px';
-const RADIUS_MD  = '4px';
-const RADIUS_SM  = '2px';
-const TRANSITION_FAST = '0.15s';
-const SPACING_SM = '8px';
-const SPACING_MD = '12px';
-const GAP_SMALL  = '6px';
-const GAP_MEDIUM = '4';    // used in parseInt() contexts
-const GAP_TINY   = '3px';
-const PANEL_PADDING_X = '12px';
+// ─── Design token references ───────────────────────────────────────────────────
+const FONT_SANS        = 'var(--font-sans)';
+const COLOR_PRIMARY    = 'var(--color-accent-gold)';
+const COLOR_SECONDARY  = 'var(--color-text-primary)';
+const RADIUS_LG        = 'var(--radius-card)';
+const RADIUS_MD        = '4px';
+const RADIUS_SM        = '2px';
+const TRANSITION_FAST  = '0.15s';
+const SPACING_SM       = 'var(--space-sm)';
+const SPACING_MD       = 'var(--space-md)';
+const GAP_SMALL        = 'var(--space-sm)';
+const GAP_MEDIUM       = 4;
+const GAP_TINY         = '3px';
+const PANEL_PADDING_X  = 'var(--space-md)';
 const HEADER_PADDING_Y = '7px';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -396,7 +399,7 @@ export function CelestialPendulumPage() {
                 </div>
               </div>
 
-              <div style={{ height: 1, background: 'rgba(227,195,114,0.16)' }} />
+              <Divider variant="gold" />
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                 <div
@@ -480,7 +483,7 @@ export function CelestialPendulumPage() {
               style={{
                 display:             'grid',
                 gridTemplateColumns: '1fr 68px 54px',
-                gap:                 parseInt(GAP_MEDIUM),
+                gap:                 GAP_MEDIUM,
                 padding:             `${HEADER_PADDING_Y} ${PANEL_PADDING_X}`,
                 borderBottom:        `1px solid rgba(227,195,114,0.15)`,
                 alignItems:          'center',
@@ -513,7 +516,7 @@ export function CelestialPendulumPage() {
                   style={{
                     display:             'grid',
                     gridTemplateColumns: '1fr 68px 54px',
-                    gap:                 parseInt(GAP_MEDIUM),
+                    gap:                 GAP_MEDIUM,
                     padding:             `${GAP_TINY} ${PANEL_PADDING_X}`,
                     borderBottom:        '1px solid rgba(255,255,255,0.04)',
                     background:          i % 2 !== 0 ? 'rgba(255,255,255,0.018)' : 'transparent',
@@ -592,48 +595,33 @@ export function CelestialPendulumPage() {
             <PanelHeader>
               <PanelLabel>KEY RESOURCES</PanelLabel>
             </PanelHeader>
-            <PanelBody style={{ padding: parseInt(SPACING_SM) }}>
+            <PanelBody style={{ padding: SPACING_SM }}>
               {resources.length === 0 ? (
                 <p
                   style={{
                     fontFamily: FONT_SANS,
-                    fontSize:   '0.50rem',
-                    color:      'rgba(198,198,199,0.28)',
+                    fontSize:   'var(--font-size-xs)',
+                    color:      'var(--color-text-muted)',
+                    opacity:    0.45,
                     fontStyle:  'italic',
                   }}
                 >
                   No resources tracked for this world state.
                 </p>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 4 }}>
+                <Grid minWidth={100} gap="sm">
                   {resources.map(res => (
-                    <div
-                      key={res.name}
-                      style={{
-                        background:    'rgba(255,255,255,0.025)',
-                        border:        '1px solid rgba(227,195,114,0.10)',
-                        padding:       '8px 8px',
-                        display:       'flex',
-                        flexDirection: 'column',
-                        gap:           4,
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <span
-                          style={{
-                            color:     'rgba(227,195,114,0.65)',
-                            fontSize:  '0.62rem',
-                            flexShrink: 0,
-                          }}
-                        >
+                    <Card key={res.name} size="sm" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+                        <span style={{ color: 'var(--color-accent-gold)', fontSize: '0.62rem', opacity: 0.65, flexShrink: 0 }}>
                           {res.icon}
                         </span>
                         <div
                           style={{
                             fontFamily:    FONT_SANS,
-                            fontSize:      '0.52rem',
+                            fontSize:      'var(--font-size-xs)',
                             fontWeight:    600,
-                            color:         'rgba(229,226,225,0.88)',
+                            color:         'var(--color-text-primary)',
                             letterSpacing: '0.04em',
                             lineHeight:    1.2,
                           }}
@@ -645,7 +633,8 @@ export function CelestialPendulumPage() {
                         style={{
                           fontFamily:    FONT_SANS,
                           fontSize:      '0.44rem',
-                          color:         'rgba(198,198,199,0.38)',
+                          color:         'var(--color-text-muted)',
+                          opacity:       0.65,
                           textTransform: 'uppercase',
                           letterSpacing: '0.06em',
                           lineHeight:    1.3,
@@ -653,9 +642,9 @@ export function CelestialPendulumPage() {
                       >
                         {res.source}
                       </div>
-                    </div>
+                    </Card>
                   ))}
-                </div>
+                </Grid>
               )}
             </PanelBody>
           </Panel>
@@ -739,7 +728,7 @@ export function CelestialPendulumPage() {
 
               {/* Farming Tips */}
               {tips.length > 0 && (
-                <div style={{ borderTop: '1px solid rgba(227,195,114,0.08)', paddingTop: parseInt(SPACING_MD) }}>
+                <div style={{ borderTop: '1px solid rgba(227,195,114,0.08)', paddingTop: SPACING_MD }}>
                   <div
                     style={{
                       fontFamily:    FONT_SANS,
@@ -775,7 +764,7 @@ export function CelestialPendulumPage() {
         </div>
 
         {/* ── Footer ─────────────────────────────────────────────────────── */}
-        <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: parseInt(GAP_SMALL) }}>
+        <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: GAP_SMALL }}>
           <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(227,195,114,0.45)', flexShrink: 0 }} />
           <span style={{ fontFamily: FONT_SANS, fontSize: '0.50rem', color: 'rgba(198,198,199,0.28)', letterSpacing: '0.18em' }}>
             Drop data · {dropsAgeLabel}
