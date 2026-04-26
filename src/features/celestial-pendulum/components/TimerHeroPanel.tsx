@@ -56,72 +56,19 @@ export function TimerHeroPanel({
         {/* ── Left: Timer panel ─────────────────────────────────────────── */}
         <div className="timer-hero-panel">
 
-          {/* "CURRENT CYCLE" micro label */}
-          <div style={{
-            fontFamily:    'var(--font-sans)',
-            fontSize:      '0.48rem',
-            fontWeight:    700,
-            letterSpacing: '0.28em',
-            textTransform: 'uppercase',
-            color:         'rgba(227, 195, 114, 0.38)',
-          }}>
-            CURRENT CYCLE
+          <div className="timer-hero-meta-label">CURRENT CYCLE</div>
+
+          <div className="timer-hero-state">{state}</div>
+
+          <div className="timer-hero-countdown">
+            <div className="timer-hero-countdown-value">{timeRemaining}</div>
+            <div className="timer-hero-countdown-label">REMAINING</div>
           </div>
 
-          {/* State name — Noto Serif headline */}
-          <div style={{
-            fontFamily:    'var(--font-serif)',
-            fontSize:      '1.6rem',
-            fontWeight:    700,
-            lineHeight:    1,
-            color:         'var(--color-accent-gold)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-          }}>
-            {state}
-          </div>
-
-          {/* Countdown */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <div style={{
-              fontFamily:         'var(--font-sans)',
-              fontSize:           '2.6rem',
-              fontWeight:         900,
-              lineHeight:         1,
-              letterSpacing:      '-0.02em',
-              fontVariantNumeric: 'tabular-nums',
-              color:              'var(--color-accent-gold)',
-            }}>
-              {timeRemaining}
-            </div>
-            <div style={{
-              fontFamily:    'var(--font-sans)',
-              fontSize:      '0.46rem',
-              fontWeight:    700,
-              letterSpacing: '0.26em',
-              textTransform: 'uppercase',
-              color:         'rgba(229, 226, 225, 0.40)',
-            }}>
-              REMAINING
-            </div>
-          </div>
-
-          {/* Cycle note callout — e.g. "EIDOLON HUNTING WINDOW" */}
           {cycleNote && (
             <div className="timer-hero-note">
-              <span style={{ color: 'rgba(0, 212, 255, 0.65)', fontSize: '0.55rem', lineHeight: 1 }}>
-                ◆
-              </span>
-              <span style={{
-                fontFamily:    'var(--font-sans)',
-                fontSize:      '0.48rem',
-                fontWeight:    700,
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                color:         'rgba(0, 212, 255, 0.80)',
-              }}>
-                {cycleNote}
-              </span>
+              <span className="timer-hero-note-icon">◆</span>
+              <span className="timer-hero-note-text">{cycleNote}</span>
             </div>
           )}
         </div>
@@ -131,32 +78,14 @@ export function TimerHeroPanel({
 
         {/* ── Right: Key Resources ──────────────────────────────────────── */}
         <div className="timer-hero-resources">
-          <div style={{
-            fontFamily:    'var(--font-sans)',
-            fontSize:      '0.48rem',
-            fontWeight:    700,
-            letterSpacing: '0.28em',
-            textTransform: 'uppercase',
-            color:         'rgba(227, 195, 114, 0.32)',
-          }}>
-            KEY RESOURCES
-          </div>
+          <div className="timer-hero-meta-label">KEY RESOURCES</div>
 
           {resources.length === 0 ? (
-            <div style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize:   '0.55rem',
-              color:      'rgba(168, 165, 160, 0.35)',
-              fontStyle:  'italic',
-            }}>
-              No resources tracked for this state.
+            <div className="timer-hero-no-resources">
+              No resources available for this state.
             </div>
           ) : (
-            <div style={{
-              display:        'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-              gap:            8,
-            }}>
+            <div className="timer-hero-resources-grid">
               {resources.map(res => (
                 <ResourceTag
                   key={res.name}

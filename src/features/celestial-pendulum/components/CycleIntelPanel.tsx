@@ -48,67 +48,22 @@ export function CycleIntelPanel({
         {/* ── All-worlds forecast ─────────────────────────────────────── */}
         {entries.length > 0 && (
           <div style={{ marginBottom: 16 }}>
-            <div style={{
-              fontFamily:    'var(--font-sans)',
-              fontSize:      '0.48rem',
-              fontWeight:    700,
-              letterSpacing: '0.24em',
-              textTransform: 'uppercase',
-              color:         'rgba(227, 195, 114, 0.35)',
-              marginBottom:  10,
-            }}>
-              ALL CYCLES
-            </div>
+            <div className="intel-section-label">ALL WORLDS</div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            <div className="intel-worlds-list">
               {entries.map(([id, s]) => {
                 const isActive = id === activeId;
                 const label    = WORLD_LABELS[id] ?? id.toUpperCase();
                 const timeStr  = forecastTimes[id] ?? '—';
 
                 return (
-                  <div
-                    key={id}
-                    style={{
-                      display:    'flex',
-                      alignItems: 'baseline',
-                      gap:        6,
-                    }}
-                  >
-                    <span style={{
-                      fontFamily:    'var(--font-sans)',
-                      fontSize:      '0.50rem',
-                      fontWeight:    700,
-                      letterSpacing: '0.10em',
-                      textTransform: 'uppercase',
-                      color:         isActive
-                        ? 'rgba(227, 195, 114, 0.82)'
-                        : 'rgba(227, 195, 114, 0.35)',
-                      minWidth:      54,
-                      flexShrink:    0,
-                    }}>
+                  <div key={id} className="intel-world-row">
+                    <span className={`intel-world-name ${isActive ? 'intel-world-name--active' : 'intel-world-name--inactive'}`}>
                       {label}
                     </span>
-
-                    <span style={{
-                      fontFamily:    'var(--font-sans)',
-                      fontSize:      '0.48rem',
-                      color:         'rgba(168, 165, 160, 0.52)',
-                      textTransform: 'capitalize',
-                    }}>
-                      {s.cycle.state}
-                    </span>
-
-                    <span style={{ color: 'rgba(227, 195, 114, 0.15)', fontSize: '0.40rem' }}>·</span>
-
-                    <span style={{
-                      fontFamily:         'var(--font-sans)',
-                      fontSize:           '0.48rem',
-                      color:              isActive
-                        ? 'rgba(229, 226, 225, 0.55)'
-                        : 'rgba(168, 165, 160, 0.35)',
-                      fontVariantNumeric: 'tabular-nums',
-                    }}>
+                    <span className="intel-world-state">{s.cycle.state}</span>
+                    <span className="intel-world-sep">·</span>
+                    <span className={`intel-world-time ${isActive ? 'intel-world-time--active' : 'intel-world-time--inactive'}`}>
                       {timeStr}
                     </span>
                   </div>
@@ -120,42 +75,14 @@ export function CycleIntelPanel({
 
         {/* ── Farming tips ────────────────────────────────────────────── */}
         {tips.length > 0 && (
-          <div style={{
-            borderTop:  '1px solid rgba(255, 255, 255, 0.05)',
-            paddingTop: 12,
-          }}>
-            <div style={{
-              fontFamily:    'var(--font-sans)',
-              fontSize:      '0.48rem',
-              fontWeight:    700,
-              letterSpacing: '0.24em',
-              textTransform: 'uppercase',
-              color:         'rgba(227, 195, 114, 0.35)',
-              marginBottom:  10,
-            }}>
-              INTEL
-            </div>
+          <div className="intel-tips-section">
+            <div className="intel-section-label">FARMING TIPS</div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div className="intel-tips-list">
               {tips.map((tip, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8 }}>
-                  <span style={{
-                    color:      'rgba(227, 195, 114, 0.38)',
-                    flexShrink: 0,
-                    fontSize:   '0.50rem',
-                    lineHeight: 1.6,
-                    userSelect: 'none',
-                  }}>
-                    ·
-                  </span>
-                  <span style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize:   '0.52rem',
-                    color:      'rgba(168, 165, 160, 0.52)',
-                    lineHeight: 1.65,
-                  }}>
-                    {tip}
-                  </span>
+                <div key={i} className="intel-tip-item">
+                  <span className="intel-tip-bullet">·</span>
+                  <span className="intel-tip-text">{tip}</span>
                 </div>
               ))}
             </div>

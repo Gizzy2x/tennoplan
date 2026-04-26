@@ -230,14 +230,8 @@ export function CelestialPendulumPage() {
   // ── Loading state ─────────────────────────────────────────────────────────
   if (!hasEverLoaded && !isError) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 'var(--space-xl)', color: 'rgba(168, 165, 160, 0.40)' }}>
-        <div style={{
-          width:        6,
-          height:       6,
-          borderRadius: '50%',
-          background:   'var(--color-accent-gold)',
-          animation:    'pulse 1.5s ease-in-out infinite',
-        }} />
+      <div className="cp-loading">
+        <div className="cp-loading-dot" />
         <span className="typo-label-xs">Initializing Systems…</span>
       </div>
     );
@@ -248,20 +242,7 @@ export function CelestialPendulumPage() {
     <button
       onClick={() => void handleRefresh()}
       disabled={isSyncing}
-      style={{
-        padding:       '4px 12px',
-        fontFamily:    'var(--font-sans)',
-        fontSize:      '0.50rem',
-        fontWeight:    700,
-        letterSpacing: '0.14em',
-        textTransform: 'uppercase',
-        color:         isSyncing ? 'rgba(227, 195, 114, 0.28)' : 'rgba(227, 195, 114, 0.55)',
-        border:        `1px solid ${isSyncing ? 'rgba(227, 195, 114, 0.10)' : 'rgba(227, 195, 114, 0.22)'}`,
-        borderRadius:  'var(--radius-sm)',
-        background:    'transparent',
-        cursor:        isSyncing ? 'not-allowed' : 'pointer',
-        transition:    'color 150ms ease, border-color 150ms ease',
-      }}
+      className="cp-refresh-btn"
     >
       {isSyncing ? 'Syncing…' : '↻ Refresh'}
     </button>
@@ -303,11 +284,7 @@ export function CelestialPendulumPage() {
         />
 
         {/* Bottom 2-column: bounties | intel */}
-        <div style={{
-          display:             'grid',
-          gridTemplateColumns: '1.4fr 1fr',
-          gap:                 8,
-        }}>
+        <div className="cp-grid">
           <BountyDetailPanel
             bounties={bounties}
             hasMission={selectedMission !== null}
@@ -320,28 +297,10 @@ export function CelestialPendulumPage() {
           />
         </div>
 
-        {/* Footer: drop data freshness */}
-        <div style={{
-          marginTop:  12,
-          display:    'flex',
-          alignItems: 'center',
-          gap:        'var(--space-sm)',
-        }}>
-          <div style={{
-            width:        4,
-            height:       4,
-            borderRadius: '50%',
-            background:   'rgba(227, 195, 114, 0.38)',
-            flexShrink:   0,
-          }} />
-          <span style={{
-            fontFamily:    'var(--font-sans)',
-            fontSize:      '0.48rem',
-            color:         'rgba(168, 165, 160, 0.28)',
-            letterSpacing: '0.18em',
-          }}>
-            Drop data · {dropsAgeLabel}
-          </span>
+        {/* Footer: reward data freshness */}
+        <div className="cp-footer">
+          <div className="cp-footer-dot" />
+          <span className="cp-footer-label">Reward data updated {dropsAgeLabel}</span>
         </div>
 
       </div>
