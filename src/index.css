@@ -669,3 +669,270 @@ a:focus-visible {
   letter-spacing: 0.30em;
   color: rgba(198, 198, 199, 0.22);
 }
+
+/* ================================================================
+   Cycle Tab Bar — World selector tabs with progress indicator
+   ================================================================ */
+
+.cycle-tab {
+  position: relative;
+  /* No overflow:hidden — tooltips and natural bg bleed allowed */
+  border: 1px solid rgba(227, 195, 114, 0.12);
+  border-radius: var(--radius-card);
+  cursor: pointer;
+  /* Mostly opaque so inactive tabs feel passive */
+  background: rgba(10, 17, 23, 0.84);
+  transition: border-color 150ms ease-out, background 150ms ease-out;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding: 0;
+}
+
+.cycle-tab:hover {
+  border-color: rgba(227, 195, 114, 0.28);
+  /* Slightly more transparent on hover = more image bleeds through */
+  background: rgba(10, 17, 23, 0.72);
+}
+
+.cycle-tab[data-active='true'] {
+  border-color: rgba(227, 195, 114, 0.45);
+  /* Left = solid app color, right = transparent (WorldBackground shows through) */
+  background: linear-gradient(
+    110deg,
+    rgba(10, 17, 23, 0.94) 0%,
+    rgba(10, 17, 23, 0.80) 42%,
+    rgba(10, 17, 23, 0.18) 100%
+  );
+}
+
+.cycle-tab-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px 10px;
+  flex: 1;
+}
+
+.cycle-tab-progress-bar {
+  width: 100%;
+  height: 2px;
+  background: rgba(227, 195, 114, 0.06);
+  flex-shrink: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.cycle-tab-progress-fill {
+  height: 100%;
+  background: rgba(227, 195, 114, 0.50);
+  border-radius: 0 1px 1px 0;
+  transition: width 1s linear;
+}
+
+/* ================================================================
+   Timer Hero — Cinematic world hero with timer overlay + resources
+   ================================================================ */
+
+.timer-hero {
+  position: relative;
+  /* NO overflow:hidden — allows ResourceTag tooltips to escape the container */
+  border: 1px solid rgba(227, 195, 114, 0.12);
+  border-radius: var(--radius-card);
+  min-height: 230px;
+  /* Left portion = solid app color; right opens to WorldBackground */
+  background: linear-gradient(
+    90deg,
+    rgba(10, 17, 23, 0.96) 0%,
+    rgba(10, 17, 23, 0.85) 35%,
+    rgba(10, 17, 23, 0.30) 62%,
+    rgba(10, 17, 23, 0.06) 100%
+  );
+  display: flex;
+  align-items: stretch;
+}
+
+/* Removed .timer-hero-image — WorldBackground (position:fixed) is the single
+   source of the cinematic image. Tabs and hero are transparent windows into it.
+   This avoids loading the same asset 3–5× on one page. */
+
+.timer-hero-gradient {
+  /* Subtle scrim to protect text readability — lighter than before
+     since we no longer need to compete with a duplicate image layer */
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(10, 17, 23, 0.30) 0%,
+    rgba(10, 17, 23, 0.10) 50%,
+    rgba(10, 17, 23, 0.00) 100%
+  );
+  pointer-events: none;
+  border-radius: var(--radius-card);
+}
+
+.timer-hero-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+}
+
+.timer-hero-panel {
+  padding: 22px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  width: 300px;
+  flex-shrink: 0;
+}
+
+.timer-hero-divider {
+  width: 1px;
+  background: rgba(227, 195, 114, 0.08);
+  flex-shrink: 0;
+  margin: 20px 0;
+}
+
+.timer-hero-resources {
+  flex: 1;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.timer-hero-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  background: rgba(0, 212, 255, 0.06);
+  border: 1px solid rgba(0, 212, 255, 0.18);
+  border-radius: var(--radius-sm);
+  width: fit-content;
+}
+
+/* ================================================================
+   Resource Tag — Universal clickable item component (app-wide)
+   ================================================================ */
+
+.resource-tag {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  transition: background 150ms ease;
+}
+
+.resource-tag[data-interactive='true'] {
+  cursor: pointer;
+}
+
+.resource-tag[data-interactive='true']:hover {
+  background: rgba(227, 195, 114, 0.05);
+}
+
+.resource-tag[data-interactive='true']:hover .resource-tag-hint {
+  opacity: 1;
+}
+
+.resource-tag-hint {
+  font-family: var(--font-sans);
+  font-size: 0.44rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0, 212, 255, 0.65);
+  opacity: 0;
+  transition: opacity 150ms ease;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* Tooltip — opens DOWNWARD so it never clips behind the fixed page header */
+.resource-tag-tooltip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 500;
+  min-width: 210px;
+  max-width: 270px;
+  background: rgba(10, 17, 23, 0.98);
+  border: 1px solid rgba(227, 195, 114, 0.22);
+  border-radius: var(--radius-card);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-md);
+  pointer-events: auto;
+}
+
+.resource-tag-codex-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 10px;
+  font-family: var(--font-sans);
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(0, 212, 255, 0.50);
+  border: 1px solid rgba(0, 212, 255, 0.16);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  background: transparent;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* ================================================================
+   Bounty Detail — Full guaranteed-reward breakdown per level
+   ================================================================ */
+
+.bounty-level-block {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.bounty-level-block:last-child {
+  border-bottom: none;
+}
+
+.bounty-rotation-block {
+  margin-top: 6px;
+}
+
+.bounty-reward-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+/* ================================================================
+   Steel Path badge
+   ================================================================ */
+
+.badge-steel-path {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 0.44rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(251, 146, 60, 0.85);
+  background: rgba(251, 146, 60, 0.08);
+  border: 1px solid rgba(251, 146, 60, 0.22);
+  border-radius: 3px;
+  padding: 2px 6px;
+}
