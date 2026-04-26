@@ -1,5 +1,5 @@
 import { memo, useMemo, useState } from 'react';
-import { Panel } from '@/components/ui/Panel';
+import { Panel, PanelHeader, PanelLabel } from '@/components/ui/Panel';
 import { ItemIcon } from '@/components/ui/ItemIcon';
 import { findByName } from '@/adapters/items/itemsAdapter';
 import type { EnrichedBounty, BountyRewardRarity } from '@/core/domain/bounty';
@@ -7,15 +7,6 @@ import type { EnrichedBounty, BountyRewardRarity } from '@/core/domain/bounty';
 // ─── Rarity helpers ───────────────────────────────────────────────────────────
 
 const RARITY_ORDER: BountyRewardRarity[] = ['Rare', 'Uncommon', 'Common', 'Unknown'];
-
-function rarityColor(rarity: BountyRewardRarity): string {
-  switch (rarity) {
-    case 'Rare':     return 'rgba(227, 195, 114, 0.90)';
-    case 'Uncommon': return 'rgba(186, 195, 254, 0.80)';
-    case 'Common':   return 'rgba(168, 165, 160, 0.55)';
-    default:         return 'rgba(168, 165, 160, 0.32)';
-  }
-}
 
 // ─── Data transform: rotations → rarity groups ────────────────────────────────
 
@@ -64,137 +55,71 @@ function buildRarityGroups(bounty: EnrichedBounty): RarityGroup[] {
 
 // ─── Reward card (grid item) ──────────────────────────────────────────────────
 
-const RewardCard = memo(function RewardCard({ item }: { item: RarityGroupItem }) {
-  const found = findByName(item.itemName);
+const RewardCard = memo(
+  function RewardCard({ item }: { item: RarityGroupItem }) {
+    const found = findByName(item.itemName);
 
-  return (
-    <div style={{
-      display:       'flex',
-      flexDirection: 'column',
-      alignItems:    'center',
-      gap:           6,
-      padding:       8,
-      textAlign:     'center',
-    }}>
-      {/* Icon container */}
-      <div style={{
-        position:     'relative',
-        width:        48,
-        height:       48,
-        display:      'flex',
-        alignItems:   'center',
-        justifyContent: 'center',
-        borderRadius: 4,
-        background:   'rgba(0, 212, 255, 0.03)',
-        border:       '1px solid rgba(0, 212, 255, 0.08)',
-      }}>
-        {found?.imageName ? (
-          <ItemIcon imageName={found.imageName} name={item.itemName} size={40} style={{ opacity: 0.90 }} />
-        ) : (
-          <div style={{
-            width: 40, height: 40, borderRadius: 2,
-            background: 'rgba(227, 195, 114, 0.05)', border: '1px solid rgba(227, 195, 114, 0.10)',
-          }} />
-        )}
+    return (
+      <div className="bounty-reward-card">
+        {/* Icon container */}
+        <div className="bounty-reward-icon-container">
+          {found?.imageName ? (
+            <ItemIcon imageName={found.imageName} name={item.itemName} size={40} style={{ opacity: 0.90 }} />
+          ) : (
+            <div className="bounty-reward-icon-fallback" />
+          )}
 
-        {/* Drop chance indicator (bottom-right corner) */}
-        <span style={{
-          position:          'absolute',
-          bottom:            -2,
-          right:             -2,
-          fontFamily:        'var(--font-sans)',
-          fontSize:          '0.65rem',
-          fontWeight:        700,
-          color:             item.maxChance >= 20 ? 'rgba(227, 195, 114, 0.90)' : 'rgba(168, 165, 160, 0.60)',
-          background:        item.maxChance >= 20 ? 'rgba(227, 195, 114, 0.15)' : 'rgba(0, 0, 0, 0.50)',
-          border:            '1px solid ' + (item.maxChance >= 20 ? 'rgba(227, 195, 114, 0.25)' : 'rgba(255, 255, 255, 0.10)'),
-          borderRadius:      '2px',
-          padding:           '2px 4px',
-          fontVariantNumeric: 'tabular-nums',
-        }}>
-          {item.maxChance.toFixed(0)}%
-        </span>
-      </div>
-
-      {/* Item name */}
-      <span style={{
-        fontFamily:   'var(--font-sans)',
-        fontSize:     '0.72rem',
-        color:        'var(--color-text-primary)',
-        lineHeight:   1.3,
-        overflow:     'hidden',
-        display:      '-webkit-box',
-        WebkitLineClamp: 2,
-        WebkitBoxOrient: 'vertical',
-        wordBreak:    'break-word',
-      }}>
-        {item.itemName}
-      </span>
-
-      {/* Rotation badges */}
-      {item.rotations.length > 0 && (
-        <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
-          {item.rotations.map(r => (
-            <span key={r} style={{
-              fontFamily:    'var(--font-sans)',
-              fontSize:      '0.65rem',
-              fontWeight:    700,
-              letterSpacing: '0.08em',
-              color:         'rgba(0, 212, 255, 0.80)',
-              background:    'rgba(0, 212, 255, 0.10)',
-              border:        '1px solid rgba(0, 212, 255, 0.20)',
-              borderRadius:  2,
-              padding:       '2px 4px',
-            }}>
-              {r}
-            </span>
-          ))}
+          {/* Drop chance indicator (bottom-right corner) */}
+          <span className={`bounty-reward-chance ${item.maxChance >= 20 ? 'bounty-reward-chance-high' : ''}`}>
+            {item.maxChance.toFixed(0)}%
+          </span>
         </div>
-      )}
-    </div>
-  );
-});
+
+        {/* Item name */}
+        <span className="bounty-reward-name">
+          {item.itemName}
+        </span>
+
+        {/* Rotation badges */}
+        {item.rotations.length > 0 && (
+          <div className="bounty-reward-rotations">
+            {item.rotations.map(r => (
+              <span key={r} className="bounty-reward-rotation-badge" title={`Rotation ${r} — higher difficulty, better drops`}>
+                Rotation {r}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  },
+  (prev, next) => prev.item.itemName === next.item.itemName && prev.item.maxChance === next.item.maxChance
+);
 
 // ─── Rarity section ───────────────────────────────────────────────────────────
 
-const RaritySection = memo(function RaritySection({ group }: { group: RarityGroup }) {
-  const color = rarityColor(group.rarity);
-  return (
-    <div style={{ marginBottom: 12 }}>
-      <div style={{
-        display:       'flex',
-        alignItems:    'center',
-        gap:           5,
-        marginBottom:  10,
-        paddingBottom: 6,
-        borderBottom:  '1px solid rgba(255, 255, 255, 0.04)',
-      }}>
-        <div style={{ width: 4, height: 4, borderRadius: '50%', background: color, flexShrink: 0 }} />
-        <span style={{
-          fontFamily:    'var(--font-sans)',
-          fontSize:      '0.75rem',
-          fontWeight:    700,
-          letterSpacing: '0.14em',
-          textTransform: 'uppercase',
-          color,
-          opacity: 0.90,
-        }}>
-          {group.rarity}
-        </span>
+const RaritySection = memo(
+  function RaritySection({ group }: { group: RarityGroup }) {
+    const rarityKey = group.rarity.toLowerCase();
+
+    return (
+      <div className="bounty-rarity-section">
+        <div className="bounty-rarity-header">
+          <div className={`bounty-rarity-dot bounty-rarity-dot--${rarityKey}`} />
+          <span className={`bounty-rarity-label bounty-rarity-label--${rarityKey}`}>
+            {group.rarity}
+          </span>
+        </div>
+        <div className="bounty-reward-grid">
+          {group.items.map(item => (
+            <RewardCard key={item.itemName} item={item} />
+          ))}
+        </div>
       </div>
-      <div style={{
-        display:             'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(64px, 1fr))',
-        gap:                 6,
-        paddingLeft:         0,
-      }}>
-        {group.items.map(item => (
-          <RewardCard key={item.itemName} item={item} />
-        ))}
-      </div>
-    </div>
-  );
-});
+    );
+  },
+  (prev, next) => prev.group.rarity === next.group.rarity && prev.group.items.length === next.group.items.length
+);
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -206,7 +131,7 @@ interface BountyDetailPanelProps {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function BountyDetailPanel({ bounties, hasMission }: BountyDetailPanelProps) {
-  const [expandedIndex, setExpandedIndex] = useState(0);
+  const [expandedSet, setExpandedSet] = useState<Set<number>>(new Set([0]));
 
   // Pre-compute rarity groups for all tiers once — not per-click
   const allRarityGroups = useMemo(
@@ -214,18 +139,23 @@ export function BountyDetailPanel({ bounties, hasMission }: BountyDetailPanelPro
     [bounties],
   );
 
+  const toggleExpanded = (index: number) => {
+    const newSet = new Set(expandedSet);
+    if (newSet.has(index)) {
+      newSet.delete(index);
+    } else {
+      newSet.add(index);
+    }
+    setExpandedSet(newSet);
+  };
+
   if (bounties.length === 0) {
     return (
       <Panel>
-        <div style={{ padding: '20px 16px' }}>
-          <span style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize:   '0.55rem',
-            color:      'rgba(168, 165, 160, 0.35)',
-            fontStyle:  'italic',
-          }}>
+        <div className="bounty-empty-state">
+          <span className="bounty-empty-message">
             {hasMission
-              ? 'Sync drop data to see bounty rewards.'
+              ? 'Tap Refresh to load bounty rewards.'
               : 'No active bounties for this world.'}
           </span>
         </div>
@@ -235,62 +165,25 @@ export function BountyDetailPanel({ bounties, hasMission }: BountyDetailPanelPro
 
   return (
     <Panel>
-      {/* Section label */}
-      <div style={{
-        fontFamily:    'var(--font-sans)',
-        fontSize:      '0.40rem',
-        fontWeight:    700,
-        letterSpacing: '0.28em',
-        textTransform: 'uppercase',
-        color:         'rgba(168, 165, 160, 0.35)',
-        marginBottom:  10,
-        paddingBottom: 6,
-        borderBottom:  '1px solid rgba(255, 255, 255, 0.04)',
-      }}>
-        Bounty Protocol · Possible Rewards
-      </div>
+      <PanelHeader>
+        <PanelLabel>Bounty Rewards by Rarity</PanelLabel>
+      </PanelHeader>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <div className="bounty-tiers-container">
         {bounties.map((bounty, i) => {
-          const isExpanded   = expandedIndex === i;
+          const isExpanded   = expandedSet.has(i);
           const rarityGroups = isExpanded ? (allRarityGroups[i] ?? []) : [];
 
           return (
-            <div key={i}>
+            <div key={i} className={`bounty-tier-group ${isExpanded ? 'bounty-tier-expanded' : ''}`}>
               {/* Tier card / toggle */}
               <button
-                onClick={() => setExpandedIndex(isExpanded ? -1 : i)}
-                style={{
-                  width:      '100%',
-                  display:    'flex',
-                  alignItems: 'center',
-                  gap:        8,
-                  padding:    '7px 10px',
-                  background: isExpanded
-                    ? 'rgba(227, 195, 114, 0.06)'
-                    : 'rgba(255, 255, 255, 0.02)',
-                  border: `1px solid ${
-                    isExpanded
-                      ? 'rgba(227, 195, 114, 0.18)'
-                      : 'rgba(255, 255, 255, 0.05)'
-                  }`,
-                  borderRadius:  isExpanded ? '4px 4px 0 0' : 4,
-                  cursor:        'pointer',
-                  textAlign:     'left',
-                  transition:    'background 150ms ease, border-color 150ms ease',
-                }}
+                onClick={() => toggleExpanded(i)}
+                className={`bounty-tier-btn ${isExpanded ? 'bounty-tier-btn-expanded' : ''}`}
+                aria-expanded={isExpanded}
+                aria-controls={`bounty-tier-content-${i}`}
               >
-                <span style={{
-                  fontFamily:    'var(--font-sans)',
-                  fontSize:      '0.57rem',
-                  fontWeight:    700,
-                  letterSpacing: '0.10em',
-                  textTransform: 'uppercase',
-                  color:         isExpanded
-                    ? 'rgba(227, 195, 114, 0.90)'
-                    : 'rgba(227, 195, 114, 0.55)',
-                  flex: 1,
-                }}>
+                <span className="bounty-tier-label">
                   {bounty.tierLabel}
                 </span>
 
@@ -299,44 +192,24 @@ export function BountyDetailPanel({ bounties, hasMission }: BountyDetailPanelPro
                 )}
 
                 {bounty.standingTotal > 0 && (
-                  <span style={{
-                    fontFamily:         'var(--font-sans)',
-                    fontSize:           '0.46rem',
-                    color:              'rgba(168, 165, 160, 0.40)',
-                    fontVariantNumeric: 'tabular-nums',
-                  }}>
+                  <span className="bounty-tier-standing">
                     {bounty.standingTotal.toLocaleString()} rep
                   </span>
                 )}
 
-                <span style={{
-                  fontSize:   '0.55rem',
-                  color:      'rgba(168, 165, 160, 0.38)',
-                  transform:  isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 150ms ease',
-                  lineHeight: 1,
-                }}>
+                <span className="bounty-tier-chevron">
                   ▾
                 </span>
               </button>
 
               {/* Expanded reward list */}
               {isExpanded && (
-                <div style={{
-                  padding:      '10px 10px 6px',
-                  border:       '1px solid rgba(227, 195, 114, 0.12)',
-                  borderTop:    'none',
-                  borderRadius: '0 0 4px 4px',
-                  background:   'rgba(0, 0, 0, 0.18)',
-                }}>
+                <div
+                  id={`bounty-tier-content-${i}`}
+                  className="bounty-tier-expanded-content terminal-power-on"
+                >
                   {bounty.cycleNote && (
-                    <div style={{
-                      fontFamily:   'var(--font-sans)',
-                      fontSize:     '0.48rem',
-                      color:        'rgba(0, 212, 255, 0.60)',
-                      fontStyle:    'italic',
-                      marginBottom: 8,
-                    }}>
+                    <div className="bounty-cycle-note">
                       {bounty.cycleNote}
                     </div>
                   )}
@@ -346,33 +219,17 @@ export function BountyDetailPanel({ bounties, hasMission }: BountyDetailPanelPro
                       <RaritySection key={group.rarity} group={group} />
                     ))
                   ) : bounty.fallbackPool && bounty.fallbackPool.length > 0 ? (
-                    <div style={{ marginBottom: 4 }}>
-                      <div style={{
-                        display:       'flex',
-                        alignItems:    'center',
-                        gap:           5,
-                        marginBottom:  4,
-                        paddingBottom: 3,
-                        borderBottom:  '1px solid rgba(255, 255, 255, 0.04)',
-                      }}>
-                        <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(168, 165, 160, 0.32)', flexShrink: 0 }} />
-                        <span style={{
-                          fontFamily:    'var(--font-sans)',
-                          fontSize:      '0.40rem',
-                          fontWeight:    700,
-                          letterSpacing: '0.24em',
-                          textTransform: 'uppercase',
-                          color:         'rgba(168, 165, 160, 0.40)',
-                        }}>
-                          Reward Pool
-                        </span>
+                    <div className="bounty-fallback-pool">
+                      <div className="bounty-fallback-header">
+                        <div className="bounty-fallback-dot" />
+                        <span className="bounty-fallback-label">Reward Pool</span>
                       </div>
                       {bounty.fallbackPool.map((name, j) => {
                         const found = findByName(name);
                         return (
-                          <div key={j} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 0' }}>
+                          <div key={j} className="bounty-fallback-item">
                             {found?.imageName && <ItemIcon imageName={found.imageName} name={name} size={16} style={{ opacity: 0.80 }} />}
-                            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '0.60rem', color: 'var(--color-text-primary)' }}>
+                            <span className="bounty-fallback-name">
                               {name}
                             </span>
                           </div>
@@ -380,12 +237,7 @@ export function BountyDetailPanel({ bounties, hasMission }: BountyDetailPanelPro
                       })}
                     </div>
                   ) : (
-                    <span style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize:   '0.50rem',
-                      color:      'rgba(168, 165, 160, 0.30)',
-                      fontStyle:  'italic',
-                    }}>
+                    <span className="bounty-no-data">
                       No drop data for this tier.
                     </span>
                   )}
