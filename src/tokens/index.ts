@@ -9,3 +9,6 @@ export type { FontRoleKey }                                 from './typography';
 
 export { shadows }                                          from './shadows';
 export type { ShadowKey }                                   from './shadows';
+
+export { WORLD_THEMES, PRESTIGE_LEVEL, PRE_HEAT_MS }        from './worldThemes';
+export type { WorldTheme }                                   from './worldThemes';

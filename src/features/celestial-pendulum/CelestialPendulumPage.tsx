@@ -21,9 +21,10 @@ import { useSyndicateMissions } from './hooks/useSyndicateMissions';
 import { useDropsLastSynced } from './hooks/useDropsLastSynced';
 import { useEnrichedBounties } from './hooks/useEnrichedBounties';
 import { WorldBackground }    from './components/WorldBackground';
-import { CycleTabBar }        from './components/CycleTabBar';
-import { TimerHeroPanel }     from './components/TimerHeroPanel';
-import { BountyDetailPanel }  from './components/BountyDetailPanel';
+import { WorldNavigationDials } from './components/WorldNavigationDials';
+import { MasterHeader }       from './components/MasterHeader';
+import { TacticalRadar }      from './components/TacticalRadar';
+import { BountyMatrix }       from './components/BountyMatrix';
 import { CycleIntelPanel }    from './components/CycleIntelPanel';
 import { DropDataService }    from '@/adapters/api/DropDataService';
 import { formatMsParts }      from '@/core/services/cycleService';
@@ -174,7 +175,7 @@ export function CelestialPendulumPage() {
   const [selectedId, setSelectedId] = useState<CycleId>('cetus');
   const [isSyncing,  setIsSyncing]  = useState(false);
 
-  const { statuses, hasEverLoaded, isError, forceRefetch: refetchCycles } = useWorldCycles();
+  const { statuses, urgency, hasEverLoaded, isError, forceRefetch: refetchCycles } = useWorldCycles();
   const { missions, forceRefetch: refetchMissions } = useSyndicateMissions();
   const { ageLabel: dropsAgeLabel } = useDropsLastSynced();
 
@@ -250,7 +251,7 @@ export function CelestialPendulumPage() {
 
   // ── Main layout ───────────────────────────────────────────────────────────
   return (
-    <div style={{ position: 'relative', color: 'var(--color-text-primary)' }}>
+    <div data-world={selectedId} style={{ position: 'relative', color: 'var(--color-text-primary)' }}>
 
       {/* Cinematic world background */}
       <WorldBackground url={bgUrl} />
@@ -265,29 +266,38 @@ export function CelestialPendulumPage() {
           right={refreshBtn}
         />
 
-        {/* World tabs */}
-        <CycleTabBar
+        {/* Global radar — sticky pre-heat spotter, world-agnostic */}
+        <MasterHeader
+          statuses={byId}
+          urgency={urgency}
+        />
+
+        {/* World navigation dials — swing rail with theme broadcasting */}
+        <WorldNavigationDials
           tabs={WORLD_TABS}
           statuses={byId}
+          urgency={urgency}
           activeId={selectedId}
           onSelect={setSelectedId}
           times={tabTimes}
         />
 
-        {/* Cinematic hero with timer + key resources */}
-        <TimerHeroPanel
-          backgroundImage={bgUrl}
-          state={heroState}
+        {/* Tactical radar — SVG blueprint hero, replaces TimerHeroPanel */}
+        <TacticalRadar
+          worldId={selectedId}
+          cycleState={cycleState}
           timeRemaining={heroTime}
           cycleNote={cycleNote}
           resources={resources}
+          urgency={urgency[selectedId]}
         />
 
         {/* Bottom 2-column: bounties | intel */}
         <div className="cp-grid">
-          <BountyDetailPanel
+          <BountyMatrix
             bounties={bounties}
             hasMission={selectedMission !== null}
+            cycleProgress={selectedStatus?.progress ?? 0}
           />
           <CycleIntelPanel
             activeId={selectedId}
