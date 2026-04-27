@@ -40,12 +40,30 @@ function canonicalizeName(raw: string): string {
   return SYNDICATE_ALIASES[raw.toLowerCase()] ?? raw;
 }
 
+/**
+ * Warframestat.us sometimes puts diagnostic strings like "Pattern Mismatch.
+ * Results inaccurate." directly in the rewardPool array when their parser
+ * fails to match a bounty. Filter them out — real item names are short,
+ * title-cased, and never contain sentence-ending punctuation.
+ */
+function sanitizeRewardPool(pool: string[] | undefined): string[] | undefined {
+  if (!pool || pool.length === 0) return undefined;
+  const clean = pool.filter(s =>
+    typeof s === 'string' &&
+    s.length > 0 &&
+    s.length < 80 &&
+    !s.includes('. ') &&
+    !s.endsWith('.')
+  );
+  return clean.length > 0 ? clean : undefined;
+}
+
 function rawToJob(raw: RawSyndicateJob): SyndicateJob {
   return {
     type:           raw.type           ?? 'Unknown',
     enemyLevels:    raw.enemyLevels    ?? [0, 0],
     standingStages: raw.standingStages ?? [],
-    rewardPool:     raw.rewardPool,
+    rewardPool:     sanitizeRewardPool(raw.rewardPool),
   };
 }
 

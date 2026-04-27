@@ -3,10 +3,11 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/adapters/storage/db';
 import { SyncService } from '@/services/SyncService';
 import { getCacheAgeMs } from '@/core/services/WorldstateService';
-import { computeCycleStatus, extrapolateCycle } from '@/core/services/cycleService';
+import { computeCycleStatus, extrapolateCycle, nextCycleState } from '@/core/services/cycleService';
 import type { WorldCycle, CycleId, CycleStatus } from '@/core/domain/cycles';
 import { useHeartbeatStore } from '@/store/heartbeat';
 import { useGameClock } from '@/hooks/useGameClock';
+import { PRESTIGE_LEVEL, PRE_HEAT_MS } from '@/tokens/worldThemes';
 
 // ---------------------------------------------------------------------------
 // Raw API shapes (kept local — not a domain concern)
@@ -40,6 +41,38 @@ const WS_FIELD: Record<CycleId, string> = {
 };
 
 const CYCLE_IDS: CycleId[] = ['cetus', 'vallis', 'cambion', 'zariman', 'earth', 'duviri'];
+
+// ---------------------------------------------------------------------------
+// Urgency / prestige
+// ---------------------------------------------------------------------------
+
+export interface CycleUrgency {
+  /** Prestige tier of the current phase */
+  prestigeLevel: 'P0' | 'P1' | 'none';
+  /**
+   * true when: current phase is not P0, next phase IS P0,
+   * and msRemaining ≤ PRE_HEAT_MS (15 min).
+   * Drives the Master Header "Strategic Preparation" state.
+   */
+  isPreHeat: boolean;
+  /** Next state key, e.g. 'cetus-night' — used by Master Header copy */
+  nextStateKey: string;
+}
+
+function computeUrgency(status: CycleStatus): CycleUrgency {
+  const { cycle, msRemaining } = status;
+  const currentKey      = `${cycle.id}-${cycle.state}`;
+  const nextState       = nextCycleState(cycle.id, cycle.state);
+  const nextKey         = `${cycle.id}-${nextState}`;
+  const currentPrestige = PRESTIGE_LEVEL[currentKey] ?? 'none';
+  const nextPrestige    = PRESTIGE_LEVEL[nextKey]    ?? 'none';
+
+  return {
+    prestigeLevel: currentPrestige,
+    isPreHeat:     currentPrestige === 'none' && nextPrestige === 'P0' && msRemaining <= PRE_HEAT_MS,
+    nextStateKey:  nextKey,
+  };
+}
 
 function normalizeState(id: CycleId, raw: RawCycle): string {
   if (id === 'cambion') return (raw.active ?? 'fass').toLowerCase();
@@ -96,21 +129,28 @@ export function useWorldCycles() {
   const now = useGameClock();
 
   // ── Map + derive ──────────────────────────────────────────────────────
-  const statuses = useMemo((): CycleStatus[] => {
-    if (!ws) return [];
+  const { statuses, urgency } = useMemo(() => {
+    if (!ws) return { statuses: [] as CycleStatus[], urgency: {} as Partial<Record<CycleId, CycleUrgency>> };
 
-    return CYCLE_IDS
+    const pairs = CYCLE_IDS
       .map(id => {
         const raw = ws[WS_FIELD[id]] as RawCycle | undefined;
         if (!raw?.expiry) return null;
-        const cycle = rawToWorldCycle(id, raw, cachedAt);
-        return computeCycleStatus(extrapolateCycle(cycle, now), now);
+        const cycle  = rawToWorldCycle(id, raw, cachedAt);
+        const status = computeCycleStatus(extrapolateCycle(cycle, now), now);
+        return { status, urgency: computeUrgency(status) };
       })
-      .filter((s): s is CycleStatus => s !== null);
+      .filter((p): p is NonNullable<typeof p> => p !== null);
+
+    return {
+      statuses: pairs.map(p => p.status),
+      urgency:  Object.fromEntries(pairs.map(p => [p.status.cycle.id, p.urgency])) as Partial<Record<CycleId, CycleUrgency>>,
+    };
   }, [ws, cachedAt, now]);
 
   return {
     statuses,
+    urgency,
     isLoading,
     isError:       !isLoading && wsEntry === null,
     isStale,

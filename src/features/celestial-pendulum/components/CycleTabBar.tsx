@@ -43,12 +43,16 @@ const CycleTabButton = memo(function CycleTabButton({
 }) {
   const state = status?.cycle.state ?? '—';
 
+  // Map state to a data attribute for CSS-based cycle visualization
+  const stateCategory = state.toLowerCase().replace(/\s/g, '-');
+
   return (
     <button
       key={id}
       type="button"
       className="cycle-tab"
       data-active={isActive ? 'true' : undefined}
+      data-state={stateCategory}
       onClick={() => onSelect(id)}
     >
       <div className="cycle-tab-body">
@@ -61,17 +65,21 @@ const CycleTabButton = memo(function CycleTabButton({
           </span>
         </div>
 
+        {/* Progress bar — repositioned inside body, above time */}
+        <div className="cycle-tab-progress-bar">
+          <div
+            className="cycle-tab-progress-fill"
+            style={{
+              width: `${Math.min(100, progress * 100).toFixed(1)}%`,
+              '--progress-ratio': progress.toFixed(3),
+            } as React.CSSProperties & { '--progress-ratio': string }}
+            data-high-intensity={progress > 0.9 ? 'true' : undefined}
+          />
+        </div>
+
         <div className={`cycle-tab-time ${isActive ? 'cycle-tab-time-active' : ''}`}>
           {timeStr}
         </div>
-      </div>
-
-      {/* Cycle progress bar */}
-      <div className="cycle-tab-progress-bar">
-        <div
-          className="cycle-tab-progress-fill"
-          style={{ width: `${Math.min(100, progress * 100).toFixed(1)}%` }}
-        />
       </div>
     </button>
   );
