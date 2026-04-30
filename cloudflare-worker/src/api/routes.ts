@@ -1,9 +1,8 @@
 import type { Env } from '../types';
 import { handleHealth } from './handlers/health';
 import { handleWorldstate } from './handlers/worldstate';
+import { handleCodex } from './handlers/codex';
 import { corsResponse, handleOptions } from '../middleware/cors';
-
-// Phase C will import: handleCodex from './handlers/codex'
 
 export function route(request: Request, env: Env): Promise<Response> {
   if (request.method === 'OPTIONS') {
@@ -23,9 +22,7 @@ export function route(request: Request, env: Env): Promise<Response> {
 
   if (pathname === '/v1/health')                 return handleHealth(request, env);
   if (pathname.startsWith('/v1/worldstate'))     return handleWorldstate(request, env);
-
-  // Phase C:
-  // if (pathname.startsWith('/v1/codex')) return handleCodex(request, env);
+  if (pathname.startsWith('/v1/codex'))          return handleCodex(request, env);
 
   return Promise.resolve(
     corsResponse(
