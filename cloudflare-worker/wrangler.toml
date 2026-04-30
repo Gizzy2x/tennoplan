@@ -1,4 +1,4 @@
-name = "web"
+name = "app"
 main = "src/index.ts"
 compatibility_date = "2026-04-30"
 compatibility_flags = ["nodejs_compat"]
@@ -6,17 +6,11 @@ compatibility_flags = ["nodejs_compat"]
 [observability]
 enabled = true
 
-# SPA fallback — serves index.html for all unmatched routes (Cloudflare Pages behaviour)
-[assets]
-not_found_handling = "single-page-application"
-
 # ---------------------------------------------------------------------------
 # KV Namespace — TENNOPLAN_KV stores worldstate + codex blobs.
 # Keys:
 #   worldstate:current / previous / metadata   (~150KB, updated every 1 min)
 #   codex:current / previous / metadata        (~2-3MB, updated every 6 hours)
-#
-# After running `wrangler kv namespace create TENNOPLAN_KV`, replace the id.
 # ---------------------------------------------------------------------------
 [[kv_namespaces]]
 binding = "TENNOPLAN_KV"
@@ -24,7 +18,7 @@ id = "a520a78ecd264bff9b0abf38adff3f8a"
 
 # ---------------------------------------------------------------------------
 # Scheduled triggers
-#   */1 * * * *   — every minute  → worldstate updater  (Phase B)
+#   * * * * *     — every minute  → worldstate updater  (Phase B)
 #   0 */6 * * *   — every 6 hours → codex updater       (Phase C)
 # ---------------------------------------------------------------------------
 [triggers]
@@ -34,3 +28,16 @@ crons = ["* * * * *", "0 */6 * * *"]
 LOG_LEVEL = "info"
 MAX_STALENESS_MINUTES = "60"
 FALLBACK_STALENESS_WARNING = "30"
+
+# ---------------------------------------------------------------------------
+# Alias @nestjs/swagger → local no-op stub.
+#
+# warframe-worldstate-parser decorates every model property with @nestjs/swagger
+# ApiProperty/ApiPropertyOptional decorators for OpenAPI generation. We don't
+# serve OpenAPI, so these are pure metadata noise at runtime. Bundling real
+# @nestjs/swagger drags the entire NestJS tree (RxJS, reflect-metadata, Node
+# HTTP shims) past the 1 MB Worker bundle limit and imports server-only code
+# that breaks in Workers. The stub is ~200 bytes of no-op factories.
+# ---------------------------------------------------------------------------
+[alias]
+"@nestjs/swagger" = "./src/stubs/nestjs-swagger.ts"
