@@ -1,9 +1,9 @@
 import type { Env } from './types';
 import { route } from './api/routes';
 import { logger } from './logger';
+import { runWorldstateUpdate } from './worldstate/updater';
 
-// Phase B: import { runWorldstateUpdate } from './worldstate/updater';
-// Phase C: import { runCodexUpdate }      from './codex/updater';
+// Phase C: import { runCodexUpdate } from './codex/updater';
 
 export default {
   async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
@@ -13,12 +13,14 @@ export default {
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
     logger.info('scheduler', 'cron tick', { cron: controller.cron });
 
-    // Phase B: every-minute worldstate update
-    // ctx.waitUntil(runWorldstateUpdate(env));
+    // Cloudflare fires scheduled() once PER cron expression, even when two
+    // crons land on the same minute. Dispatch by exact cron string.
+    if (controller.cron === '* * * * *') {
+      ctx.waitUntil(runWorldstateUpdate(env));
+    }
 
-    // Phase C: 6-hour codex update
-    // const now = new Date();
-    // if (now.getMinutes() === 0 && now.getUTCHours() % 6 === 0) {
+    // Phase C — every 6 hours
+    // if (controller.cron === '0 */6 * * *') {
     //   ctx.waitUntil(runCodexUpdate(env));
     // }
   },
