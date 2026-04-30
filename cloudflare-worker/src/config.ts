@@ -28,6 +28,28 @@ export const config = {
     wfcdDropsFallbackUrl: 'https://raw.githubusercontent.com/WFCD/warframe-drop-data/master/data/all.json',
     kvTtlSeconds:         21_600,
     fetchTimeoutMs:       30_000,
+    // Maximum simultaneous calamity fetches. Cloudflare Workers cap at
+    // 6 concurrent subrequests by default during scheduled events; we
+    // batch 4 at a time to stay safely under the limit while still
+    // pipelining downloads.
+    concurrency:          4,
+    // Calamity-inc files we consume. Each is a JSON dictionary keyed by
+    // uniqueName (e.g. /Lotus/Powersuits/Ninja/Ninja). Order matters
+    // only for log readability — fetcher pulls them in parallel batches.
+    calamityFiles: [
+      'ExportWarframes.json',     // all warframes (base + Prime)
+      'ExportWeapons.json',       // primary, secondary, melee, archwing
+      'ExportSentinels.json',     // companions
+      'ExportSentinelPowers.json',// companion abilities
+      'ExportUpgrades.json',      // mods
+      'ExportRecipes.json',       // build requirements
+      'ExportRelicArcane.json',   // relics + arcanes
+      'ExportResources.json',     // resources, gems, fish
+      'ExportKeys.json',          // quest keys, lich keys
+      'ExportFlavour.json',       // sigils, glyphs, cosmetics
+      'ExportFusionBundles.json', // mod fusion components
+      'ExportGear.json',          // ciphers, restores, consumables
+    ] as const,
   },
 
   maxStalenessMinutes:             60,
