@@ -227,3 +227,165 @@ export interface NewsItem {
   url?:         string;
   date:         number;
 }
+
+// ─── TennoplanItem (canonical shape served by /v1/codex) ───────────────────────
+// Single source of truth for all Warframe items in Tennoplan.
+// Primary key: uniqueName. Storage: codex:current → TennoplanItem[].
+
+export type ItemCategory =
+  | 'Warframe'
+  | 'Weapon'
+  | 'Companion'
+  | 'Sentinel'
+  | 'Arcane'
+  | 'Mod'
+  | 'Relic'
+  | 'Resource'
+  | 'Blueprint'
+  | 'Sigil'
+  | 'Glyph'
+  | 'Cosmetic'
+  | 'Ingredient'
+  | 'Key'
+  | 'Fish'
+  | 'Equipment';
+
+export type ItemRarity = 'Legendary' | 'Rare' | 'Uncommon' | 'Common';
+
+export type RelicTier = 'Lith' | 'Meso' | 'Neo' | 'Axi' | 'Requiem' | 'Omnia';
+
+export type Rotation = 'A' | 'B' | 'C';
+
+export type BountyTier =
+  | 'Lv1-5'
+  | 'Lv6-10'
+  | 'Lv11-15'
+  | 'Lv16-20'
+  | 'Lv21-25'
+  | 'Lv26-30'
+  | 'Lv31-40'
+  | 'Lv41-50';
+
+export interface TennoplanItem {
+  // ── Identity ────────────────────────────────────────────────
+  uniqueName:    string;
+  name:          string;
+  category:      ItemCategory;
+  type?:         string;
+  subtype?:      string;
+
+  // ── Visuals ─────────────────────────────────────────────────
+  iconUrl:       string;
+  thumbUrl?:     string;
+  color?:        string;
+
+  // ── Classification ──────────────────────────────────────────
+  masteryRank?:  number;
+  rarity?:       ItemRarity;
+  vaulted?:      boolean;
+  tradeable?:    boolean;
+  marketable?:   boolean;
+
+  // ── Drops & farming ─────────────────────────────────────────
+  dropLocations: DropLocation[];
+  bestFarms?:    BestFarmRecommendation[];
+  relicRewards?: RelicReward[];
+
+  // ── Item-specific data ──────────────────────────────────────
+  stats?:             ItemStats;
+  abilities?:         Ability[];
+  polarities?:        string[];
+  baseDrain?:         number;
+  buildRequirements?: BuildRequirement[];
+
+  // ── Economy ─────────────────────────────────────────────────
+  ducatValue?:    number;
+  estimatedPlat?: number;
+
+  // ── User state (only set after user interaction) ────────────
+  userState?: UserItemState;
+
+  // ── Metadata ────────────────────────────────────────────────
+  dataVersion:  string;
+  lastUpdated:  number;
+  source:       DataSource;
+  quality:      DataQuality;
+}
+
+export interface DropLocation {
+  uniqueName:        string;     // parent item this drop belongs to
+  location:          string;     // e.g. "Void Fissure (Lith) — Hepit, Void"
+  sourceName:        string;     // e.g. "Void Fissure" | "Mission" | "Bounty"
+  missions?:         string[];
+  chance:            number;     // 0.0–1.0
+  rotation?:         Rotation;
+  rarity?:           ItemRarity;
+  isSteelPath?:      boolean;
+  voidFissureTier?:  RelicTier;
+  bountyTier?:       BountyTier;
+  isDailyDeal?:      boolean;
+  cooldown?:         number;     // hours
+}
+
+export interface BestFarmRecommendation {
+  location:         DropLocation;
+  efficiencyScore:  number;      // 0–100 composite (chance × effort × cycle bonus)
+  estimatedRuns:    number;      // expected runs to obtain 1
+  notes?:           string;
+}
+
+export interface RelicReward {
+  item:    string;
+  rarity:  ItemRarity;
+  chancesPerRun: {
+    intact:      number;
+    exceptional: number;
+    radiant:     number;
+  };
+}
+
+export interface ItemStats {
+  damage?:         number;
+  fireRate?:       number;
+  critChance?:     number;
+  critMultiplier?: number;
+  statusChance?:   number;
+  magazine?:       number;
+  reload?:         number;
+  health?:         number;
+  shield?:         number;
+  armor?:          number;
+  energy?:         number;
+  sprintSpeed?:    number;
+  [key: string]:   number | undefined;   // extensible for future stats
+}
+
+export interface Ability {
+  name:         string;
+  description:  string;
+  stats?:       Record<string, number>;
+}
+
+export interface BuildRequirement {
+  item:   string;
+  count:  number;
+}
+
+export interface UserItemState {
+  owned?:       boolean;
+  mastered?:    boolean;
+  count?:       number;
+  masteredOn?:  number;
+  notes?:       string;
+}
+
+// ─── Codex sync envelope (KV value shape for codex:current) ────────────────────
+// Wraps the TennoplanItem[] with a small header so the API handler can
+// compute ageSeconds and version without re-deriving them from metadata.
+
+export interface CodexBundle {
+  items:        TennoplanItem[];
+  version:      string;
+  generatedAt:  number;
+  itemCount:    number;
+}
