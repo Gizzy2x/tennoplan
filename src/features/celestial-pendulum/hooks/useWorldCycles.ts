@@ -1,25 +1,38 @@
-import { useMemo, useRef, useEffect } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '@/adapters/storage/db';
-import { SyncService } from '@/services/SyncService';
-import { getCacheAgeMs } from '@/core/services/WorldstateService';
+/**
+ * useWorldCycles — Celestial Pendulum data subscriber (Phase D.4).
+ *
+ * Reads ParsedWorldstate from the V2 worldstate store via useWorldstate(),
+ * then maps the typed CycleInfo fields onto the legacy WorldCycle / CycleStatus
+ * domain types so the existing rendering code (CelestialPendulumPage,
+ * cycleService) continues to work unchanged.
+ *
+ * Migration notes:
+ *   • The legacy hook subscribed to `db.cache.get('worldstate_master')` and
+ *     parsed RawCycle (ISO date strings) into WorldCycle. The V2 ParsedWorldstate
+ *     already exposes Unix-ms timestamps and lowercased state strings, so the
+ *     mapping here is a straight field rename rather than a parse step.
+ *   • Cycle states arrive lowercased from the Worker (state: 'day'|'night'|...).
+ *     For Duviri, the mood field is also exposed; we lowercase it to match the
+ *     domain DuviriState union.
+ *   • The Worker emits boolean shorthands (isDay, isWarm) which we fall back to
+ *     when the explicit `state` string is missing — defensive coding for partial
+ *     payloads.
+ *
+ * The return signature matches the legacy useWorldCycles exactly so the
+ * Celestial Pendulum page does not need any changes.
+ */
+
+import { useMemo } from 'react';
 import { computeCycleStatus, extrapolateCycle, nextCycleState } from '@/core/services/cycleService';
-import type { WorldCycle, CycleId, CycleStatus } from '@/core/domain/cycles';
-import { useHeartbeatStore } from '@/store/heartbeat';
+import type { WorldCycle, CycleId, CycleState, CycleStatus } from '@/core/domain/cycles';
 import { useGameClock } from '@/hooks/useGameClock';
+import { useWorldstate } from '@/hooks/useWorldstate';
 import { PRESTIGE_LEVEL, PRE_HEAT_MS } from '@/tokens/worldThemes';
+import type { CycleInfo, DuviriCycleInfo, ParsedWorldstate } from '@/core/domain/tennoplanApi';
 
 // ---------------------------------------------------------------------------
-// Raw API shapes (kept local — not a domain concern)
+// Static config
 // ---------------------------------------------------------------------------
-
-interface RawCycle {
-  expiry:     string;
-  activation: string;
-  state?:     string;   // cetusCycle, vallisCycle, zarimanCycle, earthCycle
-  active?:    string;   // cambionCycle uses "active" instead of "state"
-  mood?:      string;   // duviriCycle may use "mood"
-}
 
 const META: Record<CycleId, { name: string; location: string }> = {
   cetus:   { name: 'Plains of Eidolon', location: 'Cetus' },
@@ -28,16 +41,6 @@ const META: Record<CycleId, { name: string; location: string }> = {
   zariman: { name: 'Zariman Ten Zero',  location: 'Chrysalith' },
   earth:   { name: 'Earth',            location: 'Earth Proxima' },
   duviri:  { name: 'Duviri',           location: 'Duviri Paradox' },
-};
-
-/** Worldstate packet key for each cycle id */
-const WS_FIELD: Record<CycleId, string> = {
-  cetus:   'cetusCycle',
-  vallis:  'vallisCycle',
-  cambion: 'cambionCycle',
-  zariman: 'zarimanCycle',
-  earth:   'earthCycle',
-  duviri:  'duviriCycle',
 };
 
 const CYCLE_IDS: CycleId[] = ['cetus', 'vallis', 'cambion', 'zariman', 'earth', 'duviri'];
@@ -74,19 +77,63 @@ function computeUrgency(status: CycleStatus): CycleUrgency {
   };
 }
 
-function normalizeState(id: CycleId, raw: RawCycle): string {
-  if (id === 'cambion') return (raw.active ?? 'fass').toLowerCase();
-  if (id === 'duviri')  return (raw.state  ?? raw.mood ?? 'joy').toLowerCase();
-  return (raw.state ?? 'day').toLowerCase();
+// ---------------------------------------------------------------------------
+// V2 → legacy WorldCycle adapter
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve the canonical lowercase state for a given cycle. Prefers the
+ * explicit `state` field; falls back to the boolean shorthands the Worker
+ * sets for predictable two-state cycles, then to the per-cycle default.
+ */
+function resolveState(id: CycleId, info: CycleInfo): CycleState {
+  if (info.state) return info.state.toLowerCase() as CycleState;
+  switch (id) {
+    case 'cetus':
+    case 'earth':
+      return (info.isDay ? 'day' : 'night') as CycleState;
+    case 'vallis':
+      return (info.isWarm ? 'warm' : 'cold') as CycleState;
+    case 'cambion':
+      return 'fass';
+    case 'zariman':
+      return (info.isCorpus ? 'corpus' : 'grineer') as CycleState;
+    default:
+      return 'day' as CycleState;
+  }
 }
 
-function rawToWorldCycle(id: CycleId, raw: RawCycle, fetchedAt: number): WorldCycle {
+function resolveDuviriState(info: DuviriCycleInfo): CycleState {
+  if (info.mood)  return info.mood.toLowerCase() as CycleState;
+  if (info.state) return info.state.toLowerCase() as CycleState;
+  return 'joy' as CycleState;
+}
+
+/**
+ * Pick the matching CycleInfo from the typed ParsedWorldstate fields.
+ * Returns null if the cycle isn't present (e.g. earthCycle is optional).
+ */
+function pickCycle(ws: ParsedWorldstate, id: CycleId): CycleInfo | null {
+  switch (id) {
+    case 'cetus':   return ws.cetusCycle ?? null;
+    case 'vallis':  return ws.orbVallisCycle ?? null;
+    case 'cambion': return ws.cambionDriftCycle ?? null;
+    case 'zariman': return ws.zarimanCycle ?? null;
+    case 'duviri':  return ws.duviriCycle ?? null;
+    case 'earth':   return ws.earthCycle ?? null;
+  }
+}
+
+function toWorldCycle(id: CycleId, info: CycleInfo, fetchedAt: number): WorldCycle {
+  const state = id === 'duviri'
+    ? resolveDuviriState(info as DuviriCycleInfo)
+    : resolveState(id, info);
   return {
     id,
     ...META[id],
-    state:        normalizeState(id, raw) as WorldCycle['state'],
-    expiryMs:     new Date(raw.expiry).getTime(),
-    activationMs: new Date(raw.activation).getTime(),
+    state,
+    expiryMs:     info.expiry,
+    activationMs: info.activation,
     fetchedAt,
   };
 }
@@ -96,34 +143,14 @@ function rawToWorldCycle(id: CycleId, raw: RawCycle, fetchedAt: number): WorldCy
 // ---------------------------------------------------------------------------
 
 /**
- * Subscribes to worldstate_master and extracts all six world cycles.
- * Expired cycles are extrapolated forward so the UI stays coherent between syncs.
+ * Subscribes to ParsedWorldstate and extracts all six world cycles.
+ * Expired cycles are extrapolated forward so the UI stays coherent between
+ * live syncs. The Worker also runs cycle-math fallback server-side; this is
+ * the client-side belt-and-braces for the gap between polls.
  */
 export function useWorldCycles() {
-  const wsEntry = useLiveQuery(
-    () => db.cache.get('worldstate_master').then(e => e ?? null),
-    []
-  );
-
-  const isLoading = wsEntry === undefined;
-  const ws        = (wsEntry?.data ?? null) as Record<string, unknown> | null;
-  const cachedAt  = wsEntry?.updatedAt ?? 0;
-  const isStale   = wsEntry ? wsEntry.expiresAt < Date.now() : false;
-
-  // ── Force refresh ─────────────────────────────────────────────────────
-  async function forceRefetch() {
-    await SyncService.performSync(true);
-  }
-
-  // Keep a stable ref so the heartbeat store always calls the current version
-  const refetchRef = useRef(forceRefetch);
-  refetchRef.current = forceRefetch;
-
-  useEffect(() => {
-    const { registerRefetch } = useHeartbeatStore.getState();
-    registerRefetch(() => refetchRef.current());
-    return () => useHeartbeatStore.getState().registerRefetch(null);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const { data: ws, lastSync, isLoading, isError, isStale, ageMs, forceRefetch } =
+    useWorldstate();
 
   // ── Shared global clock (no per-hook setInterval) ─────────────────────
   const now = useGameClock();
@@ -134,9 +161,9 @@ export function useWorldCycles() {
 
     const pairs = CYCLE_IDS
       .map(id => {
-        const raw = ws[WS_FIELD[id]] as RawCycle | undefined;
-        if (!raw?.expiry) return null;
-        const cycle  = rawToWorldCycle(id, raw, cachedAt);
+        const info = pickCycle(ws, id);
+        if (!info?.expiry) return null;
+        const cycle  = toWorldCycle(id, info, lastSync || now);
         const status = computeCycleStatus(extrapolateCycle(cycle, now), now);
         return { status, urgency: computeUrgency(status) };
       })
@@ -146,17 +173,17 @@ export function useWorldCycles() {
       statuses: pairs.map(p => p.status),
       urgency:  Object.fromEntries(pairs.map(p => [p.status.cycle.id, p.urgency])) as Partial<Record<CycleId, CycleUrgency>>,
     };
-  }, [ws, cachedAt, now]);
+  }, [ws, lastSync, now]);
 
   return {
     statuses,
     urgency,
     isLoading,
-    isError:       !isLoading && wsEntry === null,
+    isError,
     isStale,
-    cacheAgeMs:    getCacheAgeMs(cachedAt || now, now),
+    cacheAgeMs:    Number.isFinite(ageMs) ? ageMs : 0,
     hasEverLoaded: !isLoading,
-    lastSync:      cachedAt,
+    lastSync,
     now,
     forceRefetch,
   };

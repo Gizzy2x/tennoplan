@@ -1,14 +1,38 @@
+/**
+ * useSolarRailFeed — composite Solar Rail Feed subscriber (Phase D.4).
+ *
+ * Reads ParsedWorldstate from the V2 worldstate store via useWorldstate(),
+ * fans out into the eleven domain streams the page renders. Where the V2
+ * ParsedWorldstate doesn't expose a stream (Darvo daily deals, Steel Path
+ * endless rotation), we return empty / null and the page's conditional
+ * sections hide gracefully — no shape changes propagate to the UI.
+ *
+ * Migration notes:
+ *   • Legacy hook subscribed to `db.cache.get('worldstate_master')` and
+ *     parsed raw warframestat.us records into the legacy domain shapes.
+ *   • V2 ParsedWorldstate gives us alerts, invasions, sortie, archonHunt,
+ *     baro, news, persistentEnemies — all typed and Unix-ms.
+ *   • Sortie / ArchonHunt: V2 Sortie has missionTypes/modifiers as parallel
+ *     arrays; we zip them into the legacy `variants[{missionType, modifier…}]`
+ *     shape that ascensionService and SortieCard expect. ISO `expiry` is
+ *     synthesised from the Unix-ms field via toISO().
+ *   • Persistent enemies: V2 carries name/location/level only. We synthesise
+ *     a stable id from the name and default the health/state flags so the
+ *     existing PersistentEnemyCard renders the boss banner without crashing.
+ *   • Darvo / Steel Path / void traders array: V2 doesn't surface these.
+ *     The page treats them as "if present, render"; empty values hide the
+ *     respective sections cleanly. A future Worker enhancement can carry
+ *     these through if/when needed.
+ *
+ * The return signature matches the legacy useSolarRailFeed exactly so the
+ * Solar Rail Feed page does not need any changes.
+ */
+
 import { useMemo } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '@/adapters/storage/db';
-import { SyncService } from '@/services/SyncService';
-import { getCacheAgeMs } from '@/core/services/WorldstateService';
 import {
   computeAlertStatus,
   computeInvasionStatus,
-  computeDarvoDealStatus,
   computeVoidTraderStatus,
-  computeSteelPathStatus,
   computePersistentEnemyStatus,
   filterActiveAlerts,
   filterActiveEnemies,
@@ -23,135 +47,176 @@ import {
 import type {
   Alert,
   AlertStatus,
-  DarvoDeal,
   DarvoDealStatus,
   Invasion,
   InvasionStatus,
   NewsItem,
   PersistentEnemy,
   PersistentEnemyStatus,
-  SteelPath,
   SteelPathStatus,
   VoidTrader,
   VoidTraderStatus,
-  RawAlert,
-  RawDarvoDeal,
-  RawInvasion,
-  RawNewsItem,
-  RawPersistentEnemy,
-  RawSteelPath,
-  RawVoidTrader,
 } from '@/core/domain/railFeed';
-import type { SortieRaw, ArchonHuntRaw, SortieStatus, ArchonHuntStatus } from '@/core/domain/ascension';
+import type {
+  SortieRaw,
+  SortieMission,
+  ArchonHuntRaw,
+  ArchonHuntMission,
+  SortieStatus,
+  ArchonHuntStatus,
+} from '@/core/domain/ascension';
+import type {
+  Alert as ApiAlert,
+  Invasion as ApiInvasion,
+  Sortie as ApiSortie,
+  ArchonHunt as ApiArchonHunt,
+  BaroInfo,
+  PersistentEnemy as ApiPersistentEnemy,
+  NewsItem as ApiNewsItem,
+} from '@/core/domain/tennoplanApi';
 import { useGameClock } from '@/hooks/useGameClock';
+import { useWorldstate } from '@/hooks/useWorldstate';
 
 // ---------------------------------------------------------------------------
-// Mapping helpers (raw API → domain)
+// Helpers
 // ---------------------------------------------------------------------------
 
-function rawToInvasion(raw: RawInvasion, fetchedAt: number): Invasion {
+/** Convert Unix-ms back to ISO string for legacy `*Raw` types whose compute
+ *  functions still parse with `new Date(...)`. Cheap and stable. */
+function toISO(ms: number): string {
+  return new Date(ms).toISOString();
+}
+
+/** Parse a "10–25" range string into [min, max]. Falls back to [0, 0] when
+ *  the format is unexpected — alert level is decorative metadata. */
+function parseLevelRange(range: string): { min: number; max: number } {
+  const m = range.match(/(\d+)\s*[–-]\s*(\d+)/);
+  if (!m) return { min: 0, max: 0 };
+  return { min: Number(m[1]) || 0, max: Number(m[2]) || 0 };
+}
+
+/** Stable id derived from a string source — used when V2 omits an explicit
+ *  id field (persistent enemies are identified by name in the V2 contract). */
+function stableId(input: string): string {
+  // Lowercase + strip non-word chars; collisions across distinct names are
+  // extremely unlikely for Warframe enemy / boss labels.
+  return input.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+// ---------------------------------------------------------------------------
+// V2 → legacy domain adapters
+// ---------------------------------------------------------------------------
+
+function apiToAlert(raw: ApiAlert, fetchedAt: number): Alert {
+  const { min, max } = parseLevelRange(raw.level);
   return {
     id:               raw.id,
     node:             raw.node,
-    desc:             raw.desc ?? '',
-    attackerReward:   raw.attackerReward?.itemString ?? '',
-    defenderReward:   raw.defenderReward?.itemString ?? '',
-    attackerCredits:  raw.attackerReward?.credits ?? 0,
-    defenderCredits:  raw.defenderReward?.credits ?? 0,
-    attackingFaction: raw.attackingFaction ?? '',
-    defendingFaction: raw.defendingFaction ?? '',
-    completion:       raw.completion ?? 0,
-    vsInfestation:    raw.vsInfestation ?? false,
-    activationMs:     new Date(raw.activation).getTime(),
+    missionType:      raw.missionType,
+    faction:          '', // V2 contract drops faction — pageant blank rather than guess
+    reward:           raw.reward ?? '',
+    rewardCredits:    0,
+    minLevel:         min,
+    maxLevel:         max,
+    nightmare:        false,
+    archwingRequired: false,
+    activationMs:     raw.expiry - 60 * 60_000, // synthesised: 60-min default alert window
+    expiryMs:         raw.expiry,
     fetchedAt,
   };
 }
 
-function rawToAlert(raw: RawAlert, fetchedAt: number): Alert {
+function apiToInvasion(raw: ApiInvasion, fetchedAt: number): Invasion {
   return {
     id:               raw.id,
-    node:             raw.mission?.node ?? '',
-    missionType:      raw.mission?.type ?? '',
-    faction:          raw.mission?.faction ?? '',
-    reward:           raw.mission?.reward?.itemString ?? '',
-    rewardCredits:    raw.mission?.reward?.credits ?? 0,
-    minLevel:         raw.mission?.minEnemyLevel ?? 0,
-    maxLevel:         raw.mission?.maxEnemyLevel ?? 0,
-    nightmare:        raw.mission?.nightmare ?? false,
-    archwingRequired: raw.mission?.archwingRequired ?? false,
-    activationMs:     new Date(raw.activation).getTime(),
-    expiryMs:         new Date(raw.expiry).getTime(),
+    node:             raw.node,
+    desc:             '',
+    attackerReward:   raw.attackerReward ?? '',
+    defenderReward:   raw.defenderReward ?? '',
+    attackerCredits:  0,
+    defenderCredits:  0,
+    attackingFaction: raw.attacking,
+    defendingFaction: raw.defending,
+    completion:       raw.progress,
+    vsInfestation:    raw.vsInfestation ?? false,
+    activationMs:     raw.expiry ? raw.expiry - 24 * 60 * 60_000 : fetchedAt, // synth
     fetchedAt,
   };
 }
 
-function rawToDarvoDeal(raw: RawDarvoDeal, fetchedAt: number): DarvoDeal {
+function apiToSortieRaw(raw: ApiSortie): SortieRaw {
+  // Worker exposes missionTypes[] and modifiers[] as parallel arrays. Zip them
+  // into SortieMission[] for downstream compute + SortieCard rendering.
+  const variants: SortieMission[] = raw.missionTypes.map((missionType, i) => ({
+    missionType,
+    modifierType:        raw.modifiers[i] ?? '',
+    modifierDescription: '',
+    node:                '', // V2 doesn't carry per-variant nodes today
+  }));
   return {
-    id:            raw.id,
-    item:          raw.item ?? '',
-    originalPrice: raw.originalPrice ?? 0,
-    salePrice:     raw.salePrice ?? 0,
-    discount:      raw.discount ?? 0,
-    total:         raw.total ?? 1,
-    sold:          raw.sold ?? 0,
-    expiryMs:      new Date(raw.expiry).getTime(),
-    fetchedAt,
+    expiry:   toISO(raw.expiry),
+    faction:  raw.faction ?? '',
+    boss:     '', // V2 doesn't carry sortie boss; the page falls back to faction
+    variants,
   };
 }
 
-function rawToVoidTrader(raw: RawVoidTrader, fetchedAt: number): VoidTrader {
+function apiToArchonHuntRaw(raw: ApiArchonHunt): ArchonHuntRaw {
+  const missions: ArchonHuntMission[] = raw.missions.map(m => ({
+    type: m.missionType,
+    node: m.node,
+  }));
+  return {
+    id:      raw.id,
+    boss:    raw.boss ?? '',
+    faction: raw.faction ?? '',
+    expiry:  toISO(raw.expiry),
+    missions,
+  };
+}
+
+function apiToVoidTrader(raw: BaroInfo, fetchedAt: number): VoidTrader {
   return {
     id:           raw.id,
-    character:    raw.character ?? "Baro Ki'Teer",
+    character:    raw.name,
     location:     raw.location ?? '',
     inventory:    (raw.inventory ?? []).map(i => ({
-      item:    i.item,
+      item:    i.name,
       ducats:  i.ducats,
       credits: i.credits,
     })),
-    activationMs: new Date(raw.activation).getTime(),
-    expiryMs:     new Date(raw.expiry).getTime(),
-    active:       raw.active ?? false,
+    activationMs: raw.arrivalTime ?? 0,
+    expiryMs:     raw.departureTime ?? 0,
+    active:       raw.presence === 'at_location',
     fetchedAt,
   };
 }
 
-function rawToSteelPath(raw: RawSteelPath, fetchedAt: number): SteelPath {
+function apiToPersistentEnemy(raw: ApiPersistentEnemy, fetchedAt: number): PersistentEnemy {
   return {
-    rewardName:   raw.currentReward?.name ?? '',
-    rewardCost:   raw.currentReward?.cost ?? 15,
-    activationMs: new Date(raw.activation).getTime(),
-    expiryMs:     new Date(raw.expiry).getTime(),
-    rotation:     (raw.rotation ?? []).map(r => ({ name: r.name, cost: r.cost })),
+    id:           stableId(raw.name),
+    agentType:    raw.name,
+    typeKey:      raw.name,
+    health:       100,         // V2 doesn't surface health; PersistentEnemyCard tolerates this
+    isDiscovered: true,
+    isDestroyed:  false,
+    lastNode:     raw.location,
+    location:     raw.location,
+    active:       true,
     fetchedAt,
   };
 }
 
-function rawToPersistentEnemy(raw: RawPersistentEnemy, fetchedAt: number): PersistentEnemy {
-  return {
-    id:           raw.id,
-    agentType:    raw.agentType ?? '',
-    typeKey:      raw.typeKey ?? '',
-    health:       raw.health ?? 100,
-    isDiscovered: raw.isDiscovered ?? false,
-    isDestroyed:  raw.isDestroyed ?? false,
-    lastNode:     raw.lastNode ?? '',
-    location:     raw.location ?? '',
-    active:       raw.active ?? true,
-    fetchedAt,
-  };
-}
-
-function rawToNewsItem(raw: RawNewsItem, fetchedAt: number): NewsItem {
+function apiToNewsItem(raw: ApiNewsItem, fetchedAt: number): NewsItem {
   return {
     id:        raw.id,
-    headline:  raw.translations?.en ?? raw.message ?? '',
-    link:      raw.link ?? '',
-    imageLink: raw.imageLink ?? '',
-    dateMs:    new Date(raw.date).getTime(),
-    isUpdate:  raw.update ?? false,
-    isPrime:   raw.prime ?? false,
-    isStream:  raw.stream ?? false,
+    headline:  raw.title,
+    link:      raw.url ?? '',
+    imageLink: '',
+    dateMs:    raw.date,
+    isUpdate:  false,
+    isPrime:   false,
+    isStream:  false,
     fetchedAt,
   };
 }
@@ -161,20 +226,13 @@ function rawToNewsItem(raw: RawNewsItem, fetchedAt: number): NewsItem {
 // ---------------------------------------------------------------------------
 
 /**
- * Composite subscriber for the Solar Rail Feed tab.
- * Reads a single worldstate_master entry and fans out to 9 data streams.
- * No TanStack Query — useLiveQuery re-renders whenever SyncService writes.
+ * Composite subscriber for the Solar Rail Feed tab. Reads a single ParsedWorldstate
+ * and fans out into the domain shapes the page UI expects. Empty arrays / null
+ * for streams the V2 contract doesn't surface (Darvo deals, Steel Path).
  */
 export function useSolarRailFeed() {
-  const wsEntry = useLiveQuery(
-    () => db.cache.get('worldstate_master').then(e => e ?? null),
-    []
-  );
-
-  const isLoading = wsEntry === undefined;
-  const ws        = (wsEntry?.data ?? null) as Record<string, unknown> | null;
-  const cachedAt  = wsEntry?.updatedAt ?? 0;
-  const isStale   = wsEntry ? wsEntry.expiresAt < Date.now() : false;
+  const { data: ws, lastSync, isLoading, isError, isStale, ageMs, forceRefetch } =
+    useWorldstate();
 
   // ── Shared global clock (no per-hook setInterval) ─────────────────────
   const now = useGameClock();
@@ -205,23 +263,15 @@ export function useSolarRailFeed() {
 
     if (!ws) return empty;
 
-    const rawAlerts   = ((ws['alerts']            ?? []) as RawAlert[]).filter(r => !(r as { expired?: boolean }).expired);
-    const rawInvasions= ((ws['invasions']          ?? []) as RawInvasion[]).filter(r => !(r as { completed?: boolean }).completed);
-    const rawDarvo    = (ws['dailyDeals']          ?? []) as RawDarvoDeal[];
-    const rawTraders  = (ws['voidTraders']         ?? []) as RawVoidTrader[];
-    const rawSteelPath= ws['steelPath']            as RawSteelPath | undefined;
-    const rawEnemies  = ((ws['persistentEnemies']  ?? []) as RawPersistentEnemy[]).filter(r => !r.isDestroyed);
-    const rawNews     = (ws['news']                ?? []) as RawNewsItem[];
-    const rawSortie   = ws['sortie']               as SortieRaw | undefined;
-    const rawArchon   = ws['archonHunt']           as ArchonHuntRaw | undefined;
+    const fetchedAt = lastSync || now;
 
-    const alerts    = rawAlerts.map(r => rawToAlert(r, cachedAt));
-    const invasions = rawInvasions.map(r => rawToInvasion(r, cachedAt));
-    const darvo     = rawDarvo.map(r => rawToDarvoDeal(r, cachedAt));
-    const trader    = rawTraders[0] ? rawToVoidTrader(rawTraders[0], cachedAt) : null;
-    const sp        = rawSteelPath ? rawToSteelPath(rawSteelPath, cachedAt) : null;
-    const enemies   = rawEnemies.map(r => rawToPersistentEnemy(r, cachedAt));
-    const news      = rawNews.slice(0, 10).map(r => rawToNewsItem(r, cachedAt));
+    const alerts    = (ws.alerts             ?? []).map(a => apiToAlert(a, fetchedAt));
+    const invasions = (ws.invasions          ?? []).filter(i => !i.completed).map(i => apiToInvasion(i, fetchedAt));
+    const enemies   = (ws.persistentEnemies  ?? []).map(e => apiToPersistentEnemy(e, fetchedAt));
+    const news      = (ws.news               ?? []).slice(0, 10).map(n => apiToNewsItem(n, fetchedAt));
+    const trader    = ws.baro ? apiToVoidTrader(ws.baro, fetchedAt) : null;
+    const sortieRaw = ws.sortie     ? apiToSortieRaw(ws.sortie)         : null;
+    const archonRaw = ws.archonHunt ? apiToArchonHuntRaw(ws.archonHunt) : null;
 
     const activeAlerts  = filterActiveAlerts(alerts, now);
     const activeEnemies = filterActiveEnemies(enemies);
@@ -229,20 +279,15 @@ export function useSolarRailFeed() {
     return {
       alertStatuses:    sortAlertsByExpiry(activeAlerts).map(a => computeAlertStatus(a, now)),
       invasionStatuses: sortInvasionsByCompletion(invasions).map(computeInvasionStatus),
-      darvoDealStatuses:darvo.map(d => computeDarvoDealStatus(d, now)),
+      darvoDealStatuses:[] as DarvoDealStatus[], // V2 doesn't expose Darvo deals
       voidTraderStatus:  trader ? computeVoidTraderStatus(trader, now) : null,
-      steelPathStatus:   sp ? computeSteelPathStatus(sp, now) : null,
+      steelPathStatus:   null as SteelPathStatus | null, // V2 doesn't expose Steel Path rotation
       enemyStatuses:    activeEnemies.map(computePersistentEnemyStatus),
       newsItems:        sortAndTrimNews(news),
-      sortieStatus:      rawSortie ? computeSortieStatus(rawSortie, now) : null,
-      archonHuntStatus:  rawArchon ? computeArchonHuntStatus(rawArchon, now) : null,
+      sortieStatus:      sortieRaw ? computeSortieStatus(sortieRaw, now) : null,
+      archonHuntStatus:  archonRaw ? computeArchonHuntStatus(archonRaw, now) : null,
     };
-  }, [ws, cachedAt, now]);
-
-  // ── Force refresh ─────────────────────────────────────────────────────
-  async function forceRefetch() {
-    await SyncService.performSync(true);
-  }
+  }, [ws, lastSync, now]);
 
   return {
     alertStatuses,
@@ -257,11 +302,11 @@ export function useSolarRailFeed() {
     totalAlerts:    alertStatuses.length,
     totalInvasions: invasionStatuses.length,
     isLoading,
-    isError:        !isLoading && wsEntry === null,
+    isError,
     isStale,
-    hasEverLoaded:  !isLoading,
-    cacheAgeMs:     getCacheAgeMs(cachedAt || now, now),
-    lastSync:       cachedAt,
+    hasEverLoaded: !isLoading,
+    cacheAgeMs:    Number.isFinite(ageMs) ? ageMs : 0,
+    lastSync,
     now,
     forceRefetch,
   };

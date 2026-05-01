@@ -52,30 +52,34 @@ export function AppShell() {
   const { staleInfo } = useStaticDataCheck(recheckTick);
 
   useEffect(() => {
-    // Live worldstate only. Static data (items + drops) is Settings-driven —
-    // no auto-sync on launch. See DropDataService.
+    // Phase D.4 — V2 services are now ON by default.
     //
-    // Phase D.2/D.3 — V2 services (WorldstateSync + StaticDataService) run
-    // alongside the legacy SyncService when VITE_WORLDSTATE_V2_ENABLED=true.
-    // They write to disjoint Dexie tables (legacy: cache.worldstate_master +
-    // items; V2: worldstate + syncMetadata + tennoplanItems) so they don't
-    // conflict. Default is V2 OFF — D.4 will flip to V2-only once feature
-    // consumers are migrated.
+    // The migrated feature hooks (useWorldCycles, useFissures, useSolarRailFeed)
+    // read from the V2 worldstate table; un-migrated hooks (useSyndicateMissions,
+    // useSimaris, useDailiesData, useDailiesWeeklies) still read worldstate_master
+    // and rely on the legacy SyncService poll. Both services therefore run in
+    // parallel through the rest of the D-cycle and write to disjoint Dexie
+    // tables — no contention.
+    //
+    // Phase E will retire SyncService entirely once all hooks are V2.
+    //
+    // Opt out of V2 with VITE_WORLDSTATE_V2_ENABLED=false (development-only
+    // escape hatch — keeps the legacy stack the sole authority).
     //
     // StaticDataService.init() is fire-and-forget: it checks the local
     // codex's freshness and triggers a background refresh if stale. No
     // cleanup needed (it doesn't own any timers).
-    const v2Enabled = import.meta.env.VITE_WORLDSTATE_V2_ENABLED === "true";
+    const v2Disabled = import.meta.env.VITE_WORLDSTATE_V2_ENABLED === "false";
 
     SyncService.init();
-    if (v2Enabled) {
+    if (!v2Disabled) {
       WorldstateSync.init();
       void StaticDataService.init();
     }
 
     return () => {
       SyncService.destroy();
-      if (v2Enabled) WorldstateSync.destroy();
+      if (!v2Disabled) WorldstateSync.destroy();
     };
   }, []);
 
