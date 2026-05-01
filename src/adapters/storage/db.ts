@@ -5,7 +5,11 @@ import type { ItemState } from "@/core/domain/itemState";
 import type { DropLocation } from "@/core/domain/drops";
 import type { StoredItem } from "@/core/domain/items";
 import type { DataSyncState } from "@/core/domain/sync";
-import type { ParsedWorldstate, SyncMetadata } from "@/core/domain/tennoplanApi";
+import type {
+  ParsedWorldstate,
+  SyncMetadata,
+  TennoplanItem,
+} from "@/core/domain/tennoplanApi";
 
 export interface Setting {
   key: string;
@@ -102,6 +106,17 @@ export class TennoplanDB extends Dexie {
    * read accurate age information without inventing string-key conventions.
    */
   syncMetadata!: Table<StoredSyncMetadata, string>;
+  /**
+   * TennoplanItem catalogue from /v1/codex (Phase D.3).
+   * One row per item, keyed by uniqueName. Indexed on `category`,
+   * `masteryRank`, and `vaulted` so StaticDataService.findItems() can
+   * filter without scanning ~8k rows.
+   *
+   * Sits alongside the legacy `items` (StoredItem) table during the D
+   * transition. D.4 swaps UI consumers off the legacy table; a Phase E
+   * cleanup will retire it.
+   */
+  tennoplanItems!: Table<TennoplanItem, string>;
 
   constructor() {
     super("tennoplan");
@@ -226,6 +241,37 @@ export class TennoplanDB extends Dexie {
       dataSyncState: "id, lastUpdated",
       worldstate: "key",
       syncMetadata: "id",
+    });
+
+    // Version 7 — Phase D.3: Worker-backed codex (TennoplanItem catalogue)
+    //
+    // tennoplanItems:
+    //   Primary key = uniqueName.
+    //   One row per item, sourced from the Cloudflare Worker's /v1/codex
+    //   endpoint (~8k items). Indexed on category / masteryRank / vaulted
+    //   so StaticDataService.findItems() can filter without scanning.
+    //
+    //   Sits alongside the legacy `items` (StoredItem from items-map.json)
+    //   table during the D transition — DropDataService keeps writing to
+    //   the old one. D.4 will migrate UI consumers, after which a Phase E
+    //   cleanup retires the legacy table.
+    //
+    // Additive migration — existing tables carry forward unchanged.
+    this.version(7).stores({
+      settings: "key",
+      cache: "key, expiresAt",
+      userMarks: "++id, type, referenceId, [type+referenceId], updatedAt",
+      assetMeta: "uniqueName, cacheKey, status, priority, lastAccessedAt",
+      syncErrors: "++id, occurredAt, uniqueName",
+      progression: "++id, itemId, category, status, lastUpdated",
+      itemStates: "uniqueName, markedAt",
+      dropLocations:
+        "locationKey, type, bountyLocation, relicTier, fetchedAt, [type+bountyLocation], [bountyLocation+bountyLevel]",
+      items: "uniqueName, category, lastUpdated",
+      dataSyncState: "id, lastUpdated",
+      worldstate: "key",
+      syncMetadata: "id",
+      tennoplanItems: "uniqueName, category, masteryRank, vaulted",
     });
   }
 }
