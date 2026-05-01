@@ -5,6 +5,7 @@ import type { ItemState } from "@/core/domain/itemState";
 import type { DropLocation } from "@/core/domain/drops";
 import type { StoredItem } from "@/core/domain/items";
 import type { DataSyncState } from "@/core/domain/sync";
+import type { ParsedWorldstate, SyncMetadata } from "@/core/domain/tennoplanApi";
 
 export interface Setting {
   key: string;
@@ -29,6 +30,43 @@ export interface UserMark {
   updatedAt: number;
 }
 
+// ── Phase D.1 — new typed table rows ─────────────────────────────────────────
+
+/**
+ * Worldstate table row — one entry per snapshot key. Replaces the
+ * `db.cache.get('worldstate_master')` pattern (which mixed typed and
+ * untyped data in the generic `cache` table).
+ *
+ * Keys:
+ *   'current'  — latest ParsedWorldstate from /v1/worldstate
+ *   'previous' — rollback snapshot, written when a new sync replaces 'current'
+ *
+ * timestamp is the Unix ms at which we received the response from the
+ * Worker. SyncMetadata.lastSync (in the syncMetadata table) is the
+ * authoritative age signal; this field is a convenience for `useLiveQuery`
+ * subscribers that don't want to read from two tables.
+ */
+export interface WorldstateRow {
+  key:       'current' | 'previous';
+  data:      ParsedWorldstate;
+  timestamp: number;
+}
+
+/**
+ * SyncMetadata table row — one entry per dataset.
+ *
+ * Carries the Worker's SyncMetadata shape verbatim (lastSync, etag,
+ * version, source, quality, errorCount, lastError, itemCount) plus an
+ * `id` discriminator used as the primary key.
+ *
+ * Replaces the scattered `worldstate:etag` / `worldstate:source` keys in
+ * the `cache` table — sync state is now discoverable via a typed table
+ * with strict shape rather than untyped string lookups.
+ */
+export interface StoredSyncMetadata extends SyncMetadata {
+  id: 'worldstate' | 'codex';
+}
+
 export class TennoplanDB extends Dexie {
   settings!: Table<Setting, string>;
   cache!: Table<CacheEntry, string>;
@@ -51,6 +89,19 @@ export class TennoplanDB extends Dexie {
   items!: Table<StoredItem, string>;
   /** One row per synced dataset. Replaces the old drops:etag / drops:lastSynced settings keys. */
   dataSyncState!: Table<DataSyncState, string>;
+  /**
+   * ParsedWorldstate snapshots (Phase D.1).
+   * Key = 'current' | 'previous'. Replaces `db.cache.get('worldstate_master')`
+   * with a typed table whose subscribers see strict ParsedWorldstate data.
+   */
+  worldstate!: Table<WorldstateRow, string>;
+  /**
+   * Sync state for both worldstate and codex datasets (Phase D.1).
+   * Carries lastSync, etag, version, source, quality, errorCount per dataset
+   * so the UI can show staleness banners and the heartbeat indicator can
+   * read accurate age information without inventing string-key conventions.
+   */
+  syncMetadata!: Table<StoredSyncMetadata, string>;
 
   constructor() {
     super("tennoplan");
@@ -139,6 +190,42 @@ export class TennoplanDB extends Dexie {
         "locationKey, type, bountyLocation, relicTier, fetchedAt, [type+bountyLocation], [bountyLocation+bountyLevel]",
       items: "uniqueName, category, lastUpdated",
       dataSyncState: "id, lastUpdated",
+    });
+
+    // Version 6 — Phase D.1: Worker-backed worldstate + sync metadata
+    //
+    // worldstate:
+    //   Primary key = 'current' | 'previous' (string).
+    //   Stores the full ParsedWorldstate snapshot served by /v1/worldstate.
+    //   Replaces the old `db.cache.get('worldstate_master')` pattern with a
+    //   typed table — useLiveQuery subscribers receive ParsedWorldstate
+    //   directly instead of casting from `unknown`.
+    //
+    // syncMetadata:
+    //   Primary key = id ('worldstate' | 'codex').
+    //   Carries the Worker's SyncMetadata shape (lastSync, etag, version,
+    //   source, quality, errorCount, ...). HeartbeatStore reads this for
+    //   accurate age signalling; SyncService reads it for ETag (304) state.
+    //
+    // Additive migration — no data loss. Existing `items` / `cache` /
+    // `dropLocations` tables carry forward unchanged. The codex `items`
+    // table will be repurposed in Phase D.3 (currently still holds
+    // StoredItem rows from items-map.json; DropDataService keeps writing
+    // to it until D.3 retires that path).
+    this.version(6).stores({
+      settings: "key",
+      cache: "key, expiresAt",
+      userMarks: "++id, type, referenceId, [type+referenceId], updatedAt",
+      assetMeta: "uniqueName, cacheKey, status, priority, lastAccessedAt",
+      syncErrors: "++id, occurredAt, uniqueName",
+      progression: "++id, itemId, category, status, lastUpdated",
+      itemStates: "uniqueName, markedAt",
+      dropLocations:
+        "locationKey, type, bountyLocation, relicTier, fetchedAt, [type+bountyLocation], [bountyLocation+bountyLevel]",
+      items: "uniqueName, category, lastUpdated",
+      dataSyncState: "id, lastUpdated",
+      worldstate: "key",
+      syncMetadata: "id",
     });
   }
 }

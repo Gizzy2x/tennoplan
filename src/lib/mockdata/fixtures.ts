@@ -6,8 +6,8 @@
  * Mock data is never stale — timestamps are set to Date.now() at fixture load time.
  */
 
-import type { DropLocation, DropLocationType, BountyLocation } from '@/core/domain/drops';
-import type { StoredItem, ItemCategory } from '@/core/domain/items';
+import type { DropLocation } from '@/core/domain/drops';
+import type { StoredItem } from '@/core/domain/items';
 import type { WorldCycle } from '@/core/domain/cycles';
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -564,6 +564,62 @@ export function generateMockWorldstate() {
       expiry: new Date(now + 6 * 24 * 60 * 60 * 1000).toISOString(),
       currentReward: { name: 'Zariman Relic Pack', rotation: 'A' },
     },
+
+    // ── Syndicate Missions (Bounties) ──
+    syndicateMissions: [
+      {
+        id: 'ostron-bounties',
+        syndicate: 'Ostron',
+        expiry: new Date(now + 24 * 60 * 60 * 1000).toISOString(),
+        jobs: [
+          {
+            type: 'Bounty Level 30 - 40',
+            enemyLevels: [30, 40],
+            standingStages: [100, 200, 300],
+            rewardPool: ['Blind Rage Mod', 'Dragon Mod', 'Cetus Wisps', 'Endo'],
+          },
+        ],
+      },
+      {
+        id: 'solaris-bounties',
+        syndicate: 'Solaris United',
+        expiry: new Date(now + 24 * 60 * 60 * 1000).toISOString(),
+        jobs: [
+          {
+            type: 'Bounty Level 40 - 60',
+            enemyLevels: [40, 60],
+            standingStages: [100, 200, 300],
+            rewardPool: ['Volatile Quick Shot Mod', 'Tear Azurite', 'Void Fissure'],
+          },
+        ],
+      },
+      {
+        id: 'entrati-bounties',
+        syndicate: 'Entrati',
+        expiry: new Date(now + 24 * 60 * 60 * 1000).toISOString(),
+        jobs: [
+          {
+            type: 'Bounty Level 30 - 40',
+            enemyLevels: [30, 40],
+            standingStages: [100, 200, 300],
+            rewardPool: ['Entrati Vault', 'Endo'],
+          },
+        ],
+      },
+      {
+        id: 'holdfasts-bounties',
+        syndicate: 'The Holdfasts',
+        expiry: new Date(now + 24 * 60 * 60 * 1000).toISOString(),
+        jobs: [
+          {
+            type: 'Bounty Level 30 - 40',
+            enemyLevels: [30, 40],
+            standingStages: [100, 200, 300],
+            rewardPool: ['Zariman Reward Package', 'Endo'],
+          },
+        ],
+      },
+    ],
 
     // ── News ──
     news: [

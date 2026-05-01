@@ -92,7 +92,7 @@ export async function populateMockData(options: MockDataOptions = {}): Promise<v
  * Only items, dropLocations, and dataSyncState — leaves user marks & settings untouched.
  */
 export async function clearAllMockData(): Promise<void> {
-  if (logger.enabled) log.info('Clearing mock data…');
+  log.info('Clearing mock data…');
 
   try {
     await db.transaction('rw', [db.items, db.dropLocations, db.dataSyncState], async () => {
@@ -101,7 +101,7 @@ export async function clearAllMockData(): Promise<void> {
       await db.dataSyncState.delete('items');
       await db.dataSyncState.delete('dropLocations');
     });
-    if (logger.enabled) log.success('Mock data cleared.');
+    log.success('Mock data cleared.');
   } catch (err) {
     log.error('Failed to clear mock data', err);
     throw err;

@@ -212,7 +212,6 @@ export function CelestialPendulumPage() {
   ) as Partial<Record<CycleId, string>>;
 
   const heroTime  = selectedStatus ? formatHeroTime(selectedStatus.msRemaining) : '—';
-  const heroState = (selectedStatus?.cycle.state ?? '—').toUpperCase();
 
   const handleRefresh = useCallback(async () => {
     if (isSyncing) return;
