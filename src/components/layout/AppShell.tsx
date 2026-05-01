@@ -4,6 +4,7 @@ import { Header } from "./Header";
 import { useNavigationStore, type NavTab } from "@/store/navigation";
 import { SyncService } from "@/services/SyncService";
 import { WorldstateSync } from "@/services/WorldstateSync";
+import { StaticDataService } from "@/services/StaticDataService";
 
 import { DailiesWeekliesPage } from "@/features/dailies-weeklies/DailiesWeekliesPage";
 import { CelestialPendulumPage } from "@/features/celestial-pendulum/CelestialPendulumPage";
@@ -54,15 +55,23 @@ export function AppShell() {
     // Live worldstate only. Static data (items + drops) is Settings-driven —
     // no auto-sync on launch. See DropDataService.
     //
-    // Phase D.2 — V2 worldstate sync runs alongside the legacy SyncService
-    // when VITE_WORLDSTATE_V2_ENABLED=true is set. They write to disjoint
-    // Dexie tables (legacy: cache.worldstate_master, V2: worldstate +
-    // syncMetadata) so they don't conflict. Default is V2 OFF — D.4 will
-    // flip this to V2-only once feature consumers are migrated.
+    // Phase D.2/D.3 — V2 services (WorldstateSync + StaticDataService) run
+    // alongside the legacy SyncService when VITE_WORLDSTATE_V2_ENABLED=true.
+    // They write to disjoint Dexie tables (legacy: cache.worldstate_master +
+    // items; V2: worldstate + syncMetadata + tennoplanItems) so they don't
+    // conflict. Default is V2 OFF — D.4 will flip to V2-only once feature
+    // consumers are migrated.
+    //
+    // StaticDataService.init() is fire-and-forget: it checks the local
+    // codex's freshness and triggers a background refresh if stale. No
+    // cleanup needed (it doesn't own any timers).
     const v2Enabled = import.meta.env.VITE_WORLDSTATE_V2_ENABLED === "true";
 
     SyncService.init();
-    if (v2Enabled) WorldstateSync.init();
+    if (v2Enabled) {
+      WorldstateSync.init();
+      void StaticDataService.init();
+    }
 
     return () => {
       SyncService.destroy();
