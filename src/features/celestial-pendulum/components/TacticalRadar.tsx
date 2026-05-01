@@ -150,9 +150,14 @@ function RadarTooltip({ tooltip, accent }: { tooltip: TooltipState; accent: stri
       >
         {tooltip.hotspot.label}
       </text>
-      {/* Tip — wrap at ~120 chars wide (2 lines) */}
+      {/* Tip — wrap at ~120 chars wide (2 lines).
+          xmlns is required for foreignObject to render XHTML inside SVG;
+          React's HTMLDivElement types don't surface it, so we spread via
+          a generic attribute object to keep TS happy without losing the
+          SVG-correct markup. */}
       <foreignObject x={tx + 8} y={ty + 32} width={boxW - 16} height={24}>
-        <div xmlns="http://www.w3.org/1999/xhtml"
+        <div
+          {...{ xmlns: 'http://www.w3.org/1999/xhtml' }}
           style={{ fontSize: '6.5px', color: 'rgba(168,165,160,0.9)', lineHeight: 1.4, fontFamily: 'Inter, sans-serif' }}
         >
           {tooltip.hotspot.tip}
