@@ -2,18 +2,25 @@
  * Global Heartbeat Store — tracks API sync status across all modules.
  *
  * Each page's data hook registers its refetch here on mount.
- * The Header reads this store to render the LIVE / CACHED / OFFLINE indicator.
+ * The Header reads this store to render the LIVE / CACHED / STALE / OFFLINE indicator.
  *
  * Status transitions:
- *   live     — last fetch succeeded and data is < 5 min old
- *   cached   — data exists but is stale (API failed or > 5 min)
- *   offline  — no data and API is unreachable
+ *   live     — last fetch succeeded and data is fresh (< staleness threshold)
+ *   cached   — fetch failed but local Dexie cache exists (recent)
+ *   stale    — local cache is older than the staleness threshold (default 30 min);
+ *              data may have been served via the Worker's cycle-math fallback
+ *   offline  — no cached data AND fetch is failing
  *   syncing  — a manual refetch is in flight
+ *
+ * Phase D.2 added 'stale' to mirror the Worker's three-tier response model
+ * (official / cached / fallback). The Header gracefully degrades: any
+ * non-syncing status renders as "Last sync Xm ago" with the distinction
+ * surfaced via dedicated badge components when wired in D.4.
  */
 
 import { create } from 'zustand';
 
-export type HeartbeatStatus = 'live' | 'cached' | 'offline' | 'syncing';
+export type HeartbeatStatus = 'live' | 'cached' | 'stale' | 'offline' | 'syncing';
 
 interface HeartbeatState {
   status:     HeartbeatStatus;

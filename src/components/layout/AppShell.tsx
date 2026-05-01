@@ -3,6 +3,7 @@ import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
 import { useNavigationStore, type NavTab } from "@/store/navigation";
 import { SyncService } from "@/services/SyncService";
+import { WorldstateSync } from "@/services/WorldstateSync";
 
 import { DailiesWeekliesPage } from "@/features/dailies-weeklies/DailiesWeekliesPage";
 import { CelestialPendulumPage } from "@/features/celestial-pendulum/CelestialPendulumPage";
@@ -52,9 +53,20 @@ export function AppShell() {
   useEffect(() => {
     // Live worldstate only. Static data (items + drops) is Settings-driven —
     // no auto-sync on launch. See DropDataService.
+    //
+    // Phase D.2 — V2 worldstate sync runs alongside the legacy SyncService
+    // when VITE_WORLDSTATE_V2_ENABLED=true is set. They write to disjoint
+    // Dexie tables (legacy: cache.worldstate_master, V2: worldstate +
+    // syncMetadata) so they don't conflict. Default is V2 OFF — D.4 will
+    // flip this to V2-only once feature consumers are migrated.
+    const v2Enabled = import.meta.env.VITE_WORLDSTATE_V2_ENABLED === "true";
+
     SyncService.init();
+    if (v2Enabled) WorldstateSync.init();
+
     return () => {
       SyncService.destroy();
+      if (v2Enabled) WorldstateSync.destroy();
     };
   }, []);
 
