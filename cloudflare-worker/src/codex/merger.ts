@@ -117,8 +117,8 @@ export function mergeCodex(parsed: ParsedCodex): MergedCodex {
     [parsed.gear,          'gear'],
   ];
 
-  // Note: sentinelPowers is intentionally skipped — those are abilities, not
-  // standalone items. Enricher uses parsed.sentinelPowers to attach abilities
+  // Note: abilities is intentionally skipped — those are abilities, not
+  // standalone items. Enricher uses parsed.abilities to attach abilities
   // to sentinel items.
 
   for (const [map, source] of sources) {

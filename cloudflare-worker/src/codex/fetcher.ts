@@ -33,10 +33,11 @@ export interface RawCalamityBlobs {
   warframes:        unknown;
   weapons:          unknown;
   sentinels:        unknown;
-  sentinelPowers:   unknown;
+  abilities:        unknown;
   upgrades:         unknown;
   recipes:          unknown;
-  relicArcane:      unknown;
+  relics:           unknown;
+  arcanes:          unknown;
   resources:        unknown;
   keys:             unknown;
   flavour:          unknown;
@@ -117,10 +118,11 @@ export async function fetchAllCalamity(): Promise<RawCalamityBlobs> {
     warframes:      requireFile(lookup, 'ExportWarframes.json'),
     weapons:        requireFile(lookup, 'ExportWeapons.json'),
     sentinels:      requireFile(lookup, 'ExportSentinels.json'),
-    sentinelPowers: requireFile(lookup, 'ExportSentinelPowers.json'),
+    abilities: requireFile(lookup, 'ExportAbilities.json'),
     upgrades:       requireFile(lookup, 'ExportUpgrades.json'),
     recipes:        requireFile(lookup, 'ExportRecipes.json'),
-    relicArcane:    requireFile(lookup, 'ExportRelicArcane.json'),
+    relics:    requireFile(lookup, 'ExportRelics.json'),
+    arcanes:        requireFile(lookup, 'ExportArcanes.json'),
     resources:      requireFile(lookup, 'ExportResources.json'),
     keys:           requireFile(lookup, 'ExportKeys.json'),
     flavour:        requireFile(lookup, 'ExportFlavour.json'),

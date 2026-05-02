@@ -129,7 +129,7 @@ export interface ParsedCodex {
   warframes:       Map<string, CalamityRow>;
   weapons:         Map<string, CalamityRow>;
   sentinels:       Map<string, CalamityRow>;
-  sentinelPowers:  Map<string, CalamityRow>;
+  abilities:  Map<string, CalamityRow>;
   mods:            Map<string, CalamityRow>;        // ExportUpgrades
   recipes:         Map<string, CalamityRecipe>;     // keyed by recipe.uniqueName
   recipesByResult: Map<string, CalamityRecipe>;     // keyed by recipe.resultType
@@ -185,7 +185,7 @@ export function parseCodex(blobs: RawCodexBlobs): ParsedCodex {
 
   const totalCalamityRows =
     cal.warframes.size + cal.weapons.size + cal.sentinels.size +
-    cal.sentinelPowers.size + cal.mods.size + cal.recipes.size +
+    cal.abilities.size + cal.mods.size + cal.recipes.size +
     cal.relicArcane.size + cal.resources.size + cal.keys.size +
     cal.flavour.size + cal.fusionBundles.size + cal.gear.size;
 
@@ -220,7 +220,7 @@ interface ParsedCalamity {
   warframes:      Map<string, CalamityRow>;
   weapons:        Map<string, CalamityRow>;
   sentinels:      Map<string, CalamityRow>;
-  sentinelPowers: Map<string, CalamityRow>;
+  abilities: Map<string, CalamityRow>;
   mods:           Map<string, CalamityRow>;
   recipes:        Map<string, CalamityRecipe>;
   relicArcane:    Map<string, CalamityRelicArcane>;
@@ -239,10 +239,10 @@ function parseCalamity(blobs: RawCalamityBlobs): ParsedCalamity {
     warframes:      buildMap(blobs.warframes,        'ExportWarframes',      counter),
     weapons:        buildMap(blobs.weapons,          'ExportWeapons',        counter),
     sentinels:      buildMap(blobs.sentinels,        'ExportSentinels',      counter),
-    sentinelPowers: buildMap(blobs.sentinelPowers,   'ExportSentinelPowers', counter),
+    abilities: buildMap(blobs.abilities,   'ExportAbilities', counter),
     mods:           buildMap(blobs.upgrades,         'ExportUpgrades',       counter),
     recipes:        buildRecipeMap(blobs.recipes,    'ExportRecipes',        counter),
-    relicArcane:    buildRelicArcaneMap(blobs.relicArcane, 'ExportRelicArcane', counter),
+    relicArcane:    buildRelicsArcanes(blobs.relics, blobs.arcanes, 'ExportRelics', 'ExportArcanes', counter),
     resources:      buildMap(blobs.resources,        'ExportResources',      counter),
     keys:           buildMap(blobs.keys,             'ExportKeys',           counter),
     flavour:        buildMap(blobs.flavour,          'ExportFlavour',        counter),
@@ -322,15 +322,27 @@ function buildRecipeMap(blob: unknown, wrapperKey: string, counter: { dropped: n
   return out;
 }
 
-function buildRelicArcaneMap(
-  blob: unknown,
-  wrapperKey: string,
+function buildRelicsArcanes(
+  relicsBlob: unknown,
+  arcanesBlob: unknown,
+  relicsKey: string,
+  arcanesKey: string,
   counter: { dropped: number },
 ): Map<string, CalamityRelicArcane> {
-  const rows = extractCalamityRows(blob, wrapperKey);
-  const out  = new Map<string, CalamityRelicArcane>();
-
-  for (const raw of rows) {
+  const out = new Map<string, CalamityRelicArcane>();
+  
+  // Merge relics
+  const relicsRows = extractCalamityRows(relicsBlob, relicsKey);
+  for (const raw of relicsRows) {
+    const row = toRelicArcaneRow(raw);
+    if (!row) { counter.dropped++; continue; }
+    if (out.has(row.uniqueName)) continue;
+    out.set(row.uniqueName, row);
+  }
+  
+  // Merge arcanes
+  const arcanesRows = extractCalamityRows(arcanesBlob, arcanesKey);
+  for (const raw of arcanesRows) {
     const row = toRelicArcaneRow(raw);
     if (!row) { counter.dropped++; continue; }
     if (out.has(row.uniqueName)) continue;
