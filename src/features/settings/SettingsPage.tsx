@@ -16,19 +16,18 @@
  * codex requests per day, well within limits even with many concurrent users.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLiveQuery }         from 'dexie-react-hooks';
 import { PageHero }             from '@/components/ui/PageHero';
 import { useWorldstate }        from '@/hooks/useWorldstate';
-import { WorldstateSync }       from '@/services/WorldstateSync';
 import { StaticDataService }    from '@/services/StaticDataService';
+import { SystemPulse }          from '@/components/layout/SystemPulse';
 import { db }                   from '@/adapters/storage/db';
 import type { DataSource, DataQuality } from '@/core/domain/tennoplanApi';
 import './SettingsPage.css';
 
 // ── Rate-limit constants ───────────────────────────────────────────────────────
 
-const WS_COOLDOWN_MS    = 60_000;         // 60s — matches poll interval
 const CODEX_COOLDOWN_MS = 6 * 3_600_000; // 6h  — matches server cron
 const LS_CODEX_KEY      = 'tennoplan:codex:lastManualRefresh';
 
@@ -174,27 +173,8 @@ function RefreshButton({
 // ── Worldstate panel ──────────────────────────────────────────────────────────
 
 function WorldstatePanel() {
-  const { lastSync, source, quality, errorCount, isLoading, isError } =
+  const { source, quality, errorCount, isLoading, isError } =
     useWorldstate({ registerRefetch: false });
-
-  const [wsCooldown,   setWsCooldown]   = useState(0);
-  const [wsSyncing,    setWsSyncing]    = useState(false);
-  const [wsResultMsg,  setWsResultMsg]  = useState<{ ok: boolean; text: string } | null>(null);
-
-  const handleWsRefresh = useCallback(async () => {
-    if (wsSyncing || wsCooldown > 0) return;
-    setWsSyncing(true);
-    setWsResultMsg(null);
-    try {
-      await WorldstateSync.sync();
-      setWsResultMsg({ ok: true, text: 'Worldstate refreshed.' });
-      setWsCooldown(WS_COOLDOWN_MS);
-    } catch (e) {
-      setWsResultMsg({ ok: false, text: e instanceof Error ? e.message : 'Refresh failed' });
-    } finally {
-      setWsSyncing(false);
-    }
-  }, [wsSyncing, wsCooldown]);
 
   const hasErrors = errorCount > 0;
 
@@ -206,32 +186,14 @@ function WorldstatePanel() {
       </div>
 
       <SectionBlock>
-        <StatusRow label="Last sync"   value={isLoading ? '…' : isError ? 'Never' : ageLabel(lastSync)} accent={isError} />
-        <StatusRow label="Source"      value={isLoading ? '…' : sourceLabel(source)} />
-        <StatusRow label="Quality"     value={isLoading ? '…' : qualityLabel(quality)} pip quality={quality} />
+        <StatusRow label="Source"  value={isLoading ? '…' : isError ? '—' : sourceLabel(source)} />
+        <StatusRow label="Quality" value={isLoading ? '…' : isError ? '—' : qualityLabel(quality)} pip quality={quality} />
         {hasErrors && (
           <StatusRow label="Sync errors" value={`${errorCount} consecutive failure${errorCount !== 1 ? 's' : ''}`} accent />
         )}
       </SectionBlock>
 
-      {wsResultMsg && (
-        <p className={`settings-result typo-label-xs${wsResultMsg.ok ? ' settings-result--ok' : ' settings-result--err'}`}>
-          {wsResultMsg.ok ? '✓' : '✗'} {wsResultMsg.text}
-        </p>
-      )}
-
-      <RefreshButton
-        onClick={() => void handleWsRefresh()}
-        disabled={false}
-        cooldownMs={wsCooldown}
-        label="Force Refresh"
-        loadingLabel="Syncing…"
-        isLoading={wsSyncing}
-      />
-
-      <p className="settings-hint typo-label-xs">
-        Reads from Cloudflare KV — no upstream API calls. Safe to use.
-      </p>
+      <SystemPulse compact={false} />
     </div>
   );
 }

@@ -248,3 +248,58 @@
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Shared sync row (SystemPulse compact=false) ────────────────────────────── */
+
+.settings-sync-row {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             var(--space-md);
+  padding-top:     var(--space-sm);
+}
+
+.settings-sync-info {
+  display:     flex;
+  align-items: baseline;
+  gap:         var(--space-md);
+}
+
+.settings-sync-btn {
+  display:     inline-flex;
+  align-items: center;
+  gap:         var(--space-xs);
+  padding:     var(--space-xs) var(--space-md);
+  background:  rgba(227, 195, 114, 0.85);
+  border:      none;
+  color:       #0a1117;
+  cursor:      pointer;
+  transition:  background 0.15s ease-out, opacity 0.15s ease-out;
+  flex-shrink: 0;
+}
+
+.settings-sync-btn .typo-label-xs {
+  font-weight:    700;
+  letter-spacing: 0.06em;
+  color:          inherit;
+}
+
+.settings-sync-btn:hover:not(:disabled) {
+  background: var(--color-accent-gold);
+}
+
+.settings-sync-btn--disabled {
+  opacity:    0.45;
+  cursor:     not-allowed;
+  background: rgba(227, 195, 114, 0.25);
+  color:      var(--color-accent-gold);
+}
+
+.settings-sync-btn--disabled .typo-label-xs {
+  color: var(--color-text-muted);
+}
+
+.settings-sync-btn--syncing {
+  opacity: 0.70;
+  cursor:  not-allowed;
+}
