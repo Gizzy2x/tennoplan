@@ -560,6 +560,17 @@ a:focus-visible {
   color: var(--color-accent-gold);
 }
 
+.header-pulse-label--link {
+  background:  none;
+  border:      none;
+  padding:     0;
+  cursor:      pointer;
+}
+
+.header-pulse-label--link:hover {
+  color: rgba(227, 195, 114, 0.65);
+}
+
 .header-search {
   position: relative;
   display: flex;
