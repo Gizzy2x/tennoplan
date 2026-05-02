@@ -40,10 +40,11 @@ export const config = {
       'ExportWarframes.json',     // all warframes (base + Prime)
       'ExportWeapons.json',       // primary, secondary, melee, archwing
       'ExportSentinels.json',     // companions
-      'ExportSentinelPowers.json',// companion abilities
+      'ExportAbilities.json',     // abilities, focus upgrades, companion skills
       'ExportUpgrades.json',      // mods
       'ExportRecipes.json',       // build requirements
-      'ExportRelicArcane.json',   // relics + arcanes
+      'ExportRelics.json',        // relics (void, lith, meso, axi)
+      'ExportArcanes.json',       // arcanes (helminth, gear, warframe, weapon)
       'ExportResources.json',     // resources, gems, fish
       'ExportKeys.json',          // quest keys, lich keys
       'ExportFlavour.json',       // sigils, glyphs, cosmetics

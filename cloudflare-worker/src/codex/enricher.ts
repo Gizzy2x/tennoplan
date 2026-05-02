@@ -18,7 +18,7 @@
 //   • rarity: from drop entries (highest tier observed)
 //   • stats: per-category extraction (warframes: HP/shield/armor/...,
 //             weapons: damage/firerate/crit/..., mods: drain/maxRank)
-//   • abilities: from raw.abilities (warframes) or sentinelPowers (sentinels)
+//   • abilities: from raw.abilities (warframes) or abilities (sentinels)
 //   • polarities: from raw.polarities
 //   • baseDrain: from raw (mods)
 //   • buildRequirements: recipe.ingredients → { item, count } with display
@@ -641,7 +641,7 @@ function assignNum(out: ItemStats, key: keyof ItemStats, raw: CalamityRow, ...ca
 //
 // Warframes: raw.abilities is usually [{ abilityName, description }, ...].
 // Sentinels: raw.abilities is sometimes [{ uniqueName }] referencing rows in
-// parsed.sentinelPowers, where the actual name/description live.
+// parsed.abilities, where the actual name/description live.
 
 function extractAbilities(m: MergedItem, ctx: EnrichmentContext): Ability[] | undefined {
   const raw = m.raw['abilities'];
@@ -657,7 +657,7 @@ function extractAbilities(m: MergedItem, ctx: EnrichmentContext): Ability[] | un
     const ref = pickStringOnly(ar, 'uniqueName', 'abilityUniqueName');
 
     if ((!name || !desc) && ref) {
-      const power = ctx.parsed.sentinelPowers.get(ref);
+      const power = ctx.parsed.abilities.get(ref);
       if (power) {
         if (!name) name = pickString(power, 'name');
         if (!desc) desc = pickString(power, 'description');
