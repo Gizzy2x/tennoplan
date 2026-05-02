@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import type { Env } from './types';
 import { route } from './api/routes';
 import { logger } from './logger';
@@ -18,7 +19,7 @@ export default {
       ctx.waitUntil(runWorldstateUpdate(env));
     }
 
-    if (controller.cron === '0 */6 * * *') {
+    if (controller.cron === '*/5 * * * *') {
       ctx.waitUntil(runCodexUpdate(env));
     }
   },

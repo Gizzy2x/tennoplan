@@ -175,6 +175,10 @@ export function useWorldCycles() {
     };
   }, [ws, lastSync, now]);
 
+  // 3-minute threshold for out-of-sync warning
+  const OUT_OF_SYNC_MS = 3 * 60 * 1000;
+  const isDataOutOfSync = Number.isFinite(ageMs) && ageMs > OUT_OF_SYNC_MS;
+
   return {
     statuses,
     urgency,
@@ -186,5 +190,6 @@ export function useWorldCycles() {
     lastSync,
     now,
     forceRefetch,
+    isDataOutOfSync,
   };
 }

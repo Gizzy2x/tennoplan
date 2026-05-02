@@ -1,7 +1,9 @@
 import { db } from './db';
 
 // ---------------------------------------------------------------------------
-// Cache key constants — shared by SyncService, legacy adapters, feature hooks
+// Cache key constants — legacy V1 surface, retained for the inventory/asset
+// adapters that still write per-feature cache rows. WorldstateSync (V2) does
+// NOT use these keys; it writes the full ParsedWorldstate to db.worldstate.
 // ---------------------------------------------------------------------------
 
 // ETag key — stored alongside worldstate data for conditional GET requests.
@@ -9,7 +11,7 @@ export const WS_ETAG_KEY = 'worldstate:etag';
 
 // Data-source tag — which upstream fed the current worldstate_master entry.
 // Values: 'warframestat' (primary) | 'official' (parser-based fallback).
-// Read by <DataSourceBadge /> via useLiveQuery, written by SyncService on each sync.
+// Legacy V1 source tag — V2 surfaces source via db.syncMetadata.source instead.
 export const WS_SOURCE_KEY = 'worldstate:source';
 
 export type WorldstateSource = 'warframestat' | 'official';
@@ -66,8 +68,8 @@ export async function getWsCache<T>(key: string): Promise<WorldstateCacheResult<
 
 // ---------------------------------------------------------------------------
 // Write
-// ttlMs defaults to 24 hours so SyncService can omit it; legacy adapters that
-// pass an explicit TTL continue to work unchanged.
+// ttlMs defaults to 24 hours; legacy adapters that pass an explicit TTL
+// continue to work unchanged.
 // ---------------------------------------------------------------------------
 
 const DEFAULT_TTL_MS = 86_400_000; // 24 h
@@ -100,7 +102,9 @@ export async function getWsTimestamp(key: string): Promise<number> {
 }
 
 // ---------------------------------------------------------------------------
-// ETag helpers — used by SyncService for conditional GET (If-None-Match).
+// ETag helpers — legacy V1 ETag store. V2 stores the ETag in
+// db.syncMetadata.etag (see worldstateStore.ts). Retained only because the
+// asset/inventory adapters still reference these helpers.
 // Storing in Dexie means the ETag survives page reloads and app restarts,
 // so we skip the 2 MB download whenever the worldstate hasn't changed.
 // ---------------------------------------------------------------------------

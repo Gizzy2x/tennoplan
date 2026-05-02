@@ -175,7 +175,7 @@ export function CelestialPendulumPage() {
   const [selectedId, setSelectedId] = useState<CycleId>('cetus');
   const [isSyncing,  setIsSyncing]  = useState(false);
 
-  const { statuses, urgency, hasEverLoaded, isError, forceRefetch: refetchCycles } = useWorldCycles();
+  const { statuses, urgency, hasEverLoaded, isError, forceRefetch: refetchCycles, isDataOutOfSync } = useWorldCycles();
   const { missions, forceRefetch: refetchMissions } = useSyndicateMissions();
   const { ageLabel: dropsAgeLabel } = useDropsLastSynced();
 
@@ -289,6 +289,7 @@ export function CelestialPendulumPage() {
           cycleNote={cycleNote}
           resources={resources}
           urgency={urgency[selectedId]}
+          isDataOutOfSync={isDataOutOfSync}
         />
 
         {/* Bottom 2-column: bounties | intel */}
@@ -303,6 +304,7 @@ export function CelestialPendulumPage() {
             statuses={byId}
             forecastTimes={forecastTimes}
             tips={tips}
+            isDataOutOfSync={isDataOutOfSync}
           />
         </div>
 

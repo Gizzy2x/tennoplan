@@ -100,15 +100,9 @@ export const NAV_ITEMS: NavItem[] = [
 interface NavigationState {
   activeTab: NavTab;
   setActiveTab: (tab: NavTab) => void;
-  isCollapsed: boolean;
-  toggleCollapsed: () => void;
-  setCollapsed: (v: boolean) => void;
 }
 
 export const useNavigationStore = create<NavigationState>((set) => ({
   activeTab: "celestial-pendulum",
   setActiveTab: (tab) => set({ activeTab: tab }),
-  isCollapsed: false,
-  toggleCollapsed: () => set((s) => ({ isCollapsed: !s.isCollapsed })),
-  setCollapsed: (v) => set({ isCollapsed: v }),
 }));

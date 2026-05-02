@@ -2,7 +2,7 @@ import { QueryClient } from '@tanstack/react-query';
 
 /**
  * Singleton QueryClient — shared between App.tsx (provider) and
- * SyncService (imperative invalidation after a background sync).
+ * WorldstateSync (imperative invalidation after a background sync).
  */
 export const queryClient = new QueryClient({
   defaultOptions: {

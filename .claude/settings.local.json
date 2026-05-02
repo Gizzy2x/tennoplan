@@ -51,7 +51,12 @@
       "Read(//tmp/**)",
       "Skill(update-config)",
       "Skill(update-config:*)",
-      "Bash(npx impeccable *)"
+      "Bash(npx impeccable *)",
+      "mcp__Claude_in_Chrome__list_connected_browsers",
+      "mcp__Claude_in_Chrome__select_browser",
+      "mcp__Claude_in_Chrome__browser_batch",
+      "Read(//c/Users/Nuclear Spaceship/Downloads/**)",
+      "Bash(unzip -q Tennoplan.zip)"
     ]
   },
   "hooks": {

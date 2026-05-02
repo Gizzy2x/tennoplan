@@ -19,45 +19,20 @@ interface PageHeroProps {
  */
 export function PageHero({ prefix, title, subtitle, right, className = '' }: PageHeroProps) {
   return (
-    <div className={`mb-8 ${className}`}>
-      <div className="flex items-start justify-between gap-4">
+    <div className={`page-hero ${className}`}>
+      <div className="page-hero-row">
         <div>
-          <h1 className="page-hero-heading leading-none">
-            {prefix && (
-              <span
-                style={{
-                  fontWeight: 300,
-                  color: 'rgba(229, 226, 225, 0.75)',
-                  marginRight: '0.35em',
-                }}
-              >
-                {prefix}
-              </span>
-            )}
-            <span
-              className="orokin-etched"
-              style={{
-                fontWeight: 900,
-                color: '#E3C372',
-              }}
-            >
-              {title}
-            </span>
+          <h1 className="page-hero-heading">
+            {prefix && <span className="page-hero-prefix">{prefix}</span>}
+            <span className="page-hero-title orokin-etched">{title}</span>
           </h1>
-          {subtitle && (
-            <p className="page-hero-subtitle mt-2">{subtitle}</p>
-          )}
+          {subtitle && <p className="page-hero-subtitle">{subtitle}</p>}
         </div>
 
-        {right && (
-          <div className="flex items-center gap-3 pt-1 shrink-0">
-            {right}
-          </div>
-        )}
+        {right && <div className="page-hero-right">{right}</div>}
       </div>
 
-      {/* Gold gradient separator */}
-      <div className="somatic-line mt-4" />
+      <div className="somatic-line page-hero-divider" />
     </div>
   );
 }

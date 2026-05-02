@@ -220,7 +220,7 @@ export class TennoplanDB extends Dexie {
     //   Primary key = id ('worldstate' | 'codex').
     //   Carries the Worker's SyncMetadata shape (lastSync, etag, version,
     //   source, quality, errorCount, ...). HeartbeatStore reads this for
-    //   accurate age signalling; SyncService reads it for ETag (304) state.
+    //   accurate age signalling; WorldstateSync reads it for ETag (304) state.
     //
     // Additive migration — no data loss. Existing `items` / `cache` /
     // `dropLocations` tables carry forward unchanged. The codex `items`

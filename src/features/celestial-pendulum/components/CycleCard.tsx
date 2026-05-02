@@ -89,11 +89,12 @@ export function getStaticRewards(id: string, state: string): string {
 // ---------------------------------------------------------------------------
 
 export interface CycleCardProps {
-  status:    CycleStatus;
-  featured?: boolean;
+  status:           CycleStatus;
+  featured?:        boolean;
+  isDataOutOfSync?: boolean;
 }
 
-export function CycleCard({ status, featured = false }: CycleCardProps) {
+export function CycleCard({ status, featured = false, isDataOutOfSync = false }: CycleCardProps) {
   const { cycle, msRemaining, progress, isExpired } = status;
   const pres        = STATE[cycle.state] ?? FALLBACK;
   const { h, m, s } = formatMsParts(msRemaining);
@@ -168,7 +169,7 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
         </p>
 
         {/* HERO countdown — font-mono, intentionally not a token role */}
-        <div className="flex items-baseline gap-0.5 leading-none">
+        <div className="flex items-baseline gap-0.5 leading-none relative">
           {h !== '00' && (
             <>
               <span
@@ -222,6 +223,29 @@ export function CycleCard({ status, featured = false }: CycleCardProps) {
             s
           </span>
         </div>
+
+        {/* Out-of-sync warning icon */}
+        {isDataOutOfSync && (
+          <div
+            title="This cycle's data was synced more than 3 minutes ago — may not reflect current game state"
+            style={{
+              display:     'inline-flex',
+              alignItems:  'center',
+              justifyContent: 'center',
+              width:       16,
+              height:      16,
+              borderRadius: '50%',
+              fontSize:    '0.65rem',
+              color:       'rgba(251, 146, 60, 0.78)',
+              border:      '1px solid rgba(251, 146, 60, 0.40)',
+              background: 'rgba(251, 146, 60, 0.08)',
+              cursor:      'help',
+              marginTop:   2,
+            }}
+          >
+            🕐
+          </div>
+        )}
 
         {/* Transition label */}
         <p

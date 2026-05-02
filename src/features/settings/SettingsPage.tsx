@@ -1,355 +1,447 @@
 /**
- * SettingsPage — Static data management hub.
+ * SettingsPage — System status + data management hub (V2).
  *
- * The only place in the app that can trigger a static data sync or clear it.
- * Displays current sync status, a progress bar during refresh, and a danger
- * zone for clearing all stored data.
+ * Two data surfaces, two refresh actions:
+ *   • Worldstate  — live data from Worker KV, refreshed every 60s automatically.
+ *                   Manual refresh hits /v1/worldstate (fast KV read). Rate-limited
+ *                   to 60s so it can't beat the poll interval.
+ *   • Item Codex  — 2-3MB static blob from Worker KV, updated every 6h by cron.
+ *                   Manual refresh is rate-limited to 6h client-side (persisted in
+ *                   localStorage) — no point refreshing sooner, the server cron
+ *                   won't have produced new data yet. Countdown shown on button.
  *
- * Reached via the Settings (gear) icon in the Header — not in the sidebar.
+ * Spam protection: Cloudflare free plan has 100k requests/day. The codex blob is
+ * the only real risk — it's 2-3MB and the Worker still counts as a request per
+ * fetch. The 6h localStorage cooldown means a single user generates at most 4
+ * codex requests per day, well within limits even with many concurrent users.
  */
 
-import { useEffect, useState, useCallback } from 'react';
-import { PageHero } from '@/components/ui/PageHero';
-import { DropDataService, type FetchProgress } from '@/adapters/api/DropDataService';
-import type { StaleInfo } from '@/adapters/api/DropDataService';
-import { db } from '@/adapters/storage/db';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useLiveQuery }         from 'dexie-react-hooks';
+import { PageHero }             from '@/components/ui/PageHero';
+import { useWorldstate }        from '@/hooks/useWorldstate';
+import { WorldstateSync }       from '@/services/WorldstateSync';
+import { StaticDataService }    from '@/services/StaticDataService';
+import { db }                   from '@/adapters/storage/db';
+import type { DataSource, DataQuality } from '@/core/domain/tennoplanApi';
+import './SettingsPage.css';
 
-// ── Status pill helpers ───────────────────────────────────────────────────────
+// ── Rate-limit constants ───────────────────────────────────────────────────────
 
-type SyncStatus = 'idle' | 'syncing' | 'success' | 'error';
+const WS_COOLDOWN_MS    = 60_000;         // 60s — matches poll interval
+const CODEX_COOLDOWN_MS = 6 * 3_600_000; // 6h  — matches server cron
+const LS_CODEX_KEY      = 'tennoplan:codex:lastManualRefresh';
 
-function statusColor(s: SyncStatus): string {
-  if (s === 'success') return 'rgba(134,239,172,0.80)';
-  if (s === 'error')   return 'rgba(252,165,165,0.80)';
-  if (s === 'syncing') return 'rgba(227,195,114,0.70)';
-  return 'rgba(198,198,199,0.35)';
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function msToCountdown(ms: number): string {
+  if (ms <= 0) return '';
+  const totalSec = Math.ceil(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${s}s`;
+  return `${s}s`;
 }
 
-// ── Subcomponents ─────────────────────────────────────────────────────────────
+function ageLabel(lastSync: number): string {
+  if (!lastSync) return 'Never';
+  const ms = Date.now() - lastSync;
+  const s  = Math.floor(ms / 1000);
+  const m  = Math.floor(s / 60);
+  const h  = Math.floor(m / 60);
+  const d  = Math.floor(h / 24);
+  if (d > 0)  return `${d}d ago`;
+  if (h > 0)  return `${h}h ago`;
+  if (m > 0)  return `${m}m ago`;
+  return `${s}s ago`;
+}
 
-function SectionDivider({ label }: { label: string }) {
+function qualityLabel(q: DataQuality | string | null | undefined): string {
+  if (q === 'high')   return 'HIGH';
+  if (q === 'medium') return 'DEGRADED';
+  if (q === 'low')    return 'ESTIMATED';
+  return '—';
+}
+
+function sourceLabel(s: DataSource | string | null | undefined): string {
+  if (!s) return '—';
+  const map: Record<string, string> = {
+    'official':     'api.warframe.com',
+    'warframestat': 'warframestat.us',
+    'cached':       'Cloudflare KV (cached)',
+    'fallback':     'Cycle Math (offline)',
+    'calamity-plus':'calamity-inc (enriched)',
+    'enriched':     'calamity-inc + WFCD',
+    'wfcd':         'warframe-drop-data',
+  };
+  return map[s] ?? s;
+}
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
+
+function QualityPip({ quality }: { quality: DataQuality | string | null | undefined }) {
+  const cls =
+    quality === 'high'   ? 'settings-pip settings-pip--high'   :
+    quality === 'medium' ? 'settings-pip settings-pip--medium' :
+    quality === 'low'    ? 'settings-pip settings-pip--low'    :
+                           'settings-pip settings-pip--unknown';
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '28px 0 16px' }}>
-      <span
-        data-role="labelTiny"
-        className="typo-label-xs"
-        style={{
-          fontWeight: 700,
-          color:      'rgba(227,195,114,0.45)',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {label}
-      </span>
-      <div style={{ flex: 1, height: 1, background: 'rgba(227,195,114,0.08)' }} />
-    </div>
+    <span className={cls} aria-hidden="true" />
   );
 }
 
-function DataStatusRow({
+function StatusRow({
   label,
   value,
-  accent = false,
+  accent,
+  pip,
+  quality,
 }: {
-  label:   string;
-  value:   string;
-  accent?: boolean;
+  label:    string;
+  value:    string;
+  accent?:  boolean;
+  pip?:     boolean;
+  quality?: DataQuality | string | null;
 }) {
   return (
-    <div
-      style={{
-        display:        'flex',
-        justifyContent: 'space-between',
-        alignItems:     'center',
-        padding:        '7px 0',
-        borderBottom:   '1px solid rgba(255,255,255,0.04)',
-      }}
-    >
-      <span
-        data-role="labelTiny"
-        className="typo-label-xs"
-        style={{ color: 'rgba(198,198,199,0.45)' }}
-      >
-        {label}
-      </span>
-      <span
-        data-role="labelTiny"
-        className="typo-label-xs"
-        style={{ color: accent ? 'rgba(227,195,114,0.80)' : 'rgba(198,198,199,0.70)' }}
-      >
+    <div className="settings-status-row">
+      <span className="settings-status-label typo-label-xs">{label}</span>
+      <span className={`settings-status-value typo-label-xs${accent ? ' settings-status-value--accent' : ''}`}>
+        {pip && <QualityPip quality={quality} />}
         {value}
       </span>
     </div>
   );
 }
 
-function ProgressBar({ percent }: { percent: number | null }) {
-  const pct = percent ?? 0;
+function SectionBlock({ children }: { children: React.ReactNode }) {
+  return <div className="settings-block">{children}</div>;
+}
+
+function RefreshButton({
+  onClick,
+  disabled,
+  cooldownMs,
+  label,
+  loadingLabel,
+  isLoading,
+}: {
+  onClick:      () => void;
+  disabled:     boolean;
+  cooldownMs:   number;
+  label:        string;
+  loadingLabel: string;
+  isLoading:    boolean;
+}) {
+  const [remaining, setRemaining] = useState(cooldownMs);
+
+  useEffect(() => {
+    if (cooldownMs <= 0) { setRemaining(0); return; }
+    setRemaining(cooldownMs);
+    const id = setInterval(() => {
+      setRemaining(prev => {
+        const next = prev - 1000;
+        if (next <= 0) { clearInterval(id); return 0; }
+        return next;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [cooldownMs]);
+
+  const onCooldown = remaining > 0;
+  const isDisabled = disabled || isLoading || onCooldown;
+
   return (
-    <div
-      style={{
-        width:        '100%',
-        height:       3,
-        background:   'rgba(255,255,255,0.06)',
-        borderRadius: 2,
-        overflow:     'hidden',
-        marginTop:    10,
-      }}
+    <button
+      onClick={onClick}
+      disabled={isDisabled}
+      className={`settings-btn${isLoading ? ' settings-btn--loading' : ''}${onCooldown ? ' settings-btn--cooldown' : ''}`}
     >
-      <div
-        style={{
-          height:       '100%',
-          width:        percent === null ? '40%' : `${pct}%`,
-          background:   'rgba(227,195,114,0.60)',
-          borderRadius: 2,
-          transition:   'width 0.25s ease-out',
-          animation:    percent === null ? 'pulse-bar 1.2s ease-in-out infinite' : 'none',
-        }}
+      <span className={`settings-btn-icon${isLoading ? ' settings-btn-icon--spin' : ''}`}>↻</span>
+      <span className="typo-label-xs">
+        {isLoading
+          ? loadingLabel
+          : onCooldown
+            ? `Available in ${msToCountdown(remaining)}`
+            : label}
+      </span>
+    </button>
+  );
+}
+
+// ── Worldstate panel ──────────────────────────────────────────────────────────
+
+function WorldstatePanel() {
+  const { lastSync, source, quality, errorCount, isLoading, isError } =
+    useWorldstate({ registerRefetch: false });
+
+  const [wsCooldown,   setWsCooldown]   = useState(0);
+  const [wsSyncing,    setWsSyncing]    = useState(false);
+  const [wsResultMsg,  setWsResultMsg]  = useState<{ ok: boolean; text: string } | null>(null);
+
+  const handleWsRefresh = useCallback(async () => {
+    if (wsSyncing || wsCooldown > 0) return;
+    setWsSyncing(true);
+    setWsResultMsg(null);
+    try {
+      await WorldstateSync.sync();
+      setWsResultMsg({ ok: true, text: 'Worldstate refreshed.' });
+      setWsCooldown(WS_COOLDOWN_MS);
+    } catch (e) {
+      setWsResultMsg({ ok: false, text: e instanceof Error ? e.message : 'Refresh failed' });
+    } finally {
+      setWsSyncing(false);
+    }
+  }, [wsSyncing, wsCooldown]);
+
+  const hasErrors = errorCount > 0;
+
+  return (
+    <div className="settings-panel">
+      <div className="settings-panel-header">
+        <span className="settings-panel-title typo-label-xs">LIVE WORLDSTATE</span>
+        <span className="settings-panel-badge typo-label-xs">AUTO · 60s</span>
+      </div>
+
+      <SectionBlock>
+        <StatusRow label="Last sync"   value={isLoading ? '…' : isError ? 'Never' : ageLabel(lastSync)} accent={isError} />
+        <StatusRow label="Source"      value={isLoading ? '…' : sourceLabel(source)} />
+        <StatusRow label="Quality"     value={isLoading ? '…' : qualityLabel(quality)} pip quality={quality} />
+        {hasErrors && (
+          <StatusRow label="Sync errors" value={`${errorCount} consecutive failure${errorCount !== 1 ? 's' : ''}`} accent />
+        )}
+      </SectionBlock>
+
+      {wsResultMsg && (
+        <p className={`settings-result typo-label-xs${wsResultMsg.ok ? ' settings-result--ok' : ' settings-result--err'}`}>
+          {wsResultMsg.ok ? '✓' : '✗'} {wsResultMsg.text}
+        </p>
+      )}
+
+      <RefreshButton
+        onClick={() => void handleWsRefresh()}
+        disabled={false}
+        cooldownMs={wsCooldown}
+        label="Force Refresh"
+        loadingLabel="Syncing…"
+        isLoading={wsSyncing}
       />
+
+      <p className="settings-hint typo-label-xs">
+        Reads from Cloudflare KV — no upstream API calls. Safe to use.
+      </p>
     </div>
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
+// ── Codex panel ───────────────────────────────────────────────────────────────
 
-export function SettingsPage() {
-  const [staleInfo,    setStaleInfo]    = useState<StaleInfo | null>(null);
-  const [dropsCount,   setDropsCount]   = useState<number | null>(null);
-  const [syncStatus,   setSyncStatus]   = useState<SyncStatus>('idle');
-  const [progress,     setProgress]     = useState<FetchProgress | null>(null);
-  const [resultMsg,    setResultMsg]    = useState<string>('');
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
+function CodexPanel() {
+  const codexStatus = useLiveQuery(() => StaticDataService.getCodexStatus(), [], null);
 
-  const loadStaleInfo = useCallback(async () => {
-    const info = await DropDataService.checkForStaleData();
-    setStaleInfo(info);
-    const count = await db.dropLocations.count();
-    setDropsCount(count > 0 ? count : null);
+  const [codexCooldown,  setCodexCooldown]  = useState(0);
+  const [codexSyncing,   setCodexSyncing]   = useState(false);
+  const [codexProgress,  setCodexProgress]  = useState<string | null>(null);
+  const [codexResultMsg, setCodexResultMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  // Restore cooldown from localStorage on mount
+  useEffect(() => {
+    const raw = localStorage.getItem(LS_CODEX_KEY);
+    if (!raw) return;
+    const last = parseInt(raw, 10);
+    if (isNaN(last)) return;
+    const remaining = CODEX_COOLDOWN_MS - (Date.now() - last);
+    if (remaining > 0) setCodexCooldown(remaining);
   }, []);
 
-  useEffect(() => {
-    void loadStaleInfo();
-  }, [loadStaleInfo]);
-
-  const handleRefresh = async () => {
-    if (syncStatus === 'syncing') return;
-    setSyncStatus('syncing');
-    setProgress(null);
-    setResultMsg('');
-
+  const handleCodexRefresh = useCallback(async () => {
+    if (codexSyncing || codexCooldown > 0) return;
+    setCodexSyncing(true);
+    setCodexProgress('Contacting Worker…');
+    setCodexResultMsg(null);
     try {
-      const result = await DropDataService.fetchAndSync({
-        onProgress: (p) => setProgress(p),
-        maxRetries: 3,
+      await StaticDataService.refreshCodex((p) => {
+        setCodexProgress(`${p.status}…`);
       });
-      setSyncStatus('success');
-      setResultMsg(
-        `Synced ${result.itemsCount.toLocaleString()} items + ${result.dropsCount.toLocaleString()} drop locations in ${(result.durationMs / 1000).toFixed(1)}s`,
-      );
-      await loadStaleInfo();
-      document.dispatchEvent(new Event('static-data:synced'));
-    } catch (err) {
-      setSyncStatus('error');
-      setResultMsg(err instanceof Error ? err.message : String(err));
+      const status = await StaticDataService.getCodexStatus();
+      setCodexResultMsg({
+        ok:   true,
+        text: `${status.itemCount.toLocaleString()} items synced from ${sourceLabel(status.source ?? null)}.`,
+      });
+      const now = Date.now();
+      localStorage.setItem(LS_CODEX_KEY, String(now));
+      setCodexCooldown(CODEX_COOLDOWN_MS);
+    } catch (e) {
+      setCodexResultMsg({ ok: false, text: e instanceof Error ? e.message : 'Codex refresh failed' });
     } finally {
-      setProgress(null);
+      setCodexSyncing(false);
+      setCodexProgress(null);
     }
-  };
+  }, [codexSyncing, codexCooldown]);
 
-  const handleClear = async () => {
-    if (!showClearConfirm) {
-      setShowClearConfirm(true);
-      return;
-    }
-    setShowClearConfirm(false);
-    await DropDataService.clearAllData();
-    setResultMsg('All static data cleared. Refresh to repopulate.');
-    setSyncStatus('idle');
-    await loadStaleInfo();
-    document.dispatchEvent(new Event('static-data:synced'));
-  };
-
-  const isSyncing = syncStatus === 'syncing';
-
-  const daysLabel = staleInfo
-    ? staleInfo.daysOld === Infinity
-      ? 'Never'
-      : `${staleInfo.daysOld}d ago`
-    : '…';
+  const status      = codexStatus;
+  const itemCount   = status?.itemCount ?? 0;
+  const isPopulated = itemCount > 0;
+  const hasErrors   = (status?.errorCount ?? 0) > 0;
 
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', padding: '0 0 60px' }}>
-
-      <PageHero prefix="SYSTEM" title="SETTINGS" subtitle="Configuration & Preferences" />
-
-      {/* ── Static Data status ─────────────────────────────────────────────── */}
-      <SectionDivider label="Static Data" />
-
-      <div
-        style={{
-          background:   'rgba(255,255,255,0.025)',
-          border:       '1px solid rgba(255,255,255,0.06)',
-          padding:      '14px 18px',
-          marginBottom: 16,
-        }}
-      >
-        <DataStatusRow label="Last synced"    value={daysLabel} accent={staleInfo?.isStale} />
-        <DataStatusRow label="Drop locations" value={dropsCount ? `~${dropsCount.toLocaleString()} locations` : '—'} />
-        <DataStatusRow label="Item catalogue" value={staleInfo ? '~17 000 entries' : '—'} />
-        <DataStatusRow label="Source"         value="drops.warframestat.us" />
+    <div className="settings-panel">
+      <div className="settings-panel-header">
+        <span className="settings-panel-title typo-label-xs">ITEM CODEX</span>
+        <span className="settings-panel-badge typo-label-xs">AUTO · 6h</span>
       </div>
 
-      {/* Progress bar — visible during sync */}
-      {isSyncing && progress && (
-        <div style={{ marginBottom: 12 }}>
-          <ProgressBar percent={progress.percent} />
-          <p
-            data-role="labelTiny"
-            className="typo-label-xs"
-            style={{
-              color:     'rgba(227,195,114,0.55)',
-              marginTop: 6,
-            }}
-          >
-            {progress.status}
-          </p>
-        </div>
-      )}
+      <SectionBlock>
+        <StatusRow
+          label="Items cached"
+          value={status === null ? '…' : isPopulated ? `${itemCount.toLocaleString()} items` : 'Empty — pending first cron'}
+          accent={!isPopulated && status !== null}
+        />
+        <StatusRow
+          label="Last synced"
+          value={status === null ? '…' : status.lastSync ? ageLabel(status.lastSync) : 'Never'}
+          accent={status?.isStale && isPopulated}
+        />
+        {isPopulated && (
+          <StatusRow
+            label="Source"
+            value={status === null ? '…' : sourceLabel(status.source)}
+          />
+        )}
+        {isPopulated && (
+          <StatusRow
+            label="Quality"
+            value={status === null ? '…' : qualityLabel(status.quality)}
+            pip
+            quality={status?.quality}
+          />
+        )}
+        {hasErrors && (
+          <StatusRow
+            label="Sync errors"
+            value={`${status!.errorCount} consecutive failure${status!.errorCount !== 1 ? 's' : ''}`}
+            accent
+          />
+        )}
+      </SectionBlock>
 
-      {/* Result message */}
-      {resultMsg && !isSyncing && (
-        <p
-          data-role="labelTiny"
-          className="typo-label-xs"
-          style={{
-            color:        statusColor(syncStatus),
-            marginBottom: 12,
-          }}
-        >
-          {syncStatus === 'success' ? '✓ ' : syncStatus === 'error' ? '✗ ' : ''}{resultMsg}
+      {!isPopulated && status !== null && (
+        <p className="settings-notice typo-label-xs">
+          Worker codex cron runs every 6h. First population happens at the next 0/6/12/18 UTC tick.
+          You can force it now — it will download ~3MB from Cloudflare KV.
         </p>
       )}
 
-      {/* Refresh button */}
-      <button
-        onClick={() => void handleRefresh()}
-        disabled={isSyncing}
-        className="typo-label-xs"
-        style={{
-          display:    'flex',
-          alignItems: 'center',
-          gap:        6,
-          padding:    '8px 20px',
-          fontSize:   '0.42rem',
-          fontWeight: 700,
-          color:      isSyncing ? 'rgba(227,195,114,0.30)' : '#131313',
-          background: isSyncing ? 'rgba(227,195,114,0.15)' : 'rgba(227,195,114,0.85)',
-          border:     'none',
-          cursor:     isSyncing ? 'not-allowed' : 'pointer',
-          transition: 'background 0.15s, color 0.15s',
-        }}
-        onMouseEnter={(e) => {
-          if (!isSyncing) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(227,195,114,1)';
-        }}
-        onMouseLeave={(e) => {
-          if (!isSyncing) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(227,195,114,0.85)';
-        }}
-      >
-        <span
-          style={{
-            display:   'inline-block',
-            animation: isSyncing ? 'spin 1s linear infinite' : 'none',
-          }}
-        >
-          ↻
-        </span>
-        {isSyncing ? 'Syncing…' : 'Refresh Drop Data'}
-      </button>
+      {codexProgress && codexSyncing && (
+        <p className="settings-progress typo-label-xs">{codexProgress}</p>
+      )}
 
-      {/* ── Danger zone ────────────────────────────────────────────────────── */}
-      <SectionDivider label="Danger Zone" />
-
-      <div
-        style={{
-          background: 'rgba(255,60,60,0.03)',
-          border:     '1px solid rgba(255,100,100,0.10)',
-          padding:    '14px 18px',
-        }}
-      >
-        <p
-          data-role="labelTiny"
-          className="typo-label-xs"
-          style={{
-            color:        'rgba(252,165,165,0.50)',
-            marginBottom: 12,
-            lineHeight:   1.6,
-          }}
-        >
-          Removes all cached items, drop locations, and sync state.
-          Icons will show placeholders until the next refresh.
+      {codexResultMsg && !codexSyncing && (
+        <p className={`settings-result typo-label-xs${codexResultMsg.ok ? ' settings-result--ok' : ' settings-result--err'}`}>
+          {codexResultMsg.ok ? '✓' : '✗'} {codexResultMsg.text}
         </p>
+      )}
 
-        {showClearConfirm ? (
-          <div style={{ display: 'flex', gap: 10 }}>
+      <RefreshButton
+        onClick={() => void handleCodexRefresh()}
+        disabled={false}
+        cooldownMs={codexCooldown}
+        label="Force Refresh Codex"
+        loadingLabel={codexProgress ?? 'Downloading…'}
+        isLoading={codexSyncing}
+      />
+
+      <p className="settings-hint typo-label-xs">
+        Downloads ~3MB from Cloudflare KV. Locked for 6h after each refresh to match server cron cadence.
+      </p>
+    </div>
+  );
+}
+
+// ── Danger zone panel ─────────────────────────────────────────────────────────
+
+function DangerPanel() {
+  const [step,   setStep]   = useState<'idle' | 'confirm' | 'clearing'>('idle');
+  const [result, setResult] = useState<string | null>(null);
+
+  const handleClear = async () => {
+    if (step === 'idle')    { setStep('confirm'); return; }
+    if (step === 'confirm') {
+      setStep('clearing');
+      await Promise.all([
+        db.worldstate.clear(),
+        db.tennoplanItems.clear(),
+        db.syncMetadata.clear(),
+        db.cache.clear(),
+      ]);
+      localStorage.removeItem(LS_CODEX_KEY);
+      setResult('All local data cleared. Both services will re-sync on next access.');
+      setStep('idle');
+    }
+  };
+
+  return (
+    <div className="settings-panel settings-panel--danger">
+      <div className="settings-panel-header">
+        <span className="settings-panel-title settings-panel-title--danger typo-label-xs">DANGER ZONE</span>
+      </div>
+
+      <p className="settings-danger-desc typo-label-xs">
+        Clears all locally cached data — worldstate snapshot, item codex, sync metadata,
+        and rate-limit state. Both services will re-fetch on next load.
+      </p>
+
+      {result && (
+        <p className="settings-result settings-result--ok typo-label-xs">✓ {result}</p>
+      )}
+
+      <div className="settings-danger-actions">
+        {step === 'confirm' ? (
+          <>
             <button
               onClick={() => void handleClear()}
-              className="typo-label-xs"
-              style={{
-                padding:    '6px 16px',
-                fontWeight: 700,
-                fontSize:   '0.38rem',
-                color:      'rgba(252,165,165,0.90)',
-                border:     '1px solid rgba(252,165,165,0.35)',
-                background: 'transparent',
-                cursor:     'pointer',
-              }}
+              className="settings-btn settings-btn--danger-confirm"
             >
-              Confirm Clear
+              <span className="typo-label-xs">Confirm — clear everything</span>
             </button>
             <button
-              onClick={() => setShowClearConfirm(false)}
-              className="typo-label-xs"
-              style={{
-                padding:    '6px 16px',
-                fontWeight: 700,
-                fontSize:   '0.38rem',
-                color:      'rgba(198,198,199,0.45)',
-                border:     '1px solid rgba(198,198,199,0.12)',
-                background: 'transparent',
-                cursor:     'pointer',
-              }}
+              onClick={() => setStep('idle')}
+              className="settings-btn settings-btn--ghost"
             >
-              Cancel
+              <span className="typo-label-xs">Cancel</span>
             </button>
-          </div>
+          </>
         ) : (
           <button
-            onClick={handleClear}
-            className="typo-label-xs"
-            style={{
-              padding:    '6px 16px',
-              fontWeight: 700,
-              fontSize:   '0.38rem',
-              color:      'rgba(252,165,165,0.55)',
-              border:     '1px solid rgba(252,165,165,0.18)',
-              background: 'transparent',
-              cursor:     'pointer',
-              transition: 'color 0.15s, border-color 0.15s',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.color = 'rgba(252,165,165,0.85)';
-              (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(252,165,165,0.40)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.color = 'rgba(252,165,165,0.55)';
-              (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(252,165,165,0.18)';
-            }}
+            onClick={() => void handleClear()}
+            disabled={step === 'clearing'}
+            className="settings-btn settings-btn--danger"
           >
-            Clear All Static Data
+            <span className="typo-label-xs">
+              {step === 'clearing' ? 'Clearing…' : 'Clear All Local Data'}
+            </span>
           </button>
         )}
       </div>
+    </div>
+  );
+}
 
+// ── Page ──────────────────────────────────────────────────────────────────────
+
+export function SettingsPage() {
+  return (
+    <div className="settings-page">
+      <PageHero prefix="SYSTEM" title="SETTINGS" subtitle="Data sync status & configuration" />
+
+      <div className="settings-grid">
+        <WorldstatePanel />
+        <CodexPanel />
+      </div>
+
+      <DangerPanel />
     </div>
   );
 }
