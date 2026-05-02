@@ -88,6 +88,11 @@ export interface ParsedWorldstate {
   persistentEnemies?: PersistentEnemy[];
   news?:              NewsItem[];
 
+  // Open-world bounty rotations + Sanctuary + Netracell
+  syndicateMissions?: SyndicateMissionInfo[];
+  simaris?:           SimarisInfo;
+  archimedeas?:       ArchimedeaInfo[];
+
   // Derived (computed at parse time)
   cyclesRemaining: Record<string, number>;   // ms until each cycle flips
   isStale?:        boolean;                  // true if data > 30 min old
@@ -226,6 +231,72 @@ export interface NewsItem {
   description?: string;
   url?:         string;
   date:         number;
+}
+
+// ─── Bounty rotations (Cetus / Fortuna / Necralisk / Zariman) ──────────────────
+
+export interface SyndicateMissionInfo {
+  id:        string;
+  /** Canonical syndicate label, e.g. "Ostron" / "Solaris United" / "Entrati" / "The Holdfasts". */
+  syndicate: string;
+  /** Unix ms when these jobs rotate. */
+  expiry:    number;
+  jobs:      SyndicateJob[];
+}
+
+export interface SyndicateJob {
+  /** Display label of the bounty type, e.g. "Bounty Lv5-15". */
+  type:           string;
+  /** [min, max] enemy level for this tier. */
+  enemyLevels:    [number, number];
+  /** Standing rewarded per stage of the bounty. */
+  standingStages: number[];
+  /** Possible reward strings per stage; absent when the upstream parser fails. */
+  rewardPool?:    string[];
+}
+
+// ─── Sanctuary (Cephalon Simaris) ──────────────────────────────────────────────
+
+export interface SimarisInfo {
+  /** Active synthesis target — null when between rotations. */
+  activeSynthesisTarget: SimarisTarget | null;
+}
+
+export interface SimarisTarget {
+  name:       string;
+  type:       string;
+  isArchwing: boolean;
+  isBoss:     boolean;
+}
+
+// ─── Deep Archimedea (weekly Netracell content) ────────────────────────────────
+
+export interface ArchimedeaInfo {
+  id?:                string;
+  /** Unix ms when the rotation began. */
+  activation?:        number;
+  /** Unix ms when the rotation ends. */
+  expiry:             number;
+  /** Free-form rotation tag (e.g. "deep" / "elite"). */
+  type?:              string;
+  missions:           ArchimedeaMissionInfo[];
+  personalModifiers?: ArchimedeaModifierInfo[];
+}
+
+export interface ArchimedeaMissionInfo {
+  faction:         string;
+  factionKey?:     string;
+  missionType:     string;
+  missionTypeKey?: string;
+  deviation?:      ArchimedeaModifierInfo;
+  risks:           ArchimedeaModifierInfo[];
+}
+
+export interface ArchimedeaModifierInfo {
+  key:         string;
+  name:        string;
+  description: string;
+  isHard?:     boolean;
 }
 
 // ─── TennoplanItem (canonical shape served by /v1/codex) ───────────────────────

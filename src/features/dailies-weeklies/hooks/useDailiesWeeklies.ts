@@ -1,7 +1,24 @@
+/**
+ * useDailiesWeeklies — composite Dailies & Weeklies subscriber (Phase D.6).
+ *
+ * Reads ParsedWorldstate from the V2 worldstate store via useWorldstate()
+ * and projects Nightwave / Sortie / Archon Hunt onto the legacy domain
+ * shapes the existing rendering helpers (groupChallenges, computeStanding,
+ * computeSortieStatus, computeArchonHuntStatus) consume.
+ *
+ * Migration notes:
+ *   • Legacy hook subscribed to `db.cache.get('worldstate_master')` and
+ *     parsed RawNightwave/SortieRaw/ArchonHuntRaw directly. V2 emits
+ *     normalised Unix-ms shapes; the worldstateAdapters module bridges
+ *     them back to the `*Raw` shapes the compute helpers still expect.
+ *   • Forced sync now flows through useWorldstate().forceRefetch() →
+ *     WorldstateSync.sync(), not SyncService.performSync.
+ *
+ * The return signature matches the legacy useDailiesWeeklies exactly.
+ */
+
 import { useMemo, useState, useEffect } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/adapters/storage/db';
-import { SyncService } from '@/services/SyncService';
 import {
   computeChallengeStatus,
   computeSortieStatus,
@@ -10,35 +27,28 @@ import {
   computeStanding,
 } from '@/core/services/ascensionService';
 import { getWeekStart } from '@/core/services/cycleService';
+import {
+  apiToSortieRaw,
+  apiToArchonHuntRaw,
+  apiToNightwaveChallengeRaw,
+} from '@/core/services/worldstateAdapters';
 import type {
-  NightwaveRaw,
-  SortieRaw,
-  ArchonHuntRaw,
   ChallengeKind,
   ChallengeStatus,
   SortieStatus,
   ArchonHuntStatus,
   StandingSummary,
 } from '@/core/domain/ascension';
+import { useGameClock } from '@/hooks/useGameClock';
+import { useWorldstate } from '@/hooks/useWorldstate';
 
 // ---------------------------------------------------------------------------
 // Hook
 // ---------------------------------------------------------------------------
 
-/**
- * Composite hook for the Dailies & Weeklies tab (legacy entry-point).
- * Rewritten to read worldstate_master via useLiveQuery — no fetch calls,
- * no TanStack Query. SyncService owns the single write path.
- */
 export function useDailiesWeeklies() {
-  const wsEntry = useLiveQuery(
-    () => db.cache.get('worldstate_master').then(e => e ?? null),
-    []
-  );
-
-  const isLoading = wsEntry === undefined;
-  const ws        = (wsEntry?.data ?? null) as Record<string, unknown> | null;
-  const cachedAt  = wsEntry?.updatedAt ?? 0;
+  const { data: ws, lastSync, isLoading, isError, forceRefetch } =
+    useWorldstate();
 
   // ── Local completion state ─────────────────────────────────────────────
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
@@ -48,10 +58,10 @@ export function useDailiesWeeklies() {
     const marks = await db.userMarks.where('type').equals('ascension').toArray();
     setCompletedIds(new Set(marks.map(m => m.referenceId)));
 
-    const ws = getWeekStart(Date.now());
+    const weekStart = getWeekStart(Date.now());
     const earned = marks.reduce((sum, m) => {
       const meta = m.metadata as { reputation?: number; weekStart?: number } | undefined;
-      if (meta?.weekStart === ws) return sum + (meta.reputation ?? 0);
+      if (meta?.weekStart === weekStart) return sum + (meta.reputation ?? 0);
       return sum;
     }, 0);
     setWeeklyEarned(earned);
@@ -74,31 +84,22 @@ export function useDailiesWeeklies() {
     if (existing?.id != null) {
       await db.userMarks.delete(existing.id);
     } else {
-      const now = Date.now();
+      const ts = Date.now();
       await db.userMarks.add({
         type:        'ascension',
         referenceId: challengeId,
         status:      'completed',
-        metadata:    { reputation, weekStart: getWeekStart(now) },
-        createdAt:   now,
-        updatedAt:   now,
+        metadata:    { reputation, weekStart: getWeekStart(ts) },
+        createdAt:   ts,
+        updatedAt:   ts,
       });
     }
 
     await loadMarks();
   }
 
-  // ── Force refresh ──────────────────────────────────────────────────────
-  async function forceRefetch() {
-    await SyncService.performSync(true);
-  }
-
-  // ── 1-second clock ────────────────────────────────────────────────────
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
+  // ── Shared global clock ──────────────────────────────────────────────
+  const now = useGameClock();
 
   // ── Derived state ──────────────────────────────────────────────────────
   const {
@@ -124,28 +125,23 @@ export function useDailiesWeeklies() {
 
     if (!ws) return empty;
 
-    const nwRaw     = (ws['nightwave']  ?? {}) as NightwaveRaw;
-    const sortieRaw = ws['sortie']             as SortieRaw | undefined;
-    const archonRaw = ws['archonHunt']         as ArchonHuntRaw | undefined;
-
-    const challenges = (nwRaw.activeChallenges ?? []).map(c => ({
-      ...c,
-      reputation: Number(c.reputation) || 0,
-    }));
+    const challenges = (ws.nightwave?.challenges ?? []).map(apiToNightwaveChallengeRaw);
+    const sortieRaw  = ws.sortie     ? apiToSortieRaw(ws.sortie)         : null;
+    const archonRaw  = ws.archonHunt ? apiToArchonHuntRaw(ws.archonHunt) : null;
 
     const statuses = challenges.map(c =>
-      computeChallengeStatus(c, completedIds, now)
+      computeChallengeStatus(c, completedIds, now),
     );
 
     return {
       grouped:          groupChallenges(statuses),
-      sortieStatus:     sortieRaw ? computeSortieStatus(sortieRaw, now) : null,
+      sortieStatus:     sortieRaw ? computeSortieStatus(sortieRaw, now)     : null,
       archonHuntStatus: archonRaw ? computeArchonHuntStatus(archonRaw, now) : null,
       standing:         computeStanding(statuses),
       totalChallenges:  statuses.length,
       completedCount:   statuses.filter(s => s.completed).length,
-      season:           nwRaw.season ?? 0,
-      seasonTag:        nwRaw.tag    ?? '',
+      season:           ws.nightwave?.season ?? 0,
+      seasonTag:        '', // V2 NightwaveInfo doesn't carry the seasonal tag
     };
   }, [ws, completedIds, now]);
 
@@ -154,7 +150,7 @@ export function useDailiesWeeklies() {
     sortieStatus,
     archonHuntStatus,
     archonHuntLoading: isLoading,
-    archonHuntError:   !isLoading && wsEntry === null ? new Error('No data') : null,
+    archonHuntError:   isError ? new Error('No data') : null,
     standing,
     weeklyEarned,
     totalChallenges,
@@ -162,8 +158,8 @@ export function useDailiesWeeklies() {
     season,
     seasonTag,
     isLoading,
-    isError:   !isLoading && wsEntry === null,
-    lastSync:  cachedAt,
+    isError,
+    lastSync,
     now,
     toggleComplete,
     forceRefetch,

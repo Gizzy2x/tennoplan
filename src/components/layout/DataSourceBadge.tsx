@@ -1,51 +1,82 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/adapters/storage/db';
-import {
-  WS_SOURCE_KEY,
-  type WorldstateSource,
-} from '@/adapters/storage/worldstateCache';
+import type { DataSource } from '@/core/domain/tennoplanApi';
 
 // ---------------------------------------------------------------------------
 // DataSourceBadge
 //
 // Small cinematic pill in the Header that reveals which upstream is currently
-// feeding the worldstate_master cache:
+// feeding the V2 ParsedWorldstate snapshot:
 //
-//   WS        — warframestat.us (primary, community-parsed — healthy path)
+//   WS        — warframestat.us (community-parsed — healthy path)
 //   OFFICIAL  — api.warframe.com via warframe-worldstate-parser (fallback)
+//   CACHED    — Dexie last-good snapshot (network was unreachable)
+//   FALLBACK  — Worker's cycle-math projection (both upstreams unavailable)
 //
-// SyncService writes WS_SOURCE_KEY on every successful sync (200 OR 304), so
-// this badge reacts live to the Worker swapping upstreams without any payload
-// change. useLiveQuery re-renders as soon as Dexie's cache row is touched.
+// WorldstateSync writes db.syncMetadata['worldstate'].source on every
+// successful sync (200 OR 304), so this badge reacts live to the Worker
+// swapping upstreams without any payload change. useLiveQuery re-renders
+// as soon as the metadata row is touched.
 //
-// When no source tag exists yet (first-run, pre-sync), we render nothing — the
-// Header already has SystemPulse + breadcrumb, so an empty badge slot is
-// quieter than a placeholder "…" that tells the user nothing.
+// When no metadata exists yet (first-run, pre-sync), we render nothing —
+// the Header already has SystemPulse + breadcrumb, so an empty badge slot
+// is quieter than a placeholder "…" that tells the user nothing.
 // ---------------------------------------------------------------------------
 
 const GOLD = '#E3C372';
 
 interface BadgeSpec {
-  label:  string;
-  title:  string;
+  label:      string;
+  title:      string;
+  isFallback: boolean;
 }
 
-const BADGE_SPEC: Record<WorldstateSource, BadgeSpec> = {
+/** Spec table per V2 DataSource. Sources we don't expect for worldstate
+ *  (calamity-plus, wfcd, enriched — those are codex-side) collapse into
+ *  the "WS" healthy branding so the badge never renders garbage. */
+const BADGE_SPEC: Record<DataSource, BadgeSpec> = {
   warframestat: {
-    label: 'WS',
-    title: 'Source: warframestat.us (primary). Community-parsed worldstate — healthy path.',
+    label:      'WS',
+    title:      'Source: warframestat.us (primary). Community-parsed worldstate — healthy path.',
+    isFallback: false,
   },
   official: {
-    label: 'OFFICIAL',
-    title: 'Source: api.warframe.com via worldstate-parser (fallback). warframestat.us was unreachable; data is served from the official Warframe API.',
+    label:      'OFFICIAL',
+    title:      'Source: api.warframe.com via worldstate-parser (fallback). warframestat.us was unreachable; data is served from the official Warframe API.',
+    isFallback: true,
+  },
+  cached: {
+    label:      'CACHED',
+    title:      'Source: Dexie last-good snapshot. Network was unreachable; data is served from the local cache.',
+    isFallback: true,
+  },
+  fallback: {
+    label:      'FALLBACK',
+    title:      'Source: Worker cycle-math projection. Both upstreams unavailable — cycle states are extrapolated from the last known phase.',
+    isFallback: true,
+  },
+  'calamity-plus': {
+    label:      'WS',
+    title:      'Source: calamity-plus enriched worldstate.',
+    isFallback: false,
+  },
+  wfcd: {
+    label:      'WS',
+    title:      'Source: WFCD community data.',
+    isFallback: false,
+  },
+  enriched: {
+    label:      'WS',
+    title:      'Source: enriched worldstate.',
+    isFallback: false,
   },
 };
 
 export function DataSourceBadge() {
   const source = useLiveQuery(
-    async (): Promise<WorldstateSource | null> => {
-      const entry = await db.cache.get(WS_SOURCE_KEY);
-      return entry ? (entry.data as WorldstateSource) : null;
+    async (): Promise<DataSource | null> => {
+      const meta = await db.syncMetadata.get('worldstate');
+      return meta?.source ?? null;
     },
     [],
     null,
@@ -53,8 +84,9 @@ export function DataSourceBadge() {
 
   if (!source) return null;
 
-  const spec       = BADGE_SPEC[source];
-  const isFallback = source === 'official';
+  const spec = BADGE_SPEC[source];
+  if (!spec) return null;
+  const { isFallback } = spec;
 
   return (
     <span

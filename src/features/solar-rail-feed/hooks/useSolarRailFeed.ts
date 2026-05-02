@@ -44,6 +44,10 @@ import {
   computeSortieStatus,
   computeArchonHuntStatus,
 } from '@/core/services/ascensionService';
+import {
+  apiToSortieRaw,
+  apiToArchonHuntRaw,
+} from '@/core/services/worldstateAdapters';
 import type {
   Alert,
   AlertStatus,
@@ -58,18 +62,12 @@ import type {
   VoidTraderStatus,
 } from '@/core/domain/railFeed';
 import type {
-  SortieRaw,
-  SortieMission,
-  ArchonHuntRaw,
-  ArchonHuntMission,
   SortieStatus,
   ArchonHuntStatus,
 } from '@/core/domain/ascension';
 import type {
   Alert as ApiAlert,
   Invasion as ApiInvasion,
-  Sortie as ApiSortie,
-  ArchonHunt as ApiArchonHunt,
   BaroInfo,
   PersistentEnemy as ApiPersistentEnemy,
   NewsItem as ApiNewsItem,
@@ -80,12 +78,6 @@ import { useWorldstate } from '@/hooks/useWorldstate';
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-/** Convert Unix-ms back to ISO string for legacy `*Raw` types whose compute
- *  functions still parse with `new Date(...)`. Cheap and stable. */
-function toISO(ms: number): string {
-  return new Date(ms).toISOString();
-}
 
 /** Parse a "10–25" range string into [min, max]. Falls back to [0, 0] when
  *  the format is unexpected — alert level is decorative metadata. */
@@ -104,7 +96,8 @@ function stableId(input: string): string {
 }
 
 // ---------------------------------------------------------------------------
-// V2 → legacy domain adapters
+// V2 → legacy domain adapters (railFeed-specific shapes only;
+// shared sortie/archon adapters live in worldstateAdapters)
 // ---------------------------------------------------------------------------
 
 function apiToAlert(raw: ApiAlert, fetchedAt: number): Alert {
@@ -141,37 +134,6 @@ function apiToInvasion(raw: ApiInvasion, fetchedAt: number): Invasion {
     vsInfestation:    raw.vsInfestation ?? false,
     activationMs:     raw.expiry ? raw.expiry - 24 * 60 * 60_000 : fetchedAt, // synth
     fetchedAt,
-  };
-}
-
-function apiToSortieRaw(raw: ApiSortie): SortieRaw {
-  // Worker exposes missionTypes[] and modifiers[] as parallel arrays. Zip them
-  // into SortieMission[] for downstream compute + SortieCard rendering.
-  const variants: SortieMission[] = raw.missionTypes.map((missionType, i) => ({
-    missionType,
-    modifierType:        raw.modifiers[i] ?? '',
-    modifierDescription: '',
-    node:                '', // V2 doesn't carry per-variant nodes today
-  }));
-  return {
-    expiry:   toISO(raw.expiry),
-    faction:  raw.faction ?? '',
-    boss:     '', // V2 doesn't carry sortie boss; the page falls back to faction
-    variants,
-  };
-}
-
-function apiToArchonHuntRaw(raw: ApiArchonHunt): ArchonHuntRaw {
-  const missions: ArchonHuntMission[] = raw.missions.map(m => ({
-    type: m.missionType,
-    node: m.node,
-  }));
-  return {
-    id:      raw.id,
-    boss:    raw.boss ?? '',
-    faction: raw.faction ?? '',
-    expiry:  toISO(raw.expiry),
-    missions,
   };
 }
 
