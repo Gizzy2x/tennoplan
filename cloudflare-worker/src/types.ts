@@ -20,6 +20,15 @@ export type DataSource =
 
 export type DataQuality = 'high' | 'medium' | 'low';
 
+// ─── Codex sync state machine ──────────────────────────────────────────────────
+//
+//  normal   — 24h cadence (baseline; no recent patch)
+//  patch    — 6h cadence for ~48h after a patch (new items detected)
+//  hotfix   — 6h cadence for ~12h after a hotfix (data changed, no new items)
+//  retry    — 6-min cadence, up to 3 attempts after any failure
+//
+export type CodexSyncMode = 'normal' | 'patch' | 'hotfix' | 'retry';
+
 // ─── Stored sync metadata (KV) ─────────────────────────────────────────────────
 
 export interface SyncMetadata {
@@ -31,6 +40,12 @@ export interface SyncMetadata {
   errorCount:  number;         // consecutive failures since last success
   lastError?:  string;
   itemCount?:  number;         // Codex only
+
+  // Codex smart-sync state (absent on worldstate metadata)
+  syncMode?:            CodexSyncMode;
+  retryCount?:          number;   // retries in current streak (resets on success)
+  lastRetryAt?:         number;   // ms timestamp of last retry attempt
+  aggressiveSyncsLeft?: number;   // remaining syncs in patch/hotfix mode
 }
 
 // ─── API response wrapper ──────────────────────────────────────────────────────

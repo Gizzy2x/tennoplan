@@ -26,12 +26,13 @@ import { WORLD_THEMES } from '@/tokens/worldThemes';
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface TacticalRadarProps {
-  worldId:       CycleId;
-  cycleState:    string;       // e.g. "day", "night", "fass"
-  timeRemaining: string;       // pre-formatted, e.g. "37M"
-  cycleNote?:    string | null;
-  resources:     KeyResource[];
-  urgency?:      CycleUrgency;
+  worldId:         CycleId;
+  cycleState:      string;       // e.g. "day", "night", "fass"
+  timeRemaining:   string;       // pre-formatted, e.g. "37M"
+  cycleNote?:      string | null;
+  resources:       KeyResource[];
+  urgency?:        CycleUrgency;
+  isDataOutOfSync?: boolean;
 }
 
 // ─── Tooltip ──────────────────────────────────────────────────────────────────
@@ -201,6 +202,7 @@ export const TacticalRadar = memo(function TacticalRadar({
   cycleNote,
   resources,
   urgency,
+  isDataOutOfSync = false,
 }: TacticalRadarProps) {
   const [tooltip,    setTooltip]   = useState<TooltipState | null>(null);
   const [isScanning, setIsScanning] = useState(false);
@@ -257,6 +259,29 @@ export const TacticalRadar = memo(function TacticalRadar({
           <span className="radar-timer-value">{timeRemaining}</span>
           <span className="radar-timer-unit">REMAINING</span>
         </div>
+
+        {isDataOutOfSync && (
+          <div
+            title="This cycle's data was synced more than 3 minutes ago — may not reflect current game state"
+            style={{
+              display:      'inline-flex',
+              alignItems:   'center',
+              justifyContent: 'center',
+              width:        16,
+              height:       16,
+              borderRadius: '50%',
+              fontSize:     '0.65rem',
+              color:        'rgba(251, 146, 60, 0.78)',
+              border:       '1px solid rgba(251, 146, 60, 0.40)',
+              background:  'rgba(251, 146, 60, 0.08)',
+              cursor:       'help',
+              marginTop:    8,
+              marginBottom: 8,
+            }}
+          >
+            🕐
+          </div>
+        )}
 
         {cycleNote && (
           <div className="radar-cycle-note">

@@ -26,7 +26,7 @@ export const config = {
     calamityBaseUrl:      'https://raw.githubusercontent.com/calamity-inc/warframe-public-export-plus/master/',
     wfcdDropsUrl:         'https://drops.warframestat.us/data/all.json',
     wfcdDropsFallbackUrl: 'https://raw.githubusercontent.com/WFCD/warframe-drop-data/master/data/all.json',
-    kvTtlSeconds:         21_600,
+    kvTtlSeconds:         172_800,  // 48h — covers 24h normal cycle + buffer
     fetchTimeoutMs:       30_000,
     // Maximum simultaneous calamity fetches. Cloudflare Workers cap at
     // 6 concurrent subrequests by default during scheduled events; we

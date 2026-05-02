@@ -29,6 +29,7 @@ interface CycleIntelPanelProps {
   /** Pre-formatted forecast time strings keyed by cycle id */
   forecastTimes:      Partial<Record<CycleId, string>>;
   tips:               string[];
+  isDataOutOfSync?:   boolean;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -38,6 +39,7 @@ export function CycleIntelPanel({
   statuses,
   forecastTimes,
   tips,
+  isDataOutOfSync = false,
 }: CycleIntelPanelProps) {
   const entries = Object.entries(statuses) as [CycleId, CycleStatus][];
 
@@ -66,6 +68,25 @@ export function CycleIntelPanel({
                     <span className={`intel-world-time ${isActive ? 'intel-world-time--active' : 'intel-world-time--inactive'}`}>
                       {timeStr}
                     </span>
+                    {isDataOutOfSync && (
+                      <span
+                        title="This cycle's data was synced more than 3 minutes ago — may not reflect current game state"
+                        style={{
+                          display:     'inline-flex',
+                          alignItems:  'center',
+                          justifyContent: 'center',
+                          width:       12,
+                          height:      12,
+                          borderRadius: '50%',
+                          fontSize:    '0.50rem',
+                          color:       'rgba(251, 146, 60, 0.65)',
+                          cursor:      'help',
+                          marginLeft:  6,
+                        }}
+                      >
+                        🕐
+                      </span>
+                    )}
                   </div>
                 );
               })}

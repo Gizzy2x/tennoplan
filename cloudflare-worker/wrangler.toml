@@ -18,11 +18,12 @@ id = "a520a78ecd264bff9b0abf38adff3f8a"
 
 # ---------------------------------------------------------------------------
 # Scheduled triggers
-#   * * * * *     — every minute  → worldstate updater  (Phase B)
-#   0 */6 * * *   — every 6 hours → codex updater       (Phase C)
+#   * * * * *    — every minute  → worldstate updater
+#   */5 * * * *  — every 5 min   → codex heartbeat (smart sync state machine)
+#                  actual syncs: 24h normal | 6h patch/hotfix | 6min retry
 # ---------------------------------------------------------------------------
 [triggers]
-crons = ["* * * * *", "0 */6 * * *"]
+crons = ["* * * * *", "*/5 * * * *"]
 
 [vars]
 LOG_LEVEL = "info"

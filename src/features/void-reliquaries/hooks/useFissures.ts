@@ -83,7 +83,7 @@ function apiToFissure(raw: ApiFissure, fetchedAt: number): Fissure {
 /**
  * Subscribes to ParsedWorldstate and projects the active fissures into
  * the grouped FissureStatus shape consumed by the Void Reliquaries UI.
- * Pure read-side: SyncService is the only writer.
+ * Pure read-side: WorldstateSync is the only writer.
  */
 export function useFissures(filters: FissureFilters = DEFAULT_FILTERS) {
   const { data: ws, lastSync, isLoading, isError, isStale, ageMs, forceRefetch, requestPassiveSync } =

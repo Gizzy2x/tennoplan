@@ -228,11 +228,13 @@ function InfoPopover({ text, worldName, accentColor }: InfoPopoverProps) {
 export interface CinematicCyclePanelProps {
   status:            CycleStatus;
   syndicateMission?: SyndicateMission | null;
+  isDataOutOfSync?:  boolean;
 }
 
 export function CinematicCyclePanel({
   status,
   syndicateMission,
+  isDataOutOfSync = false,
 }: CinematicCyclePanelProps) {
   const { cycle, msRemaining, isExpired } = status;
   const pres      = STATE[cycle.state] ?? FALLBACK;
@@ -355,6 +357,30 @@ export function CinematicCyclePanel({
               </div>
             ))}
           </div>
+
+          {/* Out-of-sync warning icon */}
+          {isDataOutOfSync && (
+            <div
+              title="This cycle's data was synced more than 3 minutes ago — may not reflect current game state"
+              style={{
+                display:      'inline-flex',
+                alignItems:   'center',
+                justifyContent: 'center',
+                width:        18,
+                height:       18,
+                borderRadius: '50%',
+                fontSize:     '0.70rem',
+                color:        'rgba(251, 146, 60, 0.78)',
+                border:       '1px solid rgba(251, 146, 60, 0.40)',
+                background:  'rgba(251, 146, 60, 0.08)',
+                cursor:       'help',
+                marginTop:    4,
+                marginBottom: 6,
+              }}
+            >
+              🕐
+            </div>
+          )}
 
           {/* Hint text */}
           {hintText && (

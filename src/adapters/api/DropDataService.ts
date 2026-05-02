@@ -39,8 +39,10 @@ const log = logger.scope('DropDataService');
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-/** Authoritative drop-data source. drops.warframestat.us mirrors WFCD/warframe-drop-data. */
-const DROPS_URL = 'https://drops.warframestat.us/data/all.json';
+/** Primary drop-data source. drops.warframestat.us mirrors WFCD/warframe-drop-data. */
+const DROPS_URL_PRIMARY  = 'https://drops.warframestat.us/data/all.json';
+/** Fallback: raw WFCD repo on GitHub — same dataset, different CDN. */
+const DROPS_URL_FALLBACK = 'https://raw.githubusercontent.com/WFCD/warframe-drop-data/master/data/all.json';
 
 /** Check if mock mode is enabled via environment variable. */
 function isMockModeEnabled(): boolean {
@@ -279,17 +281,24 @@ export const DropDataService = {
 
     let res: Response;
     try {
-      res = await fetchWithRetry(DROPS_URL, prevEtag, timeoutMs, maxRetries, onProgress);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      await db.dataSyncState.put({
-        id: 'dropLocations',
-        lastUpdated: (await readSyncState('dropLocations')) ?? 0,
-        lastErrorMessage: msg,
-      });
-      log.error('fetchAndSync failed — existing rows preserved.', err);
-      emit(onProgress, `Failed: ${msg}`, null);
-      throw err;
+      res = await fetchWithRetry(DROPS_URL_PRIMARY, prevEtag, timeoutMs, maxRetries, onProgress);
+    } catch (primaryErr) {
+      log.warn('Primary drop-data source failed — trying GitHub fallback.', primaryErr);
+      emit(onProgress, 'Primary source unavailable — trying fallback…', 12);
+      try {
+        // Fallback skips ETag (different server, ETag won't match)
+        res = await fetchWithRetry(DROPS_URL_FALLBACK, undefined, timeoutMs, maxRetries, onProgress);
+      } catch (fallbackErr) {
+        const msg = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
+        await db.dataSyncState.put({
+          id: 'dropLocations',
+          lastUpdated: (await readSyncState('dropLocations')) ?? 0,
+          lastErrorMessage: `Both sources failed. ${msg}`,
+        });
+        log.error('fetchAndSync failed (primary + fallback) — existing rows preserved.', fallbackErr);
+        emit(onProgress, `Failed: ${msg}`, null);
+        throw fallbackErr;
+      }
     }
 
     const now = Date.now();

@@ -1,0 +1,250 @@
+/* SettingsPage — V2 data sync status & configuration */
+
+.settings-page {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 0 var(--space-4xl);
+}
+
+/* ── Two-column grid (worldstate + codex side by side) ─────────────────────── */
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+/* ── Panel ──────────────────────────────────────────────────────────────────── */
+
+.settings-panel {
+  background:    var(--color-bg-secondary);
+  border:        1px solid var(--color-border-default);
+  padding:       var(--space-xl);
+  display:       flex;
+  flex-direction: column;
+  gap:           var(--space-md);
+}
+
+.settings-panel--danger {
+  background: rgba(248, 113, 113, 0.03);
+  border-color: rgba(248, 113, 113, 0.14);
+  margin-top: var(--space-xl);
+}
+
+/* ── Panel header ───────────────────────────────────────────────────────────── */
+
+.settings-panel-header {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  padding-bottom:  var(--space-md);
+  border-bottom:   1px solid var(--color-border-default);
+}
+
+.settings-panel-title {
+  color:       var(--color-accent-gold);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+}
+
+.settings-panel-title--danger {
+  color:   var(--color-status-error);
+  opacity: 0.65;
+}
+
+.settings-panel-badge {
+  color:          var(--color-text-muted);
+  background:     rgba(255, 255, 255, 0.04);
+  border:         1px solid rgba(255, 255, 255, 0.06);
+  padding:        2px var(--space-sm);
+  letter-spacing: 0.06em;
+  font-size:      0.6rem;
+}
+
+/* ── Status block (rows container) ─────────────────────────────────────────── */
+
+.settings-block {
+  display:        flex;
+  flex-direction: column;
+}
+
+.settings-status-row {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     center;
+  padding:         var(--space-sm) 0;
+  border-bottom:   1px solid rgba(255, 255, 255, 0.04);
+}
+
+.settings-status-row:last-child {
+  border-bottom: none;
+}
+
+.settings-status-label {
+  color: var(--color-text-muted);
+}
+
+.settings-status-value {
+  color:       var(--color-text-primary);
+  display:     flex;
+  align-items: center;
+  gap:         var(--space-sm);
+  text-align:  right;
+}
+
+.settings-status-value--accent {
+  color: var(--color-accent-gold);
+}
+
+/* ── Quality pip ────────────────────────────────────────────────────────────── */
+
+.settings-pip {
+  display:       inline-block;
+  width:         6px;
+  height:        6px;
+  border-radius: 50%;
+  flex-shrink:   0;
+}
+
+.settings-pip--high    { background: var(--color-status-success); }
+.settings-pip--medium  { background: var(--color-accent-gold); }
+.settings-pip--low     { background: var(--color-status-error); }
+.settings-pip--unknown { background: var(--color-text-muted); opacity: 0.4; }
+
+/* ── Refresh button ─────────────────────────────────────────────────────────── */
+
+.settings-btn {
+  display:     inline-flex;
+  align-items: center;
+  gap:         var(--space-sm);
+  padding:     var(--space-sm) var(--space-lg);
+  background:  rgba(227, 195, 114, 0.85);
+  border:      none;
+  color:       #0a1117;
+  cursor:      pointer;
+  transition:  background 0.15s ease-out, opacity 0.15s ease-out;
+  align-self:  flex-start;
+}
+
+.settings-btn .typo-label-xs {
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: inherit;
+}
+
+.settings-btn:hover:not(:disabled) {
+  background: var(--color-accent-gold);
+}
+
+.settings-btn:disabled,
+.settings-btn--cooldown {
+  opacity:    0.45;
+  cursor:     not-allowed;
+  background: rgba(227, 195, 114, 0.25);
+  color:      var(--color-accent-gold);
+}
+
+.settings-btn--cooldown .typo-label-xs {
+  color: var(--color-text-muted);
+}
+
+.settings-btn--loading {
+  opacity: 0.70;
+  cursor:  not-allowed;
+}
+
+.settings-btn-icon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.settings-btn-icon--spin {
+  animation: settings-spin 1s linear infinite;
+}
+
+@keyframes settings-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Danger buttons ─────────────────────────────────────────────────────────── */
+
+.settings-btn--danger {
+  background: transparent;
+  border:     1px solid rgba(248, 113, 113, 0.22);
+  color:      rgba(248, 113, 113, 0.60);
+}
+
+.settings-btn--danger:hover:not(:disabled) {
+  background:   transparent;
+  border-color: rgba(248, 113, 113, 0.45);
+  color:        var(--color-status-error);
+}
+
+.settings-btn--danger-confirm {
+  background: rgba(248, 113, 113, 0.12);
+  border:     1px solid rgba(248, 113, 113, 0.40);
+  color:      var(--color-status-error);
+}
+
+.settings-btn--danger-confirm:hover {
+  background: rgba(248, 113, 113, 0.20);
+}
+
+.settings-btn--ghost {
+  background: transparent;
+  border:     1px solid var(--color-border-default);
+  color:      var(--color-text-muted);
+}
+
+.settings-btn--ghost:hover {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: var(--color-text-primary);
+}
+
+.settings-danger-actions {
+  display: flex;
+  gap:     var(--space-sm);
+  flex-wrap: wrap;
+}
+
+/* ── Text helpers ───────────────────────────────────────────────────────────── */
+
+.settings-hint {
+  color:       var(--color-text-muted);
+  opacity:     0.55;
+  line-height: 1.5;
+  margin-top:  calc(var(--space-xs) * -1);
+}
+
+.settings-notice {
+  color:        var(--color-text-muted);
+  background:   rgba(255, 255, 255, 0.03);
+  border:       1px solid rgba(255, 255, 255, 0.06);
+  padding:      var(--space-md);
+  line-height:  1.6;
+}
+
+.settings-progress {
+  color:     rgba(227, 195, 114, 0.60);
+  animation: settings-fade 0.3s ease-out;
+}
+
+.settings-result {
+  animation: settings-fade 0.2s ease-out;
+}
+
+.settings-result--ok  { color: var(--color-status-success); }
+.settings-result--err { color: var(--color-status-error); }
+
+.settings-danger-desc {
+  color:       var(--color-text-muted);
+  line-height: 1.6;
+}
+
+@keyframes settings-fade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
