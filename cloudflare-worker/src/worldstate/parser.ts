@@ -26,6 +26,12 @@ import type {
   NightwaveInfo,
   PersistentEnemy,
   NewsItem,
+  SyndicateMissionInfo,
+  SyndicateJob,
+  SimarisInfo,
+  ArchimedeaInfo,
+  ArchimedeaMissionInfo,
+  ArchimedeaModifierInfo,
 } from '../types';
 
 // ─── Public entry points ──────────────────────────────────────────────────────
@@ -87,6 +93,10 @@ function normalize(raw: any): ParsedWorldstate {
     ...(raw?.nightwave         ? { nightwave:         toNightwave(raw.nightwave) }              : {}),
     persistentEnemies:           toArray(raw?.persistentEnemies, toPersistentEnemy),
     news:                        toArray(raw?.news, toNewsItem),
+
+    syndicateMissions:           toArray(raw?.syndicateMissions, toSyndicateMission),
+    ...(raw?.simaris           ? { simaris:           toSimaris(raw.simaris) }                  : {}),
+    archimedeas:                 toArray(raw?.archimedeas, toArchimedea),
 
     cyclesRemaining: {
       cetus:   cetus.timeLeft,
@@ -301,5 +311,119 @@ function toNewsItem(raw: any): NewsItem | null {
     ...(raw.message     ? { description: String(raw.message) } : {}),
     ...(raw.link        ? { url:         String(raw.link)    } : {}),
     date:  asMs(raw.date) || Date.now(),
+  };
+}
+
+// ─── Syndicate bounties / Simaris / Deep Archimedea ───────────────────────────
+
+const SYNDICATE_ALIASES: Record<string, string> = {
+  'ostron':          'Ostron',
+  'solaris united':  'Solaris United',
+  'entrati':         'Entrati',
+  'the holdfasts':   'The Holdfasts',
+  'holdfasts':       'The Holdfasts',
+};
+const WANTED_SYNDICATES = new Set(Object.values(SYNDICATE_ALIASES));
+
+/** Reject diagnostic strings the upstream parser leaks into rewardPool when
+ *  it can't match a bounty. Real reward labels are short and title-cased. */
+function sanitizeRewardPool(pool: unknown): string[] | undefined {
+  if (!Array.isArray(pool)) return undefined;
+  const clean = pool.filter(s =>
+    typeof s === 'string' &&
+    s.length > 0 &&
+    s.length < 80 &&
+    !s.includes('. ') &&
+    !s.endsWith('.'),
+  ) as string[];
+  return clean.length > 0 ? clean : undefined;
+}
+
+function toSyndicateMission(raw: any): SyndicateMissionInfo | null {
+  if (!raw) return null;
+  const rawName   = String(raw.syndicate ?? '');
+  const canonical = SYNDICATE_ALIASES[rawName.toLowerCase()] ?? rawName;
+  // Filter to the four open-world syndicates — the legacy hook only ever
+  // surfaced these and the rest are noise (Steel Meridian, Arbiters, etc.).
+  if (!WANTED_SYNDICATES.has(canonical)) return null;
+
+  const jobs: SyndicateJob[] = (Array.isArray(raw.jobs) ? raw.jobs : []).map((j: any) => {
+    const lvls = Array.isArray(j?.enemyLevels) && j.enemyLevels.length === 2
+      ? [Number(j.enemyLevels[0]) || 0, Number(j.enemyLevels[1]) || 0] as [number, number]
+      : [0, 0] as [number, number];
+    const rewardPool = sanitizeRewardPool(j?.rewardPool);
+    return {
+      type:           String(j?.type ?? 'Unknown'),
+      enemyLevels:    lvls,
+      standingStages: Array.isArray(j?.standingStages)
+        ? j.standingStages.map((n: any) => Number(n) || 0)
+        : [],
+      ...(rewardPool ? { rewardPool } : {}),
+    };
+  });
+
+  return {
+    id:        String(raw.id ?? canonical),
+    syndicate: canonical,
+    expiry:    asMs(raw.expiry),
+    jobs,
+  };
+}
+
+function toSimaris(raw: any): SimarisInfo {
+  const t = raw?.activeSynthesisTarget;
+  return {
+    activeSynthesisTarget: t
+      ? {
+          name:       String(t.name       ?? 'Unknown Target'),
+          type:       String(t.type       ?? 'synthesis'),
+          isArchwing: !!t.isArchwing,
+          isBoss:     !!t.isBoss,
+        }
+      : null,
+  };
+}
+
+function toArchimedeaModifier(raw: any): ArchimedeaModifierInfo | null {
+  if (!raw) return null;
+  return {
+    key:         String(raw.key  ?? raw.name ?? ''),
+    name:        String(raw.name ?? raw.key  ?? ''),
+    description: String(raw.description ?? ''),
+    ...(raw.isHard ? { isHard: true } : {}),
+  };
+}
+
+function toArchimedeaMission(raw: any): ArchimedeaMissionInfo | null {
+  if (!raw) return null;
+  const deviation = toArchimedeaModifier(raw.deviation);
+  const risks     = Array.isArray(raw.risks)
+    ? raw.risks.map(toArchimedeaModifier).filter((m: ArchimedeaModifierInfo | null): m is ArchimedeaModifierInfo => m !== null)
+    : [];
+  return {
+    faction:     String(raw.faction     ?? ''),
+    ...(raw.factionKey     ? { factionKey:     String(raw.factionKey)     } : {}),
+    missionType: String(raw.missionType ?? ''),
+    ...(raw.missionTypeKey ? { missionTypeKey: String(raw.missionTypeKey) } : {}),
+    ...(deviation ? { deviation } : {}),
+    risks,
+  };
+}
+
+function toArchimedea(raw: any): ArchimedeaInfo | null {
+  if (!raw) return null;
+  const missions = Array.isArray(raw.missions)
+    ? raw.missions.map(toArchimedeaMission).filter((m: ArchimedeaMissionInfo | null): m is ArchimedeaMissionInfo => m !== null)
+    : [];
+  const personal = Array.isArray(raw.personalModifiers)
+    ? raw.personalModifiers.map(toArchimedeaModifier).filter((m: ArchimedeaModifierInfo | null): m is ArchimedeaModifierInfo => m !== null)
+    : [];
+  return {
+    ...(raw.id          ? { id:         String(raw.id) }     : {}),
+    ...(raw.activation  ? { activation: asMs(raw.activation) } : {}),
+    expiry:     asMs(raw.expiry),
+    ...(raw.type        ? { type:       String(raw.type) }   : {}),
+    missions,
+    ...(personal.length ? { personalModifiers: personal }    : {}),
   };
 }

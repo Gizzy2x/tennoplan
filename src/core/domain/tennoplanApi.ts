@@ -104,6 +104,13 @@ export interface ParsedWorldstate {
   persistentEnemies?: PersistentEnemy[];
   news?:              NewsItem[];
 
+  /** Open-world bounty rotations for the four wanted syndicates. */
+  syndicateMissions?: SyndicateMissionInfo[];
+  /** Sanctuary's active synthesis target (Cephalon Simaris). */
+  simaris?:           SimarisInfo;
+  /** Weekly Netracell rotations (Deep Archimedea / Elite Deep Archimedea). */
+  archimedeas?:       ArchimedeaInfo[];
+
   /** ms remaining for each cycle, keyed by short id. */
   cyclesRemaining: Record<string, number>;
   /** True if the snapshot is older than the staleness threshold. */
@@ -253,6 +260,66 @@ export interface NewsItem {
   url?:         string;
   /** Unix ms. */
   date:         number;
+}
+
+// ─── Bounty rotations / Sanctuary / Deep Archimedea ───────────────────────────
+//
+// Mirrored from cloudflare-worker/src/types.ts. The Worker filters the
+// upstream warframestat.us payload to the four open-world syndicates and
+// emits canonical labels, so the frontend never has to do alias lookups.
+
+export interface SyndicateMissionInfo {
+  id:        string;
+  /** Canonical syndicate label, e.g. "Ostron" / "Solaris United" / "Entrati" / "The Holdfasts". */
+  syndicate: string;
+  /** Unix ms when these jobs rotate. */
+  expiry:    number;
+  jobs:      SyndicateJob[];
+}
+
+export interface SyndicateJob {
+  type:           string;
+  enemyLevels:    [number, number];
+  standingStages: number[];
+  rewardPool?:    string[];
+}
+
+export interface SimarisInfo {
+  activeSynthesisTarget: SimarisTarget | null;
+}
+
+export interface SimarisTarget {
+  name:       string;
+  type:       string;
+  isArchwing: boolean;
+  isBoss:     boolean;
+}
+
+export interface ArchimedeaInfo {
+  id?:                string;
+  /** Unix ms when the rotation began. */
+  activation?:        number;
+  /** Unix ms when the rotation ends. */
+  expiry:             number;
+  type?:              string;
+  missions:           ArchimedeaMissionInfo[];
+  personalModifiers?: ArchimedeaModifierInfo[];
+}
+
+export interface ArchimedeaMissionInfo {
+  faction:         string;
+  factionKey?:     string;
+  missionType:     string;
+  missionTypeKey?: string;
+  deviation?:      ArchimedeaModifierInfo;
+  risks:           ArchimedeaModifierInfo[];
+}
+
+export interface ArchimedeaModifierInfo {
+  key:         string;
+  name:        string;
+  description: string;
+  isHard?:     boolean;
 }
 
 // ─── TennoplanItem (canonical shape served by /v1/codex) ──────────────────────

@@ -1,8 +1,7 @@
 import { useEffect, useState, type ComponentType } from "react";
-import { Sidebar } from "./Sidebar";
+import { Sidebar, SIDEBAR_W } from "./Sidebar";
 import { Header } from "./Header";
 import { useNavigationStore, type NavTab } from "@/store/navigation";
-import { SyncService } from "@/services/SyncService";
 import { WorldstateSync } from "@/services/WorldstateSync";
 import { StaticDataService } from "@/services/StaticDataService";
 
@@ -21,9 +20,6 @@ import { SettingsPage } from "@/features/settings/SettingsPage";
 import { StaleBanner } from "@/components/common/StaleBanner";
 import { useStaticDataCheck } from "@/hooks/useStaticDataCheck";
 
-const EXPANDED_W = 260;
-const RAIL_W = 72;
-
 const PAGE_MAP: Record<NavTab, ComponentType> = {
   "dailies-weeklies": DailiesWeekliesPage,
   "celestial-pendulum": CelestialPendulumPage,
@@ -41,45 +37,27 @@ const PAGE_MAP: Record<NavTab, ComponentType> = {
 
 export function AppShell() {
   const activeTab = useNavigationStore((s) => s.activeTab);
-  const isCollapsed = useNavigationStore((s) => s.isCollapsed);
   const [recheckTick, setRecheckTick] = useState(0);
   const ActivePage = PAGE_MAP[activeTab];
-  const sidebarW = isCollapsed ? RAIL_W : EXPANDED_W;
 
-  // On-launch stale check — lightweight Dexie read, no network call.
-  // Banner hides automatically when staleInfo.isStale is false.
-  // Re-checks when SettingsPage dispatches a 'static-data:synced' event.
   const { staleInfo } = useStaticDataCheck(recheckTick);
 
   useEffect(() => {
-    // Phase D.4 — V2 services are now ON by default.
+    // Phase E — V2 is the only worldstate authority.
     //
-    // The migrated feature hooks (useWorldCycles, useFissures, useSolarRailFeed)
-    // read from the V2 worldstate table; un-migrated hooks (useSyndicateMissions,
-    // useSimaris, useDailiesData, useDailiesWeeklies) still read worldstate_master
-    // and rely on the legacy SyncService poll. Both services therefore run in
-    // parallel through the rest of the D-cycle and write to disjoint Dexie
-    // tables — no contention.
-    //
-    // Phase E will retire SyncService entirely once all hooks are V2.
-    //
-    // Opt out of V2 with VITE_WORLDSTATE_V2_ENABLED=false (development-only
-    // escape hatch — keeps the legacy stack the sole authority).
+    // All feature hooks (useWorldCycles, useFissures, useSolarRailFeed,
+    // useSyndicateMissions, useSimaris, useDailiesData, useDailiesWeeklies)
+    // read ParsedWorldstate from db.worldstate via useWorldstate(). The
+    // legacy SyncService polling pipeline has been retired.
     //
     // StaticDataService.init() is fire-and-forget: it checks the local
     // codex's freshness and triggers a background refresh if stale. No
     // cleanup needed (it doesn't own any timers).
-    const v2Disabled = import.meta.env.VITE_WORLDSTATE_V2_ENABLED === "false";
-
-    SyncService.init();
-    if (!v2Disabled) {
-      WorldstateSync.init();
-      void StaticDataService.init();
-    }
+    WorldstateSync.init();
+    void StaticDataService.init();
 
     return () => {
-      SyncService.destroy();
-      if (!v2Disabled) WorldstateSync.destroy();
+      WorldstateSync.destroy();
     };
   }, []);
 
@@ -93,27 +71,24 @@ export function AppShell() {
     };
   }, []);
 
-  // Keep the CSS variable in sync so fixed cinematic backgrounds adapt automatically
+  // Sidebar width is fixed; sync once so cinematic backgrounds resolve correctly.
   useEffect(() => {
-    document.documentElement.style.setProperty("--sidebar-w", `${sidebarW}px`);
-  }, [sidebarW]);
+    document.documentElement.style.setProperty("--sidebar-w", `${SIDEBAR_W}px`);
+  }, []);
 
   return (
     <>
       <Sidebar />
       <Header />
 
-      {/* Global stale-data banner — shown just below the fixed header */}
       {staleInfo?.isStale && (
         <div
           style={{
-            marginLeft: sidebarW,
-            transition: "margin-left 250ms ease-in-out",
-            position:   "fixed",
-            top:        64, // header height
-            right:      0,
-            left:       sidebarW,
-            zIndex:     39,
+            position: "fixed",
+            top:      64,
+            right:    0,
+            left:     SIDEBAR_W,
+            zIndex:   39,
           }}
         >
           <StaleBanner staleInfo={staleInfo} />
@@ -122,9 +97,7 @@ export function AppShell() {
 
       <main
         style={{
-          marginLeft: sidebarW,
-          transition: "margin-left 250ms ease-in-out",
-          // Extra top padding when banner is visible so content isn't hidden behind it
+          marginLeft: SIDEBAR_W,
           paddingTop: staleInfo?.isStale ? 96 + 32 : undefined,
         }}
         className="pt-24 pb-8 px-6 min-h-screen relative overflow-hidden"
