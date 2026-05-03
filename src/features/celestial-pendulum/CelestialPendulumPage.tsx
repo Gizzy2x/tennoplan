@@ -26,7 +26,6 @@ import { MasterHeader }       from './components/MasterHeader';
 import { TacticalRadar }      from './components/TacticalRadar';
 import { BountyMatrix }       from './components/BountyMatrix';
 import { CycleIntelPanel }    from './components/CycleIntelPanel';
-import { DropDataService }    from '@/adapters/api/DropDataService';
 import { formatMsParts }      from '@/core/services/cycleService';
 import { getWorldBg }         from './worldAssets';
 import type { CycleId, CycleStatus } from '@/core/domain/cycles';
@@ -218,7 +217,6 @@ export function CelestialPendulumPage() {
     setIsSyncing(true);
     try {
       await Promise.all([
-        DropDataService.fetchAndSync().catch(() => {}),
         refetchCycles(),
         refetchMissions(),
       ]);
