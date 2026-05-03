@@ -1,33 +1,74 @@
 /**
  * useBountyDropLocations — live Dexie subscription for one world's bounty rows.
  *
- * Uses the compound index `[type+bountyLocation]` (db.ts v4) so the query is
- * O(rows-for-this-world), not a full-table scan. The table is wiped + refilled
- * by DropDataService.fetchAndSync(), and useLiveQuery re-runs the query
- * automatically after each rewrite.
+ * Reads from db.tennoplanItems (V2 pipeline) and reconstructs the per-tier +
+ * per-rotation DropLocation shape that bountyEnrichmentService expects.
  *
- * The hook lives in the feature folder (not in src/core/) because it imports
- * Dexie — that's the intended seam between pure logic and storage.
+ * sourceName mapping (Worker uses different world names from old domain type):
+ *   Cetus Bounty   → BountyLocation 'Cetus'
+ *   Fortuna Bounty → BountyLocation 'Solaris'
+ *   Cambion Bounty → BountyLocation 'Deimos'
+ *   Zariman Bounty → BountyLocation 'Zariman'
  */
 
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '@/adapters/storage/db';
-import type { BountyLocation, DropLocation } from '@/core/domain/drops';
+import { db }           from '@/adapters/storage/db';
+import type { BountyLocation, DropLocation, RotationTier } from '@/core/domain/drops';
 
-/**
- * Returns all Bounty drop-location rows for the given world, or an empty
- * array while Dexie is loading / when no world is selected.
- */
+const BOUNTY_TO_SOURCE: Record<BountyLocation, string> = {
+  Cetus:   'Cetus Bounty',
+  Solaris: 'Fortuna Bounty',
+  Deimos:  'Cambion Bounty',
+  Zariman: 'Zariman Bounty',
+};
+
+const LEVEL_RX = /(\d+)\s*[-–—]\s*(\d+)/;
+
 export function useBountyDropLocations(
   bountyLocation: BountyLocation | null | undefined,
 ): DropLocation[] {
   const rows = useLiveQuery(
     async () => {
       if (!bountyLocation) return [] as DropLocation[];
-      return db.dropLocations
-        .where('[type+bountyLocation]')
-        .equals(['Bounty', bountyLocation])
-        .toArray();
+      const targetSource = BOUNTY_TO_SOURCE[bountyLocation];
+
+      const all = await db.tennoplanItems.toArray();
+      const locationMap = new Map<string, DropLocation>();
+
+      for (const item of all) {
+        for (const dl of item.dropLocations) {
+          if (dl.sourceName !== targetSource) continue;
+
+          const m = LEVEL_RX.exec(dl.location);
+          const levelRange = m ? `Level ${m[1]} - ${m[2]}` : dl.location;
+          const rotKey     = (dl.rotation ?? 'flat') as RotationTier | 'flat';
+          const locationKey = `${bountyLocation}|${levelRange}|${rotKey}`;
+
+          const reward = {
+            itemName: item.name,
+            chance:   dl.chance * 100,
+            rarity:   (dl.rarity as string) ?? 'Unknown',
+          };
+
+          const existing = locationMap.get(locationKey);
+          if (existing) {
+            existing.rewards.push(reward);
+          } else {
+            locationMap.set(locationKey, {
+              locationKey,
+              type:          'Bounty',
+              displayName:   `${levelRange} (${rotKey === 'flat' ? 'Pool' : `Rotation ${rotKey}`})`,
+              rewards:       [reward],
+              bountyLocation,
+              bountyLevel:   levelRange,
+              rotationTier:  rotKey === 'flat' ? undefined : (rotKey as RotationTier),
+              fetchedAt:     Date.now(),
+            });
+          }
+        }
+      }
+
+      return Array.from(locationMap.values());
     },
     [bountyLocation],
     [] as DropLocation[],

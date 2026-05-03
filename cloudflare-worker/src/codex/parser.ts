@@ -232,23 +232,61 @@ interface ParsedCalamity {
   droppedRows:    number;          // total rows discarded across all files
 }
 
+// ─── Locale resolution ────────────────────────────────────────────────────────
+
+/**
+ * Build a lookup map from the English locale dictionary (dict.en.json).
+ * Keys are localization paths like "/Lotus/Language/Items/AshName",
+ * values are resolved English strings like "<WARFRAME> Ash".
+ */
+function buildLocaleDict(blob: unknown): Map<string, string> {
+  if (!blob || typeof blob !== 'object' || Array.isArray(blob)) return new Map();
+  const out = new Map<string, string>();
+  for (const [key, val] of Object.entries(blob as Record<string, unknown>)) {
+    if (typeof val === 'string') out.set(key, val);
+  }
+  return out;
+}
+
+/** Strip game-engine tag prefixes: "<ARCHWING> Itzal" → "Itzal" */
+function stripLocaleTag(s: string): string {
+  return s.replace(/^<[A-Z_]+>\s*/u, '').trim();
+}
+
+/**
+ * Resolve a calamity `name` field to its English display name.
+ * Non-locale strings (already English) are returned unchanged.
+ * Locale keys not present in the dict fall back to the raw key.
+ */
+function resolveLocaleName(raw: string, locale: Map<string, string>): string {
+  if (!raw.startsWith('/Lotus/Language/')) return raw;
+  const resolved = locale.get(raw);
+  if (!resolved) return raw;
+  return stripLocaleTag(resolved);
+}
+
+// ─── Calamity parsing ─────────────────────────────────────────────────────────
+
 function parseCalamity(blobs: RawCalamityBlobs): ParsedCalamity {
   const counter = { dropped: 0 };
+  const locale  = buildLocaleDict(blobs.localeDict);
+
+  log('locale dict', { entries: locale.size });
 
   return {
-    warframes:      buildMap(blobs.warframes,        'ExportWarframes',      counter),
-    weapons:        buildMap(blobs.weapons,          'ExportWeapons',        counter),
-    sentinels:      buildMap(blobs.sentinels,        'ExportSentinels',      counter),
-    abilities: buildMap(blobs.abilities,   'ExportAbilities', counter),
-    mods:           buildMap(blobs.upgrades,         'ExportUpgrades',       counter),
-    recipes:        buildRecipeMap(blobs.recipes,    'ExportRecipes',        counter),
-    relicArcane:    buildRelicsArcanes(blobs.relics, blobs.arcanes, 'ExportRelics', 'ExportArcanes', counter),
-    resources:      buildMap(blobs.resources,        'ExportResources',      counter),
-    keys:           buildMap(blobs.keys,             'ExportKeys',           counter),
-    flavour:        buildMap(blobs.flavour,          'ExportFlavour',        counter),
-    fusionBundles:  buildMap(blobs.fusionBundles,    'ExportFusionBundles',  counter),
-    gear:           buildMap(blobs.gear,             'ExportGear',           counter),
-    droppedRows:    counter.dropped,
+    warframes:     buildMap(blobs.warframes,        'ExportWarframes',     counter, locale),
+    weapons:       buildMap(blobs.weapons,          'ExportWeapons',       counter, locale),
+    sentinels:     buildMap(blobs.sentinels,        'ExportSentinels',     counter, locale),
+    abilities:     buildMap(blobs.abilities,        'ExportAbilities',     counter, locale),
+    mods:          buildMap(blobs.upgrades,         'ExportUpgrades',      counter, locale),
+    recipes:       buildRecipeMap(blobs.recipes,    'ExportRecipes',       counter, locale),
+    relicArcane:   buildRelicsArcanes(blobs.relics, blobs.arcanes, 'ExportRelics', 'ExportArcanes', counter, locale),
+    resources:     buildMap(blobs.resources,        'ExportResources',     counter, locale),
+    keys:          buildMap(blobs.keys,             'ExportKeys',          counter, locale),
+    flavour:       buildMap(blobs.flavour,          'ExportFlavour',       counter, locale),
+    fusionBundles: buildMap(blobs.fusionBundles,    'ExportFusionBundles', counter, locale),
+    gear:          buildMap(blobs.gear,             'ExportGear',          counter, locale),
+    droppedRows:   counter.dropped,
   };
 }
 
@@ -294,12 +332,17 @@ function extractCalamityRows(blob: unknown, wrapperKey: string): unknown[] {
   return [];
 }
 
-function buildMap(blob: unknown, wrapperKey: string, counter: { dropped: number }): Map<string, CalamityRow> {
+function buildMap(
+  blob:       unknown,
+  wrapperKey: string,
+  counter:    { dropped: number },
+  locale:     Map<string, string>,
+): Map<string, CalamityRow> {
   const rows = extractCalamityRows(blob, wrapperKey);
   const out  = new Map<string, CalamityRow>();
 
   for (const raw of rows) {
-    const row = toCalamityRow(raw);
+    const row = toCalamityRow(raw, locale);
     if (!row) { counter.dropped++; continue; }
     if (out.has(row.uniqueName)) continue;       // first wins; later dupes silently skipped
     out.set(row.uniqueName, row);
@@ -308,12 +351,17 @@ function buildMap(blob: unknown, wrapperKey: string, counter: { dropped: number 
   return out;
 }
 
-function buildRecipeMap(blob: unknown, wrapperKey: string, counter: { dropped: number }): Map<string, CalamityRecipe> {
+function buildRecipeMap(
+  blob:       unknown,
+  wrapperKey: string,
+  counter:    { dropped: number },
+  locale:     Map<string, string>,
+): Map<string, CalamityRecipe> {
   const rows = extractCalamityRows(blob, wrapperKey);
   const out  = new Map<string, CalamityRecipe>();
 
   for (const raw of rows) {
-    const recipe = toRecipeRow(raw);
+    const recipe = toRecipeRow(raw, locale);
     if (!recipe) { counter.dropped++; continue; }
     if (out.has(recipe.uniqueName)) continue;
     out.set(recipe.uniqueName, recipe);
@@ -323,27 +371,28 @@ function buildRecipeMap(blob: unknown, wrapperKey: string, counter: { dropped: n
 }
 
 function buildRelicsArcanes(
-  relicsBlob: unknown,
+  relicsBlob:  unknown,
   arcanesBlob: unknown,
-  relicsKey: string,
-  arcanesKey: string,
-  counter: { dropped: number },
+  relicsKey:   string,
+  arcanesKey:  string,
+  counter:     { dropped: number },
+  locale:      Map<string, string>,
 ): Map<string, CalamityRelicArcane> {
   const out = new Map<string, CalamityRelicArcane>();
-  
+
   // Merge relics
   const relicsRows = extractCalamityRows(relicsBlob, relicsKey);
   for (const raw of relicsRows) {
-    const row = toRelicArcaneRow(raw);
+    const row = toRelicArcaneRow(raw, locale);
     if (!row) { counter.dropped++; continue; }
     if (out.has(row.uniqueName)) continue;
     out.set(row.uniqueName, row);
   }
-  
+
   // Merge arcanes
   const arcanesRows = extractCalamityRows(arcanesBlob, arcanesKey);
   for (const raw of arcanesRows) {
-    const row = toRelicArcaneRow(raw);
+    const row = toRelicArcaneRow(raw, locale);
     if (!row) { counter.dropped++; continue; }
     if (out.has(row.uniqueName)) continue;
     out.set(row.uniqueName, row);
@@ -352,17 +401,18 @@ function buildRelicsArcanes(
   return out;
 }
 
-function toCalamityRow(raw: unknown): CalamityRow | null {
+function toCalamityRow(raw: unknown, locale: Map<string, string>): CalamityRow | null {
   if (!raw || typeof raw !== 'object') return null;
   const r = raw as Record<string, unknown>;
   const uniqueName = typeof r['uniqueName'] === 'string' ? (r['uniqueName'] as string) : null;
-  const name       = typeof r['name']       === 'string' ? (r['name']       as string) : null;
-  if (!uniqueName || !name) return null;
+  const rawName    = typeof r['name']       === 'string' ? (r['name']       as string) : null;
+  if (!uniqueName || !rawName) return null;
+  const name = resolveLocaleName(rawName, locale);
   return { ...r, uniqueName, name } as CalamityRow;
 }
 
-function toRecipeRow(raw: unknown): CalamityRecipe | null {
-  const base = toCalamityRow(raw);
+function toRecipeRow(raw: unknown, locale: Map<string, string>): CalamityRecipe | null {
+  const base = toCalamityRow(raw, locale);
   if (!base) return null;
 
   const r = raw as Record<string, unknown>;
@@ -393,8 +443,8 @@ function toRecipeRow(raw: unknown): CalamityRecipe | null {
   return recipe;
 }
 
-function toRelicArcaneRow(raw: unknown): CalamityRelicArcane | null {
-  const base = toCalamityRow(raw);
+function toRelicArcaneRow(raw: unknown, locale: Map<string, string>): CalamityRelicArcane | null {
+  const base = toCalamityRow(raw, locale);
   if (!base) return null;
 
   const r = raw as Record<string, unknown>;
@@ -440,9 +490,9 @@ export function parseDrops(raw: unknown): ParsedDrop[] {
 
   walkBounty(r['cetusBountyRewards'],          'Cetus',          out);
   walkBounty(r['solarisBountyRewards'],        'Fortuna',        out);
-  walkBounty(r['deimosBountyRewards'],         'Cambion',        out);
-  walkBounty(r['zarimanBountyRewards'],        'Zariman',        out);
-  walkBounty(r['entratiVaultsRewards'],        'Entrati Vaults', out);
+  walkBounty(r['deimosRewards'],               'Cambion',        out);
+  walkBounty(r['zarimanRewards'],              'Zariman',        out);
+  walkBounty(r['entratiLabRewards'],           'Entrati Vaults', out);
 
   return out;
 }
@@ -741,18 +791,23 @@ function walkBounty(raw: unknown, location: NonNullable<ParsedDrop['bountyLocati
   for (const tierEntry of raw) {
     if (!isObj(tierEntry)) continue;
     const t = tierEntry as Record<string, unknown>;
-    const tier = typeof t['tier'] === 'string' ? t['tier'] as string : undefined;
+    // WFCD uses 'bountyLevel' (e.g. "Level 5 - 15 Cetus Bounty"), not 'tier'
+    const tier = typeof t['bountyLevel'] === 'string' ? (t['bountyLevel'] as string) : undefined;
 
-    if (Array.isArray(t['rewards'])) {
-      for (const rw of t['rewards'] as unknown[]) pushBountyReward(rw, location, tier, undefined, out);
+    // WFCD structure: rewards is an object { A: [...], B: [...], C: [...] }
+    // Each rotation key maps to an array of reward items
+    if (isObj(t['rewards'])) {
+      for (const [rotKey, rotRewards] of Object.entries(t['rewards'] as Record<string, unknown>)) {
+        if (!Array.isArray(rotRewards)) continue;
+        const stage = rotKey === 'A' || rotKey === 'B' || rotKey === 'C' ? rotKey : undefined;
+        for (const rw of rotRewards) pushBountyReward(rw, location, tier, stage, out);
+      }
       continue;
     }
 
-    if (isObj(t['rotations'])) {
-      for (const [stageKey, stageRewards] of Object.entries(t['rotations'] as Record<string, unknown>)) {
-        if (!Array.isArray(stageRewards)) continue;
-        for (const rw of stageRewards) pushBountyReward(rw, location, tier, stageKey, out);
-      }
+    // Fallback: flat rewards array (non-rotated format)
+    if (Array.isArray(t['rewards'])) {
+      for (const rw of t['rewards'] as unknown[]) pushBountyReward(rw, location, tier, undefined, out);
     }
   }
 }

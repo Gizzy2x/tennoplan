@@ -1,42 +1,44 @@
 /**
- * useStaticDataCheck — on-launch stale detection for static data.
+ * useStaticDataCheck — reactive stale detection for the item codex.
  *
- * Reads the `dataSyncState` table once on mount (no polling — it's a
- * one-time check). Returns the same StaleInfo shape as
- * DropDataService.checkForStaleData() so callers don't need to know Dexie.
+ * Uses useLiveQuery so the banner auto-dismisses the moment StaticDataService
+ * writes items to Dexie — no polling, no DOM events needed.
  *
- * Only re-fetches when `refreshKey` increments, which SettingsPage triggers
- * after a successful sync to dismiss the banner.
+ * The banner only fires when itemCount === 0 (never synced / cleared). The
+ * separate staleness indicator lives in SettingsPage.
  */
 
-import { useEffect, useState } from 'react';
-import { DropDataService, type StaleInfo } from '@/adapters/api/DropDataService';
+import { useLiveQuery }      from 'dexie-react-hooks';
+import { StaticDataService } from '@/services/StaticDataService';
+import type { StaleInfo }    from '@/adapters/api/DropDataService';
 
 export interface StaticDataCheckResult {
   staleInfo: StaleInfo | null;
   isChecking: boolean;
 }
 
-export function useStaticDataCheck(syncTick?: number): StaticDataCheckResult {
-  const [staleInfo, setStaleInfo] = useState<StaleInfo | null>(null);
-  const [isChecking, setIsChecking] = useState(true);
+// syncTick kept for API compat with AppShell — no longer needed internally
+export function useStaticDataCheck(_syncTick?: number): StaticDataCheckResult {
+  const status = useLiveQuery(() => StaticDataService.getCodexStatus());
 
-  useEffect(() => {
-    let cancelled = false;
-    setIsChecking(true);
+  if (status === undefined) {
+    return { staleInfo: null, isChecking: true };
+  }
 
-    DropDataService.checkForStaleData().then((info) => {
-      if (!cancelled) {
-        setStaleInfo(info);
-        setIsChecking(false);
-      }
-    });
+  const { itemCount, lastSync, ageMinutes } = status;
+  const neverSynced = !lastSync || itemCount === 0;
+  const daysOld     = neverSynced
+    ? Infinity
+    : Math.floor(ageMinutes / (60 * 24));
 
-    return () => { cancelled = true; };
-  }, [syncTick]);
-
-  return {
-    staleInfo,
-    isChecking,
+  const staleInfo: StaleInfo = {
+    isStale:     itemCount === 0,
+    daysOld,
+    lastUpdated: lastSync || null,
+    message:     neverSynced
+      ? 'Drop data missing — sync now to see accurate bounty drops'
+      : `Drop data synced ${daysOld === 0 ? 'today' : `${daysOld} day${daysOld !== 1 ? 's' : ''} ago`}.`,
   };
+
+  return { staleInfo, isChecking: false };
 }

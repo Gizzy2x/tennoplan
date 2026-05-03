@@ -1,22 +1,17 @@
 /**
- * useDropsLastSynced — live Dexie subscription for the drops sync timestamp.
+ * useDropsLastSynced — live Dexie subscription for the codex sync timestamp.
  *
- * Reads the `dropLocations` row from the `dataSyncState` table, which
- * DropDataService.fetchAndSync() writes after every successful sync.
- * useLiveQuery re-renders automatically when the value changes, so the
- * data-freshness footer stays in sync without polling.
+ * Reads from db.syncMetadata (V2 pipeline) so the data-freshness footer stays
+ * in sync with the actual item codex, not the retired dropLocations pipeline.
  */
 
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '@/adapters/storage/db';
+import { db }           from '@/adapters/storage/db';
 
 export interface DropsLastSyncedResult {
-  /** Unix ms of the last successful sync, or null if never synced. */
   lastSynced: number | null;
-  /** True while Dexie hasn't responded yet (first render). */
-  isLoading: boolean;
-  /** Human-readable age string, e.g. "3h ago", "just now", "Never synced". */
-  ageLabel: string;
+  isLoading:  boolean;
+  ageLabel:   string;
 }
 
 function formatAge(ms: number): string {
@@ -33,13 +28,12 @@ function formatAge(ms: number): string {
 
 export function useDropsLastSynced(): DropsLastSyncedResult {
   const row = useLiveQuery(
-    () => db.dataSyncState.get('dropLocations'),
+    () => db.syncMetadata.get('codex'),
     [],
   );
 
-  // undefined = loading; null/missing row = not found; row = has value
   const isLoading  = row === undefined;
-  const lastSynced = row?.lastUpdated && row.lastUpdated > 0 ? row.lastUpdated : null;
+  const lastSynced = row?.lastSync && row.lastSync > 0 ? row.lastSync : null;
   const ageLabel   = lastSynced
     ? formatAge(Date.now() - lastSynced)
     : isLoading ? '…' : 'Never synced';

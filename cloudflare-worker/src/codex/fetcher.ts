@@ -43,6 +43,13 @@ export interface RawCalamityBlobs {
   flavour:          unknown;
   fusionBundles:    unknown;
   gear:             unknown;
+  /**
+   * English locale dictionary — flat map of localization key → display name.
+   * Calamity export files store `name` as a localization key like
+   * "/Lotus/Language/Items/SupportArchwingName"; resolving it via dict.en.json
+   * yields the human-readable English name ("Amesha") which WFCD uses.
+   */
+  localeDict:       unknown;
 }
 
 export interface RawCodexBlobs extends RawCalamityBlobs {
@@ -95,7 +102,7 @@ export async function fetchCalamityFile(filename: string): Promise<unknown> {
 }
 
 /**
- * Fetch all calamity export files in parallel batches.
+ * Fetch all calamity export files + locale dictionary in parallel batches.
  * Throws if ANY required file fails (a partial codex is unsafe to ship).
  */
 export async function fetchAllCalamity(): Promise<RawCalamityBlobs> {
@@ -103,31 +110,38 @@ export async function fetchAllCalamity(): Promise<RawCalamityBlobs> {
   log('fetching calamity exports', { count: files.length, concurrency: config.codex.concurrency });
 
   const started = Date.now();
-  const results = await pmap(files, config.codex.concurrency, async (name) => {
-    const t0 = Date.now();
-    const data = await fetchCalamityFile(name);
-    log('fetched', { file: name, ms: Date.now() - t0 });
-    return [name, data] as const;
-  });
+
+  // Fetch exports + locale dict in parallel. Dict uses same base URL.
+  const [results, localeDict] = await Promise.all([
+    pmap(files, config.codex.concurrency, async (name) => {
+      const t0 = Date.now();
+      const data = await fetchCalamityFile(name);
+      log('fetched', { file: name, ms: Date.now() - t0 });
+      return [name, data] as const;
+    }),
+    fetchCalamityFile('dict.en.json'),
+  ]);
+
   log('calamity batch complete', { ms: Date.now() - started });
 
   // Map filenames → field names. Unknown file in the list = type error
   // (rather than silent miss) thanks to readonly tuple inference.
   const lookup = new Map<string, unknown>(results);
   return {
-    warframes:      requireFile(lookup, 'ExportWarframes.json'),
-    weapons:        requireFile(lookup, 'ExportWeapons.json'),
-    sentinels:      requireFile(lookup, 'ExportSentinels.json'),
-    abilities: requireFile(lookup, 'ExportAbilities.json'),
-    upgrades:       requireFile(lookup, 'ExportUpgrades.json'),
-    recipes:        requireFile(lookup, 'ExportRecipes.json'),
-    relics:    requireFile(lookup, 'ExportRelics.json'),
-    arcanes:        requireFile(lookup, 'ExportArcanes.json'),
-    resources:      requireFile(lookup, 'ExportResources.json'),
-    keys:           requireFile(lookup, 'ExportKeys.json'),
-    flavour:        requireFile(lookup, 'ExportFlavour.json'),
-    fusionBundles:  requireFile(lookup, 'ExportFusionBundles.json'),
-    gear:           requireFile(lookup, 'ExportGear.json'),
+    warframes:     requireFile(lookup, 'ExportWarframes.json'),
+    weapons:       requireFile(lookup, 'ExportWeapons.json'),
+    sentinels:     requireFile(lookup, 'ExportSentinels.json'),
+    abilities:     requireFile(lookup, 'ExportAbilities.json'),
+    upgrades:      requireFile(lookup, 'ExportUpgrades.json'),
+    recipes:       requireFile(lookup, 'ExportRecipes.json'),
+    relics:        requireFile(lookup, 'ExportRelics.json'),
+    arcanes:       requireFile(lookup, 'ExportArcanes.json'),
+    resources:     requireFile(lookup, 'ExportResources.json'),
+    keys:          requireFile(lookup, 'ExportKeys.json'),
+    flavour:       requireFile(lookup, 'ExportFlavour.json'),
+    fusionBundles: requireFile(lookup, 'ExportFusionBundles.json'),
+    gear:          requireFile(lookup, 'ExportGear.json'),
+    localeDict,
   };
 }
 
