@@ -2660,7 +2660,7 @@ a:focus-visible {
 /* ── Reward grid ── */
 .bb-reward-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   padding: 12px;
 }
@@ -2706,13 +2706,14 @@ a:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 8px 6px;
-  height: 58px;
+  padding: 12px 8px 8px;
+  height: 96px;
+  background: radial-gradient(ellipse at 50% 60%, rgba(255,255,255,0.04) 0%, transparent 70%);
 }
 .bb-card-icon-fallback {
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
+  width: 72px;
+  height: 72px;
+  border-radius: 6px;
   background: rgba(45, 51, 59, 0.45);
 }
 
