@@ -1271,15 +1271,16 @@ a:focus-visible {
 }
 
 /* ================================================================
-   Tactical Radar — Phase 3 of Celestial Pendulum redesign
-   SVG blueprint hero section. Replaces TimerHeroPanel.
-   Left: compact timer. Right: blueprint SVG with hotspot nodes.
+   Tactical Radar — cycle timer + key resources panel.
+   Left: timer state + countdown + notes.
+   Right: key resources for the active world/state.
    ================================================================ */
 
 .tactical-radar {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  min-height: 240px;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  min-height: 180px;
   margin-bottom: var(--space-xl);
   border: 1px solid var(--color-border-default);
   border-radius: var(--radius-card);
@@ -1289,11 +1290,12 @@ a:focus-visible {
 
 /* ── Left panel: timer ── */
 
-.radar-timer-panel {
+.radar-left {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
   padding: var(--space-xl) var(--space-lg);
+  min-width: 200px;
   border-right: 1px solid var(--color-border-default);
   background: rgba(22, 27, 34, 0.60);
 }
@@ -1373,12 +1375,6 @@ a:focus-visible {
   animation: mh-badge-pulse 2s ease-in-out infinite;
 }
 
-.radar-timer-divider {
-  height: 1px;
-  background: var(--color-border-default);
-  margin-block: var(--space-xs);
-}
-
 .radar-resources-label {
   font-family: var(--font-sans);
   font-size: 0.625rem;
@@ -1426,148 +1422,19 @@ a:focus-visible {
   font-style: italic;
 }
 
-/* ── Right panel: SVG blueprint ── */
+/* ── Right panel: resources ── */
 
-.radar-map-container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.radar-svg {
+.radar-right {
   flex: 1;
-  width: 100%;
-  height: 100%;
-  display: block;
-  cursor: crosshair;
-  background: rgba(5, 10, 16, 0.60);
-}
-
-/* Hotspot hover interaction */
-.radar-hotspot {
-  cursor: pointer;
-  transition: opacity 150ms ease-out;
-}
-
-.radar-hotspot:hover {
-  opacity: 1 !important;
-}
-
-/* Ghost hotspot pulse */
-.radar-hotspot--ghost {
-  animation: radar-ghost-pulse 2.8s ease-in-out infinite;
-}
-
-@keyframes radar-ghost-pulse {
-  0%, 100% { opacity: 0.45; }
-  50%       { opacity: 0.80; }
-}
-
-/* Scan-line sweep on cycle transition */
-.radar-scan-line {
-  animation: radar-scan-sweep 0.65s cubic-bezier(0.4, 0, 0.6, 1) forwards;
-}
-
-@keyframes radar-scan-sweep {
-  from { transform: translateX(-24px); opacity: 1; }
-  to   { transform: translateX(424px); opacity: 0.4; }
-}
-
-/* Legend */
-.radar-legend {
-  display: flex;
-  align-items: center;
-  gap: var(--space-lg);
-  padding: var(--space-xs) var(--space-md);
-  border-top: 1px solid var(--color-border-default);
-  background: rgba(10, 17, 23, 0.80);
-}
-
-.radar-legend-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  font-family: var(--font-sans);
-  font-size: 0.625rem;
-  letter-spacing: 0.08em;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-}
-
-.radar-legend-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.radar-legend-dot--active  { opacity: 0.85; }
-.radar-legend-dot--ghost   {
-  background: transparent !important;
-  border: 1px solid;
-  opacity: 0.6;
-}
-
-/* Stub for worlds without a custom map */
-.radar-stub {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: var(--space-md);
-  padding: var(--space-xl);
-  flex: 1;
-  background: rgba(5, 10, 16, 0.40);
-}
-
-.radar-stub-label {
-  font-family: var(--font-sans);
-  font-size: 0.625rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.radar-stub-world {
-  font-family: var(--font-serif);
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-  letter-spacing: 0.04em;
-}
-
-.radar-stub-resources {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  width: 100%;
-}
-
-.radar-stub-resource {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: var(--space-md);
-  padding-bottom: var(--space-xs);
-  border-bottom: 1px solid rgba(45, 51, 59, 0.5);
-}
-
-.radar-stub-resource-name {
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  color: var(--color-text-primary);
-}
-
-.radar-stub-resource-source {
-  font-family: var(--font-sans);
-  font-size: 0.6875rem;
-  color: var(--color-text-muted);
+  gap: var(--space-sm);
+  padding: var(--space-xl) var(--space-lg);
+  background: rgba(10, 17, 23, 0.40);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .radar-hotspot--ghost,
-  .radar-pre-heat-badge,
-  .radar-scan-line {
+  .radar-pre-heat-badge {
     animation: none !important;
   }
 }
