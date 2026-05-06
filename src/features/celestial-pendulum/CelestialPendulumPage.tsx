@@ -24,7 +24,7 @@ import { WorldBackground }    from './components/WorldBackground';
 import { WorldNavigationDials } from './components/WorldNavigationDials';
 import { MasterHeader }       from './components/MasterHeader';
 import { TacticalRadar }      from './components/TacticalRadar';
-import { BountyMatrix }       from './components/BountyMatrix';
+import { BountyBoard }        from './components/BountyBoard';
 import { CycleIntelPanel }    from './components/CycleIntelPanel';
 import { formatMsParts }      from '@/core/services/cycleService';
 import { getWorldBg }         from './worldAssets';
@@ -292,7 +292,7 @@ export function CelestialPendulumPage() {
 
         {/* Bottom 2-column: bounties | intel */}
         <div className="cp-grid">
-          <BountyMatrix
+          <BountyBoard
             bounties={bounties}
             hasMission={selectedMission !== null}
             cycleProgress={selectedStatus?.progress ?? 0}

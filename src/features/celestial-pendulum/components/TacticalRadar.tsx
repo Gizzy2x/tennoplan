@@ -120,46 +120,74 @@ function HotspotNode({ hotspot, accent, isGhost, onHover }: HotspotNodeProps) {
 // ─── Tooltip popup ───────────────────────────────────────────────────────────
 
 function RadarTooltip({ tooltip, accent }: { tooltip: TooltipState; accent: string }) {
-  // Clamp tooltip so it doesn't overflow the SVG viewbox edges
-  const boxW = 140;
-  const boxH = 58;
-  const pad  = 8;
-  let tx = tooltip.x + 14;
-  let ty = tooltip.y - boxH - 6;
-  if (tx + boxW > VIEWBOX_W - pad) tx = tooltip.x - boxW - 14;
-  if (ty < pad) ty = tooltip.y + 14;
+  // Clamp so the tooltip stays inside the SVG viewbox
+  const boxW = 210;
+  const boxH = 82;
+  const pad  = 6;
+  let tx = tooltip.x + 16;
+  let ty = tooltip.y - boxH - 8;
+  if (tx + boxW > VIEWBOX_W - pad) tx = tooltip.x - boxW - 16;
+  if (ty < pad) ty = tooltip.y + 16;
 
   return (
     <g className="radar-tooltip">
+      {/* Shadow layer */}
+      <rect
+        x={tx + 2} y={ty + 2} width={boxW} height={boxH} rx={3}
+        fill="rgba(0,0,0,0.45)"
+      />
+      {/* Card background */}
       <rect
         x={tx} y={ty} width={boxW} height={boxH} rx={3}
-        fill="rgba(10,17,23,0.94)"
+        fill="rgba(10,17,23,0.97)"
         stroke={accent}
-        strokeWidth="0.8"
-        opacity="0.95"
+        strokeWidth="0.9"
       />
+      {/* Accent top bar */}
+      <rect
+        x={tx} y={ty} width={boxW} height={3} rx={3}
+        fill={accent}
+        opacity="0.55"
+      />
+
       {/* Resource name */}
-      <text x={tx + 8} y={ty + 14} fill={accent}
-        fontSize="8" fontFamily="Inter, sans-serif"
-        fontWeight="600" letterSpacing="0.08em"
+      <text
+        x={tx + 10} y={ty + 18}
+        fill={accent}
+        fontSize="9.5" fontFamily="Inter, sans-serif"
+        fontWeight="700" letterSpacing="0.10em"
       >
         {tooltip.hotspot.resource.toUpperCase()}
       </text>
-      {/* Location */}
-      <text x={tx + 8} y={ty + 26} fill="rgba(229,226,225,0.85)"
-        fontSize="7.5" fontFamily="Inter, sans-serif"
+
+      {/* Separator */}
+      <line
+        x1={tx + 10} y1={ty + 24}
+        x2={tx + boxW - 10} y2={ty + 24}
+        stroke={accent} strokeWidth="0.5" opacity="0.22"
+      />
+
+      {/* Location label with arrow prefix */}
+      <text
+        x={tx + 10} y={ty + 35}
+        fill="rgba(229,226,225,0.80)"
+        fontSize="7.5" fontFamily="Inter, sans-serif" fontWeight="500"
       >
-        {tooltip.hotspot.label}
+        {'▸ ' + tooltip.hotspot.label}
       </text>
-      {/* Tip — wrap at ~120 chars wide (2 lines).
-          xmlns is required for foreignObject to render XHTML inside SVG;
-          React's HTMLDivElement types don't surface it, so we spread via
-          a generic attribute object to keep TS happy without losing the
-          SVG-correct markup. */}
-      <foreignObject x={tx + 8} y={ty + 32} width={boxW - 16} height={24}>
+
+      {/* Farming tip — wrapped via foreignObject.
+          xmlns is required for XHTML inside SVG; spread via a generic
+          attribute object to avoid TS errors on the XHTML element. */}
+      <foreignObject x={tx + 10} y={ty + 42} width={boxW - 20} height={36}>
         <div
           {...{ xmlns: 'http://www.w3.org/1999/xhtml' }}
-          style={{ fontSize: '6.5px', color: 'rgba(168,165,160,0.9)', lineHeight: 1.4, fontFamily: 'Inter, sans-serif' }}
+          style={{
+            fontSize:   '7px',
+            color:      'rgba(168,165,160,0.85)',
+            lineHeight: 1.55,
+            fontFamily: 'Inter, sans-serif',
+          }}
         >
           {tooltip.hotspot.tip}
         </div>
