@@ -186,7 +186,7 @@ const RewardCard = memo(function RewardCard({
       {/* Icon */}
       <div className="bb-card-icon-area">
         {found?.imageName ? (
-          <ItemIcon imageName={found.imageName} name={reward.itemName} size={40} />
+          <ItemIcon imageName={found.imageName} name={reward.itemName} size={72} />
         ) : (
           <div className="bb-card-icon-fallback" />
         )}
@@ -441,7 +441,7 @@ export const BountyBoard = memo(function BountyBoard({
                 <div key={`fb-${i}`} className="bb-reward-card bb-reward-card--unknown">
                   <div className="bb-card-icon-area">
                     {item?.imageName ? (
-                      <ItemIcon imageName={item.imageName} name={name} size={40} />
+                      <ItemIcon imageName={item.imageName} name={name} size={72} />
                     ) : (
                       <div className="bb-card-icon-fallback" />
                     )}
