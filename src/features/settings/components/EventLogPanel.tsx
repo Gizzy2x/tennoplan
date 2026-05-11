@@ -11,7 +11,7 @@
  * UI (rows, chips, banner) lives in SettingsPage.module.css.
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/adapters/storage/db';
@@ -79,6 +79,8 @@ function EventRow({ entry }: { entry: EventLogEntry }) {
   const [open, setOpen] = useState(false);
   const hasDetails = !!entry.details;
 
+  const toggle = () => hasDetails && setOpen((o) => !o);
+
   return (
     <div
       className={clsx(
@@ -86,9 +88,17 @@ function EventRow({ entry }: { entry: EventLogEntry }) {
         open       && styles.eventRowOpen,
         hasDetails && styles.eventRowClickable,
       )}
-      onClick={() => hasDetails && setOpen((o) => !o)}
+      onClick={toggle}
+      onKeyDown={(e) => {
+        if (!hasDetails) return;
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggle();
+        }
+      }}
       role={hasDetails ? 'button' : undefined}
       tabIndex={hasDetails ? 0 : -1}
+      aria-expanded={hasDetails ? open : undefined}
     >
       <span className={clsx(styles.eventPip, PIP_FOR_LEVEL[entry.level])} aria-hidden="true" />
       <span className={styles.eventTime} title={new Date(entry.timestamp).toLocaleString()}>
@@ -121,6 +131,7 @@ function Chip({
       type="button"
       className={clsx(styles.chip, active && styles.chipActive)}
       onClick={onClick}
+      aria-pressed={active}
     >
       <span>{children}</span>
       {count !== undefined && count > 0 && (
@@ -173,11 +184,25 @@ export function EventLogPanel() {
     [events],
   );
 
+  // Pulse the count badge briefly when new events arrive. We retrigger
+  // the animation by toggling a key, which remounts the badge span.
+  const prevCountRef = useRef(events.length);
+  const [pulseKey, setPulseKey] = useState(0);
+  useEffect(() => {
+    if (events.length > prevCountRef.current) {
+      setPulseKey((k) => k + 1);
+    }
+    prevCountRef.current = events.length;
+  }, [events.length]);
+
   return (
     <Panel>
       <PanelHeader>
         <PanelLabel>Event Log</PanelLabel>
-        <span className={styles.headerBadge}>
+        <span
+          key={pulseKey}
+          className={clsx(styles.headerBadge, pulseKey > 0 && styles.headerBadgePulse)}
+        >
           {events.length} event{events.length === 1 ? '' : 's'}
         </span>
       </PanelHeader>
@@ -225,8 +250,8 @@ export function EventLogPanel() {
           {filtered.length === 0 ? (
             <p className={styles.eventEmpty}>
               {events.length === 0
-                ? 'No events recorded yet. The log fills up as the app runs.'
-                : 'No events match the current filter.'}
+                ? 'No events yet — the log fills up as the app runs.'
+                : 'No events match these filters. Try clearing one.'}
             </p>
           ) : (
             filtered.map((e) => <EventRow key={e.id} entry={e} />)
@@ -235,7 +260,7 @@ export function EventLogPanel() {
 
         {filtered.length > 0 && (
           <div className={styles.eventFooter}>
-            Showing {filtered.length} of {events.length} entries
+            Showing {filtered.length} of {events.length} event{events.length === 1 ? '' : 's'}
             {filtered[0] && ` · newest ${relativeAge(filtered[0].timestamp)}`}
           </div>
         )}
