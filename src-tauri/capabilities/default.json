@@ -1,0 +1,22 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "enables the default permissions",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "https://cdn.warframestat.us/*" },
+        { "url": "https://api.warframestat.us/*" },
+        { "url": "https://drops.warframestat.us/*" },
+        { "url": "https://content.warframe.com/*" },
+        { "url": "https://wf.snekw.com/*" },
+        { "url": "https://raw.githubusercontent.com/*" }
+      ]
+    }
+  ]
+}

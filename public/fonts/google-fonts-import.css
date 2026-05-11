@@ -1,0 +1,7 @@
+/* Import these fonts directly from Google Fonts CDN */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Exo:wght@300;400;500;600;700&display=swap');
+
+/* Note: Aileron is available via CDN from jsDelivr as it's public domain */
+@import url('https://cdn.jsdelivr.net/npm/aileron@1/aileron.css');

@@ -1,0 +1,616 @@
+/* ================================================================
+   Warframe Mod Card — Authentic layered PNG frame assets
+
+   Consistent layout for ALL rarities:
+   - Background fills entire card
+   - Mod art occupies upper 60% (centered, large)
+   - Bottom gradient panel covers lower 45% for text readability
+   - Frame ornaments sit AT card edges (no overhangs that break visual cohesion)
+   - Corner lights are small accents at bottom corners
+
+   NOTE: This is a CSS Module — class names are auto-scoped by Vite.
+   Use via `import styles from './ModCard.module.css'` then `styles['wf-mod-card']`.
+   Global tokens (--shadow-modcard-body, --font-modcard-display, etc.) live in
+   src/index.css and are inherited automatically.
+   ================================================================ */
+
+.wf-mod-card {
+  --wf-w: 170px;
+  position:     relative;
+  width:        var(--wf-w);
+  aspect-ratio: 242 / 338;
+  cursor:       pointer;
+  transition:   transform 0.2s ease-out, filter 0.2s ease-out;
+  filter:       drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+  outline:      none;
+  overflow:     hidden;
+  border-radius: 2px;
+}
+
+.wf-mod-card:hover,
+.wf-mod-card:focus-visible {
+  transform: translateY(-4px) scale(1.06);
+  filter:    drop-shadow(0 6px 24px var(--wf-glow, rgba(0,0,0,0.6)));
+  z-index:   10;
+}
+
+.wf-mod-card:focus-visible {
+  outline:        2px solid var(--color-accent-teal);
+  outline-offset: 4px;
+}
+
+/* ── Shared layer positioning ──────────────────────────────────── */
+
+.wf-l {
+  position:       absolute;
+  pointer-events: none;
+  user-select:    none;
+}
+
+/* L0: Background — fills entire card */
+.wf-l-bg {
+  inset:      0;
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+  z-index:    0;
+}
+
+/* L1: Mod icon / art — dominates upper card region */
+.wf-l-icon-wrap {
+  top:             6%;
+  left:            10%;
+  right:           10%;
+  height:          54%;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  z-index:         2;
+}
+
+.wf-l-icon {
+  width:      100%;
+  height:     100%;
+  object-fit: contain;
+  filter:     drop-shadow(0 0 8px var(--wf-glow, transparent));
+}
+
+/* L2: Bottom dark panel for text readability */
+.wf-l-panel {
+  left:       0;
+  right:      0;
+  bottom:     0;
+  height:     50%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,0,0,0.45) 25%,
+    rgba(0,0,0,0.78) 60%,
+    rgba(0,0,0,0.88) 100%
+  );
+  z-index:    3;
+}
+
+/* L3: Side lights — thin vertical accents pinned to edges */
+.wf-l-side {
+  top:     8%;
+  height:  70%;
+  width:   auto;
+  z-index: 4;
+  opacity: 0.9;
+}
+.wf-l-side--l { left:  0; }
+.wf-l-side--r { right: 0; transform: scaleX(-1); }
+
+/* L4: Frame top — small ornament at top edge */
+.wf-l-ftop {
+  top:     0;
+  left:    -4%;
+  width:   108%;
+  height:  auto;
+  z-index: 6;
+}
+
+/* L5: Frame bottom — curved border at bottom edge */
+.wf-l-fbtm {
+  bottom:  0;
+  left:    -5%;
+  width:   110%;
+  height:  auto;
+  z-index: 6;
+}
+
+/* L6: Corner lights — small accents at bottom corners */
+.wf-l-corner {
+  bottom:  3%;
+  width:   14%;
+  height:  auto;
+  z-index: 7;
+}
+.wf-l-corner--l { left: 2%; }
+.wf-l-corner--r { right: 2%; transform: scaleX(-1); }
+
+/* ── Drain badge (top-right) ───────────────────────────────────── */
+
+.wf-drain-badge {
+  position:    absolute;
+  top:         3%;
+  right:       4%;
+  display:     flex;
+  align-items: center;
+  gap:         2px;
+  height:      9%;
+  z-index:     8;
+}
+
+.wf-drain-backer {
+  height:     100%;
+  width:      auto;
+  display:    block;
+}
+
+.wf-drain-num {
+  position:    absolute;
+  top:         50%;
+  left:        18%;
+  transform:   translateY(-50%);
+  font-family: var(--font-modcard-body);
+  font-size:   var(--font-modcard-body-size);
+  font-weight: var(--font-modcard-body-weight);
+  letter-spacing: var(--font-modcard-body-letter-spacing);
+  color:       var(--wf-notch-color, #fff);
+  line-height: 1;
+  text-shadow: var(--shadow-modcard-body);
+  pointer-events: none;
+}
+
+.wf-polarity-icon {
+  position:     absolute;
+  top:          50%;
+  right:        8%;
+  transform:    translateY(-50%);
+  width:        40%;
+  height:       100%;
+  display:      flex;
+  align-items:  center;
+  color:        var(--wf-notch-color, #fff);
+  pointer-events: none;
+}
+.wf-polarity-icon svg { width: 100%; height: 100%; }
+
+.wf-polarity-text {
+  position:    absolute;
+  top:         50%;
+  right:       12%;
+  transform:   translateY(-50%);
+  font-family: var(--font-modcard-body);
+  font-size:   var(--font-modcard-body-size);
+  font-weight: var(--font-modcard-body-weight);
+  letter-spacing: var(--font-modcard-body-letter-spacing);
+  color:       var(--wf-notch-color, #fff);
+  line-height: 1;
+  text-shadow: var(--shadow-modcard-body);
+  pointer-events: none;
+}
+
+/* ── Mod name ──────────────────────────────────────────────────── */
+
+.wf-mod-name {
+  position:           absolute;
+  left:               8%;
+  right:              8%;
+  bottom:             32%;
+  font-family:        var(--font-modcard-display);
+  font-size:          var(--font-modcard-display-size);
+  font-weight:        var(--font-modcard-display-weight);
+  letter-spacing:     var(--font-modcard-display-letter-spacing);
+  color:              #fff;
+  text-align:         center;
+  line-height:        1.15;
+  margin:             0;
+  padding:            0;
+  z-index:            8;
+  text-shadow:        var(--shadow-modcard-display);
+  display:            -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow:           hidden;
+  word-break:         break-word;
+}
+
+/* ── Stats ──────────────────────────────────────────────────────── */
+
+.wf-mod-stats {
+  position:    absolute;
+  left:        8%;
+  right:       8%;
+  bottom:      24%;
+  text-align:  center;
+  z-index:     8;
+}
+
+.wf-mod-stat {
+  font-family:   var(--font-modcard-body);
+  font-size:     var(--font-modcard-body-size);
+  font-weight:   var(--font-modcard-body-weight);
+  letter-spacing: var(--font-modcard-body-letter-spacing);
+  line-height:   1.3;
+  color:         rgba(255,255,255,0.92);
+  display:       block;
+  text-shadow:   var(--shadow-modcard-body);
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+}
+
+/* ── Type tab (lower tab image + text) ─────────────────────────── */
+
+.wf-type-tab {
+  position:        absolute;
+  bottom:          11%;
+  left:            50%;
+  transform:       translateX(-50%);
+  width:           70%;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  z-index:         8;
+}
+
+.wf-tab-img {
+  width:  100%;
+  height: auto;
+  display: block;
+}
+
+.wf-tab-text {
+  position:       absolute;
+  font-family:    var(--font-modcard-body);
+  font-size:      var(--font-modcard-body-size);
+  font-weight:    var(--font-modcard-body-weight);
+  letter-spacing: var(--font-modcard-body-letter-spacing);
+  text-transform: uppercase;
+  color:          rgba(255,255,255,0.92);
+  text-shadow:    var(--shadow-modcard-body);
+  white-space:    nowrap;
+}
+
+/* ── Rank pips ──────────────────────────────────────────────────── */
+
+.wf-rank-pips {
+  position:        absolute;
+  bottom:          5%;
+  left:            50%;
+  transform:       translateX(-50%);
+  display:         flex;
+  gap:             2px;
+  justify-content: center;
+  z-index:         8;
+  max-width:       70%;
+  flex-wrap:       wrap;
+}
+
+.wf-pip {
+  width:   5px;
+  height:  5px;
+  opacity: 0.25;
+  flex-shrink: 0;
+}
+
+.wf-pip--on {
+  opacity: 1;
+  filter:  drop-shadow(0 0 2px rgba(100,200,255,0.7));
+}
+
+/* ── Archon full-card mode ─────────────────────────────────────── */
+
+.wf-archon-full {
+  width:      100%;
+  height:     100%;
+  object-fit: contain;
+}
+
+/* ── Size: grid (rank grid in ModPage, ~138px) ────────────────── */
+
+.wf-mod-card--grid {
+  --wf-w: 138px;
+}
+
+.wf-mod-card--grid .wf-mod-name  { font-size: 0.58rem; }
+.wf-mod-card--grid .wf-mod-stat  { font-size: 0.46rem; }
+.wf-mod-card--grid .wf-tab-text  { font-size: 0.42rem; }
+.wf-mod-card--grid .wf-drain-num { font-size: 0.52rem; }
+.wf-mod-card--grid .wf-pip       { width: 5px; height: 5px; }
+
+/* ── Size: detail (large card in modal, ~280px) ───────────────── */
+
+.wf-mod-card--detail {
+  --wf-w: 280px;
+  cursor: default;
+}
+
+.wf-mod-card--detail:hover,
+.wf-mod-card--detail:focus-visible {
+  transform: none;
+  filter:    drop-shadow(0 4px 16px var(--wf-glow, rgba(0,0,0,0.6)));
+}
+
+.wf-mod-card--detail .wf-mod-name {
+  font-size: 1rem;
+}
+
+.wf-mod-card--detail .wf-mod-stat {
+  font-size:   0.72rem;
+  white-space: normal;
+}
+
+.wf-mod-card--detail .wf-tab-text {
+  font-size: 0.65rem;
+}
+
+.wf-mod-card--detail .wf-drain-num {
+  font-size: 0.8rem;
+}
+
+.wf-mod-card--detail .wf-polarity-icon {
+  width:  16px;
+  height: 16px;
+}
+
+.wf-mod-card--detail .wf-pip {
+  width:  8px;
+  height: 8px;
+}
+
+/* ── Per-type tweaks (only what's distinctive about each frame style) ─ */
+
+/* Galvanized has unique "BottomLight" instead of CornerLights — slightly smaller */
+.wf-mod-card--galvanized .wf-l-corner { width: 10%; }
+
+/* Peculiar uses smoke effects on sides instead of solid lines */
+.wf-mod-card--peculiar .wf-l-side { width: 14%; opacity: 0.6; }
+
+/* Riven side lights are slightly more prominent (darker purple) */
+.wf-mod-card--riven .wf-l-side { opacity: 0.85; }
+
+/* ================================================================
+   Mod Card V2 — consolidated 254×373 canvas layers
+   Every PNG layer (background, frame, top-right-cost, rank-complete-line)
+   is exported at the same dimensions, so they stack pixel-perfect with
+   inset:0 + width/height:100%. Scaling the card scales the whole stack.
+   ================================================================ */
+
+.wf-mod-card--v2 {
+  width: calc(170px * var(--card-size-scale));
+  aspect-ratio: 254 / 373;
+  overflow: hidden;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.7));
+}
+
+.wf-mod-card--v2:hover,
+.wf-mod-card--v2:focus-visible {
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.85));
+}
+
+/* L0: Background — full canvas */
+.wf-mod-card--v2 .wf-v2-bg {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* L1: Mod art — full canvas so the background mask aligns 1:1.
+   The art image fills the top 62% of the card height at full width. */
+.wf-mod-card--v2 .wf-v2-art {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  -webkit-mask-image: var(--wf-bg-url);
+          mask-image: var(--wf-bg-url);
+  -webkit-mask-size: 100% 100%;
+          mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+}
+.wf-mod-card--v2 .wf-v2-art-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 62%;
+  object-fit: cover;
+  filter:
+    drop-shadow(0 0 10px var(--wf-glow, transparent))
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* L2/L3: Frame overlay — full canvas border (notch baked into frame PNG) */
+.wf-mod-card--v2 .wf-v2-frame {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+}
+
+/* L4: Maxed-rank blue line — full canvas, only rendered at max rank */
+.wf-mod-card--v2 .wf-v2-rank-line {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+}
+
+/* L5: Drain number + polarity — both centered on the visual middle of the
+   gold notch in mod-top-right-polarity+cost.png. The notch is offset toward
+   the right edge and slightly down from the very top, so each child is
+   anchored by translating from a center-point inside the notch.
+   Notch center ≈ {top: 6.3%, right edge: 2%}; notch width ≈ 22% of card. */
+
+.wf-mod-card--v2 .wf-v2-drain {
+  position: absolute;
+  top: 8.4%;
+  right: 17%;
+  transform: translate(50%, -50%);
+  font-family: var(--font-modcard-body);
+  font-size: calc(0.78rem * var(--card-text-scale));
+  font-weight: var(--font-modcard-body-weight);
+  letter-spacing: var(--font-modcard-body-letter-spacing);
+  color: var(--wf-notch-color, #fff);
+  line-height: 1;
+  text-shadow: var(--shadow-modcard-body);
+  z-index: 5;
+}
+
+.wf-mod-card--v2 .wf-v2-polarity {
+  position:    absolute;
+  top:         8.4%;
+  right:       10%;
+  transform:   translate(50%, -50%);
+  width:       9%;
+  aspect-ratio: 1;
+  display:     flex;
+  align-items: center;
+  justify-content: center;
+  z-index:     5;
+  color:       var(--wf-notch-color, #fff);
+}
+.wf-mod-card--v2 .wf-v2-polarity svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+}
+
+/* Fallback when polarity has no SVG */
+.wf-mod-card--v2 .wf-v2-polarity-text {
+  position: absolute;
+  top: 6.3%;
+  right: 5.5%;
+  transform: translate(50%, -50%);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--wf-notch-color, #fff);
+  text-shadow: var(--shadow-modcard-body);
+  z-index: 5;
+}
+
+/* L6–L7: Name + Description group — flexbox container */
+.wf-mod-card--v2 .wf-v2-content {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 19.6%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  z-index: 5;
+}
+
+/* L6: Mod name — Warframe-style bold sans */
+.wf-mod-card--v2 .wf-v2-name {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-modcard-display);
+  font-size: calc(1.25rem * var(--card-text-scale));
+  font-weight: var(--font-modcard-display-weight);
+  letter-spacing: var(--font-modcard-display-letter-spacing);
+  color: #fff;
+  text-shadow: var(--shadow-modcard-display);
+  line-height: 0.90;
+  word-break: break-word;
+}
+
+/* L7: Stat lines */
+.wf-mod-card--v2 .wf-v2-stats {
+  text-align: center;
+}
+.wf-mod-card--v2 .wf-v2-stat {
+  display: block;
+  font-family: var(--font-modcard-body);
+  font-size: calc(0.95rem * var(--card-text-scale));
+  font-weight: var(--font-modcard-body-weight);
+  letter-spacing: var(--font-modcard-body-letter-spacing);
+  line-height: 1.25;
+  color: #ffeabe;
+  text-shadow: var(--shadow-modcard-body);
+}
+
+/* L8: Category label (WARFRAME / RIFLE / SECONDARY / …) — RED BOX
+   Absolute bounds: left 8%, right 8%, height confined to bottom 12.5%–9.5%.
+   Cannot exit these bounds under any circumstances. */
+.wf-mod-card--v2 .wf-v2-category {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 12.3%;
+  height: 3%;
+  text-align: center;
+  font-family: var(--font-modcard-body);
+  font-size: calc(0.6rem * var(--card-text-scale));
+  font-weight: var(--font-modcard-body-weight);
+  letter-spacing: var(--font-modcard-body-letter-spacing);
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: var(--shadow-modcard-body);
+  z-index: 5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* L9: Rank stars — PINK BOX
+   Position: absolute centered box at bottom 5.8%.
+   Stars are centered both vertically AND horizontally within this pink box.
+   The pink box center (not the card) is the reference for star alignment.
+   Sits ON TOP of the rank-line layer (line is z:4, stars z:6). */
+.wf-mod-card--v2 .wf-v2-stars {
+  position: absolute;
+  left: 50%;
+  bottom: 2%;
+  width: 78%;
+  height: 3.2%;
+  transform: translate(-50%, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  z-index: 6;
+}
+.wf-mod-card--v2 .wf-v2-star {
+  width: 8px;
+  height: 8px;
+  opacity: 0.28;
+  flex-shrink: 0;
+}
+.wf-mod-card--v2 .wf-v2-star--on {
+  opacity: 1;
+  filter:
+    drop-shadow(0 0 3px rgba(140, 220, 255, 0.95))
+    drop-shadow(0 0 1px rgba(255, 255, 255, 0.6));
+}
+
+/* ── Notch color per frame type (drain number + polarity icon/text) ─── */
+/* Default is white; only non-white types need a rule. */
+
+/* V2 cards */
+.wf-mod-card--rare-v2      { --wf-notch-color: #c8a050; }
+
+/* V1 cards */
+.wf-mod-card--common       { --wf-notch-color: #b07838; }
+.wf-mod-card--archon       { --wf-notch-color: #d4820a; }
+.wf-mod-card--riven        { --wf-notch-color: #9050c8; }
+/* legendary, galvanized, peculiar, uncommon, amalgam → default #fff */
+
+/* ── Size variants for V2 cards ─────────────────────────────────────── */
+
+.wf-mod-card--v2.wf-mod-card--grid .wf-v2-name     { font-size: 0.6rem; }
+.wf-mod-card--v2.wf-mod-card--grid .wf-v2-stat     { font-size: 0.46rem; }
+.wf-mod-card--v2.wf-mod-card--grid .wf-v2-category { font-size: 0.4rem; letter-spacing: 0.14em; }
+.wf-mod-card--v2.wf-mod-card--grid .wf-v2-drain    { font-size: 0.58rem; }
+.wf-mod-card--v2.wf-mod-card--grid .wf-v2-star     { width: 5px; height: 5px; }

@@ -17,14 +17,25 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import clsx from 'clsx';
 import { useLiveQuery }         from 'dexie-react-hooks';
 import { PageHero }             from '@/components/ui/PageHero';
 import { useWorldstate }        from '@/hooks/useWorldstate';
 import { StaticDataService }    from '@/services/StaticDataService';
 import { SystemPulse }          from '@/components/layout/SystemPulse';
 import { db }                   from '@/adapters/storage/db';
+import {
+  onIconSyncProgress,
+  verifyAndRepairIcons,
+  clearAndRedownloadIcons,
+  getIconSyncSnapshot,
+  type IconSyncProgress,
+} from '@/adapters/assets/startupIconSync';
+import { testCdnConnection, getFetchDiagnostics } from '@/lib/http/nativeFetch';
+import { getCacheDiagnostics } from '@/lib/icons/iconBlobCache';
+import { EventLogPanel } from './components/EventLogPanel';
 import type { DataSource, DataQuality } from '@/core/domain/tennoplanApi';
-import './SettingsPage.css';
+import styles from './SettingsPage.module.css';
 
 // ── Rate-limit constants ───────────────────────────────────────────────────────
 
@@ -81,13 +92,13 @@ function sourceLabel(s: DataSource | string | null | undefined): string {
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
 function QualityPip({ quality }: { quality: DataQuality | string | null | undefined }) {
-  const cls =
-    quality === 'high'   ? 'settings-pip settings-pip--high'   :
-    quality === 'medium' ? 'settings-pip settings-pip--medium' :
-    quality === 'low'    ? 'settings-pip settings-pip--low'    :
-                           'settings-pip settings-pip--unknown';
+  const variantClass =
+    quality === 'high'   ? styles['settings-pip--high']   :
+    quality === 'medium' ? styles['settings-pip--medium'] :
+    quality === 'low'    ? styles['settings-pip--low']    :
+                           styles['settings-pip--unknown'];
   return (
-    <span className={cls} aria-hidden="true" />
+    <span className={clsx(styles['settings-pip'], variantClass)} aria-hidden="true" />
   );
 }
 
@@ -105,9 +116,9 @@ function StatusRow({
   quality?: DataQuality | string | null;
 }) {
   return (
-    <div className="settings-status-row">
-      <span className="settings-status-label typo-label-xs">{label}</span>
-      <span className={`settings-status-value typo-label-xs${accent ? ' settings-status-value--accent' : ''}`}>
+    <div className={styles['settings-status-row']}>
+      <span className={clsx(styles['settings-status-label'], 'typo-label-xs')}>{label}</span>
+      <span className={clsx(styles['settings-status-value'], 'typo-label-xs', accent && styles['settings-status-value--accent'])}>
         {pip && <QualityPip quality={quality} />}
         {value}
       </span>
@@ -116,7 +127,7 @@ function StatusRow({
 }
 
 function SectionBlock({ children }: { children: React.ReactNode }) {
-  return <div className="settings-block">{children}</div>;
+  return <div className={styles['settings-block']}>{children}</div>;
 }
 
 function RefreshButton({
@@ -156,9 +167,13 @@ function RefreshButton({
     <button
       onClick={onClick}
       disabled={isDisabled}
-      className={`settings-btn${isLoading ? ' settings-btn--loading' : ''}${onCooldown ? ' settings-btn--cooldown' : ''}`}
+      className={clsx(
+        styles['settings-btn'],
+        isLoading && styles['settings-btn--loading'],
+        onCooldown && styles['settings-btn--cooldown']
+      )}
     >
-      <span className={`settings-btn-icon${isLoading ? ' settings-btn-icon--spin' : ''}`}>↻</span>
+      <span className={clsx(styles['settings-btn-icon'], isLoading && styles['settings-btn-icon--spin'])}>↻</span>
       <span className="typo-label-xs">
         {isLoading
           ? loadingLabel
@@ -179,10 +194,10 @@ function WorldstatePanel() {
   const hasErrors = errorCount > 0;
 
   return (
-    <div className="settings-panel">
-      <div className="settings-panel-header">
-        <span className="settings-panel-title typo-label-xs">LIVE WORLDSTATE</span>
-        <span className="settings-panel-badge typo-label-xs">AUTO · 60s</span>
+    <div className={styles['settings-panel']}>
+      <div className={styles['settings-panel-header']}>
+        <span className={clsx(styles['settings-panel-title'], 'typo-label-xs')}>LIVE WORLDSTATE</span>
+        <span className={clsx(styles['settings-panel-badge'], 'typo-label-xs')}>AUTO · 60s</span>
       </div>
 
       <SectionBlock>
@@ -249,10 +264,10 @@ function CodexPanel() {
   const hasErrors   = (status?.errorCount ?? 0) > 0;
 
   return (
-    <div className="settings-panel">
-      <div className="settings-panel-header">
-        <span className="settings-panel-title typo-label-xs">ITEM CODEX</span>
-        <span className="settings-panel-badge typo-label-xs">AUTO · 6h</span>
+    <div className={styles['settings-panel']}>
+      <div className={styles['settings-panel-header']}>
+        <span className={clsx(styles['settings-panel-title'], 'typo-label-xs')}>ITEM CODEX</span>
+        <span className={clsx(styles['settings-panel-badge'], 'typo-label-xs')}>AUTO · 6h</span>
       </div>
 
       <SectionBlock>
@@ -290,18 +305,22 @@ function CodexPanel() {
       </SectionBlock>
 
       {!isPopulated && status !== null && (
-        <p className="settings-notice typo-label-xs">
+        <p className={clsx(styles['settings-notice'], 'typo-label-xs')}>
           Worker codex cron runs every 6h. First population happens at the next 0/6/12/18 UTC tick.
           You can force it now — it will download ~3MB from Cloudflare KV.
         </p>
       )}
 
       {codexProgress && codexSyncing && (
-        <p className="settings-progress typo-label-xs">{codexProgress}</p>
+        <p className={clsx(styles['settings-progress'], 'typo-label-xs')}>{codexProgress}</p>
       )}
 
       {codexResultMsg && !codexSyncing && (
-        <p className={`settings-result typo-label-xs${codexResultMsg.ok ? ' settings-result--ok' : ' settings-result--err'}`}>
+        <p className={clsx(
+          styles['settings-result'],
+          'typo-label-xs',
+          codexResultMsg.ok ? styles['settings-result--ok'] : styles['settings-result--err']
+        )}>
           {codexResultMsg.ok ? '✓' : '✗'} {codexResultMsg.text}
         </p>
       )}
@@ -315,7 +334,7 @@ function CodexPanel() {
         isLoading={codexSyncing}
       />
 
-      <p className="settings-hint typo-label-xs">
+      <p className={clsx(styles['settings-hint'], 'typo-label-xs')}>
         Downloads ~3MB from Cloudflare KV. Locked for 6h after each refresh to match server cron cadence.
       </p>
     </div>
@@ -339,38 +358,39 @@ function DangerPanel() {
         db.cache.clear(),
       ]);
       localStorage.removeItem(LS_CODEX_KEY);
-      setResult('All local data cleared. Both services will re-sync on next access.');
+      setResult('All local data cleared. Reloading…');
       setStep('idle');
+      setTimeout(() => window.location.reload(), 800);
     }
   };
 
   return (
-    <div className="settings-panel settings-panel--danger">
-      <div className="settings-panel-header">
-        <span className="settings-panel-title settings-panel-title--danger typo-label-xs">DANGER ZONE</span>
+    <div className={clsx(styles['settings-panel'], styles['settings-panel--danger'])}>
+      <div className={styles['settings-panel-header']}>
+        <span className={clsx(styles['settings-panel-title'], styles['settings-panel-title--danger'], 'typo-label-xs')}>DANGER ZONE</span>
       </div>
 
-      <p className="settings-danger-desc typo-label-xs">
+      <p className={clsx(styles['settings-danger-desc'], 'typo-label-xs')}>
         Clears all locally cached data — worldstate snapshot, item codex, sync metadata,
         and rate-limit state. Both services will re-fetch on next load.
       </p>
 
       {result && (
-        <p className="settings-result settings-result--ok typo-label-xs">✓ {result}</p>
+        <p className={clsx(styles['settings-result'], styles['settings-result--ok'], 'typo-label-xs')}>✓ {result}</p>
       )}
 
-      <div className="settings-danger-actions">
+      <div className={styles['settings-danger-actions']}>
         {step === 'confirm' ? (
           <>
             <button
               onClick={() => void handleClear()}
-              className="settings-btn settings-btn--danger-confirm"
+              className={clsx(styles['settings-btn'], styles['settings-btn--danger-confirm'])}
             >
               <span className="typo-label-xs">Confirm — clear everything</span>
             </button>
             <button
               onClick={() => setStep('idle')}
-              className="settings-btn settings-btn--ghost"
+              className={clsx(styles['settings-btn'], styles['settings-btn--ghost'])}
             >
               <span className="typo-label-xs">Cancel</span>
             </button>
@@ -379,7 +399,7 @@ function DangerPanel() {
           <button
             onClick={() => void handleClear()}
             disabled={step === 'clearing'}
-            className="settings-btn settings-btn--danger"
+            className={clsx(styles['settings-btn'], styles['settings-btn--danger'])}
           >
             <span className="typo-label-xs">
               {step === 'clearing' ? 'Clearing…' : 'Clear All Local Data'}
@@ -391,17 +411,227 @@ function DangerPanel() {
   );
 }
 
+// ── Icon Cache panel ──────────────────────────────────────────────────────────
+
+interface ConnTestResult {
+  ok:         boolean;
+  message:    string;
+  backend:    string;
+  durationMs: number;
+}
+
+function IconCachePanel() {
+  const [progress, setProgress] = useState<IconSyncProgress>(getIconSyncSnapshot);
+  const [busy,     setBusy]     = useState(false);
+  const [testing,  setTesting]  = useState(false);
+  const [test,     setTest]     = useState<ConnTestResult | null>(null);
+
+  useEffect(() => {
+    setProgress(getIconSyncSnapshot());
+    return onIconSyncProgress(setProgress);
+  }, []);
+
+  const isActive   = progress.phase === 'preflight'
+                  || progress.phase === 'checking'
+                  || progress.phase === 'downloading';
+  const isDone     = progress.phase === 'done';
+  const isAborted  = progress.phase === 'aborted';
+  const pct        = progress.pct;
+  const missing    = Math.max(0, progress.total - progress.cached - progress.failed);
+  const allGood    = isDone && missing === 0 && progress.failed === 0;
+
+  const handleVerify = useCallback(() => {
+    if (busy || isActive) return;
+    setBusy(true);
+    setTest(null);
+    verifyAndRepairIcons();
+  }, [busy, isActive]);
+
+  const handleClearRedownload = useCallback(async () => {
+    if (busy || isActive) return;
+    setBusy(true);
+    setTest(null);
+    await clearAndRedownloadIcons();
+  }, [busy, isActive]);
+
+  const handleTest = useCallback(async () => {
+    if (testing) return;
+    setTesting(true);
+    setTest(null);
+    const r = await testCdnConnection();
+    setTest({
+      ok:         r.ok,
+      message:    r.message,
+      backend:    r.backend,
+      durationMs: r.durationMs,
+    });
+    setTesting(false);
+  }, [testing]);
+
+  useEffect(() => {
+    if (progress.phase === 'done' || progress.phase === 'aborted') setBusy(false);
+  }, [progress.phase]);
+
+  // Status label per phase
+  let statusLabel = '—';
+  if (progress.phase === 'preflight')    statusLabel = 'Testing connection…';
+  else if (progress.phase === 'checking') statusLabel = 'Scanning cache…';
+  else if (progress.phase === 'downloading') statusLabel = 'Downloading…';
+  else if (isDone && allGood)            statusLabel = 'All icons cached ✓';
+  else if (isDone && progress.failed > 0)    statusLabel = `${progress.failed.toLocaleString()} failed`;
+  else if (isDone && missing > 0)        statusLabel = `${missing.toLocaleString()} missing`;
+  else if (isAborted)                    statusLabel = 'Aborted — see error below';
+  else if (progress.phase === 'idle' && progress.total === 0) statusLabel = 'Waiting for startup sync…';
+
+  const fetchDiag = getFetchDiagnostics();
+  const cacheDiag = getCacheDiagnostics();
+
+  return (
+    <div className={clsx(styles['settings-panel'], styles['settings-panel--full'])}>
+      <div className={styles['settings-panel-header']}>
+        <span className={clsx(styles['settings-panel-title'], 'typo-label-xs')}>ICON CACHE</span>
+        <span className={clsx(styles['settings-panel-badge'], 'typo-label-xs')}>
+          {progress.backend === 'tauri-http' ? 'TAURI HTTP · NATIVE' :
+           progress.backend === 'browser'    ? 'BROWSER FETCH · CORS' :
+                                                'CACHE API · LOCAL'}
+        </span>
+      </div>
+
+      {/* Progress bar */}
+      <div className={styles['icon-sync-bar-track']} role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
+        <div
+          className={clsx(
+            styles['icon-sync-bar-fill'],
+            isActive  && styles['icon-sync-bar-fill--active'],
+            allGood   && styles['icon-sync-bar-fill--complete'],
+            isAborted && styles['icon-sync-bar-fill--error']
+          )}
+          style={{ width: `${isAborted ? 100 : pct}%` }}
+        />
+      </div>
+
+      <div className={styles['icon-sync-count-row']}>
+        <span className={clsx(styles['icon-sync-count-main'], 'typo-label-xs')}>
+          {progress.total === 0
+            ? 'Calculating…'
+            : `${progress.cached.toLocaleString()} / ${progress.total.toLocaleString()} icons`}
+        </span>
+        <span className={clsx(
+          styles['icon-sync-pct'],
+          'typo-label-xs',
+          allGood && styles['icon-sync-pct--ok'],
+          isAborted && styles['icon-sync-pct--err']
+        )}>
+          {isAborted ? 'ERROR' : `${pct}%`}
+        </span>
+      </div>
+
+      <SectionBlock>
+        <StatusRow label="Status"  value={statusLabel} accent={!allGood && (isDone || isAborted)} />
+        <StatusRow label="Backend" value={
+          fetchDiag.backend === 'tauri-http' ? 'Tauri Rust (reqwest, no CORS)' :
+          fetchDiag.backend === 'browser'    ? 'Browser fetch (CORS-restricted)' :
+          fetchDiag.isTauri && !fetchDiag.pluginLoaded ? 'Tauri plugin not loaded' :
+                                                'unknown'
+        } accent={fetchDiag.backend === 'browser' && fetchDiag.isTauri} />
+        {isDone && (
+          <StatusRow label="Cached"  value={progress.cached.toLocaleString()} />
+        )}
+        {isDone && progress.failed > 0 && (
+          <StatusRow label="Failed"  value={progress.failed.toLocaleString()} accent />
+        )}
+        {cacheDiag.lastError && (
+          <StatusRow label="Last error" value={cacheDiag.lastError.slice(0, 80)} accent />
+        )}
+      </SectionBlock>
+
+      {/* Aborted preflight — actionable error */}
+      {isAborted && progress.error && (
+        <p className={clsx(styles['settings-result'], styles['settings-result--err'], 'typo-label-xs')} style={{ whiteSpace: 'pre-wrap' }}>
+          ✗ {progress.error}
+        </p>
+      )}
+
+      {/* Plugin load failure (Tauri but plugin didn't load) */}
+      {fetchDiag.isTauri && !fetchDiag.pluginLoaded && fetchDiag.pluginLoadError && (
+        <p className={clsx(styles['settings-notice'], 'typo-label-xs')}>
+          tauri-plugin-http failed to load: <code>{fetchDiag.pluginLoadError}</code>.
+          Stop and restart <code>npm run tauri dev</code> — Cargo needs to compile the new plugin.
+        </p>
+      )}
+
+      {/* Connection test result */}
+      {test && (
+        <p className={clsx(
+          styles['settings-result'],
+          'typo-label-xs',
+          test.ok ? styles['settings-result--ok'] : styles['settings-result--err']
+        )}>
+          {test.ok ? '✓' : '✗'} Connection test ({test.backend}, {test.durationMs}ms): {test.message}
+        </p>
+      )}
+
+      <p className={clsx(styles['settings-hint'], 'typo-label-xs')}>
+        Icons download once from the WFCD CDN via Tauri's native HTTP client (no CORS).
+        After first download, every icon in the app loads instantly with no internet required.
+      </p>
+
+      <div className={styles['icon-sync-actions']}>
+        <button
+          className={clsx(styles['settings-btn'], styles['settings-btn--ghost'])}
+          onClick={() => void handleTest()}
+          disabled={testing}
+        >
+          <span className={clsx(styles['settings-btn-icon'], testing && styles['settings-btn-icon--spin'])}>⊙</span>
+          <span className="typo-label-xs">{testing ? 'Testing…' : 'Test Connection'}</span>
+        </button>
+
+        <button
+          className={clsx(
+            styles['settings-btn'],
+            (isActive || busy) && styles['settings-btn--loading']
+          )}
+          onClick={handleVerify}
+          disabled={isActive || busy}
+        >
+          <span className={clsx(styles['settings-btn-icon'], isActive && styles['settings-btn-icon--spin'])}>↻</span>
+          <span className="typo-label-xs">
+            {isActive
+              ? (progress.phase === 'preflight' ? 'Testing connection…'
+                : progress.phase === 'checking' ? 'Scanning cache…'
+                : `Downloading… ${progress.cached.toLocaleString()} / ${progress.total.toLocaleString()}`)
+              : 'Verify & Repair Missing Icons'}
+          </span>
+        </button>
+
+        <button
+          className={clsx(styles['settings-btn'], styles['settings-btn--ghost'])}
+          onClick={() => void handleClearRedownload()}
+          disabled={isActive || busy}
+        >
+          <span className={styles['settings-btn-icon']}>⟳</span>
+          <span className="typo-label-xs">Clear & Redownload All</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export function SettingsPage() {
   return (
-    <div className="settings-page">
+    <div className={styles['settings-page']}>
       <PageHero prefix="SYSTEM" title="SETTINGS" subtitle="Data sync status & configuration" />
 
-      <div className="settings-grid">
+      <div className={styles['settings-grid']}>
         <WorldstatePanel />
         <CodexPanel />
       </div>
+
+      <IconCachePanel />
+
+      <EventLogPanel />
 
       <DangerPanel />
     </div>

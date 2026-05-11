@@ -1,24 +1,26 @@
 /**
- * ItemIcon — renders a Warframe item icon from the WFCD CDN.
+ * ItemIcon — renders a Warframe item icon.
  *
  * Usage:
  *   <ItemIcon imageName="ash-f2c6f3ab3f.png" name="Ash" size="md" />
  *   <ItemIcon item={warframeItem} size={48} />
  *   <ItemIcon uniqueName="/Lotus/Powersuits/Ninja/Ninja" name="Ash" />
  *
- * Resolution order (sync, no Dexie):
- *   1. item.imageName   → CDN URL
- *   2. imageName (guard against empty string → placeholder)
- *   3. uniqueName       → itemsAdapter.findByUniqueName → CDN URL
- *   4. /lotus-placeholder.svg
+ * Resolution order:
+ *   1. item.imageName / imageName / uniqueName → CDN URL
+ *   2. iconBlobCache: Cache API hit (instant after first load)
+ *   3. iconBlobCache: CDN fetch + persist to Cache API
+ *   4. /lotus-placeholder.svg on network failure
  *
- * For Dexie-backed pre-resolved iconUrls, use LazyItemIcon with uniqueName.
+ * Icons are fetched once and cached to the Cache API so subsequent renders
+ * (and app restarts) serve from local storage — fully offline after first sync.
  */
 
-import { useState, type CSSProperties } from 'react';
+import { type CSSProperties } from 'react';
 import { cn } from '@/lib/utils';
 import { getIconUrl, getIconUrlByItem } from '@/lib/icons/IconResolver';
 import { findByUniqueName } from '@/adapters/items/itemsAdapter';
+import { useIconBlobUrl } from '@/lib/icons/iconBlobCache';
 import type { WarframeItem } from '@/core/domain/items';
 
 // ─── Size presets (px) ───────────────────────────────────────────────────────
@@ -57,16 +59,15 @@ export type ItemIconProps = ItemIconSource & {
 
 const GOLD_TINT_FILTER = 'sepia(1) saturate(3) hue-rotate(5deg) brightness(1.05)';
 
-// ─── URL resolution (sync) ───────────────────────────────────────────────────
+// ─── CDN URL resolution (sync, from bundled items-map.json) ──────────────────
 
-function resolveSrc(
+function resolveCdnUrl(
   props: Pick<ItemIconProps, 'item' | 'imageName' | 'uniqueName'>,
 ): string {
   if ('item' in props && props.item) {
     return props.item.imageName ? getIconUrlByItem(props.item) : '/lotus-placeholder.svg';
   }
   if ('imageName' in props && props.imageName) {
-    // Guard: empty imageName would produce a broken CDN URL ending in '/'
     return props.imageName.trim() ? getIconUrl(props.imageName) : '/lotus-placeholder.svg';
   }
   if ('uniqueName' in props && props.uniqueName) {
@@ -88,13 +89,16 @@ export function ItemIcon({
   className,
   style: styleProp,
 }: ItemIconProps & { item?: WarframeItem; imageName?: string; uniqueName?: string }) {
-  const [errored, setErrored] = useState(false);
-
   const px = typeof size === 'number' ? size : SIZE_MAP[size as SizePreset] ?? 48;
 
-  const src = errored
-    ? '/lotus-placeholder.svg'
-    : resolveSrc({ item, imageName, uniqueName } as Parameters<typeof resolveSrc>[0]);
+  const cdnUrl = resolveCdnUrl(
+    { item, imageName, uniqueName } as Parameters<typeof resolveCdnUrl>[0],
+  );
+
+  // Resolves: in-memory cache → Cache API → CDN fetch → placeholder
+  const src = useIconBlobUrl(cdnUrl);
+
+  const isPlaceholder = src === '/lotus-placeholder.svg';
 
   return (
     <img
@@ -102,14 +106,12 @@ export function ItemIcon({
       alt={name ?? item?.name ?? 'Warframe item'}
       width={px}
       height={px}
-      loading="lazy"
       decoding="async"
-      onError={() => setErrored(true)}
       className={cn('object-contain shrink-0', className)}
       style={{
         width:  px,
         height: px,
-        filter: tint && !errored ? GOLD_TINT_FILTER : undefined,
+        filter: tint && !isPlaceholder ? GOLD_TINT_FILTER : undefined,
         ...styleProp,
       }}
     />

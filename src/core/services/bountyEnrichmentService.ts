@@ -106,7 +106,13 @@ export function enrichBounty({
   locations,
   cycleNote = null,
 }: EnrichBountyArgs): EnrichedBounty {
-  const levelRange    = parseLevelRange(job.type);
+  // Prefer enemyLevels — the API sends job names like "Proof of Life" in
+  // job.type, not level ranges, so parseLevelRange(job.type) always returns
+  // null. enemyLevels is the authoritative [lo, hi] pair from the worldstate.
+  const levelRange: [number, number] | null =
+    job.enemyLevels[0] !== 0 || job.enemyLevels[1] !== 0
+      ? job.enemyLevels
+      : parseLevelRange(job.type);
   const isSteelPath   = /steel/i.test(job.type);
   const standingTotal = job.standingStages.reduce((a, b) => a + b, 0);
 
