@@ -21,6 +21,124 @@
   src: url("/fonts/inter-vf.woff2") format("woff2");
 }
 
+/* ================================================================
+   New Fonts for Mod Card Styling — Added Fonts
+   ================================================================ */
+
+@font-face {
+  font-family: "Aileron";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://cdn.jsdelivr.net/npm/aileron@1.93/Aileron-Regular.woff2") format("woff2"),
+       url("https://cdn.jsdelivr.net/npm/aileron@1.93/Aileron-Regular.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Aileron";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://cdn.jsdelivr.net/npm/aileron@1.93/Aileron-Bold.woff2") format("woff2"),
+       url("https://cdn.jsdelivr.net/npm/aileron@1.93/Aileron-Bold.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/roboto/v32/KFOkCnqEu92Fr1MmEU9fBBc-.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/roboto/v32/KFOmCnqEu92Fr1Mu4mxP.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/roboto/v32/KFOlCnqEu92Fr1MmEU9fBBc-.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/roboto/v32/KFOlCnqEu92Fr1MmWUlfBBc-.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/notosans/v21/o-0IIpQlx3QUlC4CrDUnVVVQ.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/notosans/v21/o-0IIpQlx3QUlC4MjD0nVVVQ.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/notosans/v21/o-0IIpQlx3QUlC4CqDUnVVVQ.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Noto Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/notosans/v21/o-0IIpQlx3QUlC4CpDUnVVVQ.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/exo2/v19/7cHpv4kjgoGqM7E3yNLu5Og.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/exo2/v19/7cHmv4kjgoGqM7E3yNLu6eg.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/exo2/v19/7cHpv4kjgoGqM7E3yNI25Og.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Exo";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/exo2/v19/7cHpv4kjgoGqM7E3yNIo5Og.woff2") format("woff2");
+}
+
 /* @theme block DELETED — using :root dark teal tokens only (see below) */
 
 /* ================================================================
@@ -34,6 +152,8 @@
 :root {
   --sidebar-w: 72px;
   --header-h:  64px;
+  --card-size-scale: 1.25;  /* Card dimensions only: 1 = 170px width, 1.2 = 204px, 1.5 = 255px, etc. */
+  --card-text-scale: 1;  /* Text sizes only: 1 = default, 1.2 = 20% larger, etc. */
 
   /* ================================================================
      Design System Tokens — Dark Teal Theme
@@ -81,6 +201,35 @@
   /* Typography — font families */
   --font-serif: "Noto Serif", Georgia, serif;
   --font-sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* ════════════════════════════════════════════════════════════════
+     MOD CARD FONT CONFIGURATION — Adjust all font settings here
+     ════════════════════════════════════════════════════════════════ */
+
+  /* Mod Card Display (Headline/Name) */
+  --font-modcard-display:       "Roboto";
+  --font-modcard-display-size:  0.78rem;
+  --font-modcard-display-weight: 100;
+  --font-modcard-display-letter-spacing: 0.01em;
+
+  /* Mod Card Body (Stats, Drain, Labels, Category) */
+  --font-modcard-body:          "Roboto";
+  --font-modcard-body-size:     0.6rem;
+  --font-modcard-body-weight:   100;
+  --font-modcard-body-letter-spacing: 0.10em;
+  --shadow-modcard-body: 1px 0 2px rgba(0,0,0,0.95), 0 1px 2px rgba(0,0,0,0.95);
+
+  /* Mod Card Display Text Shadow */
+  --shadow-modcard-display: 1px 0 2px rgba(0,0,0,0.95), 0 1px 4px rgba(0,0,0,0.95);
+
+  /* ════════════════════════════════════════════════════════════════
+     AVAILABLE FONTS — Choose from these for display/body above
+     ════════════════════════════════════════════════════════════════
+     "Aileron"    — Clean geometric sans, Warframe-authentic
+     "Roboto"     — Precise & technical
+     "Noto Sans"  — Professional & neutral
+     "Exo"        — Futuristic geometric with personality
+     ════════════════════════════════════════════════════════════════ */
 
   /* Typography — size scale */
   --font-size-3xl: 3.2rem;
@@ -3598,4 +3747,389 @@ a:focus-visible {
   font-size: 0.75rem;
   color: rgba(168, 165, 160, 0.52);
   line-height: 1.65;
+}
+
+/* ── Root error boundary fallback ─────────────────────────────────────────── */
+
+.error-boundary-fallback {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  min-height:      100vh;
+  padding:         var(--space-xl);
+  background:      var(--color-bg-primary);
+}
+
+.error-boundary-card {
+  max-width:       560px;
+  background:      var(--color-bg-secondary);
+  border:          1px solid rgba(248, 113, 113, 0.22);
+  border-left:     3px solid var(--color-status-error, #f87171);
+  padding:         var(--space-xl);
+  display:         flex;
+  flex-direction:  column;
+  gap:             var(--space-md);
+}
+
+.error-boundary-title {
+  font-family:     var(--font-serif);
+  font-size:       1.25rem;
+  color:           var(--color-status-error, #f87171);
+  letter-spacing:  0.02em;
+}
+
+.error-boundary-message {
+  font-family:     ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size:       0.78rem;
+  color:           var(--color-text-primary);
+  background:      rgba(0, 0, 0, 0.30);
+  padding:         var(--space-sm) var(--space-md);
+  border-radius:   2px;
+  word-break:      break-word;
+}
+
+.error-boundary-hint {
+  font-size:       0.78rem;
+  line-height:     1.6;
+  color:           var(--color-text-muted);
+}
+
+.error-boundary-actions {
+  display:         flex;
+  gap:             var(--space-sm);
+}
+
+.error-boundary-btn {
+  padding:         var(--space-sm) var(--space-lg);
+  background:      rgba(227, 195, 114, 0.85);
+  border:          none;
+  color:           #0a1117;
+  cursor:          pointer;
+  font-weight:     700;
+  letter-spacing:  0.06em;
+  font-size:       0.72rem;
+  text-transform:  uppercase;
+  transition:      background 0.15s ease-out;
+}
+
+.error-boundary-btn:hover {
+  background: var(--color-accent-gold);
+}
+
+.error-boundary-btn--ghost {
+  background:      transparent;
+  border:          1px solid var(--color-border-default);
+  color:           var(--color-text-muted);
+}
+
+.error-boundary-btn--ghost:hover {
+  background:      transparent;
+  border-color:    rgba(255, 255, 255, 0.18);
+  color:           var(--color-text-primary);
+}
+
+/* ================================================================
+   Scholar's Arcanum — Mod Codex Browse + Detail Page
+   ================================================================ */
+
+/* ── Root container ─────────────────────────────────────────────── */
+
+.arcanum-root {
+  display:        flex;
+  flex-direction: column;
+  gap:            0;
+}
+
+/* ── Search bar ─────────────────────────────────────────────────── */
+
+.arcanum-search-row {
+  margin-bottom: var(--space-md);
+}
+
+.arcanum-search {
+  width:            100%;
+  background:       var(--color-bg-secondary);
+  border:           1px solid var(--color-border-default);
+  border-radius:    6px;
+  color:            var(--color-text-primary);
+  font-family:      var(--font-sans);
+  font-size:        0.875rem;
+  padding:          8px 14px;
+  outline:          none;
+  transition:       border-color 0.15s ease-out;
+}
+
+.arcanum-search::placeholder { color: var(--color-text-muted); }
+.arcanum-search:focus         { border-color: rgba(0, 212, 255, 0.45); }
+
+/* ── Filter chips ───────────────────────────────────────────────── */
+
+.arcanum-filter-row {
+  display:     flex;
+  flex-wrap:   wrap;
+  gap:         var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.arcanum-filter-row--compat {
+  max-height:     44px;
+  overflow:       hidden;
+  flex-wrap:      nowrap;
+  overflow-x:     auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+  margin-bottom:  var(--space-md);
+}
+
+.arcanum-filter-row--compat::-webkit-scrollbar { display: none; }
+
+.arcanum-chip {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            var(--space-xs);
+  padding:        4px 10px;
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  20px;
+  cursor:         pointer;
+  color:          var(--color-text-muted);
+  transition:     border-color 0.15s ease-out, color 0.15s ease-out, background 0.15s ease-out;
+  white-space:    nowrap;
+  flex-shrink:    0;
+}
+
+.arcanum-chip:hover {
+  border-color: rgba(0, 212, 255, 0.3);
+  color:        var(--color-text-primary);
+}
+
+.arcanum-chip--active {
+  background:   rgba(0, 212, 255, 0.08);
+  border-color: rgba(0, 212, 255, 0.5);
+  color:        var(--color-accent-teal);
+}
+
+.arcanum-chip-count {
+  display:       inline-flex;
+  align-items:   center;
+  justify-content: center;
+  background:    rgba(0, 212, 255, 0.15);
+  border-radius: 10px;
+  font-size:     0.65rem;
+  font-weight:   700;
+  padding:       1px 5px;
+  color:         var(--color-accent-teal);
+  min-width:     16px;
+}
+
+/* ── Browse grid ────────────────────────────────────────────────── */
+
+.arcanum-browse-grid {
+  display:               grid;
+  grid-template-columns: repeat(auto-fill, calc(170px * var(--card-size-scale)));
+  gap:                   30px 20px;
+  justify-content:       center;
+  justify-items:         center;
+  padding:               16px 0;
+}
+
+.arcanum-load-more {
+  text-align:  center;
+  padding:     var(--space-xl) 0 var(--space-2xl);
+  color:       var(--color-text-muted);
+}
+
+.arcanum-empty {
+  color:       var(--color-text-muted);
+  padding:     var(--space-2xl) 0;
+  text-align:  center;
+}
+
+/* ================================================================
+   Warframe Mod Card styles have moved to a CSS Module:
+     src/features/scholars-arcanum/components/ModCard.module.css
+   Edit there for any mod card visual changes.
+   ================================================================ */
+
+/* ================================================================
+   Mod Detail Modal styles have moved to a CSS Module:
+     src/features/scholars-arcanum/components/ModDetailModal.module.css
+   Edit there for any modal visual changes.
+   ================================================================ */
+
+/* ================================================================
+   Mod Rank Grid — used in ModPage for all-ranks view
+   ================================================================ */
+
+.mod-rank-grid-wrap {
+  flex:      1;
+  min-width: 0;
+  padding:   var(--space-xl) 0;
+  overflow:  visible;
+}
+
+.mod-rank-grid {
+  display:               grid;
+  grid-template-columns: repeat(auto-fill, 138px);
+  gap:                   var(--space-xl) var(--space-lg);
+  justify-content:       start;
+  overflow:              visible;
+}
+
+/* ================================================================
+   Mod Page — detail layout (rank grid + sidebar)
+   ================================================================ */
+
+.mod-page {
+  display:        flex;
+  flex-direction: column;
+  gap:            0;
+}
+
+/* Breadcrumb */
+.mod-breadcrumb {
+  display:       flex;
+  align-items:   center;
+  gap:           var(--space-sm);
+  margin-bottom: var(--space-md);
+  color:         var(--color-text-muted);
+}
+
+.mod-breadcrumb-link {
+  background:     none;
+  border:         none;
+  padding:        0;
+  cursor:         pointer;
+  color:          var(--color-accent-gold);
+  font-family:    var(--font-sans);
+  font-size:      0.75rem;
+  font-weight:    600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition:     color 0.12s ease-out;
+}
+
+.mod-breadcrumb-link:hover { color: #fff; }
+
+.mod-breadcrumb-sep {
+  color:     rgba(168,165,160,0.4);
+  font-size: 0.75rem;
+}
+
+.mod-breadcrumb-current {
+  color:          var(--color-text-primary);
+  font-family:    var(--font-sans);
+  font-size:      0.75rem;
+  font-weight:    600;
+  letter-spacing: 0.06em;
+}
+
+/* Page hero */
+.mod-page-hero {
+  margin-bottom: var(--space-sm);
+}
+
+.mod-page-title {
+  font-family:    var(--font-serif);
+  font-size:      var(--font-size-2xl);
+  font-weight:    700;
+  color:          var(--color-accent-gold);
+  letter-spacing: 0.04em;
+  line-height:    1.1;
+  margin:         0;
+}
+
+.mod-page-subtitle {
+  font-family:    var(--font-sans);
+  font-size:      0.75rem;
+  color:          var(--color-text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin:         var(--space-xs) 0 0;
+}
+
+/* Layout: rank grid + sidebar */
+.mod-page-layout {
+  display:               grid;
+  grid-template-columns: 1fr 200px;
+  gap:                   var(--space-2xl);
+  align-items:           flex-start;
+  overflow:              visible;
+}
+
+/* ================================================================
+   Sidebar feature card
+   ================================================================ */
+
+.mod-sidebar-card {
+  width:         200px;
+  flex-shrink:   0;
+  border-radius: 8px;
+  overflow:      hidden;
+  border:        1px solid var(--color-border-default);
+  background:    var(--color-bg-secondary);
+  transition:    border-color 0.15s ease-out, box-shadow 0.15s ease-out;
+  align-self:    flex-start;
+  position:      sticky;
+  top:           var(--space-xl);
+}
+
+.mod-sidebar-card:hover {
+  border-color: rgba(227,195,114,0.4);
+  box-shadow:   0 0 14px rgba(227,195,114,0.12);
+}
+
+.mod-sidebar-art {
+  position:        relative;
+  width:           100%;
+  height:          180px;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  background:      rgba(0,0,0,0.3);
+  overflow:        hidden;
+}
+
+.mod-sidebar-icon {
+  width:      120px;
+  height:     120px;
+  object-fit: contain;
+  filter:     drop-shadow(0 0 20px rgba(227,195,114,0.35));
+}
+
+.mod-sidebar-overlay {
+  position:       absolute;
+  inset:          0;
+  background:     linear-gradient(to bottom, transparent 40%, rgba(10,17,23,0.7) 100%);
+  pointer-events: none;
+}
+
+.mod-sidebar-footer {
+  padding:    var(--space-sm) var(--space-md);
+  background: rgba(227,195,114,0.06);
+  border-top: 1px solid rgba(227,195,114,0.12);
+}
+
+.mod-sidebar-label {
+  font-family:    var(--font-serif);
+  font-size:      0.8rem;
+  font-weight:    600;
+  color:          rgba(229,226,225,0.9);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ================================================================
+   Related mods stub
+   ================================================================ */
+
+.mod-related-section {
+  margin-top: var(--space-3xl);
+}
+
+.mod-related-stub {
+  color:      var(--color-text-muted);
+  padding:    var(--space-xl) 0;
+  text-align: center;
+  font-style: italic;
 }

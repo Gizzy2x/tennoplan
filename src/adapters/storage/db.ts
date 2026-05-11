@@ -5,6 +5,7 @@ import type { ItemState } from "@/core/domain/itemState";
 import type { DropLocation } from "@/core/domain/drops";
 import type { StoredItem } from "@/core/domain/items";
 import type { DataSyncState } from "@/core/domain/sync";
+import type { EventLogEntry } from "@/core/domain/eventLog";
 import type {
   ParsedWorldstate,
   SyncMetadata,
@@ -117,6 +118,12 @@ export class TennoplanDB extends Dexie {
    * cleanup will retire it.
    */
   tennoplanItems!: Table<TennoplanItem, string>;
+  /**
+   * Cross-cutting event log — every error/warn/info from the entire app
+   * flows here. Bounded buffer (~500 entries). Surfaced in Settings → Event Log.
+   * Indexes: timestamp (recent-first ordering), category + level (filtering).
+   */
+  eventLog!: Table<EventLogEntry, number>;
 
   constructor() {
     super("tennoplan");
@@ -272,6 +279,35 @@ export class TennoplanDB extends Dexie {
       worldstate: "key",
       syncMetadata: "id",
       tennoplanItems: "uniqueName, category, masteryRank, vaulted",
+    });
+
+    // Version 8 — Cross-cutting event log
+    //
+    // eventLog:
+    //   Primary key = ++id (auto-increment).
+    //   Bounded rolling buffer (~500 entries) — pruned by the logger after writes.
+    //   Indexes:
+    //     timestamp        — sort recent-first in the Settings panel
+    //     category, level  — single-axis filtering
+    //     [category+level] — combined filter (e.g. "icon errors only")
+    //
+    // Additive migration — all prior tables carry forward unchanged.
+    this.version(8).stores({
+      settings: "key",
+      cache: "key, expiresAt",
+      userMarks: "++id, type, referenceId, [type+referenceId], updatedAt",
+      assetMeta: "uniqueName, cacheKey, status, priority, lastAccessedAt",
+      syncErrors: "++id, occurredAt, uniqueName",
+      progression: "++id, itemId, category, status, lastUpdated",
+      itemStates: "uniqueName, markedAt",
+      dropLocations:
+        "locationKey, type, bountyLocation, relicTier, fetchedAt, [type+bountyLocation], [bountyLocation+bountyLevel]",
+      items: "uniqueName, category, lastUpdated",
+      dataSyncState: "id, lastUpdated",
+      worldstate: "key",
+      syncMetadata: "id",
+      tennoplanItems: "uniqueName, category, masteryRank, vaulted",
+      eventLog: "++id, timestamp, category, level, [category+level]",
     });
   }
 }
