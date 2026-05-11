@@ -13,7 +13,7 @@
  *   • Item Codex — server cron every 6h; manual rate-limited to 6h via localStorage
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import clsx from 'clsx';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { PageHero }       from '@/components/ui/PageHero';
@@ -287,7 +287,7 @@ function CodexPanel() {
       <PanelBody>
         <DataRow
           label="Items cached"
-          value={status === null ? '…' : isPopulated ? `${itemCount.toLocaleString()} items` : 'Empty — pending cron'}
+          value={status === null ? '…' : isPopulated ? `${itemCount.toLocaleString()} items` : 'Empty — waiting for first sync'}
           accent={!isPopulated && status !== null}
         />
         <DataRow
@@ -322,8 +322,9 @@ function CodexPanel() {
 
         {!isPopulated && status !== null && (
           <p className={styles.notice}>
-            Worker codex cron runs every 6h. First population happens at the next
-            0/6/12/18 UTC tick. You can force it now — downloads ~3MB from KV.
+            The codex syncs from our server every 6 hours. The next automatic
+            sync runs at 00:00, 06:00, 12:00, or 18:00 UTC — whichever comes
+            first. You can also trigger a sync manually below (~3 MB download).
           </p>
         )}
 
@@ -349,8 +350,8 @@ function CodexPanel() {
         </div>
 
         <span className={styles.hint}>
-          ~3MB pull from Cloudflare KV. Locked for 6h after each refresh to match
-          the server cron cadence.
+          Downloads about 3 MB. Locked for 6 hours after each refresh — the
+          server only produces new data on that schedule.
         </span>
       </PanelBody>
     </Panel>
@@ -417,14 +418,17 @@ function IconCachePanel() {
   if      (progress.phase === 'preflight')                    statusLabel = 'Testing connection…';
   else if (progress.phase === 'checking')                     statusLabel = 'Scanning cache…';
   else if (progress.phase === 'downloading')                  statusLabel = 'Downloading…';
-  else if (isDone && allGood)                                 statusLabel = 'All icons cached ✓';
-  else if (isDone && progress.failed > 0)                     statusLabel = `${progress.failed.toLocaleString()} failed`;
-  else if (isDone && missing > 0)                             statusLabel = `${missing.toLocaleString()} missing`;
-  else if (isAborted)                                         statusLabel = 'Aborted — see error below';
+  else if (isDone && allGood)                                 statusLabel = 'All icons cached';
+  else if (isDone && progress.failed > 0)                     statusLabel = `${progress.failed.toLocaleString()} failed to download`;
+  else if (isDone && missing > 0)                             statusLabel = `${missing.toLocaleString()} icons missing`;
+  else if (isAborted)                                         statusLabel = 'Sync stopped — details below';
   else if (progress.phase === 'idle' && progress.total === 0) statusLabel = 'Waiting for startup sync…';
 
-  const fetchDiag = getFetchDiagnostics();
-  const cacheDiag = getCacheDiagnostics();
+  // Diagnostic snapshots only need to recompute when the sync phase
+  // changes — they're plain object reads but recomputing on every
+  // progress tick (potentially 100s/sec) is wasteful.
+  const fetchDiag = useMemo(() => getFetchDiagnostics(), [progress.phase, progress.backend]);
+  const cacheDiag = useMemo(() => getCacheDiagnostics(), [progress.phase, progress.cached, progress.failed]);
 
   const backendBadge =
     progress.backend === 'tauri-http' ? 'Tauri HTTP · Native' :
@@ -452,7 +456,7 @@ function IconCachePanel() {
               allGood   && styles.progressFillComplete,
               isAborted && styles.progressFillError,
             )}
-            style={{ width: `${isAborted ? 100 : pct}%` }}
+            style={{ transform: `scaleX(${(isAborted ? 100 : pct) / 100})` }}
           />
         </div>
         <div className={styles.progressMeta}>
@@ -495,8 +499,9 @@ function IconCachePanel() {
 
         {fetchDiag.isTauri && !fetchDiag.pluginLoaded && fetchDiag.pluginLoadError && (
           <p className={styles.notice}>
-            tauri-plugin-http failed to load: <code>{fetchDiag.pluginLoadError}</code>.
-            Restart <code>npm run tauri dev</code> — Cargo needs to compile the plugin.
+            The native HTTP plugin didn't load: <code>{fetchDiag.pluginLoadError}</code>.
+            Close and reopen the app to let it rebuild. If you're running from
+            source, restart <code>npm run tauri dev</code>.
           </p>
         )}
 
@@ -529,7 +534,7 @@ function IconCachePanel() {
                 ? (progress.phase === 'preflight' ? 'Testing connection…'
                   : progress.phase === 'checking' ? 'Scanning cache…'
                   : `Downloading ${progress.cached.toLocaleString()} / ${progress.total.toLocaleString()}`)
-                : 'Verify & Repair'}
+                : 'Verify & repair icons'}
             </span>
           </button>
 
@@ -545,8 +550,8 @@ function IconCachePanel() {
         </div>
 
         <span className={styles.hint}>
-          Icons download once via Tauri's native HTTP client (no CORS). After
-          first download, every icon loads instantly with no internet required.
+          Icons download once, then load instantly from your machine. No
+          internet needed after the first sync.
         </span>
       </PanelBody>
     </Panel>
@@ -570,7 +575,7 @@ function DangerPanel() {
         db.cache.clear(),
       ]);
       localStorage.removeItem(LS_CODEX_KEY);
-      setResult('All local data cleared. Reloading…');
+      setResult('Local data cleared. Reloading the app…');
       setStep('idle');
       setTimeout(() => window.location.reload(), 800);
     }
@@ -584,8 +589,9 @@ function DangerPanel() {
       </PanelHeader>
       <PanelBody>
         <p className={styles.dangerDesc}>
-          Clears all locally cached data — worldstate snapshot, item codex, sync
-          metadata, and rate-limit state. Both services will re-fetch on next load.
+          Wipes every local cache — worldstate, item codex, sync history, and
+          refresh cooldowns. The app will re-download everything on next launch.
+          Use this if data looks wrong and a refresh hasn't helped.
         </p>
 
         {result && (
@@ -600,7 +606,7 @@ function DangerPanel() {
                 onClick={() => void handleClear()}
                 className={clsx(styles.btn, styles.btnDangerConfirm)}
               >
-                <span>Confirm — clear everything</span>
+                <span>Yes, clear everything</span>
               </button>
               <button
                 type="button"

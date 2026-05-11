@@ -15,6 +15,25 @@
   padding:   0 0 var(--space-4xl);
 }
 
+/* Subtle panel-entrance stagger — feels like the dashboard "powers on"
+   when you arrive. Five staggered sections; the PageHero is untouched. */
+.page :global(.panel),
+.page :global(.section-divider) {
+  animation: panel-rise 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.page :global(.section-divider):nth-of-type(1) { animation-delay: 0.05s; }
+.page :global(.panel):nth-of-type(1)           { animation-delay: 0.10s; }
+.page :global(.panel):nth-of-type(2)           { animation-delay: 0.14s; }
+.page :global(.section-divider):nth-of-type(2) { animation-delay: 0.18s; }
+.page :global(.section-divider):nth-of-type(3) { animation-delay: 0.22s; }
+.page :global(.section-divider):nth-of-type(4) { animation-delay: 0.26s; }
+
+@keyframes panel-rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
 .grid2 {
   display:               grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -35,12 +54,33 @@
   border:         1px solid rgba(255, 255, 255, 0.06);
   border-radius:  2px;
   background:     rgba(255, 255, 255, 0.02);
+  transition:     color 0.2s ease-out, border-color 0.2s ease-out,
+                  background 0.2s ease-out;
+}
+
+/* New-event pulse — applied for ~600ms when the event count increases.
+   Quiet throb in gold; reverts to default once the animation completes. */
+.headerBadgePulse {
+  animation: badge-pulse 0.7s ease-out;
+}
+
+@keyframes badge-pulse {
+  0% {
+    color:      var(--color-accent-gold);
+    border-color: var(--color-accent-gold-50);
+    background: var(--color-accent-gold-15);
+  }
+  100% {
+    color:      rgba(168, 165, 160, 0.50);
+    border-color: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+  }
 }
 
 .headerBadgeAccent {
-  color:        rgba(227, 195, 114, 0.65);
-  border-color: rgba(227, 195, 114, 0.20);
-  background:   rgba(227, 195, 114, 0.04);
+  color:        var(--color-accent-gold-70);
+  border-color: var(--color-accent-gold-20);
+  background:   var(--color-accent-gold-10);
 }
 
 .headerBadgeDanger {
@@ -141,34 +181,45 @@
 /* ── Buttons ──────────────────────────────────────────────────────── */
 
 .btn {
-  display:        inline-flex;
-  align-items:    center;
-  gap:            var(--space-sm);
-  padding:        6px var(--space-md);
-  font-family:    var(--font-sans);
-  font-size:      0.7rem;
-  font-weight:    700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background:     rgba(227, 195, 114, 0.85);
-  border:         1px solid rgba(227, 195, 114, 0.85);
-  color:          var(--color-bg-primary);
-  cursor:         pointer;
-  border-radius:  2px;
-  transition:     background 0.15s ease-out, border-color 0.15s ease-out,
-                  opacity 0.15s ease-out, color 0.15s ease-out;
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             var(--space-sm);
+  min-height:      36px;
+  padding:         var(--space-sm) var(--space-lg);
+  font-family:     var(--font-sans);
+  font-size:       0.7rem;
+  font-weight:     700;
+  letter-spacing:  0.08em;
+  text-transform:  uppercase;
+  background:      rgba(227, 195, 114, 0.85);
+  border:          1px solid rgba(227, 195, 114, 0.85);
+  color:           var(--color-bg-primary);
+  cursor:          pointer;
+  border-radius:   2px;
+  transition:      background 0.15s ease-out, border-color 0.15s ease-out,
+                   opacity 0.15s ease-out, color 0.15s ease-out,
+                   transform 0.12s cubic-bezier(0.2, 0.7, 0.2, 1),
+                   box-shadow 0.15s ease-out;
 }
 
 .btn:hover:not(:disabled) {
   background:   var(--color-accent-gold);
   border-color: var(--color-accent-gold);
+  transform:    translateY(-1px);
+  box-shadow:   0 4px 12px -4px rgba(227, 195, 114, 0.35);
+}
+
+.btn:active:not(:disabled) {
+  transform:  translateY(1px);
+  box-shadow: none;
 }
 
 .btn:disabled,
 .btnCooldown {
-  background:   rgba(227, 195, 114, 0.18);
-  border-color: rgba(227, 195, 114, 0.22);
-  color:        rgba(227, 195, 114, 0.50);
+  background:   var(--color-accent-gold-15);
+  border-color: var(--color-accent-gold-20);
+  color:        var(--color-accent-gold-50);
   cursor:       not-allowed;
 }
 
@@ -185,7 +236,7 @@
 
 .btnGhost:hover:not(:disabled) {
   background:   transparent;
-  border-color: rgba(227, 195, 114, 0.40);
+  border-color: var(--color-accent-gold-40);
   color:        var(--color-accent-gold);
 }
 
@@ -236,11 +287,15 @@
 }
 
 .progressFill {
-  height:        100%;
-  background:    var(--color-accent-teal);
-  border-radius: 2px;
-  transition:    width 0.3s ease-out;
-  opacity:       0.75;
+  width:           100%;
+  height:          100%;
+  background:      var(--color-accent-teal);
+  border-radius:   2px;
+  transform-origin: left center;
+  transform:       scaleX(0);
+  transition:      transform 0.3s ease-out;
+  opacity:         0.75;
+  will-change:     transform;
 }
 
 .progressFillActive   { opacity: 1;    animation: pulse 1.8s ease-in-out infinite; }
@@ -289,7 +344,8 @@
   display:        inline-flex;
   align-items:    center;
   gap:            var(--space-xs);
-  padding:        3px var(--space-sm);
+  min-height:     28px;
+  padding:        var(--space-xs) var(--space-md);
   font-family:    var(--font-sans);
   font-size:      0.65rem;
   font-weight:    600;
@@ -309,17 +365,21 @@
   color:        rgba(229, 226, 225, 0.85);
 }
 
+.chip:active {
+  transform: translateY(1px);
+}
+
 .chipActive {
-  background:   rgba(227, 195, 114, 0.12);
-  border-color: rgba(227, 195, 114, 0.40);
+  background:   var(--color-accent-gold-15);
+  border-color: var(--color-accent-gold-40);
   color:        var(--color-accent-gold);
 }
 
 .chipCount {
   font-size:            0.6rem;
-  color:                rgba(168, 165, 160, 0.55);
-  background:           rgba(0, 0, 0, 0.30);
-  padding:              0 5px;
+  color:                rgba(229, 226, 225, 0.82);
+  background:           rgba(0, 0, 0, 0.45);
+  padding:              0 6px;
   border-radius:        8px;
   font-variant-numeric: tabular-nums;
 }
@@ -360,6 +420,10 @@
   line-height:           1.4;
   border-bottom:         1px solid rgba(255, 255, 255, 0.025);
   transition:            background 0.10s ease-out;
+  /* Skip rendering off-screen rows entirely until the user scrolls them
+     into view. ~28px contain-intrinsic-size prevents scrollbar jank. */
+  content-visibility:    auto;
+  contain-intrinsic-size: auto 28px;
 }
 
 .eventRow:last-child { border-bottom: none; }
@@ -438,8 +502,8 @@
 .eventBanner {
   margin-top:    var(--space-md);
   padding:       var(--space-md) var(--space-lg);
-  background:    rgba(227, 195, 114, 0.05);
-  border:        1px solid rgba(227, 195, 114, 0.20);
+  background:    var(--color-accent-gold-10);
+  border:        1px solid var(--color-accent-gold-20);
   border-radius: 2px;
   color:         rgba(229, 226, 225, 0.90);
   line-height:   1.55;
@@ -487,4 +551,37 @@
   font-size:   0.74rem;
   line-height: 1.55;
   color:       rgba(229, 226, 225, 0.75);
+}
+
+/* ── Respect user motion preferences ──────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .progressFillActive,
+  .btnIconSpin,
+  .progressLine,
+  .result,
+  .headerBadgePulse {
+    animation: none !important;
+  }
+
+  .page :global(.panel),
+  .page :global(.section-divider) {
+    animation: none !important;
+    opacity: 1;
+  }
+
+  .btn,
+  .chip,
+  .eventRow,
+  .progressFill,
+  .headerBadge {
+    transition: none !important;
+  }
+
+  .btn:hover:not(:disabled),
+  .btn:active:not(:disabled),
+  .chip:active {
+    transform: none !important;
+    box-shadow: none !important;
+  }
 }
