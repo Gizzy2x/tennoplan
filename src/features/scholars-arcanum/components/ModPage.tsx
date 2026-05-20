@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { ModCard } from './ModCard';
+import { ModCardV3 } from './ModCardV3';
 import type { ModEntry } from '@/lib/mods/modsAdapter';
 import { useIconBlobUrl } from '@/lib/icons/iconBlobCache';
 import { getIconUrl } from '@/lib/icons/IconResolver';
@@ -85,7 +85,7 @@ export function ModPage({ mod, onBack }: ModPageProps) {
         <div className="mod-rank-grid-wrap">
           <div className="mod-rank-grid">
             {ranks.map((r) => (
-              <ModCard key={r} mod={mod} rank={r} size="grid" />
+              <ModCardV3 key={r} mod={mod} rank={r} size="grid" />
             ))}
           </div>
         </div>
