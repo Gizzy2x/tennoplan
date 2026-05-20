@@ -1,0 +1,967 @@
+/* ════════════════════════════════════════════════════════════════════════
+   ModCardV3 — layered card
+   Container: bg's 242×338 ratio. Pieces edge/corner-anchored, no translateX.
+
+   Structure:
+     1. Knobs            — every tunable variable, declared once on .card
+     2. Card shell       — sizing, grid, hover, focus
+     3. Pieces           — L0…L8, each consumes knobs above
+     4. Size variants    — .size-grid / .size-browse / .size-detail
+     5. State variants   — .state-collapsed
+     6. Tier overrides   — Amalgam · Galvanized · Peculiar
+   ════════════════════════════════════════════════════════════════════════ */
+
+
+/* ═════ 1 · KNOBS ════════════════════════════════════════════════════════
+   Baseline defaults. Override any in a .tier-* block. */
+
+.card {
+  /* Size — change --card-w, everything scales */
+  --card-w:          170px;
+  --card-text-scale: calc(var(--card-w) / 170px);
+
+  /* Tier (set by inline style from JS) */
+  --tier-text-color: #fdebbd;
+  --tier-glow:       rgba(210, 175, 80, 0.55);
+
+  /* L1.5 · Art glow / corner dodge / edge shadow — UNIVERSAL knobs.
+     ----------------------------------------------------------------------
+     Everything below scales with --card-w (no hardcoded px) and is fully
+     toggleable via the *-blend-mode knobs (set to `normal` to disable that
+     layer's blend, or to `none` via the *-opacity:0 knob to kill it outright).
+
+     Per-tier color overrides live in section 6. The fallback for every
+     color knob is --tier-glow (single inline color from JS) so a tier with
+     no explicit override still renders a coherent glow. */
+
+  /* — Rarity glow (radial, behind icon) —
+     Three knobs control the halo's shape:
+       radius — UNITLESS multiplier of --card-w (no % or px, breaks calc)
+                  0.53 → circle radius = card-w * 0.53
+       inner  — % of radius kept FULLY TRANSPARENT (clear zone around icon)
+       outer  — % of radius where color reaches FULL strength
+                  Keep outer ≤ 100%, else the color never fully appears.
+     Color ramps linearly from transparent at `inner` to full at `outer`. */
+  --v3-art-glow-color:      var(--tier-glow);
+  --v3-art-glow-radius:     0.9;
+  --v3-art-glow-inner:      31%;
+  --v3-art-glow-outer:      61%;
+  --v3-art-glow-opacity:    62%;
+  --v3-art-glow-blend-mode: screen;     /* screen · plus-lighter · normal · overlay · soft-light · lighten */
+
+  /* — Corner dodge lights (TL/TR/BL/BR warm flares) — */
+  --v3-art-corners-color:      var(--tier-glow);
+  --v3-art-corners-top-size:   22%;   /* TL + TR spread (% of art-wrap) */
+  --v3-art-corners-btm-size:   19%;   /* BL + BR spread (% of art-wrap) */
+  --v3-art-corners-opacity:    0.9;
+  --v3-art-corners-blend-mode: color-dodge; /* color-dodge · screen · plus-lighter · normal · overlay */
+
+  /* — Edge shadow (L/T/R darkening on the art) — */
+  --v3-art-shadow-color:      rgba(0, 0, 0, 0.88);
+  --v3-art-shadow-size:       3%;    /* reach inward                              */
+  --v3-art-shadow-feather:    0%;    /* solid hold before fade (≤ size)           */
+  --v3-art-shadow-opacity:    70%;
+  --v3-art-shadow-blend-mode: normal;  /* normal · multiply · darken                */
+
+  /* — Art drop-shadow (filter, sits behind the icon image itself) — */
+  --v3-art-dropshadow-color:  var(--tier-glow);
+  --v3-art-dropshadow-blur:   calc(var(--card-w) * 0.06);  /* scales with card */
+  --v3-art-dropshadow-opacity: 1;     /* 0 = disabled (color → transparent)        */
+
+  /* L2 · Side lights */
+  --sidelight-top:       9%;
+  --sidelight-height:    85%;
+  --sidelight-opacity:   0.9;
+  --sidelight-max-width: none;
+  --sidelight-left:      -2%;   /* was -7px → 7/170 ≈ 4.1% (scales with card) */
+  --sidelight-right:     -2%;
+
+  /* L3 · Top-right backer (drain + polarity) — UNIVERSAL across every tier.
+     ----------------------------------------------------------------------
+     Every value below is a single source of truth for ALL backers. There are
+     no per-tier backer overrides; tier color comes from --tier-text-color.
+
+     Anatomy:
+        ┌───────────────────────────┐
+        │  ← left safety gap  ┌───┐ │
+        │  [drain] gap [pol]  │ R │ │  ← right safety gap (--backer-right)
+        │                     └───┘ │
+        └───────────────────────────┘
+            ↑                    ↑
+        left edge of            right edge of backer
+        backer (moves           (PINNED — never moves)
+        leftward when
+        2-digit drain)
+
+     Position — anchors the backer's right edge to the card; left edge is
+     determined by width below. */
+  --backer-top:                    3%;
+  --backer-right:                  0%;
+
+  /* Width — backer extends leftward from --backer-right. Two-digit drains
+     swap to the extended width via the .backerExtended modifier. */
+  --backer-width:                  18.6%;    /* 45/242 — 1-digit drains      */
+  --backer-width-extended:         23.97%;   /* 58/242 — 2-digit drains      */
+  --backer-width-transition:       180ms ease-out; /* swap animation         */
+
+  /* Content overlay — the flex container that sits on top of the backer art
+     and holds the drain number + polarity icon. Same right/width anchoring
+     as the backer image so the two stack perfectly. */
+  --backer-content-height:         8%;       /* matches backer art           */
+  --backer-content-gap:            0px;      /* between drain and polarity   */
+  --backer-content-align-x:        center;   /* horizontal align inside backer */
+  --backer-content-align-y:        center;
+
+  /* Content shift — nudges the entire drain+polarity unit as one without
+     changing alignment or the gap between them. Use any CSS length (px, %, em).
+     +X = right, -X = left;  +Y = down, -Y = up. */
+  --backer-content-shift-x:        7%;
+  --backer-content-shift-y:        -3%;
+
+  /* Per-piece shifts — fine-tune drain or polarity individually relative to
+     where the content-shift placed the unit. Leave at 0 unless you need to
+     compensate for asymmetric padding inside a specific glyph or SVG. */
+  --backer-drain-shift-x:          0%;
+  --backer-drain-shift-y:          0%;
+  --backer-polarity-shift-x:       0%;
+  --backer-polarity-shift-y:       0%;
+
+  /* Drain text */
+  --backer-drain-font-family:      var(--font-modcard-body);
+  --backer-drain-font-size:        0.70rem;  /* × --card-text-scale          */
+  --backer-drain-font-weight:      600;
+  --backer-drain-line-height:      1;
+  --backer-drain-letter-spacing:   normal;
+
+  /* Polarity icon — sized as a fraction of CARD WIDTH so the icon stays a
+     CONSTANT pixel size regardless of which backer is active (standard vs
+     extended). Edit the decimal multiplier:
+       0.07 → 7% of card width.
+     Width and height are independent so non-square SVGs can be tuned without
+     distortion. Both reference card-w (not card-h) so aspect stays stable
+     when card-w changes — they scale in lockstep with the card. */
+  --backer-polarity-width:         calc(var(--card-w) * 0.07);
+  --backer-polarity-height:        calc(var(--card-w) * 0.10);
+
+  /* Polarity fallback text (when no SVG is available for the polarity) */
+  --backer-polarity-text-size:     1em;      /* relative to drain font-size  */
+  --backer-polarity-text-weight:   700;
+  --backer-polarity-text-family:   var(--font-sans);
+
+  /* Text shadow — applies to drain + polarity fallback text uniformly */
+  --backer-text-shadow-x:          0px;
+  --backer-text-shadow-y:          1px;
+  --backer-text-shadow-blur:       1px;
+  --backer-text-shadow-color:      rgba(0, 0, 0, 0.7);
+
+  /* L4a · Frame top */
+  --frame-top-top:    -4.4%;
+  --frame-top-left:   -7%;
+  --frame-top-width:  114%;
+
+  /* L4b · Frame bottom */
+  --frame-bottom-bottom: -8%;
+  --frame-bottom-left:   -8%;
+  --frame-bottom-width:  118%;
+
+  /* L5 · Corner lights */
+  --corner-light-bottom: -2%;
+  --corner-light-width:  25%;
+  --corner-light-left:   -4%;
+  --corner-light-right:  -4%;
+
+  /* L6 · Lower tab + label */
+  --lower-tab-bottom:      4.4%;
+  --lower-tab-left:        6.6%;   /* 210/242 → centers */
+  --lower-tab-width:       86.8%;
+  --lower-tab-text-bottom: 4.4%;
+
+  /* L7 · Rank slots + complete line */
+  --rank-slots-bottom:    -4%;
+  --rank-complete-bottom: -4.4%;
+}
+
+
+/* ═════ 2 · CARD SHELL ═══════════════════════════════════════════════════ */
+
+.card {
+  position:      relative;
+  width:         var(--card-w);
+  aspect-ratio:  242 / 338;
+  cursor:        pointer;
+  outline:       none;
+  overflow:      visible;
+  filter:        drop-shadow(0 4px 12px rgba(0, 0, 0, 0.7));
+  transition:    transform 200ms ease-out, filter 200ms ease-out;
+
+  /* Grid rows: art (1fr) · content (auto) · bottom spacer (auto).
+     Text grows → art shrinks. */
+  display:            grid;
+  grid-template-rows: 1fr auto auto;
+}
+
+.card:hover,
+.card:focus-visible {
+  transform: translateY(-4px) scale(1.06);
+  filter:    drop-shadow(0 8px 24px var(--tier-glow));
+  z-index:   10;
+}
+
+.card:focus-visible {
+  outline:        2px solid var(--color-accent-teal);
+  outline-offset: 4px;
+}
+
+
+/* ═════ 3 · PIECES ═══════════════════════════════════════════════════════ */
+
+/* L0 · Background */
+.background {
+  position:       absolute;
+  inset:          0;
+  width:          100%;
+  height:         100%;
+  z-index:        0;
+  pointer-events: none;
+  user-select:    none;
+}
+
+/* L1 · Art — grid row 1, masked to bg shape + bottom fade */
+.artWrap {
+  grid-row:       1;
+  min-height:     0;
+  position:       relative;
+  z-index:        1;
+  pointer-events: none;
+  user-select:    none;
+  -webkit-mask-image:
+    var(--bg-url),
+    linear-gradient(to bottom, black 0%, black calc(100% - var(--v2-art-fade-height, 5px)), transparent 100%);
+          mask-image:
+    var(--bg-url),
+    linear-gradient(to bottom, black 0%, black calc(100% - var(--v2-art-fade-height, 5px)), transparent 100%);
+  -webkit-mask-size:      100% auto, 100% 100%;
+          mask-size:      100% auto, 100% 100%;
+  -webkit-mask-repeat:    no-repeat, no-repeat;
+          mask-repeat:    no-repeat, no-repeat;
+  -webkit-mask-position:  0% 0%, 0% 0%;
+          mask-position:  0% 0%, 0% 0%;
+  -webkit-mask-composite: destination-in;
+          mask-composite: intersect;
+}
+
+.art {
+  position:   absolute;
+  inset:      0;
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+  /* Drop-shadow scales with --card-w via --v3-art-dropshadow-blur. Setting
+     --v3-art-dropshadow-opacity:0 (or the color to transparent) kills it. */
+  filter:
+    drop-shadow(0 0 var(--v3-art-dropshadow-blur) var(--v3-art-dropshadow-color))
+    drop-shadow(0 calc(var(--card-w) * 0.012) calc(var(--card-w) * 0.024) rgba(0, 0, 0, 0.5));
+  opacity: 1;
+}
+
+/* Rarity glow — radial, scales with --card-w. Blend + opacity tunable. */
+.artWrap::after {
+  content:        '';
+  position:       absolute;
+  inset:          0;
+  pointer-events: none;
+  z-index:        2;
+  mix-blend-mode: var(--v3-art-glow-blend-mode);
+  opacity:        var(--v3-art-glow-opacity);
+  background: radial-gradient(
+    circle calc(var(--card-w) * var(--v3-art-glow-radius)) at 50% 50%,
+    transparent 0%,
+    transparent var(--v3-art-glow-inner),
+    var(--v3-art-glow-color) var(--v3-art-glow-outer)
+  );
+}
+
+/* Corner dodge lights — sizes are % of artWrap → scale automatically with card. */
+.artCorners {
+  position:       absolute;
+  inset:          0;
+  pointer-events: none;
+  z-index:        3;
+  mix-blend-mode: var(--v3-art-corners-blend-mode);
+  opacity:        var(--v3-art-corners-opacity);
+  background:
+    radial-gradient(ellipse var(--v3-art-corners-top-size) var(--v3-art-corners-top-size) at   0%   0%, var(--v3-art-corners-color) 0%, transparent 100%),
+    radial-gradient(ellipse var(--v3-art-corners-top-size) var(--v3-art-corners-top-size) at 100%   0%, var(--v3-art-corners-color) 0%, transparent 100%),
+    radial-gradient(ellipse var(--v3-art-corners-btm-size) var(--v3-art-corners-btm-size) at   0% 100%, var(--v3-art-corners-color) 0%, transparent 100%),
+    radial-gradient(ellipse var(--v3-art-corners-btm-size) var(--v3-art-corners-btm-size) at 100% 100%, var(--v3-art-corners-color) 0%, transparent 100%);
+}
+
+/* Edge shadow — left/top/right (bottom is the mask fade). All % units scale. */
+.artWrap::before {
+  content:        '';
+  position:       absolute;
+  inset:          0;
+  pointer-events: none;
+  z-index:        4;
+  mix-blend-mode: var(--v3-art-shadow-blend-mode);
+  opacity:        var(--v3-art-shadow-opacity);
+  background:
+    linear-gradient(to right,  var(--v3-art-shadow-color) 0%, var(--v3-art-shadow-color) var(--v3-art-shadow-feather), transparent var(--v3-art-shadow-size)),
+    linear-gradient(to left,   var(--v3-art-shadow-color) 0%, var(--v3-art-shadow-color) var(--v3-art-shadow-feather), transparent var(--v3-art-shadow-size)),
+    linear-gradient(to bottom, var(--v3-art-shadow-color) 0%, var(--v3-art-shadow-color) var(--v3-art-shadow-feather), transparent var(--v3-art-shadow-size));
+}
+
+/* L2 · Side lights — 16×256 native */
+.sideLight {
+  position:       absolute;
+  top:            var(--sidelight-top);
+  height:         var(--sidelight-height);
+  width:          auto;
+  max-width:      var(--sidelight-max-width);
+  z-index:        2;
+  opacity:        var(--sidelight-opacity);
+  pointer-events: none;
+  user-select:    none;
+}
+.sideLightLeft  { left:  var(--sidelight-left);  transform: scaleX(-1); }
+.sideLightRight { right: var(--sidelight-right); }
+
+/* L3 · Backer + content (drain + polarity).
+   Every value below comes from a knob declared in section 1. To change any
+   placement, sizing, or text styling, edit the knob — never patch this rule
+   block. The .backerExtended / .backerContentExtended modifiers swap to the
+   wider asset + width for 2-digit drains. */
+.backer {
+  position:       absolute;
+  top:            var(--backer-top);
+  right:          var(--backer-right);
+  width:          var(--backer-width);
+  height:         auto;
+  max-width:      none;
+  z-index:        5;
+  pointer-events: none;
+  user-select:    none;
+  transition:     width var(--backer-width-transition);
+}
+.backerExtended {
+  width: var(--backer-width-extended);
+}
+
+.backerContent {
+  position:        absolute;
+  top:             var(--backer-top);
+  right:           var(--backer-right);
+  width:           var(--backer-width);
+  height:          var(--backer-content-height);
+  z-index:         6;
+  display:         flex;
+  align-items:     var(--backer-content-align-y);
+  justify-content: var(--backer-content-align-x);
+  gap:             calc(var(--backer-content-gap) * var(--card-text-scale));
+  font-family:     var(--backer-drain-font-family);
+  font-size:       calc(var(--backer-drain-font-size) * var(--card-text-scale));
+  font-weight:     var(--backer-drain-font-weight);
+  letter-spacing:  var(--backer-drain-letter-spacing);
+  color:           var(--tier-text-color);
+  line-height:     var(--backer-drain-line-height);
+  text-shadow:
+    var(--backer-text-shadow-x)
+    var(--backer-text-shadow-y)
+    var(--backer-text-shadow-blur)
+    var(--backer-text-shadow-color);
+  pointer-events:  none;
+  /* Shifts the whole drain+polarity unit as a group without changing alignment
+     or the gap between them. Driven by --backer-content-shift-{x,y}. */
+  transform:       translate(var(--backer-content-shift-x), var(--backer-content-shift-y));
+  transition:      width var(--backer-width-transition);
+}
+.backerContentExtended {
+  width: var(--backer-width-extended);
+}
+
+.drain {
+  line-height: inherit;
+  transform:   translate(var(--backer-drain-shift-x), var(--backer-drain-shift-y));
+}
+
+.polarity {
+  width:           var(--backer-polarity-width);
+  height:          var(--backer-polarity-height);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  color:           var(--tier-text-color);
+  flex-shrink:     0;
+  transform:       translate(var(--backer-polarity-shift-x), var(--backer-polarity-shift-y));
+}
+.polarity svg { width: 100%; height: 100%; }
+
+.polarityText {
+  font-family: var(--backer-polarity-text-family);
+  font-weight: var(--backer-polarity-text-weight);
+  font-size:   var(--backer-polarity-text-size);
+  transform:   translate(var(--backer-polarity-shift-x), var(--backer-polarity-shift-y));
+}
+
+/* ── Per-polarity tuning ────────────────────────────────────────────────────
+   Each polarity SVG (and text fallback) has a different intrinsic shape and
+   visual mass — Naramon is a thin horizontal line, Madurai is a tall V,
+   Vazarin is a wide D, etc. The universal --backer-polarity-* knobs above
+   set the baseline; the blocks below scope per-polarity OVERRIDES.
+
+   These overrides are UNIVERSAL across tiers (Bronze through Archon all share
+   them). Uncomment any line to override that knob for the matching polarity.
+
+   Knob reminder:
+     --backer-polarity-width   — icon width  as % of backer-content box
+     --backer-polarity-height  — icon height as % of backer-content box
+     --backer-polarity-shift-x — horizontal nudge (px, % or em — + = right)
+     --backer-polarity-shift-y — vertical nudge (px, % or em — + = down) */
+
+.polarity[data-polarity="madurai"],
+.polarityText[data-polarity="madurai"] {
+  /* --backer-polarity-width:    42%; */
+  /* --backer-polarity-height:   90%; */
+  /* --backer-polarity-shift-x:   0px; */
+  /* --backer-polarity-shift-y:   0px; */
+}
+
+.polarity[data-polarity="vazarin"],
+.polarityText[data-polarity="vazarin"] {
+  /* --backer-polarity-width:    42%; */
+  /* --backer-polarity-height:   90%; */
+  /* --backer-polarity-shift-x:   0px; */
+  /* --backer-polarity-shift-y:   0px; */
+}
+
+.polarity[data-polarity="naramon"],
+.polarityText[data-polarity="naramon"] {
+  /* --backer-polarity-width:    42%; */
+  /* --backer-polarity-height:   90%; */
+  /* --backer-polarity-shift-x:   0px; */
+  /* --backer-polarity-shift-y:   0px; */
+}
+
+.polarity[data-polarity="zenurik"],
+.polarityText[data-polarity="zenurik"] {
+  /* --backer-polarity-width:    42%; */
+  /* --backer-polarity-height:   90%; */
+  /* --backer-polarity-shift-x:   0px; */
+  /* --backer-polarity-shift-y:   0px; */
+}
+
+.polarity[data-polarity="unairu"],
+.polarityText[data-polarity="unairu"] {
+  /* --backer-polarity-width:    42%; */
+  /* --backer-polarity-height:   90%; */
+  /* --backer-polarity-shift-x:   0px; */
+  /* --backer-polarity-shift-y:   0px; */
+}
+
+.polarity[data-polarity="penjaga"],
+.polarityText[data-polarity="penjaga"] {
+  /* --backer-polarity-width:    42%; */
+  /* --backer-polarity-height:   90%; */
+  /* --backer-polarity-shift-x:   0px; */
+  /* --backer-polarity-shift-y:   0px; */
+}
+
+.polarity[data-polarity="umbra"],
+.polarityText[data-polarity="umbra"] {
+  /* --backer-polarity-width:    42%; */
+  /* --backer-polarity-height:   90%; */
+  /* --backer-polarity-shift-x:   0px; */
+  /* --backer-polarity-shift-y:   0px; */
+}
+
+.polarity[data-polarity="aura"],
+.polarityText[data-polarity="aura"] {
+  /* --backer-polarity-width:    42%; */
+  /* --backer-polarity-height:   90%; */
+  /* --backer-polarity-shift-x:   0px; */
+  /* --backer-polarity-shift-y:   0px; */
+}
+
+.polarity[data-polarity="universal"],
+.polarityText[data-polarity="universal"] {
+  /* --backer-polarity-width:    42%; */
+  /* --backer-polarity-height:   90%; */
+  /* --backer-polarity-shift-x:   0px; */
+  /* --backer-polarity-shift-y:   0px; */
+}
+
+/* L4a · Frame top — 281×117 native */
+.frameTop {
+  position:       absolute;
+  top:            var(--frame-top-top);
+  left:           var(--frame-top-left);
+  width:          var(--frame-top-width);
+  height:         auto;
+  max-width:      none;
+  z-index:        4;
+  pointer-events: none;
+  user-select:    none;
+}
+
+/* L4b · Frame bottom — 292×120 native */
+.frameBottom {
+  position:       absolute;
+  bottom:         var(--frame-bottom-bottom);
+  left:           var(--frame-bottom-left);
+  width:          var(--frame-bottom-width);
+  height:         auto;
+  max-width:      none;
+  z-index:        4;
+  pointer-events: none;
+  user-select:    none;
+}
+
+/* L5 · Corner lights — 64×64 native */
+.cornerLight {
+  position:       absolute;
+  bottom:         var(--corner-light-bottom);
+  width:          var(--corner-light-width);
+  height:         auto;
+  max-width:      none;
+  z-index:        7;
+  pointer-events: none;
+  user-select:    none;
+}
+.cornerLightLeft  { left:  var(--corner-light-left);  transform: scaleX(-1); }
+.cornerLightRight { right: var(--corner-light-right); }
+
+/* L6 · Lower tab + label — 210×26 native */
+.lowerTab {
+  position:       absolute;
+  bottom:         var(--lower-tab-bottom);
+  left:           var(--lower-tab-left);
+  width:          var(--lower-tab-width);
+  height:         auto;
+  max-width:      none;
+  z-index:        7;
+  pointer-events: none;
+  user-select:    none;
+}
+
+.lowerTabText {
+  position:        absolute;
+  bottom:          var(--lower-tab-text-bottom);
+  left:            0;
+  right:           0;
+  height:          7.7%;
+  z-index:         8;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-family:     var(--font-modcard-body);
+  font-size:       calc(0.70rem * var(--card-text-scale));
+  font-weight:     500;
+  letter-spacing:  0.1em;
+  text-transform:  uppercase;
+  color:           var(--tier-text-color);
+  text-shadow:     0 1px 1px rgba(0, 0, 0, 0.7);
+  pointer-events:  none;
+  user-select:     none;
+}
+
+/* L7 · Rank slots */
+.rankSlots {
+  position:        absolute;
+  bottom:          var(--rank-slots-bottom);
+  left:            0;
+  right:           0;
+  display:         flex;
+  justify-content: center;
+  flex-wrap:       wrap;
+  gap:             calc(2px * var(--card-text-scale));
+  z-index:         8;
+}
+
+.rankSlot {
+  width:       calc(5px * var(--card-text-scale));
+  height:      calc(5px * var(--card-text-scale));
+  opacity:     0.25;
+  flex-shrink: 0;
+}
+.rankSlotOn {
+  opacity: 1;
+  filter:  drop-shadow(0 0 calc(2px * var(--card-text-scale)) rgba(140, 220, 255, 0.95));
+}
+
+/* L7b · Rank complete line — only at max rank */
+.rankCompleteLine {
+  position:       absolute;
+  bottom:         var(--rank-complete-bottom);
+  left:           0;
+  width:          100%;
+  height:         auto;
+  z-index:        8;
+  pointer-events: none;
+  user-select:    none;
+}
+
+/* L8 · Mod name + stats — grid row 2 */
+.content {
+  grid-row:       2;
+  position:       relative;
+  z-index:        9;
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            var(--v2-content-gap, 5px);
+  margin-top:     var(--v2-art-fade-buffer, 3%);
+  padding:        0 8% var(--v2-content-bottom-gap, 1px);
+  text-align:     center;
+  color:          var(--tier-text-color);
+  pointer-events: none;
+}
+
+.modName {
+  margin:         0;
+  font-family:    var(--font-modcard-display);
+  font-size:      calc(0.95rem * var(--card-text-scale));
+  font-weight:    400;
+  letter-spacing: 0.02em;
+  line-height:    1.1;
+  text-shadow:    0 1px 2px rgba(0, 0, 0, 0.8);
+  word-break:     break-word;
+}
+
+.stats {
+  display:        flex;
+  flex-direction: column;
+  gap:            calc(1px * var(--card-text-scale));
+}
+
+.stat {
+  font-family:    var(--font-modcard-body);
+  font-size:      calc(0.6rem * var(--card-text-scale));
+  font-weight:    300;
+  letter-spacing: 0.04em;
+  line-height:    1.2;
+  text-shadow:    0 1px 1px rgba(0, 0, 0, 0.7);
+}
+
+/* Grid row 3 — reserves bottom zone for tab + rank pips */
+.bottomSpacer {
+  grid-row:       3;
+  height:         0;
+  padding-bottom: 28%;             /* ~20% of card height (242:338) */
+  pointer-events: none;
+}
+
+/* Collapsed-state name overlay */
+.modNameCollapsed {
+  position:   absolute;
+  left:       8%;
+  right:      8%;
+  bottom:     14%;
+  z-index:    9;
+  text-align: center;
+}
+
+
+/* ═════ 4 · SIZE VARIANTS ════════════════════════════════════════════════ */
+
+.size-grid   { --card-w: 138px; }
+.size-browse { --card-w: 170px; }
+.size-detail { --card-w: 280px; }
+
+.size-detail.card:hover,
+.size-detail.card:focus-visible {
+  transform: none;
+  filter:    drop-shadow(0 6px 18px var(--tier-glow));
+}
+
+
+/* ═════ 5 · STATE VARIANTS ═══════════════════════════════════════════════ */
+
+.state-collapsed { /* future: animate aspect-ratio + hide rows 2/3 */ }
+
+
+/* ═════ 6 · TIER OVERRIDES ═══════════════════════════════════════════════
+   Each block mirrors section 1's knob layout, commented out.
+   Uncomment a line to override that knob for the tier.
+   Any --v2-* art knob from ModCard.module.css :root works here too. */
+
+/* ── Amalgam ─────────────────────────────────────────────────────────────
+   No active overrides. */
+.tier-amalgam {
+  /* L2 · Side lights */
+  /* --sidelight-top:       9%;         */
+  /* --sidelight-height:    85%;        */
+  /* --sidelight-opacity:   0.9;        */
+  /* --sidelight-max-width: none;       */
+  /* --sidelight-left:      -4%;        */
+  /* --sidelight-right:     -4%;        */
+
+  /* L3 · Top-right backer */
+  /* --backer-top:    3%;               */
+  /* --backer-right:  4%;               */
+  /* --backer-width:  18.6%;            */
+
+  /* L4a · Frame top */
+  /* --frame-top-top:    -4.4%;         */
+  /* --frame-top-left:   -7%;           */
+  /* --frame-top-width:  114%;          */
+
+  /* L4b · Frame bottom */
+  /* --frame-bottom-bottom: -8%;        */
+  /* --frame-bottom-left:   -8%;        */
+  /* --frame-bottom-width:  118%;       */
+
+  /* L5 · Corner lights */
+  /* --corner-light-bottom: -2%;        */
+  /* --corner-light-width:  25%;        */
+  /* --corner-light-left:   -4%;        */
+  /* --corner-light-right:  -4%;        */
+
+  /* L6 · Lower tab + label */
+  /* --lower-tab-bottom:      4.4%;     */
+  /* --lower-tab-left:        6.6%;     */
+  /* --lower-tab-width:       86.8%;    */
+  /* --lower-tab-text-bottom: 4.4%;     */
+
+  /* L7 · Rank slots + complete line */
+  /* --rank-slots-bottom:    -4%;       */
+  /* --rank-complete-bottom: -4.4%;     */
+}
+
+
+/* ── Galvanized ──────────────────────────────────────────────────────────
+   Active: 512w frames · 32w side light cap · side lights swapped
+   Note: corner lights are paired 32×32 blue-tint PNGs (smaller than baseline) */
+.tier-galvanized {
+  /* L2 · Side lights */
+  /* --sidelight-top:       9%;         */
+  /* --sidelight-height:    85%;        */
+  /* --sidelight-opacity:   0.9;        */
+  --sidelight-max-width: 10%;
+  /* --sidelight-left:      -4%;        */
+  /* --sidelight-right:     -4%;        */
+
+  /* L3 · Top-right backer */
+  /* --backer-top:    3%;               */
+  /* --backer-right:  4%;               */
+  /* --backer-width:  18.6%;            */
+
+  /* L4a · Frame top */
+  /* --frame-top-top:   -4.4%;          */
+  /* --frame-top-left:  -7%;            */
+  --frame-top-left:  -55.8%;            /* (100 − 211.6) / 2 */
+  --frame-top-width: 211.6%;            /* 512/242 */
+
+  /* L4b · Frame bottom */
+  --frame-bottom-bottom: -24%;
+  /* --frame-bottom-left:   -8%;        */
+  --frame-bottom-left:   -55.8%;
+  --frame-bottom-width:  211.6%;
+
+  /* L5 · Corner lights (paired, 32×32 blue-tint PNG — tune width/offset) */
+  --corner-light-bottom: -1%;        
+  --corner-light-width:  7%;        
+  --corner-light-left:   3%;        
+  --corner-light-right:  3%;        
+
+  /* L6 · Lower tab + label */
+  /* --lower-tab-bottom:      4.4%;     */
+  /* --lower-tab-left:        6.6%;     */
+  /* --lower-tab-width:       86.8%;    */
+  /* --lower-tab-text-bottom: 4.4%;     */
+
+  /* L7 · Rank slots + complete line */
+  /* --rank-slots-bottom:    -4%;       */
+  /* --rank-complete-bottom: -4.4%;     */
+}
+.tier-galvanized .sideLightLeft  { transform: none; }
+.tier-galvanized .sideLightRight { transform: scaleX(-1); }
+/* Corner light PNG is muted blue (~157,165,193) — saturate + glow to read blue */
+.tier-galvanized .cornerLight {
+  filter:
+    saturate(2.5)
+    drop-shadow(0 0 3px rgba(60, 120, 220, 0.9));
+}
+
+
+/* ── Peculiar ────────────────────────────────────────────────────────────
+   Active: 512w frames · 64w side smoke (capped + dimmed) */
+.tier-peculiar {
+  /* L2 · Side smoke */
+  --sidelight-top:    9%;
+  --sidelight-height: 85%;           
+  --sidelight-opacity:   0.7;
+  --sidelight-max-width: 15%;
+  --sidelight-left:   -7.4%;   /* was -21px → 21/170 ≈ 12.4% */
+  --sidelight-right:  -7.4%;          
+
+  /* L3 · Top-right backer */
+  /* --backer-top:    3%;               */
+  /* --backer-right:  4%;               */
+  /* --backer-width:  18.6%;            */
+
+  /* L4a · Frame top */
+  --frame-top-top:   -23.4%;          
+  /* --frame-top-left:  -7%;            */
+  --frame-top-left:  -55.8%;
+  --frame-top-width: 211.6%;
+
+  /* L4b · Frame bottom */
+  --frame-bottom-bottom: -24%;        
+  /* --frame-bottom-left:   -8%;        */
+  --frame-bottom-left:   -55.8%;
+  --frame-bottom-width:  211.6%;
+
+  /* L5 · Corner lights */
+  --corner-light-bottom: -2%;        
+  --corner-light-width:  25%;        
+  --corner-light-left:   -4%;        
+  --corner-light-right:  -4%;        
+
+  /* L6 · Lower tab + label */
+  /* --lower-tab-bottom:      4.4%;     */
+  /* --lower-tab-left:        6.6%;     */
+  /* --lower-tab-width:       86.8%;    */
+  /* --lower-tab-text-bottom: 4.4%;     */
+
+  /* L7 · Rank slots + complete line */
+  /* --rank-slots-bottom:    -4%;       */
+  /* --rank-complete-bottom: -4.4%;     */
+}
+.tier-peculiar .sideLightLeft  { transform: none; }
+.tier-peculiar .sideLightRight { transform: scaleX(-1); }
+
+
+/* ── Plexus (Common / Uncommon / Rare) ──────────────────────────────────
+   All three Plexus rarities share the same asset structure (Avionic frame
+   top/bottom + GalvanizedBottomLight paired corner lights). Tunings apply
+   uniformly; only the underlying rarity background/frame/tab colors differ.
+   No active overrides yet. */
+.tier-plexuscommon,
+.tier-plexusuncommon,
+.tier-plexusrare {
+  /* L2 · Side lights */
+  --sidelight-top:       7%;
+  --sidelight-height:    68%;
+  --sidelight-opacity:   0.9;
+  --sidelight-max-width: none;
+  --sidelight-left:      -2%;
+  --sidelight-right:     -2%;
+
+  /* L3 · Top-right backer */
+  /* --backer-top:    3%;               */
+  /* --backer-right:  4%;               */
+  /* --backer-width:  18.6%;            */
+
+  /* L4a · Frame top */
+  --frame-top-top:    -8.4%;
+  --frame-top-left:   -6%;
+  --frame-top-width:  112%;
+
+  /* L4b · Frame bottom */
+  --frame-bottom-bottom: -8%;
+  --frame-bottom-left:   -10%;
+  --frame-bottom-width:  120%;
+
+  /* L5 · Corner lights (GalvanizedBottomLight, paired) */
+  --corner-light-bottom: 5%;
+  --corner-light-width:  9%;
+  --corner-light-left:   -1%;
+  --corner-light-right:  -1%;
+
+  /* L6 · Lower tab + label */
+  /* --lower-tab-bottom:      4.4%;     */
+  /* --lower-tab-left:        6.6%;     */
+  /* --lower-tab-width:       86.8%;    */
+  /* --lower-tab-text-bottom: 4.4%;     */
+
+  /* L7 · Rank slots + complete line */
+  /* --rank-slots-bottom:    -4%;       */
+  /* --rank-complete-bottom: -4.4%;     */
+}
+/* Mirror paired corner lights (Galvanized pattern) */
+.tier-plexuscommon   .cornerLight,
+.tier-plexusuncommon .cornerLight,
+.tier-plexusrare     .cornerLight { /* shared sizing tweaks can go here */ }
+
+
+/* ═════ 7 · PER-TIER RARITY GLOW / CORNER / SHADOW COLORS ════════════════
+   One block per tier. Each sets the rarity color for the radial glow and
+   the corner dodge lights. Edge shadow stays dark for every tier (uncomment
+   per-tier if you ever want a tinted shadow). All other knobs (radius,
+   sizes, opacities, blend modes) inherit from section 1 — change them there
+   to toggle globally, OR override here to diverge per tier.
+
+   These mirror the V2 palette (see ModCard.module.css :root and per-tier blocks).
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* ── Bronze (Common) ─── */
+.tier-bronze {
+  --v3-art-glow-color:    rgba(130, 125, 115, 0.45);
+  --v3-art-corners-color: rgba(180, 160, 120, 0.90);
+}
+
+/* ── Silver (Uncommon) ─── */
+.tier-silver {
+  --v3-art-glow-color:    rgb(86, 117, 255);
+  --v3-art-corners-color: rgba(0, 0, 0, 0.9);
+}
+
+/* ── Gold (Rare) ─── */
+.tier-gold {
+  --v3-art-glow-color:    rgba(210, 175, 80, 0.55);
+  --v3-art-corners-color: rgba(255, 123, 0, 0.90);
+}
+
+/* ── Legendary (Primed) ─── */
+.tier-legendary {
+  --v3-art-glow-color:    rgba(84, 142, 169, 0.86);
+  --v3-art-corners-color: rgba(44, 100, 255, 0.90);
+}
+
+/* ── Omega (Riven) ─── */
+.tier-omega {
+  --v3-art-glow-color:    rgba(150, 80, 200, 0.55);
+  --v3-art-corners-color: rgba(180, 100, 240, 0.90);
+}
+
+/* ── Amalgam ─── */
+.tier-amalgam {
+  --v3-art-glow-color:    rgba(180, 50, 50, 0.45);
+  --v3-art-corners-color: rgba(220, 80, 60, 0.90);
+}
+
+/* ── Galvanized ─── */
+.tier-galvanized {
+  --v3-art-glow-color:    rgba(60, 120, 180, 0.45);
+  --v3-art-corners-color: rgba(80, 160, 220, 0.90);
+}
+
+/* ── Peculiar ─── */
+.tier-peculiar {
+  --v3-art-glow-color:    rgba(100, 180, 160, 0.45);
+  --v3-art-corners-color: rgba(100, 200, 170, 0.90);
+}
+
+/* ── Archon ─── */
+.tier-archon {
+  --v3-art-glow-color:    rgba(220, 140, 40, 0.55);
+  --v3-art-corners-color: rgba(240, 140, 40, 0.90);
+}
+
+/* ── Plexus Common ─── */
+.tier-plexuscommon {
+  --v3-art-glow-color:    rgba(130, 125, 115, 0.45);
+  --v3-art-corners-color: rgba(180, 160, 120, 0.90);
+}
+
+/* ── Plexus Uncommon ─── */
+.tier-plexusuncommon {
+  --v3-art-glow-color:    rgba(100, 220, 120, 0.45);
+  --v3-art-corners-color: rgba(120, 200, 140, 0.90);
+}
+
+/* ── Plexus Rare ─── */
+.tier-plexusrare {
+  --v3-art-glow-color:    rgba(210, 175, 80, 0.55);
+  --v3-art-corners-color: rgba(255, 123, 0, 0.90);
+}

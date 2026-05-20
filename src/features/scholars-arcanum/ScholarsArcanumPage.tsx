@@ -1,10 +1,14 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { PageHero } from '@/components/ui/PageHero';
-import { ModCard } from './components/ModCard';
+import { ModCardV3 } from './components/ModCardV3';
 import { ModDetailModal } from './components/ModDetailModal';
 import { searchMods, getAllCompatNames, type ModEntry, type ModRarity } from '@/lib/mods/modsAdapter';
 
 const RARITIES: Array<ModRarity | 'all'> = ['all', 'Legendary', 'Rare', 'Uncommon', 'Common'];
+
+const COMPAT_DISPLAY: Record<string, string> = {
+  PLEXUS: 'Railjack',
+};
 const PAGE_SIZE = 60;
 
 function FilterChip({
@@ -104,7 +108,7 @@ export function ScholarsArcanumPage() {
           <FilterChip
             key={c}
             active={compat === c}
-            label={c}
+            label={COMPAT_DISPLAY[c] ?? c}
             onClick={() => setCompat(c === compat ? undefined : c)}
           />
         ))}
@@ -119,7 +123,7 @@ export function ScholarsArcanumPage() {
         <>
           <div className="arcanum-browse-grid">
             {visibleResults.map((mod) => (
-              <ModCard
+              <ModCardV3
                 key={mod.uniqueName}
                 mod={mod}
                 onClick={() => setSelectedMod(mod)}

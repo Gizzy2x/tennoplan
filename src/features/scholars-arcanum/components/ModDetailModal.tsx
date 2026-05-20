@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
-import { ModCard } from './ModCard';
+import { ModCardV3 } from './ModCardV3';
 import type { ModEntry } from '@/lib/mods/modsAdapter';
 import styles from './ModDetailModal.module.css';
 
@@ -49,7 +49,7 @@ export function ModDetailModal({ mod, onClose }: ModDetailModalProps) {
         <div className={styles['wf-modal-layout']}>
           {/* Card preview */}
           <div className={styles['wf-modal-card-col']}>
-            <ModCard mod={mod} rank={rank} size="detail" />
+            <ModCardV3 mod={mod} rank={rank} size="detail" />
           </div>
 
           {/* Info panel */}
