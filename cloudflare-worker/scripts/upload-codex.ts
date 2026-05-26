@@ -32,9 +32,11 @@ const TTL_SECONDS = 172_800; // 48h — matches worker's config.codex.kvTtlSecon
 // ─── Env ──────────────────────────────────────────────────────────────────────
 
 function requireEnv(name: string): string {
-  // .trim() defends against secrets pasted with a trailing newline — those
-  // make the Authorization header invalid (Headers.append rejects \n).
-  const v = process.env[name]?.trim();
+  // Strip ALL whitespace, not just edges — when a secret is pasted with a
+  // soft wrap, the embedded \n breaks Headers.append. CF tokens, account IDs,
+  // and namespace IDs are alphanumeric (+ hyphens / underscores) so this is
+  // safe across all three secrets.
+  const v = process.env[name]?.replace(/\s+/g, '');
   if (!v) {
     console.error(`[upload-codex] missing required env var: ${name}`);
     process.exit(1);
