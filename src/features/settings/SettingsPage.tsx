@@ -1,18 +1,3 @@
-/**
- * SettingsPage — System Configuration hub (V2).
- *
- * Built on the canonical impeccable design primitives:
- *   - Panel / PanelHeader / PanelLabel / PanelBody for chrome
- *   - DataRow for label/value pairs
- *   - SectionDivider for major section breaks
- *   - Settings-specific UI (progress bars, event rows, chips, buttons)
- *     lives in SettingsPage.module.css
- *
- * Two refresh surfaces:
- *   • Worldstate — auto-refreshed every 60s; manual rate-limited to 60s
- *   • Item Codex — server cron every 6h; manual rate-limited to 6h via localStorage
- */
-
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import clsx from 'clsx';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -36,7 +21,7 @@ import {
   getIconSyncSnapshot,
   type IconSyncProgress,
 } from '@/adapters/assets/startupIconSync';
-import { testCdnConnection, getFetchDiagnostics } from '@/lib/http/nativeFetch';
+import { getFetchDiagnostics } from '@/lib/http/nativeFetch';
 import { getCacheDiagnostics } from '@/lib/icons/iconBlobCache';
 import { EventLogPanel } from './components/EventLogPanel';
 import type { DataSource, DataQuality } from '@/core/domain/tennoplanApi';
@@ -256,7 +241,9 @@ function CodexPanel() {
     setCodexProgress('Contacting Worker…');
     setCodexResultMsg(null);
     try {
-      await StaticDataService.refreshCodex((p) => setCodexProgress(`${p.status}…`));
+      await StaticDataService.refreshCodex({
+        onProgress: (p) => setCodexProgress(`${p.status}…`),
+      });
       const status = await StaticDataService.getCodexStatus();
       setCodexResultMsg({
         ok:   true,
@@ -320,14 +307,6 @@ function CodexPanel() {
           />
         )}
 
-        {!isPopulated && status !== null && (
-          <p className={styles.notice}>
-            The codex syncs from our server every 6 hours. The next automatic
-            sync runs at 00:00, 06:00, 12:00, or 18:00 UTC — whichever comes
-            first. You can also trigger a sync manually below (~3 MB download).
-          </p>
-        )}
-
         {codexProgress && codexSyncing && (
           <p className={styles.progressLine}>{codexProgress}</p>
         )}
@@ -349,10 +328,7 @@ function CodexPanel() {
           />
         </div>
 
-        <span className={styles.hint}>
-          Downloads about 3 MB. Locked for 6 hours after each refresh — the
-          server only produces new data on that schedule.
-        </span>
+        <span className={styles.hint}>~3 MB download · locked 6h after each sync</span>
       </PanelBody>
     </Panel>
   );
@@ -360,18 +336,9 @@ function CodexPanel() {
 
 // ─── Icon Cache panel ─────────────────────────────────────────────────────────
 
-interface ConnTestResult {
-  ok:         boolean;
-  message:    string;
-  backend:    string;
-  durationMs: number;
-}
-
 function IconCachePanel() {
   const [progress, setProgress] = useState<IconSyncProgress>(getIconSyncSnapshot);
   const [busy,     setBusy]     = useState(false);
-  const [testing,  setTesting]  = useState(false);
-  const [test,     setTest]     = useState<ConnTestResult | null>(null);
 
   useEffect(() => {
     setProgress(getIconSyncSnapshot());
@@ -390,25 +357,14 @@ function IconCachePanel() {
   const handleVerify = useCallback(() => {
     if (busy || isActive) return;
     setBusy(true);
-    setTest(null);
     verifyAndRepairIcons();
   }, [busy, isActive]);
 
   const handleClearRedownload = useCallback(async () => {
     if (busy || isActive) return;
     setBusy(true);
-    setTest(null);
     await clearAndRedownloadIcons();
   }, [busy, isActive]);
-
-  const handleTest = useCallback(async () => {
-    if (testing) return;
-    setTesting(true);
-    setTest(null);
-    const r = await testCdnConnection();
-    setTest({ ok: r.ok, message: r.message, backend: r.backend, durationMs: r.durationMs });
-    setTesting(false);
-  }, [testing]);
 
   useEffect(() => {
     if (progress.phase === 'done' || progress.phase === 'aborted') setBusy(false);
@@ -475,17 +431,6 @@ function IconCachePanel() {
         </div>
 
         <DataRow label="Status" value={statusLabel} accent={!allGood && (isDone || isAborted)} />
-        <DataRow
-          label="Backend"
-          value={
-            fetchDiag.backend === 'tauri-http' ? 'Tauri Rust (reqwest, no CORS)' :
-            fetchDiag.backend === 'browser'    ? 'Browser fetch (CORS-restricted)' :
-            fetchDiag.isTauri && !fetchDiag.pluginLoaded ? 'Tauri plugin not loaded' :
-                                                  'unknown'
-          }
-          accent={fetchDiag.backend === 'browser' && fetchDiag.isTauri}
-        />
-        {isDone && <DataRow label="Cached" value={progress.cached.toLocaleString()} />}
         {isDone && progress.failed > 0 && (
           <DataRow label="Failed" value={progress.failed.toLocaleString()} accent />
         )}
@@ -505,23 +450,7 @@ function IconCachePanel() {
           </p>
         )}
 
-        {test && (
-          <p className={clsx(styles.result, test.ok ? styles.resultOk : styles.resultErr)}>
-            {test.ok ? '✓' : '✗'} Connection test ({test.backend}, {test.durationMs}ms): {test.message}
-          </p>
-        )}
-
         <div className={styles.actions}>
-          <button
-            type="button"
-            className={clsx(styles.btn, styles.btnGhost)}
-            onClick={() => void handleTest()}
-            disabled={testing}
-          >
-            <span className={clsx(styles.btnIcon, testing && styles.btnIconSpin)}>⊙</span>
-            <span>{testing ? 'Testing…' : 'Test Connection'}</span>
-          </button>
-
           <button
             type="button"
             className={clsx(styles.btn, (isActive || busy) && styles.btnLoading)}
