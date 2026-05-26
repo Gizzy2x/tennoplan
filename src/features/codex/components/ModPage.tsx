@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { ModCardV3 } from './ModCardV3';
-import type { ModEntry } from '@/lib/mods/modsAdapter';
+import type { ModEntry } from '@/lib/mods/codexModsAdapter';
 import { useIconBlobUrl } from '@/lib/icons/iconBlobCache';
 import { getIconUrl } from '@/lib/icons/IconResolver';
 

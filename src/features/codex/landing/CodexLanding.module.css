@@ -1,0 +1,74 @@
+/* ================================================================
+   CodexLanding — wrapper that hosts the landing blocks.
+   Sets up the container-query context so blocks can adapt to the
+   landing's available width rather than viewport width.
+
+   Stagger entrance: each block fades in + lifts by 8px, offset by
+   80ms. One pass on mount, no looping motion.
+   ================================================================ */
+
+.root {
+  /* Container-query host. Every child block uses @container queries
+     against this name, so the page adapts to its actual width
+     (sidebar + window resizing both work without media queries). */
+  container-name:  codex-landing;
+  container-type:  inline-size;
+
+  display:         flex;
+  flex-direction:  column;
+  gap:             var(--space-2xl);
+  max-width:       1600px;
+  padding-bottom:  var(--space-2xl);
+}
+
+.section {
+  /* Initial state for the staggered entrance. Reduced-motion users
+     get the final state immediately. */
+  opacity:   0;
+  transform: translateY(8px);
+  animation: codex-landing-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.section:nth-child(1) { animation-delay:   0ms; }
+.section:nth-child(2) { animation-delay:  80ms; }
+.section:nth-child(3) { animation-delay: 160ms; }
+.section:nth-child(4) { animation-delay: 240ms; }
+.section:nth-child(5) { animation-delay: 320ms; }
+.section:nth-child(6) { animation-delay: 400ms; }
+
+@keyframes codex-landing-rise {
+  to {
+    opacity:   1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    animation:    none;
+    opacity:      1;
+    transform:    none;
+  }
+}
+
+/* ── Footer strip ─────────────────────────────────────────────── */
+
+.footer {
+  display:        flex;
+  align-items:    center;
+  flex-wrap:      wrap;
+  gap:            var(--space-md);
+  padding-top:    var(--space-lg);
+  border-top:     1px solid var(--color-border-default);
+  font-family:    var(--font-sans);
+  font-size:      0.72rem;
+  color:          var(--color-text-muted);
+}
+
+.footerDot {
+  opacity: 0.4;
+}
+
+.footerStale {
+  color: var(--color-accent-gold);
+}

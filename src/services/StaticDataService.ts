@@ -30,6 +30,7 @@
  */
 
 import { logger } from '@/core/utils/logger';
+import { db } from '@/adapters/storage/db';
 import {
   getCodexItem,
   findCodexItems,
@@ -63,6 +64,31 @@ const ENDPOINT    = WORKER_BASE ? `${WORKER_BASE}/v1/codex` : null;
  *  the timeout generous to ride out CDN warm-up jitter. */
 const REQUEST_TIMEOUT_MS = 60_000;
 
+/**
+ * Client-side codex schema version. Bump this whenever the TennoplanItem
+ * shape adds or renames a field so that older Dexie caches are flushed on
+ * the next app launch — without this, users running the app would keep
+ * the stale-shape rows until the cache happened to expire on its own.
+ *
+ * Persisted in localStorage rather than Dexie so the check is synchronous
+ * (no race with sync state). Bump rules:
+ *   • New optional field added            → bump
+ *   • Field renamed or semantics changed  → bump
+ *   • Pipeline behaviour changed in a way that affects which rows / shapes
+ *     are emitted (e.g. component name prefixing) → bump
+ *
+ * Version history:
+ *   • '1' — initial TennoplanItem shape (Phase A, Apr 2026)
+ *   • '2' — adds wikiUrl, introduced, patchHistory, transmutable,
+ *           auraPolarity; WFCD warframes integration; resolved ability
+ *           names; prefixed component names (May 2026)
+ *   • '3' — WFCD-only pipeline. Calamity dropped entirely. Per-category
+ *           parsers; new items in weapons/sentinels/pets/arcanes/relics/
+ *           gear flow through directly from WFCD endpoints (May 2026)
+ */
+const CODEX_SCHEMA_VERSION = '3';
+const SCHEMA_VERSION_KEY    = 'tennoplan:codex-schema-version';
+
 // ─── Public types ─────────────────────────────────────────────────────────────
 
 export interface RefreshProgress {
@@ -83,6 +109,48 @@ export interface RefreshOptions {
   onProgress?: (progress: RefreshProgress) => void;
   /** When true, ignores the stored ETag — forces a fresh full payload. */
   force?:      boolean;
+}
+
+// ─── Schema version guard ────────────────────────────────────────────────────
+
+/**
+ * Compare the cached codex's client-schema version against the current
+ * compile-time constant. On mismatch, wipe the codex rows + metadata so
+ * the next `init()` sync starts clean — old rows would be missing the
+ * fields the new UI expects (e.g. wikiUrl, auraPolarity, prefixed
+ * component names).
+ *
+ * Defensive: errors inside the wipe are swallowed and logged. We'd
+ * rather ship the app with a stale cache than refuse to boot because a
+ * Dexie operation failed at startup.
+ */
+async function ensureSchemaVersion(): Promise<void> {
+  let stored: string | null = null;
+  try {
+    stored = localStorage.getItem(SCHEMA_VERSION_KEY);
+  } catch {
+    // localStorage may be unavailable in some embedded contexts (Tauri
+    // sandboxed iframes, private modes). Skip the guard rather than
+    // blocking startup.
+    return;
+  }
+
+  if (stored === CODEX_SCHEMA_VERSION) return;
+
+  log.info(`Codex schema version changed (${stored ?? 'none'} → ${CODEX_SCHEMA_VERSION}) — flushing cached items.`);
+  try {
+    await db.tennoplanItems.clear();
+    await db.syncMetadata.delete('codex');
+  } catch (e) {
+    log.warn('Schema-version wipe failed — will rely on staleness path', errMsg(e));
+  }
+
+  try {
+    localStorage.setItem(SCHEMA_VERSION_KEY, CODEX_SCHEMA_VERSION);
+  } catch {
+    // Persistence failed but the wipe succeeded — the next launch will
+    // re-flush, idempotent. Acceptable.
+  }
 }
 
 // ─── Fetch helpers ────────────────────────────────────────────────────────────
@@ -186,6 +254,13 @@ export const StaticDataService = {
       log.warn('VITE_WORLDSTATE_WORKER_URL not configured — codex sync disabled');
       return;
     }
+
+    // Schema-version guard runs BEFORE the staleness check. When the
+    // client-side schema bumps, we flush the cached codex regardless of
+    // its age — old rows won't have the fields the new UI expects, and
+    // staleness alone wouldn't trigger a flush since rows under 12h old
+    // would be considered "fresh" by the regular path.
+    await ensureSchemaVersion();
 
     const status = await getCodexStatus();
     const shouldSync =

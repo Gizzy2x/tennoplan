@@ -1,0 +1,40 @@
+/* ================================================================
+   LandingHero — editorial title + tagline.
+   Left-aligned, no centering; the landscape canvas reads as an
+   editorial page, not a marketing centered headline.
+   ================================================================ */
+
+.root {
+  max-width:      720px;
+  display:        flex;
+  flex-direction: column;
+  gap:            8px;
+  padding-top:    var(--space-xl);
+}
+
+.title {
+  font-family:    var(--font-serif);
+  font-weight:    700;
+  letter-spacing: 0.02em;
+  /* Fluid type — large on wide canvases, calm on narrow */
+  font-size:      clamp(2.5rem, 4.4vw, 3.5rem);
+  line-height:    1.05;
+  color:          var(--color-text-primary);
+  margin:         0;
+}
+
+.tagline {
+  font-family: var(--font-sans);
+  font-size:   1rem;
+  color:       var(--color-text-muted);
+  line-height: 1.5;
+  margin:      0;
+  max-width:   56ch;
+}
+
+/* Narrow viewports — slightly less air at top */
+@container codex-landing (max-width: 720px) {
+  .root {
+    padding-top: var(--space-md);
+  }
+}

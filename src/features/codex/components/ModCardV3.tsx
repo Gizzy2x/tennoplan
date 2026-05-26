@@ -25,17 +25,13 @@ import { type CSSProperties } from 'react';
 import clsx from 'clsx';
 import { useIconBlobUrl } from '@/lib/icons/iconBlobCache';
 import { getIconUrl } from '@/lib/icons/IconResolver';
-import type { ModEntry } from '@/lib/mods/modsAdapter';
+import type { ModEntry } from '@/lib/mods/codexModsAdapter';
 import {
   detectTierV3, getFrameAssetsV3, TIER_TEXT_COLOR, TIER_GLOW,
-  type V3Tier,
 } from './modFrameAssetsV3';
 import { getPolarityIcon, POLARITY_LABEL } from './modFrameAssetsV3';
+import { StatLine } from '@/lib/tennoicons/StatLine';
 import styles from './ModCardV3.module.css';
-
-function cleanStat(raw: string): string {
-  return raw.replace(/<[A-Z0-9_]+>/g, '').replace(/\\n/g, ' · ').trim();
-}
 
 export type V3CardState = 'expanded' | 'collapsed';
 export type V3CardSize  = 'grid' | 'browse' | 'detail';
@@ -200,7 +196,7 @@ export function ModCardV3({
           {stats.length > 0 && (
             <div className={styles.stats}>
               {stats.map((line, i) => (
-                <span key={i} className={styles.stat}>{cleanStat(line)}</span>
+                <StatLine key={i} text={line} className={styles.stat} />
               ))}
             </div>
           )}

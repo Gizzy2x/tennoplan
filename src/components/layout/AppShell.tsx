@@ -10,7 +10,7 @@ import { CelestialPendulumPage } from "@/features/celestial-pendulum/CelestialPe
 import { VoidReliquariesPage } from "@/features/void-reliquaries/VoidReliquariesPage";
 import { ArsenalFabricationPage } from "@/features/arsenal-fabrication/ArsenalFabricationPage";
 import { AscensionRegistryPage } from "@/features/ascension-registry/AscensionRegistryPage";
-import { ScholarsArcanumPage } from "@/features/scholars-arcanum/ScholarsArcanumPage";
+import { CodexPage } from "@/features/codex/CodexPage";
 import { BazaarOfSevenPage } from "@/features/bazaar-of-seven/BazaarOfSevenPage";
 import { SolarRailFeedPage } from "@/features/solar-rail-feed/SolarRailFeedPage";
 import { PlatinumLedgerPage } from "@/features/platinum-ledger/PlatinumLedgerPage";
@@ -26,7 +26,7 @@ const PAGE_MAP: Record<NavTab, ComponentType> = {
   "void-reliquaries": VoidReliquariesPage,
   "arsenal-fabrication": ArsenalFabricationPage,
   "ascension-registry": AscensionRegistryPage,
-  "scholars-arcanum": ScholarsArcanumPage,
+  "codex": CodexPage,
   "bazaar-of-seven": BazaarOfSevenPage,
   "solar-rail-feed": SolarRailFeedPage,
   "platinum-ledger": PlatinumLedgerPage,
@@ -38,7 +38,28 @@ const PAGE_MAP: Record<NavTab, ComponentType> = {
 export function AppShell() {
   const activeTab = useNavigationStore((s) => s.activeTab);
   const [recheckTick, setRecheckTick] = useState(0);
-  const ActivePage = PAGE_MAP[activeTab];
+
+  // Tabs the user has visited at least once this session. Once a tab is
+  // visited it stays mounted (hidden via CSS when inactive) so each
+  // page's full state — Codex sub-tab + selected entry, scroll position,
+  // any filters — survives sidebar tab switches. The first visit is the
+  // only mount; thereafter it's free to return to.
+  //
+  // Lazy-add strategy: only mounted pages render. Tabs never visited stay
+  // truly unmounted, so first-load doesn't pay for pages the user never
+  // opens.
+  const [visited, setVisited] = useState<Set<NavTab>>(
+    () => new Set<NavTab>([activeTab]),
+  );
+
+  useEffect(() => {
+    setVisited((prev) => {
+      if (prev.has(activeTab)) return prev;
+      const next = new Set(prev);
+      next.add(activeTab);
+      return next;
+    });
+  }, [activeTab]);
 
   const { staleInfo } = useStaticDataCheck(recheckTick);
 
@@ -102,7 +123,25 @@ export function AppShell() {
         }}
         className="pt-24 pb-8 px-6 min-h-screen relative overflow-hidden"
       >
-        <ActivePage />
+        {(Object.entries(PAGE_MAP) as Array<[NavTab, ComponentType]>).map(
+          ([tab, Page]) => {
+            if (!visited.has(tab)) return null;
+            const isActive = tab === activeTab;
+            // Hidden tabs stay mounted (state + scroll position preserved)
+            // but are display:none'd so they don't render or steal focus.
+            // React 19's native `inert` removes them from the a11y tree.
+            return (
+              <div
+                key={tab}
+                style={{ display: isActive ? undefined : 'none' }}
+                aria-hidden={isActive ? undefined : true}
+                {...(isActive ? {} : { inert: true })}
+              >
+                <Page />
+              </div>
+            );
+          },
+        )}
       </main>
     </>
   );

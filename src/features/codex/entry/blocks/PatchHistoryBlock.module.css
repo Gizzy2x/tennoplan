@@ -1,0 +1,184 @@
+/* ================================================================
+   PatchHistoryBlock — collapsible patch-log timeline.
+   Vertical list, newest first. Default shows 3 recent entries;
+   "Show all" expander reveals the remainder.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+  padding:        var(--space-md);
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  8px;
+}
+
+.label {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  margin:         0;
+}
+
+.list {
+  display:        flex;
+  flex-direction: column;
+  gap:            16px;
+  list-style:     none;
+  padding:        0;
+  margin:         0;
+}
+
+.entry {
+  display:        grid;
+  grid-template-columns: minmax(140px, auto) 1fr;
+  gap:            var(--space-md);
+  padding:        var(--space-sm) 0;
+  border-bottom:  1px solid color-mix(in srgb, var(--color-border-default) 60%, transparent);
+}
+
+.entry:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.entryHeader {
+  display:        flex;
+  flex-direction: column;
+  gap:            4px;
+}
+
+.entryDate {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color:          var(--color-text-primary);
+}
+
+.entryName {
+  font-family: var(--font-sans);
+  font-size:   0.88rem;
+  font-weight: 600;
+  color:       var(--color-text-primary);
+}
+
+.entryLink {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            4px;
+  margin-top:     2px;
+  font-family:    var(--font-sans);
+  font-size:      0.62rem;
+  font-weight:    600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  text-decoration: none;
+  transition:     color 0.15s ease-out;
+}
+
+.entryLink:hover {
+  color: var(--color-accent-teal);
+}
+
+.entryLink:focus-visible {
+  outline:        2px solid var(--color-accent-teal);
+  outline-offset: 2px;
+  color:          var(--color-accent-teal);
+}
+
+.changes {
+  display:        flex;
+  flex-direction: column;
+  gap:            10px;
+  min-width:      0;
+}
+
+.changeGroup {
+  display:        flex;
+  flex-direction: column;
+  gap:            4px;
+}
+
+.changeHeading {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            6px;
+  font-family:    var(--font-sans);
+  font-size:      0.6rem;
+  font-weight:    700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+.changeDot {
+  width:         7px;
+  height:        7px;
+  border-radius: 50%;
+  background:    currentColor;
+  opacity:       0.85;
+}
+
+/* Different intent dots without falling into the AI-color trap. */
+.changeHeading--additions  { color: #7fb892; }
+.changeHeading--changes    { color: var(--color-accent-teal); }
+.changeHeading--fixes      { color: #c89a5f; }
+
+.changeBody {
+  font-family: var(--font-sans);
+  font-size:   0.88rem;
+  color:       var(--color-text-primary);
+  line-height: 1.55;
+  margin:      0;
+  max-width:   72ch;
+}
+
+/* ── Toggle button ─────────────────────────────────────────────── */
+
+.toggleRow {
+  display:    flex;
+  justify-content: center;
+  padding-top: var(--space-sm);
+}
+
+.toggle {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            8px;
+  padding:        7px 16px;
+  background:     transparent;
+  border:         1px solid var(--color-border-default);
+  border-radius:  4px;
+  cursor:         pointer;
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  transition:     border-color 0.18s ease-out, color 0.18s ease-out;
+}
+
+.toggle:hover {
+  border-color: rgba(0, 212, 255, 0.5);
+  color:        var(--color-accent-teal);
+}
+
+.toggle:focus-visible {
+  outline:        2px solid var(--color-accent-teal);
+  outline-offset: 2px;
+}
+
+/* Narrow: stack date column above content */
+@container codex-landing (max-width: 640px) {
+  .entry {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -24,7 +24,7 @@
  * ─────────────────────────────────────────────────────────────────────────
  */
 
-import type { ModEntry } from '@/lib/mods/modsAdapter';
+import type { ModEntry } from '@/lib/mods/codexModsAdapter';
 
 // ─── Asset loaders ────────────────────────────────────────────────────────────
 
@@ -141,17 +141,6 @@ export interface FrameAssetSetV3 {
 const FULL_LAYOUT = {
   showDrain:     true,
   showPolarity:  true,
-  showSideLight: true,
-  showRankPips:  true,
-  showRankLine:  true,
-  showLowerTab:  true,
-} as const;
-
-/** No drain, no polarity — for mods with no capacity cost.
- *  Rank pips and lower tab still visible. */
-const NO_DRAIN_LAYOUT = {
-  showDrain:     false,
-  showPolarity:  false,
   showSideLight: true,
   showRankPips:  true,
   showRankLine:  true,

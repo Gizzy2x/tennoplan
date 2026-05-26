@@ -1,0 +1,32 @@
+/* ================================================================
+   DescriptionBlock — sanitized lore / flavor text.
+   Treated as editorial body copy: serif feel via measure cap, calm
+   muted color, generous line-height.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+  padding:        var(--space-md);
+  background:     transparent;
+}
+
+.label {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  margin:         0;
+}
+
+.body {
+  font-family: var(--font-sans);
+  font-size:   1rem;
+  color:       var(--color-text-primary);
+  line-height: 1.65;
+  margin:      0;
+  max-width:   72ch;
+}

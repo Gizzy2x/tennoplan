@@ -391,12 +391,58 @@ export interface TennoplanItem {
   stats?:             ItemStats;
   abilities?:         Ability[];
   polarities?:        string[];
+  /** Aura slot polarity (Warframes only) — distinct from `polarities`. */
+  auraPolarity?:      string;
   baseDrain?:         number;
   buildRequirements?: BuildRequirement[];
+
+  /**
+   * Flavor / lore / mechanics string from raw.description, locale-resolved.
+   * Applies to every category (warframe lore, weapon flavour, mod text...),
+   * not just mods.
+   */
+  description?:  string;
+
+  // ── Mod-specific (category === 'Mod') ──────────────────────
+  /** Per-rank stat lines. levelStats[0] = R0, levelStats[N] = RN. */
+  levelStats?:   string[][];
+  /**
+   * Short compatibility label shown at the bottom of mod cards:
+   * "SHOTGUN", "WARFRAME", "ASH", "POLEARMS", "FOCUS WAY", etc.
+   * Uppercased, no "Mod" suffix.
+   */
+  compatName?:   string;
+  /** Mod polarity, lowercase: 'madurai' | 'vazarin' | 'naramon' | ... */
+  polarity?:     string;
+  /** True for warframe augment mods. */
+  isAugment?:    boolean;
+  /** True for Exilus-slot mods (utility / cosmetic). */
+  isExilus?:     boolean;
+  /** True when this mod is one of the equippable pieces of a Mod Set. */
+  isSet?:        boolean;
+  /** Source filename / mod set uniqueName when isSet is true. */
+  modSet?:       string;
+  /**
+   * Image filename for the mod thumb on cdn.warframestat.us.
+   * Distinct from iconUrl when we want to render at a non-standard size.
+   */
+  imageName?:    string;
 
   // ── Economy ─────────────────────────────────────────────────
   ducatValue?:    number;
   estimatedPlat?: number;
+
+  // ── External knowledge links ───────────────────────────────
+  /** Deep link to wiki.warframe.com for this item (CC BY-SA — attribute). */
+  wikiUrl?:       string;
+  /** Update this item was introduced in. */
+  introduced?:    IntroducedInfo;
+  /** ISO date string (YYYY-MM-DD) of first release. */
+  releaseDate?:   string;
+  /** Whether this item can appear in mod transmutation (Mod only). */
+  transmutable?:  boolean;
+  /** Patch history excerpts pulled from upstream WFCD `patchlogs`. */
+  patchHistory?:  PatchLogEntry[];
 
   // ── User state (only set after user interaction) ────────────
   userState?: UserItemState;
@@ -491,4 +537,33 @@ export interface UserItemState {
   /** Unix ms when mastered. */
   masteredOn?:  number;
   notes?:       string;
+}
+
+/**
+ * One patch-log entry pulled from upstream WFCD `patchlogs`.
+ * Already curated, dated, and source-linked — we surface as-is.
+ */
+export interface PatchLogEntry {
+  /** Update name, e.g. "Veilbreaker: Update 32". */
+  name:       string;
+  /** ISO timestamp (e.g. "2022-09-07T15:00:11Z"). */
+  date:       string;
+  /** Link to the forum post. */
+  url?:       string;
+  additions?: string;
+  changes?:   string;
+  fixes?:     string;
+}
+
+/**
+ * Which update first added this item to the game.
+ * Source: wiki `{{Update}}` template, surfaced via WFCD.
+ */
+export interface IntroducedInfo {
+  /** e.g. "Update 15.6". */
+  name:    string;
+  /** ISO date (YYYY-MM-DD). */
+  date?:   string;
+  url?:    string;
+  parent?: string;
 }

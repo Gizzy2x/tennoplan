@@ -1,0 +1,108 @@
+/* ================================================================
+   RecentlyAdded — list of items introduced within the last 90 days.
+   Lives in the right column of the spotlight on wide viewports;
+   stacks below on narrow.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+  height:         100%;
+}
+
+.label {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  margin:         0;
+}
+
+.divider {
+  height:     1px;
+  background: var(--color-border-default);
+  width:      100%;
+  margin:     0;
+}
+
+.list {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+  flex:           1;
+}
+
+.row {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             var(--space-sm);
+  padding:         8px 10px;
+  background:      transparent;
+  border:          1px solid transparent;
+  border-radius:   4px;
+  cursor:          pointer;
+  font-family:     var(--font-sans);
+  color:           var(--color-text-primary);
+  text-align:      left;
+  width:           100%;
+  transition:      border-color 0.18s ease-out, background 0.18s ease-out;
+}
+
+.row:hover {
+  border-color: rgba(0, 212, 255, 0.35);
+  background:   color-mix(in srgb, var(--color-bg-secondary) 70%, var(--color-accent-teal) 4%);
+}
+
+.row:focus-visible {
+  outline:        2px solid var(--color-accent-teal);
+  outline-offset: 1px;
+}
+
+.name {
+  font-size:    0.85rem;
+  color:        var(--color-text-primary);
+  white-space:  nowrap;
+  overflow:     hidden;
+  text-overflow: ellipsis;
+  flex:         1;
+  min-width:    0;
+}
+
+.tag {
+  flex-shrink:    0;
+  font-size:      0.6rem;
+  font-weight:    600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+.footerLink {
+  align-self:     flex-start;
+  margin-top:     auto;
+  padding:        6px 0 0;
+  background:     none;
+  border:         none;
+  cursor:         pointer;
+  font-family:    var(--font-sans);
+  font-size:      0.72rem;
+  letter-spacing: 0.06em;
+  color:          var(--color-accent-teal);
+  transition:     color 0.18s ease-out;
+}
+
+.footerLink:hover {
+  color: color-mix(in srgb, var(--color-accent-teal) 80%, white 20%);
+}
+
+.empty {
+  font-family: var(--font-sans);
+  font-size:   0.8rem;
+  color:       var(--color-text-muted);
+  font-style:  italic;
+  padding:     var(--space-sm) 10px;
+}
