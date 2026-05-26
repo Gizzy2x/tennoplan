@@ -1,0 +1,110 @@
+/**
+ * CodexEntryPage — generic shell for a single codex entry.
+ *
+ * Renders the block sequence defined by [blockSets.ts] for the entry's
+ * category. Each block is responsible for deciding whether it has enough
+ * data to render — blocks return null when their data is absent, so
+ * adding a new optional field to TennoplanItem doesn't require shell
+ * changes and missing data doesn't leave empty boxes.
+ *
+ * Mods are rendered through ModDetailModal at the CodexPage level
+ * rather than this shell, but the ModStats block dispatch is preserved
+ * here so future per-page mod views (e.g. linked from search) work.
+ */
+
+import { useState } from 'react';
+import type { CodexEntry } from '../types';
+import { blocksFor, type BlockKey } from './blockSets';
+import { HeaderBlock } from './blocks/HeaderBlock';
+import { HeroIconBlock } from './blocks/HeroIconBlock';
+import { StatsWarframeBlock } from './blocks/StatsWarframeBlock';
+import { DescriptionBlock } from './blocks/DescriptionBlock';
+import { PolaritiesBlock } from './blocks/PolaritiesBlock';
+import { AbilitiesBlock } from './blocks/AbilitiesBlock';
+import { WikiFooterBlock } from './blocks/WikiFooterBlock';
+import { ModStatsBlock } from './blocks/ModStatsBlock';
+import { BestFarmsBlock } from './blocks/BestFarmsBlock';
+import { PatchHistoryBlock } from './blocks/PatchHistoryBlock';
+import { BuildBlock } from './blocks/BuildBlock';
+import { DropsBlock } from './blocks/DropsBlock';
+import { ComponentsBlock } from './blocks/ComponentsBlock';
+
+interface CodexEntryPageProps {
+  entry: CodexEntry;
+  /** Open another codex entry (component sub-cards, related links). */
+  onSelectEntry?: (entry: CodexEntry) => void;
+}
+
+export function CodexEntryPage({ entry, onSelectEntry }: CodexEntryPageProps) {
+  const blocks = blocksFor(entry.category);
+  return (
+    <div className="codex-entry">
+      {blocks.map((key) => (
+        <BlockSlot
+          key={key}
+          blockKey={key}
+          entry={entry}
+          onSelectEntry={onSelectEntry}
+        />
+      ))}
+    </div>
+  );
+}
+
+interface BlockSlotProps {
+  blockKey:        BlockKey;
+  entry:           CodexEntry;
+  onSelectEntry?:  (entry: CodexEntry) => void;
+}
+
+/**
+ * Dispatcher — turns a BlockKey into a rendered component.
+ * Unimplemented keys render a labelled placeholder so the shell stays
+ * visually meaningful while the catalog continues to grow (Components,
+ * BestFarms, Build, PatchHistory, RelicRewards, etc. land in later steps).
+ */
+function BlockSlot({ blockKey, entry, onSelectEntry }: BlockSlotProps) {
+  switch (blockKey) {
+    case 'Header':         return <HeaderBlock entry={entry} />;
+    case 'HeroIcon':       return <HeroIconBlock entry={entry} />;
+    case 'StatsWarframe':  return <StatsWarframeBlock entry={entry} />;
+    case 'Description':    return <DescriptionBlock entry={entry} />;
+    case 'Polarities':     return <PolaritiesBlock entry={entry} />;
+    case 'Abilities':      return <AbilitiesBlock entry={entry} />;
+    case 'WikiFooter':     return <WikiFooterBlock entry={entry} />;
+    case 'ModStats':       return <ModStatsBlockSlot entry={entry} />;
+    case 'BestFarms':      return <BestFarmsBlock entry={entry} />;
+    case 'PatchHistory':   return <PatchHistoryBlock entry={entry} />;
+    case 'Build':          return <BuildBlock entry={entry} />;
+    case 'Drops':          return <DropsBlock entry={entry} />;
+    case 'Components':     return <ComponentsBlock entry={entry} onSelectEntry={onSelectEntry} />;
+    default:
+      return (
+        <div className="codex-entry-placeholder">
+          <span className="typo-label-xs">{blockKey}</span>
+        </div>
+      );
+  }
+}
+
+/**
+ * Local wrapper that owns rank state for ModStatsBlock. The block is
+ * controlled so a future full-page mod view can sync rank to the URL;
+ * for now we keep rank in component state defaulted to max rank.
+ */
+function ModStatsBlockSlot({ entry }: { entry: CodexEntry }) {
+  const levelStats = entry.levelStats ?? [];
+  const maxRank = Math.max(0, levelStats.length - 1);
+  const [rank, setRank] = useState(maxRank);
+
+  if (levelStats.length === 0) return null;
+
+  return (
+    <ModStatsBlock
+      levelStats={levelStats}
+      baseDrain={entry.baseDrain ?? 0}
+      rank={rank}
+      onRankChange={setRank}
+    />
+  );
+}

@@ -1,0 +1,242 @@
+/* ================================================================
+   FeaturedSpotlight — the museum centerpiece.
+   Three-column layout on wide canvases (art / meta / recently),
+   collapsing gracefully via container queries.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-md);
+}
+
+.header {
+  display:        flex;
+  align-items:    baseline;
+  justify-content: space-between;
+  gap:            var(--space-sm);
+}
+
+.label {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            10px;
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  margin:         0;
+}
+
+.labelDot {
+  width:         7px;
+  height:        7px;
+  border-radius: 50%;
+  background:    var(--color-accent-gold);
+  box-shadow:    0 0 8px rgba(227, 195, 114, 0.5);
+}
+
+.weekTag {
+  font-family:    var(--font-sans);
+  font-size:      0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+/* ── Layout grid ───────────────────────────────────────────────── */
+
+.grid {
+  display:               grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.85fr);
+  gap:                   1px;
+  background:            var(--color-border-default);
+  border:                1px solid var(--color-border-default);
+  border-radius:         10px;
+  overflow:              hidden;
+  min-height:            340px;
+}
+
+.panel {
+  background: var(--color-bg-secondary);
+  padding:    var(--space-md);
+  display:    flex;
+  flex-direction: column;
+}
+
+/* ── Art panel ─────────────────────────────────────────────────── */
+
+.art {
+  position:        relative;
+  align-items:     center;
+  justify-content: center;
+  padding:         var(--space-lg);
+  background:
+    radial-gradient(ellipse at center, rgba(0, 212, 255, 0.05) 0%, rgba(10, 17, 23, 0) 70%),
+    var(--color-bg-secondary);
+}
+
+.artImage {
+  max-width:      88%;
+  max-height:     100%;
+  object-fit:     contain;
+  filter:         drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
+  transition:     filter 0.25s ease-out, transform 0.25s ease-out;
+}
+
+.art:hover .artImage {
+  filter:    drop-shadow(0 12px 24px rgba(0, 212, 255, 0.18)) brightness(1.05);
+  transform: translateY(-2px);
+}
+
+.artFallback {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           160px;
+  height:          160px;
+  border-radius:   50%;
+  background:      rgba(255, 255, 255, 0.03);
+  font-family:     var(--font-serif);
+  font-size:       3.5rem;
+  color:           var(--color-text-muted);
+}
+
+/* ── Meta panel ────────────────────────────────────────────────── */
+
+.name {
+  font-family:    var(--font-serif);
+  font-weight:    700;
+  font-size:      clamp(1.7rem, 2.6vw, 2.1rem);
+  letter-spacing: 0.01em;
+  color:          var(--color-accent-gold);
+  line-height:    1.1;
+  margin:         0;
+}
+
+.subtitle {
+  display:        flex;
+  align-items:    center;
+  gap:            8px;
+  flex-wrap:      wrap;
+  margin-top:     8px;
+  font-family:    var(--font-sans);
+  font-size:      0.72rem;
+  font-weight:    600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+.subtitleDot { opacity: 0.4; }
+
+.vaultedBadge {
+  color: #b89060;
+}
+
+.rule {
+  width:      48px;
+  height:     2px;
+  background: var(--color-accent-gold);
+  border:     none;
+  margin:     var(--space-md) 0;
+  opacity:    0.7;
+}
+
+.description {
+  font-family: var(--font-sans);
+  font-size:   0.92rem;
+  color:       var(--color-text-primary);
+  line-height: 1.55;
+  margin:      0;
+  /* Clamp to keep the panel uniform regardless of item description length */
+  display:           -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow:          hidden;
+}
+
+.action {
+  align-self:     flex-start;
+  margin-top:     auto;
+  padding-top:    var(--space-md);
+}
+
+.actionBtn {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            8px;
+  padding:        10px 18px;
+  background:     var(--color-accent-gold);
+  color:          var(--color-bg-primary);
+  border:         none;
+  border-radius:  4px;
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor:         pointer;
+  transition:     transform 0.18s ease-out, box-shadow 0.18s ease-out, background 0.18s ease-out;
+}
+
+.actionBtn:hover {
+  transform:  translateY(-1px);
+  box-shadow: 0 6px 14px rgba(227, 195, 114, 0.25);
+  background: color-mix(in srgb, var(--color-accent-gold) 88%, white 12%);
+}
+
+.actionBtn:focus-visible {
+  outline:        2px solid var(--color-accent-teal);
+  outline-offset: 2px;
+}
+
+/* ── Recently-added panel (third column) ───────────────────────── */
+
+.recent {
+  /* RecentlyAdded uses its own module — this just hosts it. */
+  padding: var(--space-md);
+}
+
+/* ── Loading + empty states ────────────────────────────────────── */
+
+.loading,
+.unavailable {
+  grid-column: 1 / -1;
+  display:     flex;
+  align-items: center;
+  justify-content: center;
+  padding:     var(--space-2xl);
+  color:       var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size:   0.9rem;
+  font-style:  italic;
+}
+
+/* ── Container-query responsive collapse ───────────────────────── */
+
+/* Medium canvas: art + meta side-by-side, recently-added drops below */
+@container codex-landing (max-width: 1100px) {
+  .grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  }
+  .recent {
+    grid-column: 1 / -1;
+    border-top:  1px solid var(--color-border-default);
+  }
+}
+
+/* Narrow canvas: everything stacks */
+@container codex-landing (max-width: 720px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .art {
+    min-height: 260px;
+  }
+  .recent {
+    grid-column: 1 / -1;
+  }
+}

@@ -19,7 +19,7 @@ export type NavTab =
   | "void-reliquaries"
   | "arsenal-fabrication"
   | "ascension-registry"
-  | "scholars-arcanum"
+  | "codex"
   | "bazaar-of-seven"
   | "solar-rail-feed"
   | "platinum-ledger"
@@ -60,9 +60,9 @@ export const NAV_ITEMS: NavItem[] = [
     icon: Medal,
   },
   {
-    id: "scholars-arcanum",
-    label: "THE SCHOLAR'S ARCANUM",
-    breadcrumb: "SCHOLARS_ARCANUM",
+    id: "codex",
+    label: "CODEX",
+    breadcrumb: "CODEX",
     icon: BookOpen,
   },
   {

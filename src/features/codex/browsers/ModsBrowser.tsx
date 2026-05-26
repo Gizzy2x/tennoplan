@@ -1,8 +1,21 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { PageHero } from '@/components/ui/PageHero';
-import { ModCardV3 } from './components/ModCardV3';
-import { ModDetailModal } from './components/ModDetailModal';
-import { searchMods, getAllCompatNames, type ModEntry, type ModRarity } from '@/lib/mods/modsAdapter';
+/**
+ * ModsBrowser — grid + filters for the Codex Mods sub-tab.
+ *
+ * Pure browser: filters + grid, no modal. Selection bubbles up to
+ * CodexPage which owns the modal state — that lets the landing's
+ * spotlight and other surfaces open mod detail through the same path
+ * without each consumer managing modal state.
+ */
+
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { ModCardV3 } from '../components/ModCardV3';
+import {
+  useAllMods,
+  useAllCompatNames,
+  filterMods,
+  type ModEntry,
+  type ModRarity,
+} from '@/lib/mods/codexModsAdapter';
 
 const RARITIES: Array<ModRarity | 'all'> = ['all', 'Legendary', 'Rare', 'Uncommon', 'Common'];
 
@@ -16,7 +29,7 @@ function FilterChip({
 }: { active: boolean; label: string; onClick: () => void }) {
   return (
     <button
-      className={`arcanum-chip${active ? ' arcanum-chip--active' : ''}`}
+      className={`codex-browse-chip${active ? ' codex-browse-chip--active' : ''}`}
       onClick={onClick}
     >
       <span className="typo-label-xs">{label}</span>
@@ -24,22 +37,30 @@ function FilterChip({
   );
 }
 
-export function ScholarsArcanumPage() {
-  const [selectedMod, setSelectedMod] = useState<ModEntry | null>(null);
+interface ModsBrowserProps {
+  /** Open a mod in its detail modal. The parent owns the modal state. */
+  onSelectMod:    (mod: ModEntry) => void;
+  /** Lets the parent display a total count in the page hero. */
+  onCountChange?: (count: number) => void;
+}
+
+export function ModsBrowser({ onSelectMod, onCountChange }: ModsBrowserProps) {
   const [query, setQuery]             = useState('');
   const [rarity, setRarity]           = useState<ModRarity | 'all'>('all');
   const [compat, setCompat]           = useState<string | undefined>(undefined);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const allCompats = useMemo(() => getAllCompatNames(), []);
+  const allMods    = useAllMods();
+  const allCompats = useAllCompatNames();
 
   const results = useMemo(
-    () => searchMods({ query, rarity, compatName: compat }),
-    [query, rarity, compat],
+    () => filterMods(allMods, { query, rarity, compatName: compat }),
+    [allMods, query, rarity, compat],
   );
 
   useEffect(() => { setVisibleCount(PAGE_SIZE); }, [query, rarity, compat]);
+  useEffect(() => { onCountChange?.(results.length); }, [results.length, onCountChange]);
 
   useEffect(() => {
     const el = sentinelRef.current;
@@ -61,20 +82,11 @@ export function ScholarsArcanumPage() {
     [results, visibleCount],
   );
 
-  const handleClose = useCallback(() => setSelectedMod(null), []);
-
   return (
-    <div className="arcanum-root">
-      <PageHero
-        prefix="SCHOLAR'S"
-        title="ARCANUM"
-        subtitle={`${results.length.toLocaleString()} mods · Click to inspect`}
-      />
-
-      {/* Search bar */}
-      <div className="arcanum-search-row">
+    <>
+      <div className="codex-browse-search-row">
         <input
-          className="arcanum-search typo-body"
+          className="codex-browse-search typo-body"
           type="search"
           placeholder="Search mods…"
           value={query}
@@ -85,8 +97,7 @@ export function ScholarsArcanumPage() {
         />
       </div>
 
-      {/* Rarity filter */}
-      <div className="arcanum-filter-row">
+      <div className="codex-browse-filter-row">
         {RARITIES.map((r) => (
           <FilterChip
             key={r}
@@ -97,8 +108,7 @@ export function ScholarsArcanumPage() {
         ))}
       </div>
 
-      {/* Compat filter */}
-      <div className="arcanum-filter-row arcanum-filter-row--compat">
+      <div className="codex-browse-filter-row codex-browse-filter-row--compat">
         <FilterChip
           active={compat === undefined}
           label="All Types"
@@ -114,24 +124,23 @@ export function ScholarsArcanumPage() {
         ))}
       </div>
 
-      {/* Results grid */}
       {results.length === 0 ? (
-        <p className="arcanum-empty typo-label-xs">
+        <p className="codex-browse-empty typo-label-xs">
           No mods match the current filter.
         </p>
       ) : (
         <>
-          <div className="arcanum-browse-grid">
+          <div className="codex-browse-grid">
             {visibleResults.map((mod) => (
               <ModCardV3
                 key={mod.uniqueName}
                 mod={mod}
-                onClick={() => setSelectedMod(mod)}
+                onClick={() => onSelectMod(mod)}
               />
             ))}
           </div>
           {visibleCount < results.length && (
-            <div ref={sentinelRef} className="arcanum-load-more">
+            <div ref={sentinelRef} className="codex-browse-load-more">
               <span className="typo-label-xs">
                 Showing {visibleCount} of {results.length} mods — scroll for more
               </span>
@@ -139,11 +148,6 @@ export function ScholarsArcanumPage() {
           )}
         </>
       )}
-
-      {/* Detail modal */}
-      {selectedMod && (
-        <ModDetailModal mod={selectedMod} onClose={handleClose} />
-      )}
-    </div>
+    </>
   );
 }

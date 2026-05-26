@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import clsx from 'clsx';
 import { ModCardV3 } from './ModCardV3';
-import type { ModEntry } from '@/lib/mods/modsAdapter';
+import { ModStatsBlock, computeDisplayDrain } from '@/features/codex/entry/blocks/ModStatsBlock';
+import type { ModEntry } from '@/lib/mods/codexModsAdapter';
 import styles from './ModDetailModal.module.css';
 
 const POLARITY_DISPLAY: Record<string, string> = {
@@ -9,10 +10,6 @@ const POLARITY_DISPLAY: Record<string, string> = {
   zenurik: 'Zenurik (Z)', unairu: 'Unairu (U)', penjaga: 'Penjaga (P)',
   umbra: 'Umbra (Ω)', aura: 'Aura', universal: 'Universal',
 };
-
-function cleanStat(raw: string): string {
-  return raw.replace(/<[A-Z0-9_]+>/g, '').replace(/\\n/g, ' · ').trim();
-}
 
 interface ModDetailModalProps {
   mod: ModEntry;
@@ -22,8 +19,7 @@ interface ModDetailModalProps {
 export function ModDetailModal({ mod, onClose }: ModDetailModalProps) {
   const maxRank = Math.max(0, mod.levelStats.length - 1);
   const [rank, setRank] = useState(maxRank);
-  const stats = useMemo(() => mod.levelStats[rank] ?? [], [mod, rank]);
-  const displayDrain = mod.drain > 0 ? mod.drain + rank : rank + 4;
+  const displayDrain = computeDisplayDrain(mod.drain, rank);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -65,46 +61,12 @@ export function ModDetailModal({ mod, onClose }: ModDetailModalProps) {
 
             <div className={styles['wf-modal-divider']} />
 
-            {/* Rank slider */}
-            <div className={styles['wf-modal-rank-section']}>
-              <div className={styles['wf-modal-rank-header']}>
-                <span className={styles['wf-modal-rank-label']}>RANK</span>
-                <span className={styles['wf-modal-rank-value']}>{rank} / {maxRank}</span>
-              </div>
-              <input
-                type="range"
-                className={styles['wf-modal-slider']}
-                min={0}
-                max={maxRank}
-                step={1}
-                value={rank}
-                onChange={(e) => setRank(Number(e.target.value))}
-              />
-              {maxRank <= 15 && (
-                <div className={styles['wf-modal-rank-ticks']}>
-                  {Array.from({ length: maxRank + 1 }, (_, i) => (
-                    <button
-                      key={i}
-                      className={clsx(styles['wf-modal-tick'], i === rank && styles['wf-modal-tick--active'])}
-                      onClick={() => setRank(i)}
-                    >
-                      {i}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className={styles['wf-modal-divider']} />
-
-            {/* Stats */}
-            <div className={styles['wf-modal-stats']}>
-              <span className={styles['wf-modal-stats-header']}>STATS AT RANK {rank}</span>
-              {stats.length > 0
-                ? stats.map((l, i) => <div key={i} className={styles['wf-modal-stat-row']}>{cleanStat(l)}</div>)
-                : <div className={clsx(styles['wf-modal-stat-row'], styles['wf-modal-stat-empty'])}>No stats at this rank</div>
-              }
-            </div>
+            <ModStatsBlock
+              levelStats={mod.levelStats}
+              baseDrain={mod.drain}
+              rank={rank}
+              onRankChange={setRank}
+            />
 
             {/* Description */}
             {mod.description && (

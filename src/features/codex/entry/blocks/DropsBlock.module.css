@@ -1,0 +1,178 @@
+/* ================================================================
+   DropsBlock — full drop-location table grouped by source.
+   Companion to BestFarmsBlock: BestFarms shows the curated top 5,
+   DropsBlock shows the exhaustive list. Reaches for the data-row
+   typographic pattern from the design system.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+  padding:        var(--space-md);
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  8px;
+}
+
+.label {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  margin:         0;
+}
+
+/* ── Source group section ─────────────────────────────────────── */
+
+.group {
+  display:        flex;
+  flex-direction: column;
+  gap:            6px;
+  padding-top:    var(--space-sm);
+}
+
+.group:first-of-type {
+  padding-top: 0;
+}
+
+.groupHeading {
+  display:        flex;
+  align-items:    baseline;
+  gap:            10px;
+  padding-bottom: 4px;
+  border-bottom:  1px solid color-mix(in srgb, var(--color-border-default) 50%, transparent);
+}
+
+.groupName {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color:          var(--color-text-primary);
+}
+
+.groupCount {
+  font-family:    var(--font-sans);
+  font-size:      0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+/* ── Rows ──────────────────────────────────────────────────────── */
+
+.rows {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+  list-style:     none;
+  padding:        0;
+  margin:         0;
+}
+
+.row {
+  display:        grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  gap:            14px;
+  align-items:    baseline;
+  padding:        8px 10px;
+  border-radius:  6px;
+  transition:     background 0.18s ease-out;
+}
+
+.row:hover {
+  background: color-mix(in srgb, var(--color-bg-primary) 55%, transparent);
+}
+
+.location {
+  font-family: var(--font-sans);
+  font-size:   0.9rem;
+  color:       var(--color-text-primary);
+  white-space: nowrap;
+  overflow:    hidden;
+  text-overflow: ellipsis;
+}
+
+.rotation {
+  font-family:    var(--font-sans);
+  font-size:      0.62rem;
+  font-weight:    700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  min-width:      80px;
+}
+
+.tag {
+  font-family:    var(--font-sans);
+  font-size:      0.58rem;
+  font-weight:    700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding:        2px 6px;
+  border-radius:  3px;
+  border:         1px solid;
+}
+
+.tag--sp {
+  color:        #c89a5f;
+  border-color: rgba(200, 154, 95, 0.45);
+}
+
+.chance {
+  font-family: var(--font-sans);
+  font-size:   0.95rem;
+  font-weight: 700;
+  color:       var(--color-accent-gold);
+  text-align:  right;
+  min-width:   65px;
+}
+
+.toggleRow {
+  display:         flex;
+  justify-content: center;
+  padding-top:     var(--space-sm);
+}
+
+.toggle {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            8px;
+  padding:        7px 16px;
+  background:     transparent;
+  border:         1px solid var(--color-border-default);
+  border-radius:  4px;
+  cursor:         pointer;
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  transition:     border-color 0.18s ease-out, color 0.18s ease-out;
+}
+
+.toggle:hover {
+  border-color: rgba(0, 212, 255, 0.5);
+  color:        var(--color-accent-teal);
+}
+
+/* Narrow: rotation column drops below location */
+@container codex-landing (max-width: 640px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .rotation {
+    grid-column: 1 / -1;
+    min-width:   0;
+    padding-top: 2px;
+  }
+  .tag {
+    grid-column: 1;
+    justify-self: start;
+  }
+}

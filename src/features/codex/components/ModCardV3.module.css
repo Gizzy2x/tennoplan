@@ -608,7 +608,7 @@
   display:        flex;
   flex-direction: column;
   align-items:    center;
-  gap:            var(--v2-content-gap, 5px);
+  gap:            var(--v2-content-gap, 2px);
   margin-top:     var(--v2-art-fade-buffer, 3%);
   padding:        0 8% var(--v2-content-bottom-gap, 1px);
   text-align:     center;
@@ -635,10 +635,10 @@
 
 .stat {
   font-family:    var(--font-modcard-body);
-  font-size:      calc(0.6rem * var(--card-text-scale));
-  font-weight:    300;
+  font-size:      calc(0.8rem * var(--card-text-scale));
+  font-weight:    350;
   letter-spacing: 0.04em;
-  line-height:    1.2;
+  line-height:    1;
   text-shadow:    0 1px 1px rgba(0, 0, 0, 0.7);
 }
 
@@ -646,7 +646,7 @@
 .bottomSpacer {
   grid-row:       3;
   height:         0;
-  padding-bottom: 28%;             /* ~20% of card height (242:338) */
+  padding-bottom: 19%;             /* ~20% of card height (242:338) */
   pointer-events: none;
 }
 

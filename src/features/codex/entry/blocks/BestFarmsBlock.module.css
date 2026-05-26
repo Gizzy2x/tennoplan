@@ -1,0 +1,178 @@
+/* ================================================================
+   BestFarmsBlock — ranked top-5 farm efficiency picks.
+
+   Impeccable discipline:
+     • 4pt spacing rhythm (12 / 16 / 24)
+     • Gold accent reserved for rank ordinal + efficiency bar fill
+     • Subtle row hover lift; no border-left stripes (banned)
+     • Efficiency bar is a single accent fill, NOT a gradient
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+  padding:        var(--space-md);
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  8px;
+}
+
+.label {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  margin:         0;
+}
+
+.list {
+  display:        flex;
+  flex-direction: column;
+  gap:            8px;
+  list-style:     none;
+  padding:        0;
+  margin:         0;
+}
+
+.row {
+  position:       relative;
+  display:        grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  gap:            var(--space-md);
+  align-items:    center;
+  padding:        10px 12px;
+  background:     color-mix(in srgb, var(--color-bg-primary) 55%, transparent);
+  border-radius:  6px;
+  transition:     transform 0.18s ease-out, background 0.18s ease-out;
+}
+
+.row:hover {
+  transform:  translateY(-1px);
+  background: color-mix(in srgb, var(--color-bg-primary) 45%, var(--color-accent-teal) 4%);
+}
+
+.rank {
+  display:        flex;
+  align-items:    center;
+  justify-content: center;
+  width:          32px;
+  height:         32px;
+  border-radius:  50%;
+  background:     rgba(227, 195, 114, 0.1);
+  border:         1px solid rgba(227, 195, 114, 0.35);
+  color:          var(--color-accent-gold);
+  font-family:    var(--font-serif);
+  font-size:      1rem;
+  font-weight:    700;
+  line-height:    1;
+}
+
+.meta {
+  display:        flex;
+  flex-direction: column;
+  gap:            3px;
+  min-width:      0;
+}
+
+.location {
+  font-family: var(--font-sans);
+  font-size:   0.95rem;
+  font-weight: 600;
+  color:       var(--color-text-primary);
+  white-space: nowrap;
+  overflow:    hidden;
+  text-overflow: ellipsis;
+}
+
+.metaRow {
+  display:        flex;
+  align-items:    center;
+  gap:            8px;
+  flex-wrap:      wrap;
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+.metaDot { opacity: 0.4; }
+
+.sourceTag {
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--color-text-primary);
+}
+
+.steelPath {
+  color:        #c89a5f;
+  border:       1px solid rgba(200, 154, 95, 0.4);
+  border-radius: 3px;
+  padding:      1px 5px;
+  font-size:    0.58rem;
+}
+
+.chance {
+  font-family: var(--font-serif);
+  font-size:   1.5rem;
+  font-weight: 700;
+  color:       var(--color-accent-gold);
+  line-height: 1;
+  text-align:  right;
+}
+
+.chanceLabel {
+  display: block;
+  font-family: var(--font-sans);
+  font-size:   0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* Efficiency bar runs the full row width at the bottom */
+.efficiency {
+  position:        absolute;
+  bottom:          3px;
+  left:            12px;
+  right:           12px;
+  height:          2px;
+  background:      rgba(255, 255, 255, 0.04);
+  border-radius:   1px;
+  overflow:        hidden;
+}
+
+.efficiencyFill {
+  position:        absolute;
+  inset:           0;
+  right:           auto;
+  background:      var(--color-accent-gold);
+  transform-origin: left;
+  transition:      width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.notes {
+  grid-column:    2 / -1;
+  font-family:    var(--font-sans);
+  font-size:      0.78rem;
+  color:          var(--color-text-muted);
+  margin:         2px 0 0;
+  font-style:     italic;
+}
+
+/* Narrow container — stack chance below meta, keep rank inline */
+@container codex-landing (max-width: 560px) {
+  .row {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+  .chance {
+    grid-column: 2;
+    text-align:  left;
+    font-size:   1.25rem;
+  }
+}

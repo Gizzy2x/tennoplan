@@ -1,0 +1,106 @@
+/* ================================================================
+   PolaritiesBlock — mod slot polarity indicators.
+   Used by Warframes, Weapons, Companions. Renders each polarity as
+   a tiny SVG sigil with hover labels.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+  padding:        var(--space-md);
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  8px;
+}
+
+.label {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  margin:         0;
+}
+
+.row {
+  display:    flex;
+  align-items: center;
+  gap:         var(--space-sm);
+  flex-wrap:   wrap;
+}
+
+.slot {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           36px;
+  height:          36px;
+  border-radius:   6px;
+  background:      color-mix(in srgb, var(--color-bg-primary) 55%, transparent);
+  border:          1px solid var(--color-border-default);
+  color:           var(--color-accent-gold);
+  position:        relative;
+  transition:      border-color 0.18s ease-out;
+}
+
+.slot:hover,
+.slot:focus-visible {
+  border-color: rgba(0, 212, 255, 0.4);
+}
+
+.slot:focus-visible {
+  outline:        2px solid var(--color-accent-teal);
+  outline-offset: 2px;
+}
+
+/* Aura slot wears a teal ring to distinguish it from regular slots */
+.slot--aura {
+  color:        var(--color-accent-teal);
+  border-color: rgba(0, 212, 255, 0.4);
+}
+
+.icon {
+  width:  18px;
+  height: 18px;
+  display: block;
+}
+
+.iconText {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size:   0.95rem;
+  letter-spacing: 0.02em;
+  color: currentColor;
+}
+
+.tooltip {
+  position:       absolute;
+  bottom:         calc(100% + 6px);
+  left:           50%;
+  transform:      translateX(-50%);
+  padding:        3px 7px;
+  background:     var(--color-bg-primary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  4px;
+  font-family:    var(--font-sans);
+  font-size:      0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  white-space:    nowrap;
+  opacity:        0;
+  pointer-events: none;
+  transition:     opacity 0.15s ease-out;
+}
+
+.slot:hover .tooltip,
+.slot:focus-within .tooltip {
+  opacity: 1;
+}
+
+.muted {
+  opacity:    0.45;
+  color:      var(--color-text-muted);
+}
