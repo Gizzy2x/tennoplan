@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,slnt,wdth,wght,GRAD,XOPQ,XTRA,YOPQ,YTAS,YTDE,YTFI,YTLC,YTUC@8..144,-10..0,25..151,100..900,-200..150,27..175,323..603,25..135,649..854,-305..-98,560..788,416..570,528..760&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@100;200;300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@100;200;300;400&display=swap');
 
 /* ================================================================
    TENNOPLAN — The Orokin Digital Standard
@@ -43,12 +47,21 @@
        url("https://cdn.jsdelivr.net/npm/aileron@1.93/Aileron-Bold.woff") format("woff");
 }
 
+/* Roboto v2.138 (2017 — old-style, matches Warframe's bundled version) */
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/fonts/roboto-old/Roboto-Thin.ttf") format("truetype");
+}
+
 @font-face {
   font-family: "Roboto";
   font-style: normal;
   font-weight: 300;
   font-display: swap;
-  src: url("https://fonts.gstatic.com/s/roboto/v32/KFOkCnqEu92Fr1MmEU9fBBc-.woff2") format("woff2");
+  src: url("/fonts/roboto-old/Roboto-Light.ttf") format("truetype");
 }
 
 @font-face {
@@ -56,7 +69,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("https://fonts.gstatic.com/s/roboto/v32/KFOmCnqEu92Fr1Mu4mxP.woff2") format("woff2");
+  src: url("/fonts/roboto-old/Roboto-Regular.ttf") format("truetype");
 }
 
 @font-face {
@@ -64,7 +77,7 @@
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url("https://fonts.gstatic.com/s/roboto/v32/KFOlCnqEu92Fr1MmEU9fBBc-.woff2") format("woff2");
+  src: url("/fonts/roboto-old/Roboto-Medium.ttf") format("truetype");
 }
 
 @font-face {
@@ -72,7 +85,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("https://fonts.gstatic.com/s/roboto/v32/KFOlCnqEu92Fr1MmWUlfBBc-.woff2") format("woff2");
+  src: url("/fonts/roboto-old/Roboto-Bold.ttf") format("truetype");
 }
 
 @font-face {
@@ -3829,12 +3842,111 @@ a:focus-visible {
 }
 
 /* ================================================================
-   Scholar's Arcanum — Mod Codex Browse + Detail Page
+   Codex — Browse + Detail Page (currently hosts the Mod browser;
+   will host warframes / weapons / etc. as Phase A rolls out)
    ================================================================ */
+
+/* ── Sub-tab nav (within the Codex tab) ────────────────────────── */
+
+.codex-subtabs {
+  display:       flex;
+  align-items:   center;
+  gap:           4px;
+  margin:        var(--space-sm) 0 var(--space-md);
+  border-bottom: 1px solid rgba(77, 70, 56, 0.25);
+}
+
+.codex-subtab {
+  font-family:    var(--font-sans);
+  font-size:      0.68rem;
+  font-weight:    700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding:        10px 18px 12px;
+  border:         none;
+  border-bottom:  2px solid transparent;
+  background:     none;
+  color:          var(--color-text-muted);
+  cursor:         pointer;
+  transition:     color 0.15s ease-out, border-color 0.15s ease-out;
+  margin-bottom:  -1px;
+}
+
+.codex-subtab:hover {
+  color: var(--color-text-primary);
+}
+
+.codex-subtab[data-active='true'] {
+  color:               var(--color-accent-gold);
+  border-bottom-color: var(--color-accent-gold);
+}
+
+.codex-subtab-count {
+  margin-left:    auto;
+  padding-right:  4px;
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  letter-spacing: 0.08em;
+  color:          var(--color-text-muted);
+  align-self:     center;
+}
+
+/* ── Entry detail "back" bar ───────────────────────────────────── */
+
+.codex-back-bar {
+  display:        flex;
+  align-items:    center;
+  margin-bottom:  var(--space-md);
+}
+
+.codex-back-btn {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            6px;
+  padding:        6px 12px;
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  4px;
+  color:          var(--color-text-muted);
+  font-family:    var(--font-sans);
+  font-size:      0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor:         pointer;
+  transition:     border-color 0.15s ease-out, color 0.15s ease-out;
+}
+
+.codex-back-btn:hover {
+  color:        var(--color-text-primary);
+  border-color: rgba(0, 212, 255, 0.45);
+}
+
+/* ── Entry detail container + placeholder block ────────────────── */
+
+.codex-entry {
+  /* Container-query host. Mirrors the codex-landing wrapper so blocks
+     that reference `@container codex-landing (...)` work identically in
+     both the landing AND the detail view — same names, two hosts. */
+  container-name:  codex-landing;
+  container-type:  inline-size;
+
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-md);
+}
+
+.codex-entry-placeholder {
+  padding:       var(--space-md);
+  background:    var(--color-bg-secondary);
+  border:        1px dashed var(--color-border-default);
+  border-radius: 6px;
+  color:         var(--color-text-muted);
+}
+
 
 /* ── Root container ─────────────────────────────────────────────── */
 
-.arcanum-root {
+.codex-browse-root {
   display:        flex;
   flex-direction: column;
   gap:            0;
@@ -3842,11 +3954,11 @@ a:focus-visible {
 
 /* ── Search bar ─────────────────────────────────────────────────── */
 
-.arcanum-search-row {
+.codex-browse-search-row {
   margin-bottom: var(--space-md);
 }
 
-.arcanum-search {
+.codex-browse-search {
   width:            100%;
   background:       var(--color-bg-secondary);
   border:           1px solid var(--color-border-default);
@@ -3859,19 +3971,19 @@ a:focus-visible {
   transition:       border-color 0.15s ease-out;
 }
 
-.arcanum-search::placeholder { color: var(--color-text-muted); }
-.arcanum-search:focus         { border-color: rgba(0, 212, 255, 0.45); }
+.codex-browse-search::placeholder { color: var(--color-text-muted); }
+.codex-browse-search:focus         { border-color: rgba(0, 212, 255, 0.45); }
 
 /* ── Filter chips ───────────────────────────────────────────────── */
 
-.arcanum-filter-row {
+.codex-browse-filter-row {
   display:     flex;
   flex-wrap:   wrap;
   gap:         var(--space-xs);
   margin-bottom: var(--space-sm);
 }
 
-.arcanum-filter-row--compat {
+.codex-browse-filter-row--compat {
   max-height:     44px;
   overflow:       hidden;
   flex-wrap:      nowrap;
@@ -3881,9 +3993,9 @@ a:focus-visible {
   margin-bottom:  var(--space-md);
 }
 
-.arcanum-filter-row--compat::-webkit-scrollbar { display: none; }
+.codex-browse-filter-row--compat::-webkit-scrollbar { display: none; }
 
-.arcanum-chip {
+.codex-browse-chip {
   display:        inline-flex;
   align-items:    center;
   gap:            var(--space-xs);
@@ -3898,18 +4010,18 @@ a:focus-visible {
   flex-shrink:    0;
 }
 
-.arcanum-chip:hover {
+.codex-browse-chip:hover {
   border-color: rgba(0, 212, 255, 0.3);
   color:        var(--color-text-primary);
 }
 
-.arcanum-chip--active {
+.codex-browse-chip--active {
   background:   rgba(0, 212, 255, 0.08);
   border-color: rgba(0, 212, 255, 0.5);
   color:        var(--color-accent-teal);
 }
 
-.arcanum-chip-count {
+.codex-browse-chip-count {
   display:       inline-flex;
   align-items:   center;
   justify-content: center;
@@ -3924,7 +4036,7 @@ a:focus-visible {
 
 /* ── Browse grid ────────────────────────────────────────────────── */
 
-.arcanum-browse-grid {
+.codex-browse-grid {
   display:               grid;
   grid-template-columns: repeat(auto-fill, calc(170px * var(--card-size-scale)));
   gap:                   30px 20px;
@@ -3933,13 +4045,13 @@ a:focus-visible {
   padding:               16px 0;
 }
 
-.arcanum-load-more {
+.codex-browse-load-more {
   text-align:  center;
   padding:     var(--space-xl) 0 var(--space-2xl);
   color:       var(--color-text-muted);
 }
 
-.arcanum-empty {
+.codex-browse-empty {
   color:       var(--color-text-muted);
   padding:     var(--space-2xl) 0;
   text-align:  center;
@@ -3947,13 +4059,13 @@ a:focus-visible {
 
 /* ================================================================
    Warframe Mod Card styles have moved to a CSS Module:
-     src/features/scholars-arcanum/components/ModCard.module.css
+     src/features/codex/components/ModCardV3.module.css
    Edit there for any mod card visual changes.
    ================================================================ */
 
 /* ================================================================
    Mod Detail Modal styles have moved to a CSS Module:
-     src/features/scholars-arcanum/components/ModDetailModal.module.css
+     src/features/codex/components/ModDetailModal.module.css
    Edit there for any modal visual changes.
    ================================================================ */
 
