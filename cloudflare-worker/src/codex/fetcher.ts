@@ -1,23 +1,19 @@
 // ---------------------------------------------------------------------------
 // Codex fetcher — pulls every upstream JSON blob the codex pipeline needs.
 //
-// Sources:
-//   • calamity-inc/warframe-public-export-plus  (12 JSON files; ~30 MB total)
-//   • drops.warframestat.us/data/all.json       (WFCD drops; ~10 MB)
+// WFCD-only sources (post-2026-05-26 refactor):
+//   • mods, warframes, weapons, sentinels, pets, arcanes, relics, resources, gear
+//   • drops (location-keyed; parser inverts to per-item drops)
 //
-// Strategy:
-//   • All calamity files fetched in parallel batches (config.concurrency).
-//     Cloudflare caps simultaneous subrequests during scheduled events.
-//   • WFCD drops has primary + GitHub-raw fallback.
-//   • If ANY required calamity file fails, throw — partial codex would
-//     produce broken TennoplanItems. We refuse to commit garbage.
-//   • WFCD drops failure is recoverable: codex can ship without drops
-//     (degraded quality), but every drop-bearing item loses bestFarms.
-//     Returns null and lets the merger handle absence.
+// Each per-category fetch:
+//   • Primary:  api.warframestat.us/<category> with ?only= filter (small)
+//   • Fallback: raw.githubusercontent.com/WFCD/warframe-items (full payload)
+//   • Returns the parsed JSON, or null if BOTH paths fail. Downstream
+//     parsers tolerate null absence — codex still ships with reduced
+//     coverage rather than refusing to commit.
 //
-// Output:
-//   RawCodexBlobs — every fetched payload as `unknown`, parsed JSON.
-//   Downstream parser (C.2) does the type-narrowing into lookup maps.
+// Only `drops` carries a `source` attribution because the merge logic
+// downstream conditions on it; item categories don't need it.
 // ---------------------------------------------------------------------------
 
 import { config } from '../config';
@@ -29,154 +25,77 @@ const warn = (msg: string, data?: unknown) => logger.warn('codex-fetcher',  msg,
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
-export interface RawCalamityBlobs {
-  warframes:        unknown;
-  weapons:          unknown;
-  sentinels:        unknown;
-  abilities:        unknown;
-  upgrades:         unknown;
-  recipes:          unknown;
-  relics:           unknown;
-  arcanes:          unknown;
-  resources:        unknown;
-  keys:             unknown;
-  flavour:          unknown;
-  fusionBundles:    unknown;
-  gear:             unknown;
-  /**
-   * English locale dictionary — flat map of localization key → display name.
-   * Calamity export files store `name` as a localization key like
-   * "/Lotus/Language/Items/SupportArchwingName"; resolving it via dict.en.json
-   * yields the human-readable English name ("Amesha") which WFCD uses.
-   */
-  localeDict:       unknown;
-}
-
-export interface RawCodexBlobs extends RawCalamityBlobs {
+export interface RawCodexBlobs {
   /** WFCD drops payload, or null if both sources failed. */
-  drops: unknown | null;
-  /** Source attribution for the drops blob: 'wfcd' (primary), 'wfcd-github' (fallback), or null on failure. */
-  dropsSource: 'wfcd' | 'wfcd-github' | null;
+  drops:        unknown | null;
+  /** Source attribution for drops: 'wfcd' (primary), 'wfcd-github' (fallback), or null. */
+  dropsSource:  'wfcd' | 'wfcd-github' | null;
+
+  // Per-category item universes. null = both primary + fallback failed.
+  mods:         unknown | null;
+  warframes:    unknown | null;
+  weapons:      unknown | null;
+  sentinels:    unknown | null;
+  pets:         unknown | null;
+  arcanes:      unknown | null;
+  relics:       unknown | null;
+  resources:    unknown | null;
+  gear:         unknown | null;
+  misc:         unknown | null;
 }
 
-// ─── Fetch helpers ────────────────────────────────────────────────────────────
+// ─── Internal helpers ─────────────────────────────────────────────────────────
 
 async function fetchJson(url: string, timeoutMs: number, retries = 1): Promise<unknown> {
   const res = await fetchWithRetry(url, { timeoutMs, retries });
   return JSON.parse(res.text);
 }
 
-/**
- * Run an async fn over a list of inputs with bounded concurrency.
- * Returns results in input order. If any task throws, the whole call
- * rejects with that error — there's no partial-success semantics here
- * because a half-fetched codex is useless.
- */
-async function pmap<T, R>(items: readonly T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
-  const results = new Array<R>(items.length);
-  let cursor = 0;
+function errMsg(e: unknown): string {
+  return e instanceof Error ? e.message : String(e);
+}
 
-  async function worker(): Promise<void> {
-    while (cursor < items.length) {
-      const i = cursor++;
-      const it = items[i];
-      if (it === undefined) continue;
-      results[i] = await fn(it);
-    }
+/**
+ * Generic primary-with-GitHub-fallback fetch. Returns the parsed JSON, or
+ * null if both fail. Logs source attribution so we can spot when fallbacks
+ * fire repeatedly in production.
+ */
+async function fetchWithFallback(label: string, primary: string, fallback: string): Promise<unknown | null> {
+  const t0 = Date.now();
+  try {
+    const data = await fetchJson(primary, config.codex.fetchTimeoutMs, 2);
+    log(`fetched ${label} (primary)`, { ms: Date.now() - t0 });
+    return data;
+  } catch (e) {
+    warn(`${label} primary failed, trying GitHub fallback`, { error: errMsg(e) });
   }
-
-  const workers = Array.from({ length: Math.min(limit, items.length) }, worker);
-  await Promise.all(workers);
-  return results;
-}
-
-// ─── Calamity ─────────────────────────────────────────────────────────────────
-
-/**
- * Fetch a single calamity file by basename (e.g. 'ExportWarframes.json').
- * Returns parsed JSON.
- */
-export async function fetchCalamityFile(filename: string): Promise<unknown> {
-  const url = config.codex.calamityBaseUrl + filename;
-  return fetchJson(url, config.codex.fetchTimeoutMs, 1);
-}
-
-/**
- * Fetch all calamity export files + locale dictionary in parallel batches.
- * Throws if ANY required file fails (a partial codex is unsafe to ship).
- */
-export async function fetchAllCalamity(): Promise<RawCalamityBlobs> {
-  const files = config.codex.calamityFiles;
-  log('fetching calamity exports', { count: files.length, concurrency: config.codex.concurrency });
-
-  const started = Date.now();
-
-  // Fetch exports + locale dict in parallel. Dict uses same base URL.
-  const [results, localeDict] = await Promise.all([
-    pmap(files, config.codex.concurrency, async (name) => {
-      const t0 = Date.now();
-      const data = await fetchCalamityFile(name);
-      log('fetched', { file: name, ms: Date.now() - t0 });
-      return [name, data] as const;
-    }),
-    fetchCalamityFile('dict.en.json'),
-  ]);
-
-  log('calamity batch complete', { ms: Date.now() - started });
-
-  // Map filenames → field names. Unknown file in the list = type error
-  // (rather than silent miss) thanks to readonly tuple inference.
-  const lookup = new Map<string, unknown>(results);
-  return {
-    warframes:     requireFile(lookup, 'ExportWarframes.json'),
-    weapons:       requireFile(lookup, 'ExportWeapons.json'),
-    sentinels:     requireFile(lookup, 'ExportSentinels.json'),
-    abilities:     requireFile(lookup, 'ExportAbilities.json'),
-    upgrades:      requireFile(lookup, 'ExportUpgrades.json'),
-    recipes:       requireFile(lookup, 'ExportRecipes.json'),
-    relics:        requireFile(lookup, 'ExportRelics.json'),
-    arcanes:       requireFile(lookup, 'ExportArcanes.json'),
-    resources:     requireFile(lookup, 'ExportResources.json'),
-    keys:          requireFile(lookup, 'ExportKeys.json'),
-    flavour:       requireFile(lookup, 'ExportFlavour.json'),
-    fusionBundles: requireFile(lookup, 'ExportFusionBundles.json'),
-    gear:          requireFile(lookup, 'ExportGear.json'),
-    localeDict,
-  };
-}
-
-function requireFile(lookup: Map<string, unknown>, name: string): unknown {
-  const v = lookup.get(name);
-  if (v === undefined) {
-    throw new Error(`Calamity fetch missing required file: ${name}`);
+  try {
+    const data = await fetchJson(fallback, config.codex.fetchTimeoutMs, 2);
+    log(`fetched ${label} (github fallback)`, { ms: Date.now() - t0 });
+    return data;
+  } catch (e) {
+    warn(`${label} fallback failed — category will be missing this sync`, { error: errMsg(e) });
+    return null;
   }
-  return v;
 }
 
-// ─── WFCD drops ───────────────────────────────────────────────────────────────
+// ─── Drops (separate because it also reports source attribution) ──────────────
 
-/**
- * Fetch the WFCD drops payload. Tries the primary CDN first, then the
- * raw GitHub mirror. Returns the parsed JSON plus a source attribution
- * so the merger can score data quality. Returns null on both failures —
- * codex still ships without drops, just with degraded quality.
- */
-export async function fetchWfcdDrops(): Promise<{ data: unknown; source: 'wfcd' | 'wfcd-github' } | null> {
+async function fetchDrops(): Promise<{ data: unknown; source: 'wfcd' | 'wfcd-github' } | null> {
   const t0 = Date.now();
   try {
     const data = await fetchJson(config.codex.wfcdDropsUrl, config.codex.fetchTimeoutMs, 2);
-    log('fetched WFCD drops (primary)', { ms: Date.now() - t0 });
+    log('fetched drops (primary)', { ms: Date.now() - t0 });
     return { data, source: 'wfcd' };
   } catch (e) {
-    warn('WFCD primary failed, falling back to GitHub', { error: errMsg(e) });
+    warn('drops primary failed, falling back to GitHub', { error: errMsg(e) });
   }
-
   try {
     const data = await fetchJson(config.codex.wfcdDropsFallbackUrl, config.codex.fetchTimeoutMs, 2);
-    log('fetched WFCD drops (fallback)', { ms: Date.now() - t0 });
+    log('fetched drops (github fallback)', { ms: Date.now() - t0 });
     return { data, source: 'wfcd-github' };
   } catch (e) {
-    warn('WFCD fallback failed too — codex will ship without drops', { error: errMsg(e) });
+    warn('drops fallback failed — codex will ship without drop data', { error: errMsg(e) });
     return null;
   }
 }
@@ -184,32 +103,50 @@ export async function fetchWfcdDrops(): Promise<{ data: unknown; source: 'wfcd' 
 // ─── Top-level entry point ────────────────────────────────────────────────────
 
 /**
- * Fetch every upstream blob the codex pipeline needs, in parallel.
- * Calamity exports are required (throws on any failure).
- * WFCD drops are recoverable (returns null, downstream handles absence).
+ * Fetch every WFCD source the codex needs. All categories run concurrently;
+ * each one tolerates its own failure (returns null) so a single down endpoint
+ * doesn't sink the whole sync. Validator decides whether the result is
+ * shippable based on per-category presence + total item count.
  */
 export async function fetchAllCodexSources(): Promise<RawCodexBlobs> {
   const started = Date.now();
+  const c = config.codex;
 
-  const [calamity, drops] = await Promise.all([
-    fetchAllCalamity(),
-    fetchWfcdDrops(),
+  const [
+    drops,
+    mods, warframes, weapons, sentinels, pets, arcanes, relics, resources, gear, misc,
+  ] = await Promise.all([
+    fetchDrops(),
+    fetchWithFallback('mods',      c.wfcdModsUrl,      c.wfcdModsFallbackUrl),
+    fetchWithFallback('warframes', c.wfcdWarframesUrl, c.wfcdWarframesFallbackUrl),
+    fetchWithFallback('weapons',   c.wfcdWeaponsUrl,   c.wfcdWeaponsFallbackUrl),
+    fetchWithFallback('sentinels', c.wfcdSentinelsUrl, c.wfcdSentinelsFallbackUrl),
+    fetchWithFallback('pets',      c.wfcdPetsUrl,      c.wfcdPetsFallbackUrl),
+    fetchWithFallback('arcanes',   c.wfcdArcanesUrl,   c.wfcdArcanesFallbackUrl),
+    fetchWithFallback('relics',    c.wfcdRelicsUrl,    c.wfcdRelicsFallbackUrl),
+    fetchWithFallback('resources', c.wfcdResourcesUrl, c.wfcdResourcesFallbackUrl),
+    fetchWithFallback('gear',      c.wfcdGearUrl,      c.wfcdGearFallbackUrl),
+    fetchWithFallback('misc',      c.wfcdMiscUrl,      c.wfcdMiscFallbackUrl),
   ]);
 
   log('all codex sources fetched', {
-    ms:           Date.now() - started,
-    dropsSource:  drops?.source ?? 'unavailable',
+    ms:          Date.now() - started,
+    dropsSource: drops?.source ?? 'unavailable',
+    mods:        mods      != null ? 'ok' : 'unavailable',
+    warframes:   warframes != null ? 'ok' : 'unavailable',
+    weapons:     weapons   != null ? 'ok' : 'unavailable',
+    sentinels:   sentinels != null ? 'ok' : 'unavailable',
+    pets:        pets      != null ? 'ok' : 'unavailable',
+    arcanes:     arcanes   != null ? 'ok' : 'unavailable',
+    relics:      relics    != null ? 'ok' : 'unavailable',
+    resources:   resources != null ? 'ok' : 'unavailable',
+    gear:        gear      != null ? 'ok' : 'unavailable',
+    misc:        misc      != null ? 'ok' : 'unavailable',
   });
 
   return {
-    ...calamity,
     drops:       drops?.data ?? null,
     dropsSource: drops?.source ?? null,
+    mods, warframes, weapons, sentinels, pets, arcanes, relics, resources, gear, misc,
   };
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function errMsg(e: unknown): string {
-  return e instanceof Error ? e.message : String(e);
 }

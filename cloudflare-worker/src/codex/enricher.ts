@@ -1,34 +1,32 @@
 // ---------------------------------------------------------------------------
-// Codex enricher — turn merged items into TennoplanItem-shaped records.
+// Codex enricher — turn BuiltItem records into TennoplanItem-shaped output.
 //
 // Inputs:
-//   • MergedCodex from merger.ts (per-item drops/recipe/relic-contents/ducat)
-//   • ParsedCodex from parser.ts (lookup maps for cross-item resolution)
+//   • BuiltCodex from builder.ts (per-item drops/relic/ducat)
+//   • ParsedCodex from parser.ts (per-category WFCD records keyed by uniqueName)
 //
-// What we add here:
-//   • iconUrl + thumbUrl (resolved from calamity texture/image fields)
-//   • dropLocations: ParsedDrop[] → DropLocation[] (final shape)
-//   • bestFarms: scored efficiency ranking, top 5 (chance ÷ effort minutes)
-//   • relicRewards: relicContents → RelicReward (collapsed by item, with
-//     intact/exceptional/radiant chances per state)
-//   • vaulted: a Prime part is vaulted iff none of its containing relics
-//     currently appears as a mission/bounty/sortie/transient drop
-//   • tradeable / marketable: category-based heuristic
-//   • masteryRank: from raw.masteryRequirement
-//   • rarity: from drop entries (highest tier observed)
-//   • stats: per-category extraction (warframes: HP/shield/armor/...,
-//             weapons: damage/firerate/crit/..., mods: drain/maxRank)
-//   • abilities: from raw.abilities (warframes) or abilities (sentinels)
-//   • polarities: from raw.polarities
-//   • baseDrain: from raw (mods)
-//   • buildRequirements: recipe.ingredients → { item, count } with display
-//     names resolved via the global name index
+// What we do:
+//   • Resolve iconUrl from the WFCD record's `imageName`
+//   • Convert ParsedDrop[] → DropLocation[] (final shape)
+//   • Rank bestFarms: top 5 efficient drop sources per item
+//   • Build relicRewards (collapsed Intact/Exceptional/Radiant chances)
+//   • Detect vaulted state for Prime parts
+//   • Set tradeable/marketable based on category + per-row tradable
+//   • Extract per-category fields:
+//       - Warframe: stats (health/shield/armor/...), abilities, polarities,
+//                   auraPolarity, components → buildRequirements
+//       - Weapon:   stats (damage/firerate/crit/...), components, masteryRank
+//       - Mod:      levelStats, polarity, compatName, isAugment, isExilus,
+//                   modSet, baseDrain, imageName
+//       - Arcane:   levelStats, rarity
+//       - Relic:    rewards collapsed into relicRewards
+//       - Sentinel/Pet: stats, abilities, polarities, components
+//   • Wiki-equivalent metadata: wikiUrl, introduced, releaseDate, patchHistory
 //
 // What we DON'T do (stays for normalizer / validator):
 //   • Add metadata (dataVersion, lastUpdated, source, quality)
-//   • Strip pipeline-internal fields
-//   • Filter rows missing required fields
-//   • Compute the codex-wide quality score
+//   • Strip pipeline-internal hints
+//   • Filter incomplete rows (validator's job)
 // ---------------------------------------------------------------------------
 
 import { logger } from '../logger';
@@ -45,11 +43,31 @@ import type {
   Ability,
   BuildRequirement,
   TennoplanItem,
+  PatchLogEntry,
+  IntroducedInfo,
 } from '../types';
-import type { CalamityRow, ParsedCodex, ParsedDrop, DropRarity } from './parser';
-import type { MergedCodex, MergedItem, RelicContent } from './merger';
+import type {
+  ParsedCodex,
+  ParsedDrop,
+  DropRarity,
+  WfcdMod,
+  WfcdWarframe,
+  WfcdWeapon,
+  WfcdSentinel,
+  WfcdPet,
+  WfcdArcane,
+  WfcdRelic,
+  WfcdResource,
+  WfcdGear,
+  WfcdMisc,
+  WfcdComponent,
+  WfcdAbility,
+  WfcdIntroduced,
+  WfcdPatchLog,
+} from './parser';
+import type { BuiltCodex, BuiltItem, RelicContent } from './builder';
 
-const log = (msg: string, data?: unknown) => logger.info('codex-enricher', msg, data);
+const log  = (msg: string, data?: unknown) => logger.info('codex-enricher', msg, data);
 const warn = (msg: string, data?: unknown) => logger.warn('codex-enricher', msg, data);
 
 // ─── Public types ─────────────────────────────────────────────────────────────
@@ -62,8 +80,6 @@ const warn = (msg: string, data?: unknown) => logger.warn('codex-enricher', msg,
 export type EnrichedItem =
   Omit<TennoplanItem, 'dataVersion' | 'lastUpdated' | 'source' | 'quality'>
   & {
-    /** Reasons the validator should consider when scoring this item.
-     *  Stripped by the normalizer. */
     _qualityHints?: string[];
   };
 
@@ -83,14 +99,14 @@ export interface EnrichedCodex {
 
 // ─── Top-level entry point ────────────────────────────────────────────────────
 
-export function enrichCodex(merged: MergedCodex, parsed: ParsedCodex): EnrichedCodex {
+export function enrichCodex(built: BuiltCodex, parsed: ParsedCodex): EnrichedCodex {
   const t0 = Date.now();
 
-  const ctx = buildContext(merged, parsed);
+  const ctx = buildContext(parsed);
   const items: EnrichedItem[] = [];
   const hintCounts: Record<string, number> = {};
 
-  for (const m of merged.items) {
+  for (const m of built.items) {
     const enriched = enrichItem(m, ctx);
     items.push(enriched);
     if (enriched._qualityHints) {
@@ -112,7 +128,7 @@ export function enrichCodex(merged: MergedCodex, parsed: ParsedCodex): EnrichedC
   });
 
   if (stats.itemsWithIcons < items.length / 2) {
-    warn('over half of items missing icons — calamity texture/image fields may have changed shape');
+    warn('over half of items missing icons — WFCD imageName field may have shifted');
   }
 
   return { items, stats };
@@ -122,77 +138,61 @@ export function enrichCodex(merged: MergedCodex, parsed: ParsedCodex): EnrichedC
 
 interface EnrichmentContext {
   parsed: ParsedCodex;
-  /** All item display names → uniqueName, for ingredient resolution. */
-  nameToUnique: Map<string, string>;
   /** Set of relic display names that currently appear as a drop in a
-   *  non-relic source (mission/bounty/sortie/transient). Used for vaulted
-   *  detection: a Prime part is vaulted iff NONE of its containing relics
-   *  show up here. */
+   *  non-relic source. Used for vaulted detection. */
   activeRelics: Set<string>;
 }
 
-function buildContext(merged: MergedCodex, parsed: ParsedCodex): EnrichmentContext {
-  // Display name → uniqueName. First entry wins on collisions; we'd rather
-  // pick a stable mapping than oscillate between calamity patches.
-  const nameToUnique = new Map<string, string>();
-  for (const item of merged.items) {
-    if (!nameToUnique.has(item.name)) {
-      nameToUnique.set(item.name, item.uniqueName);
-    }
-  }
-
-  // Walk every drop to find which relics are currently dropping. The drop
-  // entries live on items already; checking parsed.allDrops is faster than
-  // re-walking merged.items.drops.
+function buildContext(parsed: ParsedCodex): EnrichmentContext {
   const activeRelics = new Set<string>();
   if (parsed.allDrops.length > 0) {
     for (const drop of parsed.allDrops) {
-      if (drop.source === 'relic') continue;     // relic-content drops don't count
+      if (drop.source === 'relic') continue;
       if (looksLikeRelicName(drop.itemName)) activeRelics.add(drop.itemName);
     }
   }
-
-  return { parsed, nameToUnique, activeRelics };
+  return { parsed, activeRelics };
 }
 
 // ─── Per-item enrichment ──────────────────────────────────────────────────────
 
-function enrichItem(m: MergedItem, ctx: EnrichmentContext): EnrichedItem {
+type WfcdAny =
+  | WfcdMod | WfcdWarframe | WfcdWeapon | WfcdSentinel | WfcdPet
+  | WfcdArcane | WfcdRelic | WfcdResource | WfcdGear | WfcdMisc;
+
+function enrichItem(m: BuiltItem, ctx: EnrichmentContext): EnrichedItem {
   const hints: string[] = [];
 
-  const { iconUrl, thumbUrl } = resolveIcons(m.raw);
+  const wfcd = lookupWfcdRecord(m, ctx.parsed);
+
+  // Synthetic component items don't have a per-category WFCD record —
+  // their data comes from the embedded componentRecord on BuiltItem.
+  const imageName = m.componentRecord?.imageName
+    ?? (wfcd && 'imageName' in wfcd ? wfcd.imageName : undefined);
+  const iconUrl   = resolveIconUrl(imageName, m.name);
   if (!iconUrl) hints.push('missing-icon');
 
-  const dropLocations = m.drops.map(d => toDropLocation(d, m.uniqueName));
+  // Cap drop entries per item — frontend only renders a top-N list and the
+  // long tail is the CPU/stringify hot spot for items like Hornet Strike (91
+  // enemy drops). Sort by chance and keep the top 15.
+  const sortedDrops = m.drops.length > MAX_DROP_LOCATIONS_PER_ITEM
+    ? [...m.drops].sort((a, b) => b.chance - a.chance).slice(0, MAX_DROP_LOCATIONS_PER_ITEM)
+    : m.drops;
+  const dropLocations = sortedDrops.map(d => toDropLocation(d, m.uniqueName));
   if (m.drops.length > 0 && dropLocations.length === 0) hints.push('drops-not-mappable');
 
   const bestFarms = rankBestFarms(dropLocations);
-
   const relicRewards = m.relicContents ? buildRelicRewards(m.relicContents) : undefined;
 
-  const masteryRank = pickNumber(m.raw, 'masteryRequirement', 'masteryReq', 'masteryRank');
-  const rarity      = inferItemRarity(m.drops);
-  const polarities  = pickStringArray(m.raw, 'polarities');
-  const baseDrain   = pickNumber(m.raw, 'fusionLimit', 'baseDrain');
-  const stats       = extractStats(m);
-  const abilities   = extractAbilities(m, ctx);
-  const buildRequirements = m.recipe?.ingredients
-    ? buildIngredientList(m.recipe.ingredients, ctx)
-    : undefined;
-  const color       = pickString(m.raw, 'primaryColor', 'color');
-  const type        = pickString(m.raw, 'productCategory', 'type', 'slot');
-  const description = pickString(m.raw, 'description', 'codexSecret');
-  void description; // reserved — TennoplanItem doesn't include description today
+  const description = m.componentRecord?.description
+    ?? (wfcd && 'description' in wfcd ? wfcd.description : undefined);
+  const introduced  = wfcd && 'introduced'  in wfcd && wfcd.introduced  ? toIntroduced(wfcd.introduced)   : undefined;
+  const patchHistory = wfcd && 'patchlogs'   in wfcd && wfcd.patchlogs   ? toPatchHistory(wfcd.patchlogs) : undefined;
+  const wikiUrl      = wfcd && 'wikiaUrl'    in wfcd ? wfcd.wikiaUrl    : undefined;
+  const releaseDate  = wfcd && 'releaseDate' in wfcd ? wfcd.releaseDate : undefined;
 
-  const vaulted    = inferVaulted(m, ctx);
-  const tradeable  = inferTradeable(m.category);
-  const marketable = inferMarketable(m.category);
-
-  // Required field check — flag for validator. We don't drop here; that's
-  // validator's job. Just record so the run quality score reflects gaps.
   if (!m.uniqueName) hints.push('missing-uniqueName');
   if (!m.name)       hints.push('missing-name');
-  if (!iconUrl)      hints.push('missing-icon');
 
   const item: EnrichedItem = {
     uniqueName: m.uniqueName,
@@ -202,65 +202,287 @@ function enrichItem(m: MergedItem, ctx: EnrichmentContext): EnrichedItem {
     dropLocations,
   };
 
-  if (thumbUrl)                         item.thumbUrl     = thumbUrl;
-  if (color)                            item.color        = color;
-  if (type)                             item.type         = type;
-  if (masteryRank !== undefined)        item.masteryRank  = masteryRank;
-  if (rarity)                           item.rarity       = rarity;
-  if (vaulted !== undefined)            item.vaulted      = vaulted;
-  if (tradeable !== undefined)          item.tradeable    = tradeable;
-  if (marketable !== undefined)         item.marketable   = marketable;
-  if (bestFarms && bestFarms.length)    item.bestFarms    = bestFarms;
+  if (description)                         item.description  = description;
+  if (introduced)                          item.introduced   = introduced;
+  if (patchHistory && patchHistory.length) item.patchHistory = patchHistory;
+  if (wikiUrl)                             item.wikiUrl      = wikiUrl;
+  if (releaseDate)                         item.releaseDate  = releaseDate;
+
+  if (bestFarms && bestFarms.length)       item.bestFarms    = bestFarms;
   if (relicRewards && relicRewards.length) item.relicRewards = relicRewards;
-  if (stats)                            item.stats        = stats;
-  if (abilities && abilities.length)    item.abilities    = abilities;
-  if (polarities && polarities.length)  item.polarities   = polarities;
-  if (baseDrain !== undefined)          item.baseDrain    = baseDrain;
-  if (buildRequirements && buildRequirements.length) item.buildRequirements = buildRequirements;
-  if (m.ducatValue !== undefined)       item.ducatValue   = m.ducatValue;
-  if (hints.length)                     item._qualityHints = hints;
+  if (m.ducatValue !== undefined)          item.ducatValue   = m.ducatValue;
+
+  // Default rarity inferred from drops; per-category overrides below.
+  const rarity = inferItemRarity(m.drops);
+  if (rarity) item.rarity = rarity;
+
+  // Per-category field extraction.
+  switch (m.source) {
+    case 'mod':       applyModFields      (item, wfcd as WfcdMod | undefined);      break;
+    case 'warframe':  applyWarframeFields (item, wfcd as WfcdWarframe | undefined); break;
+    case 'weapon':    applyWeaponFields   (item, wfcd as WfcdWeapon | undefined);   break;
+    case 'sentinel':  applySentinelFields (item, wfcd as WfcdSentinel | undefined); break;
+    case 'pet':       applyPetFields      (item, wfcd as WfcdPet | undefined);      break;
+    case 'arcane':    applyArcaneFields   (item, wfcd as WfcdArcane | undefined);   break;
+    case 'relic':     applyRelicFields    (item, wfcd as WfcdRelic | undefined);    break;
+    case 'resource':  applyResourceFields (item, wfcd as WfcdResource | undefined); break;
+    case 'gear':      applyGearFields     (item, wfcd as WfcdGear | undefined);     break;
+    case 'misc':      applyResourceFields (item, wfcd as WfcdMisc | undefined);     break;
+    case 'component': /* fields already applied above via componentRecord */ break;
+  }
+
+  // Tradeable: per-row tradable wins (component's own tradable → WFCD's tradable → category default).
+  const componentTradable = m.componentRecord?.tradable;
+  const wfcdTradable      = wfcd && 'tradable' in wfcd && typeof wfcd.tradable === 'boolean' ? wfcd.tradable : undefined;
+  const rowTradable       = componentTradable !== undefined ? componentTradable : wfcdTradable;
+  const tradeable         = rowTradable !== undefined ? rowTradable : inferTradeable(m.category);
+  if (tradeable !== undefined) item.tradeable = tradeable;
+
+  const marketable = inferMarketable(m.category);
+  if (marketable !== undefined) item.marketable = marketable;
+
+  // Vaulted: relics carry it from WFCD directly; Prime parts infer from active relics.
+  if (m.source === 'relic') {
+    // applyRelicFields already set item.vaulted from WFCD's vaulted flag.
+  } else {
+    const vaulted = inferVaulted(m, ctx);
+    if (vaulted !== undefined) item.vaulted = vaulted;
+  }
+
+  if (hints.length) item._qualityHints = hints;
 
   return item;
 }
 
-// ─── Icon resolution ──────────────────────────────────────────────────────────
-//
-// Calamity rows expose icons via a small set of fields, in rough preference
-// order:
-//   • imageName  — warframestat-style hashed filename ("volt-9d8a7c.png")
-//   • icon       — sometimes a path, sometimes a full URL
-//   • textureLocation — internal Lotus path ("/Lotus/Interface/Icons/...")
-//
-// We try each in turn, defaulting to a slug-based CDN guess. Worst case the
-// frontend's <ItemIcon> component falls back to /lotus-placeholder.svg.
+// ─── WFCD record lookup ───────────────────────────────────────────────────────
 
-const CDN_BASE     = 'https://cdn.warframestat.us/img';
-const BROWSE_BASE  = 'https://browse.wf';
+function lookupWfcdRecord(item: BuiltItem, parsed: ParsedCodex): WfcdAny | undefined {
+  switch (item.source) {
+    case 'mod':       return parsed.mods?.get      (item.uniqueName);
+    case 'warframe':  return parsed.warframes?.get (item.uniqueName);
+    case 'weapon':    return parsed.weapons?.get   (item.uniqueName);
+    case 'sentinel':  return parsed.sentinels?.get (item.uniqueName);
+    case 'pet':       return parsed.pets?.get      (item.uniqueName);
+    case 'arcane':    return parsed.arcanes?.get   (item.uniqueName);
+    case 'relic':     return parsed.relics?.get    (item.uniqueName);
+    case 'resource':  return parsed.resources?.get (item.uniqueName);
+    case 'gear':      return parsed.gear?.get      (item.uniqueName);
+    case 'misc':      return parsed.misc?.get      (item.uniqueName);
+    case 'component': return undefined;
+  }
+}
+
+// ─── Per-category field application ───────────────────────────────────────────
+
+function applyModFields(item: EnrichedItem, mod: WfcdMod | undefined): void {
+  if (!mod) return;
+
+  if (Array.isArray(mod.levelStats)) {
+    const levelStats: string[][] = [];
+    for (const ls of mod.levelStats) {
+      levelStats.push(Array.isArray(ls?.stats) ? ls.stats.filter(s => typeof s === 'string') : []);
+    }
+    if (levelStats.length > 0) item.levelStats = levelStats;
+  }
+
+  if (mod.compatName)                  item.compatName   = mod.compatName.toUpperCase();
+  if (mod.polarity)                    item.polarity     = mod.polarity;
+  if (mod.isAugment)                   item.isAugment    = true;
+  if (mod.isExilus)                    item.isExilus     = true;
+  if (mod.imageName)                   item.imageName    = mod.imageName;
+  if (mod.modSet)                     { item.modSet = mod.modSet; item.isSet = true; }
+  if (mod.baseDrain !== undefined)     item.baseDrain    = mod.baseDrain;
+  if (mod.transmutable !== undefined)  item.transmutable = mod.transmutable;
+
+  const modRarity = asItemRarity(mod.rarity);
+  if (modRarity) item.rarity = modRarity;
+}
+
+function applyWarframeFields(item: EnrichedItem, wf: WfcdWarframe | undefined): void {
+  if (!wf) return;
+
+  if (wf.polarities?.length) item.polarities   = wf.polarities;
+  if (wf.aura)               item.auraPolarity = wf.aura;
+
+  if (wf.abilities?.length) {
+    item.abilities = wf.abilities.map(toAbility);
+  }
+
+  const stats: ItemStats = {};
+  if (typeof wf.health      === 'number' && wf.health      > 0) stats.health      = wf.health;
+  if (typeof wf.shield      === 'number' && wf.shield      > 0) stats.shield      = wf.shield;
+  if (typeof wf.armor       === 'number' && wf.armor       > 0) stats.armor       = wf.armor;
+  if (typeof wf.power       === 'number' && wf.power       > 0) stats.energy      = wf.power;
+  if (typeof wf.sprintSpeed === 'number' && wf.sprintSpeed > 0) stats.sprintSpeed = wf.sprintSpeed;
+  if (Object.keys(stats).length > 0) item.stats = stats;
+
+  if (wf.components?.length) {
+    const reqs = componentsToBuildRequirements(wf.components, wf.name);
+    if (reqs.length > 0) item.buildRequirements = reqs;
+  }
+
+  if (wf.type) item.type = wf.type;
+}
+
+function applyWeaponFields(item: EnrichedItem, w: WfcdWeapon | undefined): void {
+  if (!w) return;
+
+  const stats: ItemStats = {};
+  if (typeof w.totalDamage         === 'number' && w.totalDamage         > 0) stats.damage         = w.totalDamage;
+  if (typeof w.fireRate            === 'number' && w.fireRate            > 0) stats.fireRate       = w.fireRate;
+  if (typeof w.criticalChance      === 'number' && w.criticalChance      > 0) stats.critChance     = w.criticalChance;
+  if (typeof w.criticalMultiplier  === 'number' && w.criticalMultiplier  > 0) stats.critMultiplier = w.criticalMultiplier;
+  if (typeof w.procChance          === 'number' && w.procChance          > 0) stats.statusChance   = w.procChance;
+  if (typeof w.magazineSize        === 'number' && w.magazineSize        > 0) stats.magazine       = w.magazineSize;
+  if (typeof w.reloadTime          === 'number' && w.reloadTime          > 0) stats.reload         = w.reloadTime;
+  if (Object.keys(stats).length > 0) item.stats = stats;
+
+  if (typeof w.masteryReq === 'number') item.masteryRank = w.masteryReq;
+  if (w.polarities?.length)             item.polarities  = w.polarities;
+  if (w.type)                           item.type        = w.type;
+  if (w.productCategory)                item.subtype     = w.productCategory;
+
+  if (w.components?.length) {
+    const reqs = componentsToBuildRequirements(w.components, w.name);
+    if (reqs.length > 0) item.buildRequirements = reqs;
+  }
+}
+
+function applySentinelFields(item: EnrichedItem, s: WfcdSentinel | undefined): void {
+  if (!s) return;
+
+  const stats: ItemStats = {};
+  if (typeof s.health === 'number' && s.health > 0) stats.health = s.health;
+  if (typeof s.shield === 'number' && s.shield > 0) stats.shield = s.shield;
+  if (typeof s.armor  === 'number' && s.armor  > 0) stats.armor  = s.armor;
+  if (Object.keys(stats).length > 0) item.stats = stats;
+
+  if (s.polarities?.length)             item.polarities  = s.polarities;
+  if (typeof s.masteryReq === 'number') item.masteryRank = s.masteryReq;
+  if (s.abilities?.length)              item.abilities   = s.abilities.map(toAbility);
+
+  if (s.components?.length) {
+    const reqs = componentsToBuildRequirements(s.components, s.name);
+    if (reqs.length > 0) item.buildRequirements = reqs;
+  }
+}
+
+function applyPetFields(item: EnrichedItem, p: WfcdPet | undefined): void {
+  if (!p) return;
+
+  const stats: ItemStats = {};
+  if (typeof p.health === 'number' && p.health > 0) stats.health = p.health;
+  if (typeof p.shield === 'number' && p.shield > 0) stats.shield = p.shield;
+  if (typeof p.armor  === 'number' && p.armor  > 0) stats.armor  = p.armor;
+  if (Object.keys(stats).length > 0) item.stats = stats;
+
+  if (p.polarities?.length)             item.polarities  = p.polarities;
+  if (typeof p.masteryReq === 'number') item.masteryRank = p.masteryReq;
+  if (p.abilities?.length)              item.abilities   = p.abilities.map(toAbility);
+  if (p.type)                           item.type        = p.type;
+
+  if (p.components?.length) {
+    const reqs = componentsToBuildRequirements(p.components, p.name);
+    if (reqs.length > 0) item.buildRequirements = reqs;
+  }
+}
+
+function applyArcaneFields(item: EnrichedItem, a: WfcdArcane | undefined): void {
+  if (!a) return;
+
+  if (Array.isArray(a.levelStats)) {
+    const levelStats: string[][] = [];
+    for (const ls of a.levelStats) {
+      levelStats.push(Array.isArray(ls?.stats) ? ls.stats.filter(s => typeof s === 'string') : []);
+    }
+    if (levelStats.length > 0) item.levelStats = levelStats;
+  }
+
+  const r = asItemRarity(a.rarity);
+  if (r) item.rarity = r;
+
+  if (a.type) item.type = a.type;
+}
+
+function applyRelicFields(item: EnrichedItem, r: WfcdRelic | undefined): void {
+  if (!r) return;
+  if (typeof r.vaulted === 'boolean') item.vaulted = r.vaulted;
+  if (r.tier)                          item.type    = r.tier;
+}
+
+function applyResourceFields(item: EnrichedItem, r: WfcdResource | WfcdMisc | undefined): void {
+  if (!r) return;
+  if (r.type) item.type = r.type;
+}
+
+function applyGearFields(item: EnrichedItem, g: WfcdGear | undefined): void {
+  if (!g) return;
+  if (g.type) item.type = g.type;
+}
+
+// ─── Component → BuildRequirement ─────────────────────────────────────────────
+
+/** Standard part nouns — distinguishes parts from generic resources. */
+const PART_SHORT_NAMES = new Set([
+  'Blueprint', 'Chassis', 'Neuroptics', 'Systems',
+  'Harness', 'Wings', 'Carapace', 'Cerebrum',
+  'Stock', 'Barrel', 'Receiver', 'Link', 'Grip', 'Blade',
+  'Lower Limb', 'Upper Limb', 'String',
+]);
+
+/**
+ * WFCD ships generic short component names ("Blueprint", "Chassis") because
+ * the parent context is implicit. Frontend's ComponentsBlock looks rows
+ * up by exact name in Dexie — where they live as "Ash Blueprint", "Ash
+ * Chassis" — so we prefix the generic shorts with the parent name.
+ */
+function componentsToBuildRequirements(components: readonly WfcdComponent[], parentName: string): BuildRequirement[] {
+  const reqs: BuildRequirement[] = [];
+  for (const c of components) {
+    if (!c.name || !Number.isFinite(c.itemCount) || c.itemCount <= 0) continue;
+    const item = PART_SHORT_NAMES.has(c.name) ? `${parentName} ${c.name}` : c.name;
+    reqs.push({ item, count: c.itemCount });
+  }
+  return reqs;
+}
+
+// ─── Mapping helpers ──────────────────────────────────────────────────────────
+
+function toAbility(a: WfcdAbility): Ability {
+  return {
+    name:        a.name,
+    description: a.description ?? '',
+  };
+}
+
+function toIntroduced(i: WfcdIntroduced): IntroducedInfo {
+  const out: IntroducedInfo = { name: i.name };
+  if (i.date)   out.date   = i.date;
+  if (i.url)    out.url    = i.url;
+  if (i.parent) out.parent = i.parent;
+  return out;
+}
+
+function toPatchHistory(logs: readonly WfcdPatchLog[]): PatchLogEntry[] {
+  return logs.map((p) => {
+    const entry: PatchLogEntry = { name: p.name, date: p.date };
+    if (p.url)       entry.url       = p.url;
+    if (p.additions) entry.additions = p.additions;
+    if (p.changes)   entry.changes   = p.changes;
+    if (p.fixes)     entry.fixes     = p.fixes;
+    return entry;
+  });
+}
+
+// ─── Icon resolution ──────────────────────────────────────────────────────────
+
+const CDN_BASE = 'https://cdn.warframestat.us/img';
 const PLACEHOLDER_ICON = '';   // empty string → frontend uses lotus placeholder
 
-function resolveIcons(raw: CalamityRow): { iconUrl: string; thumbUrl?: string } {
-  // 1. imageName — direct CDN filename
-  const imageName = pickString(raw, 'imageName');
-  if (imageName) return { iconUrl: `${CDN_BASE}/${imageName}` };
-
-  // 2. icon — could be URL or relative
-  const icon = pickString(raw, 'icon', 'iconImage');
-  if (icon) {
-    if (/^https?:\/\//i.test(icon)) return { iconUrl: icon };
-    if (icon.startsWith('/'))       return { iconUrl: `${BROWSE_BASE}${icon}` };
-    return { iconUrl: `${CDN_BASE}/${icon}` };
-  }
-
-  // 3. textureLocation — internal Lotus path served by browse.wf
-  const tex = pickString(raw, 'textureLocation', 'parentName');
-  if (tex && tex.startsWith('/')) return { iconUrl: `${BROWSE_BASE}${tex}` };
-
-  // 4. last resort: name-slug. Frontend will degrade to placeholder if 404.
-  if (typeof raw.name === 'string' && raw.name.length > 0) {
-    return { iconUrl: `${CDN_BASE}/${slugifyName(raw.name)}.png` };
-  }
-
-  return { iconUrl: '' };
+function resolveIconUrl(imageName: string | undefined, displayName: string): string {
+  if (imageName && imageName.length > 0) return `${CDN_BASE}/${imageName}`;
+  if (displayName && displayName.length > 0) return `${CDN_BASE}/${slugifyName(displayName)}.png`;
+  return '';
 }
 
 function slugifyName(name: string): string {
@@ -293,7 +515,6 @@ function toDropLocation(drop: ParsedDrop, parentUniqueName: string): DropLocatio
     if (mapped) out.bountyTier = mapped;
   }
 
-  // Mission node, when we parsed it cleanly.
   if (drop.node) {
     const missions: string[] = [];
     if (drop.planet && drop.node) missions.push(`${drop.planet}/${drop.node}`);
@@ -353,12 +574,11 @@ function mapRarity(r: DropRarity): ItemRarity {
     case 'Uncommon':  return 'Uncommon';
     case 'Rare':      return 'Rare';
     case 'Legendary': return 'Legendary';
-    case 'Cosmic':    return 'Legendary';   // cosmic is a "rarer than rare" tier; collapse to Legendary
+    case 'Cosmic':    return 'Legendary';
   }
 }
 
 function mapBountyTier(raw: string): BountyTier | undefined {
-  // WFCD bounty tiers come as "Level 5 - 15", "Level 30 - 40", etc.
   const m = /Level\s*(\d+)\s*-\s*(\d+)/i.exec(raw);
   if (!m || !m[1] || !m[2]) return undefined;
   const lo = Number(m[1]);
@@ -377,12 +597,9 @@ function mapBountyTier(raw: string): BountyTier | undefined {
 }
 
 // ─── Best farms ranking ───────────────────────────────────────────────────────
-//
-// Composite efficiency: chance ÷ effort minutes, scaled to 0–100. Higher
-// chance and lower mission length both push the score up. We cap at 100 so
-// "10% chance in 1 minute" doesn't dominate the scale.
 
 const MAX_RECOMMENDATIONS = 5;
+const MAX_DROP_LOCATIONS_PER_ITEM = 15;
 
 function rankBestFarms(locations: readonly DropLocation[]): BestFarmRecommendation[] | undefined {
   if (locations.length === 0) return undefined;
@@ -412,25 +629,15 @@ function buildRecommendation(loc: DropLocation): BestFarmRecommendation | null {
 }
 
 function effortMinutesFor(loc: DropLocation): number {
-  // Conservative estimates per source type. Tuned for "average AABC rotation"
-  // semantics: a Survival drop at Rotation A is ~5 min; at C, the player is
-  // committing to a 20-min run for the C reward, so we treat C as ~10 min.
   if (loc.sourceName.startsWith('Sortie'))      return 20;
   if (loc.sourceName.startsWith('Arbitration')) return 10;
-  if (loc.sourceName.endsWith('Bounty'))         return 8;
-  if (loc.sourceName === 'Void Fissure') {
-    // Crack-time: Capture/Exterminate fissures land near 4 min; we add a
-    // little buffer for relic acquisition on top.
-    return 6;
-  }
-
+  if (loc.sourceName.endsWith('Bounty'))        return 8;
+  if (loc.sourceName === 'Void Fissure')        return 6;
   if (loc.sourceName.startsWith('Mission')) {
-    // Rotation matters: A=5, B=7, C=10
     if (loc.rotation === 'C') return 10;
     if (loc.rotation === 'B') return 7;
     return 5;
   }
-
   return 5;
 }
 
@@ -444,11 +651,6 @@ function formatNote(loc: DropLocation, runs: number, minutes: number): string {
 }
 
 // ─── Relic rewards (final shape) ──────────────────────────────────────────────
-//
-// MergedItem.relicContents is one row per (item, state). RelicReward collapses
-// this to one row per item with chances split by Intact / Exceptional /
-// Radiant. Flawless usually shares Exceptional's chance row in WFCD; we map
-// it to the Exceptional slot if Exceptional is missing.
 
 function buildRelicRewards(contents: readonly RelicContent[]): RelicReward[] {
   const byItem = new Map<string, RelicReward>();
@@ -485,15 +687,12 @@ function rarityFor(r: DropRarity | undefined): ItemRarity {
 // ─── Vaulted detection ────────────────────────────────────────────────────────
 //
 // Definition: a Prime part is vaulted iff none of its containing relics
-// currently appear as a drop in any non-relic source (mission, bounty,
-// sortie, transient, blueprint, modByDrop, key).
-//
+// currently appear as a drop in any non-relic source.
 // For non-Prime items we don't set vaulted (it's irrelevant).
 
-function inferVaulted(m: MergedItem, ctx: EnrichmentContext): boolean | undefined {
+function inferVaulted(m: BuiltItem, ctx: EnrichmentContext): boolean | undefined {
   if (!isPrimePartByName(m.name, m.category)) return undefined;
 
-  // Find every relic whose contents include this item.
   const containingRelics = new Set<string>();
   for (const drop of m.drops) {
     if (drop.source !== 'relic') continue;
@@ -504,7 +703,6 @@ function inferVaulted(m: MergedItem, ctx: EnrichmentContext): boolean | undefine
 
   if (containingRelics.size === 0) return undefined;
 
-  // Vaulted iff NO containing relic shows up in active drop sources.
   for (const relicName of containingRelics) {
     if (ctx.activeRelics.has(relicName)) return false;
   }
@@ -537,7 +735,7 @@ function inferTradeable(category: ItemCategory): boolean | undefined {
     case 'Equipment':
       return false;
     default:
-      return undefined;     // Warframe / Weapon / Companion / Sentinel etc. are tradeable as parts, not whole — leave undefined
+      return undefined;
   }
 }
 
@@ -565,8 +763,6 @@ function inferMarketable(category: ItemCategory): boolean | undefined {
 // ─── Rarity inference ─────────────────────────────────────────────────────────
 
 function inferItemRarity(drops: readonly ParsedDrop[]): ItemRarity | undefined {
-  // Highest-tier rarity wins. A part listed as Common in some relics and Rare
-  // in others is treated as Rare for display purposes.
   let best: number = -1;
   let chosen: ItemRarity | undefined;
   for (const d of drops) {
@@ -587,170 +783,19 @@ function rarityTier(r: DropRarity): number {
   }
 }
 
-// ─── Stats extraction ─────────────────────────────────────────────────────────
-
-function extractStats(m: MergedItem): ItemStats | undefined {
-  const r = m.raw;
-  const stats: ItemStats = {};
-  let any = false;
-
-  // Warframe stats
-  if (m.category === 'Warframe') {
-    assignNum(stats, 'health',      r, 'health');
-    assignNum(stats, 'shield',      r, 'shield');
-    assignNum(stats, 'armor',       r, 'armor');
-    assignNum(stats, 'energy',      r, 'power', 'energy');
-    assignNum(stats, 'sprintSpeed', r, 'sprint', 'sprintSpeed');
-    any = Object.keys(stats).length > 0;
-  }
-
-  // Weapon stats
-  if (m.category === 'Weapon') {
-    assignNum(stats, 'damage',         r, 'totalDamage', 'damage');
-    assignNum(stats, 'fireRate',       r, 'fireRate');
-    assignNum(stats, 'critChance',     r, 'criticalChance', 'criticalHitChance');
-    assignNum(stats, 'critMultiplier', r, 'criticalMultiplier', 'criticalDamage');
-    assignNum(stats, 'statusChance',   r, 'procChance', 'statusChance');
-    assignNum(stats, 'magazine',       r, 'magazineSize', 'magazine');
-    assignNum(stats, 'reload',         r, 'reloadTime', 'reload');
-    any = any || Object.keys(stats).length > 0;
-  }
-
-  // Sentinel / Companion stats
-  if (m.category === 'Sentinel' || m.category === 'Companion') {
-    assignNum(stats, 'health',  r, 'health');
-    assignNum(stats, 'shield',  r, 'shield');
-    assignNum(stats, 'armor',   r, 'armor');
-    any = any || Object.keys(stats).length > 0;
-  }
-
-  return any ? stats : undefined;
-}
-
-function assignNum(out: ItemStats, key: keyof ItemStats, raw: CalamityRow, ...candidates: string[]): void {
-  for (const c of candidates) {
-    const v = raw[c];
-    if (typeof v === 'number' && Number.isFinite(v) && v > 0) {
-      out[key] = v;
-      return;
-    }
+function asItemRarity(raw: string | undefined): ItemRarity | undefined {
+  switch (raw) {
+    case 'Legendary':
+    case 'Rare':
+    case 'Uncommon':
+    case 'Common':
+      return raw;
+    default:
+      return undefined;
   }
 }
 
-// ─── Abilities extraction ─────────────────────────────────────────────────────
-//
-// Warframes: raw.abilities is usually [{ abilityName, description }, ...].
-// Sentinels: raw.abilities is sometimes [{ uniqueName }] referencing rows in
-// parsed.abilities, where the actual name/description live.
-
-function extractAbilities(m: MergedItem, ctx: EnrichmentContext): Ability[] | undefined {
-  const raw = m.raw['abilities'];
-  if (!Array.isArray(raw)) return undefined;
-
-  const out: Ability[] = [];
-  for (const a of raw as unknown[]) {
-    if (!a || typeof a !== 'object') continue;
-    const ar = a as Record<string, unknown>;
-
-    let name = pickStringOnly(ar, 'abilityName', 'name');
-    let desc = pickStringOnly(ar, 'description', 'desc');
-    const ref = pickStringOnly(ar, 'uniqueName', 'abilityUniqueName');
-
-    if ((!name || !desc) && ref) {
-      const power = ctx.parsed.abilities.get(ref);
-      if (power) {
-        if (!name) name = pickString(power, 'name');
-        if (!desc) desc = pickString(power, 'description');
-      }
-    }
-
-    if (!name) continue;
-    const ability: Ability = { name, description: desc ?? '' };
-    out.push(ability);
-  }
-
-  return out.length > 0 ? out : undefined;
-}
-
-// ─── Build requirements ───────────────────────────────────────────────────────
-
-function buildIngredientList(
-  ingredients: ReadonlyArray<{ itemType: string; itemCount: number }>,
-  ctx: EnrichmentContext,
-): BuildRequirement[] {
-  const out: BuildRequirement[] = [];
-  for (const ing of ingredients) {
-    if (!ing.itemType || !Number.isFinite(ing.itemCount) || ing.itemCount <= 0) continue;
-    const display = displayNameForUniqueName(ing.itemType, ctx) ?? prettifyUniqueName(ing.itemType);
-    out.push({ item: display, count: ing.itemCount });
-  }
-  return out;
-}
-
-function displayNameForUniqueName(uniqueName: string, ctx: EnrichmentContext): string | undefined {
-  // Inverse lookup: scan all calamity sources for this uniqueName. Cheap
-  // because we only build/cache the search lazily here — and the worker
-  // runs this 12-ish times per recipe at most.
-  const p = ctx.parsed;
-  return (
-    p.warframes.get(uniqueName)?.name ??
-    p.weapons.get(uniqueName)?.name ??
-    p.sentinels.get(uniqueName)?.name ??
-    p.mods.get(uniqueName)?.name ??
-    p.recipes.get(uniqueName)?.name ??
-    p.relicArcane.get(uniqueName)?.name ??
-    p.resources.get(uniqueName)?.name ??
-    p.keys.get(uniqueName)?.name ??
-    p.flavour.get(uniqueName)?.name ??
-    p.fusionBundles.get(uniqueName)?.name ??
-    p.gear.get(uniqueName)?.name
-  );
-}
-
-function prettifyUniqueName(s: string): string {
-  // /Lotus/Types/Items/MiscItems/CommonGenericComponent → "CommonGenericComponent"
-  const tail = s.split('/').pop() ?? s;
-  return tail
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/_/g, ' ')
-    .trim();
-}
-
-// ─── Generic field pickers ────────────────────────────────────────────────────
-
-function pickString(raw: CalamityRow, ...keys: string[]): string | undefined {
-  for (const k of keys) {
-    const v = raw[k];
-    if (typeof v === 'string' && v.length > 0) return v;
-  }
-  return undefined;
-}
-
-function pickStringOnly(obj: Record<string, unknown>, ...keys: string[]): string | undefined {
-  for (const k of keys) {
-    const v = obj[k];
-    if (typeof v === 'string' && v.length > 0) return v;
-  }
-  return undefined;
-}
-
-function pickNumber(raw: CalamityRow, ...keys: string[]): number | undefined {
-  for (const k of keys) {
-    const v = raw[k];
-    if (typeof v === 'number' && Number.isFinite(v)) return v;
-  }
-  return undefined;
-}
-
-function pickStringArray(raw: CalamityRow, ...keys: string[]): string[] | undefined {
-  for (const k of keys) {
-    const v = raw[k];
-    if (Array.isArray(v) && v.every(x => typeof x === 'string')) return v as string[];
-  }
-  return undefined;
-}
-
-// ─── Stats ────────────────────────────────────────────────────────────────────
+// ─── Stats roll-up ────────────────────────────────────────────────────────────
 
 function computeStats(items: readonly EnrichedItem[], hintCounts: Record<string, number>): EnrichedCodex['stats'] {
   let withIcons       = 0;

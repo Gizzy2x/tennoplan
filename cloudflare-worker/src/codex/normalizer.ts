@@ -109,13 +109,10 @@ function stripInternals(e: EnrichedItem): Omit<EnrichedItem, '_qualityHints'> {
   return rest;
 }
 
-function pickSource(e: EnrichedItem, defaultSource: DataSource): DataSource {
-  // Items with no icon AND no drops carry only calamity provenance.
-  // Items with drops carry the enriched (calamity + wfcd) attribution.
-  // Default in opts wins as a tiebreaker — updater.ts may choose between
-  // 'enriched' (full pipeline) or 'cached' (rebuilt from KV) appropriately.
-  if (e.dropLocations.length > 0) return defaultSource;
-  return 'calamity-plus';
+function pickSource(_e: EnrichedItem, defaultSource: DataSource): DataSource {
+  // WFCD-only pipeline (post-2026-05-26 refactor) — every item carries the
+  // same source attribution. Drops absence no longer signals a degraded path.
+  return defaultSource;
 }
 
 function pickQuality(hintCount: number): DataQuality {

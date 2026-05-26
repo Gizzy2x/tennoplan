@@ -1,0 +1,97 @@
+name: Build & Publish Codex
+
+# ---------------------------------------------------------------------------
+# The codex pipeline (parse + build + enrich + validate of ~8,800 Warframe
+# items across 11 WFCD endpoints) is too CPU-heavy for Cloudflare Workers'
+# Free-plan per-invocation budget. Running it in GitHub Actions instead
+# keeps the worker simple (it only serves the KV blob) while still updating
+# data on a regular schedule.
+#
+# Triggers:
+#   • schedule  — every 6 hours; matches the post-patch sync cadence the
+#                 worker used to fire when items changed.
+#   • workflow_dispatch — manual run, useful right after a Warframe patch.
+#   • push to main when scripts/ or worker pipeline code changes — so a
+#                 pipeline tweak propagates to KV without waiting for the
+#                 next scheduled run.
+#
+# Required GitHub secrets (already set for deploy.yml):
+#   CLOUDFLARE_API_TOKEN   — needs Workers KV Storage:Edit permission
+#   CLOUDFLARE_ACCOUNT_ID  — account ID
+#
+# The KV namespace ID is not a secret (it's already in wrangler.toml in this
+# repo), so it lives inline below.
+# ---------------------------------------------------------------------------
+
+on:
+  schedule:
+    # Every 6 hours at minute 12 (avoids the top-of-the-hour cron herd).
+    - cron: '12 */6 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'cloudflare-worker/scripts/build-codex.ts'
+      - 'cloudflare-worker/scripts/upload-codex.ts'
+      - 'cloudflare-worker/src/codex/**'
+      - 'cloudflare-worker/src/config.ts'
+      - 'cloudflare-worker/src/types.ts'
+      - 'cloudflare-worker/src/storage/metadata.ts'
+      - 'cloudflare-worker/src/utils/http.ts'
+      - 'cloudflare-worker/src/logger.ts'
+      - '.github/workflows/build-codex.yml'
+
+jobs:
+  build:
+    name: Build codex + upload to KV
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    # Hard ceiling — local runs complete in <10 seconds; if CI takes more than
+    # this the build is wedged on a fetch and should fail rather than hang.
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: cloudflare-worker/package-lock.json
+
+      - name: Install worker dependencies
+        working-directory: cloudflare-worker
+        run: npm ci
+
+      - name: Build codex blob (Node — no Workers CPU limit)
+        working-directory: cloudflare-worker
+        run: npm run build-codex
+
+      - name: Upload blob + metadata to Cloudflare KV
+        working-directory: cloudflare-worker
+        env:
+          CLOUDFLARE_API_TOKEN:       ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID:      ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # TENNOPLAN_KV namespace ID — present in wrangler.toml, not secret.
+          CLOUDFLARE_KV_NAMESPACE_ID: a520a78ecd264bff9b0abf38adff3f8a
+        run: npm run upload-codex
+
+      - name: Smoke-test public endpoint
+        run: |
+          set -e
+          STATUS=$(curl -s -o /tmp/codex.json -w "%{http_code}" https://app.tennoplan.workers.dev/v1/codex)
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::Codex endpoint returned HTTP $STATUS"
+            head -c 400 /tmp/codex.json
+            exit 1
+          fi
+          # Check the response has a non-trivial data array.
+          COUNT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('/tmp/codex.json','utf8')).data.length)")
+          echo "Codex blob exposed via worker — $COUNT items"
+          if [ "$COUNT" -lt 1000 ]; then
+            echo "::error::Item count $COUNT looks too low"
+            exit 1
+          fi
