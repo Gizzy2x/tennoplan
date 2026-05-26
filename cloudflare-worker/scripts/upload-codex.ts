@@ -32,7 +32,9 @@ const TTL_SECONDS = 172_800; // 48h — matches worker's config.codex.kvTtlSecon
 // ─── Env ──────────────────────────────────────────────────────────────────────
 
 function requireEnv(name: string): string {
-  const v = process.env[name];
+  // .trim() defends against secrets pasted with a trailing newline — those
+  // make the Authorization header invalid (Headers.append rejects \n).
+  const v = process.env[name]?.trim();
   if (!v) {
     console.error(`[upload-codex] missing required env var: ${name}`);
     process.exit(1);
