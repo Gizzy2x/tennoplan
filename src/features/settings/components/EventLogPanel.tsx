@@ -144,6 +144,7 @@ function Chip({
 // ─── Panel ────────────────────────────────────────────────────────────────────
 
 export function EventLogPanel() {
+  const [collapsed,      setCollapsed]      = useState(true);
   const [levelFilter,    setLevelFilter]    = useState<EventLevel    | 'all'>('all');
   const [categoryFilter, setCategoryFilter] = useState<EventCategory | 'all'>('all');
 
@@ -205,7 +206,17 @@ export function EventLogPanel() {
         >
           {events.length} event{events.length === 1 ? '' : 's'}
         </span>
+        <button
+          type="button"
+          className={styles.collapseToggle}
+          onClick={() => setCollapsed((c) => !c)}
+          aria-expanded={!collapsed}
+          aria-label={collapsed ? 'Expand event log' : 'Collapse event log'}
+        >
+          {collapsed ? '▸' : '▾'}
+        </button>
       </PanelHeader>
+      {!collapsed && (
       <PanelBody>
         {staleWarning && (
           <div className={styles.eventBanner}>
@@ -280,6 +291,7 @@ export function EventLogPanel() {
           </button>
         </div>
       </PanelBody>
+      )}
     </Panel>
   );
 }
