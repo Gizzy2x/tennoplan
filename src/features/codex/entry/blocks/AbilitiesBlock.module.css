@@ -1,0 +1,91 @@
+/* ================================================================
+   AbilitiesBlock — numbered list of warframe powers.
+   Each ability gets a numbered card with a gold name and sanitized
+   description body.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+  padding:        var(--space-md);
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  8px;
+}
+
+.label {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  margin:         0;
+}
+
+.list {
+  display:        flex;
+  flex-direction: column;
+  gap:            10px;
+  list-style:     none;
+  padding:        0;
+  margin:         0;
+}
+
+.ability {
+  display:        grid;
+  grid-template-columns: 36px 1fr;
+  gap:            14px;
+  padding:        10px 12px;
+  background:     color-mix(in srgb, var(--color-bg-primary) 55%, transparent);
+  border-radius:  6px;
+  border:         1px solid transparent;
+  transition:     border-color 0.18s ease-out, background 0.18s ease-out;
+}
+
+.ability:hover {
+  border-color: rgba(0, 212, 255, 0.2);
+  background:   color-mix(in srgb, var(--color-bg-primary) 50%, transparent);
+}
+
+.numberBadge {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           32px;
+  height:          32px;
+  border-radius:   50%;
+  background:      rgba(227, 195, 114, 0.12);
+  border:          1px solid rgba(227, 195, 114, 0.35);
+  color:           var(--color-accent-gold);
+  font-family:     var(--font-serif);
+  font-size:       1.05rem;
+  font-weight:     700;
+  line-height:     1;
+}
+
+.meta {
+  display:        flex;
+  flex-direction: column;
+  gap:            4px;
+  min-width:      0;
+}
+
+.name {
+  font-family:    var(--font-sans);
+  font-size:      0.95rem;
+  font-weight:    700;
+  letter-spacing: 0.04em;
+  color:          var(--color-text-primary);
+  margin:         0;
+}
+
+.description {
+  font-family: var(--font-sans);
+  font-size:   0.88rem;
+  color:       var(--color-text-primary);
+  line-height: 1.55;
+  margin:      0;
+  max-width:   72ch;
+}

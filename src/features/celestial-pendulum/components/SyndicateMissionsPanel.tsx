@@ -58,13 +58,15 @@ function SyndicateCard({
       {/* Syndicate name */}
       <div>
         <p
-          className="font-label text-[9px] uppercase tracking-[0.3em]"
+          data-role="labelSmall"
+          className="typo-label-sm"
           style={{ color: meta.color, opacity: 0.55 }}
         >
           {meta.subtitle}
         </p>
         <p
-          className="font-headline text-base font-bold orokin-etched leading-tight mt-0.5"
+          data-role="hero"
+          className="typo-hero orokin-etched leading-tight mt-0.5"
           style={{ color: meta.color }}
         >
           {meta.displayName}
@@ -76,21 +78,29 @@ function SyndicateCard({
 
       {mission ? (
         <>
-          {/* Expiry countdown */}
+          {/* Expiry countdown — font-mono, intentionally not a token role */}
           {msLeft !== null && msLeft > 0 ? (
             <div>
               <p
-                className="font-headline text-xl font-bold tabular-nums"
+                className="font-mono text-xl font-bold tabular-nums"
                 style={{ color: meta.color, textShadow: `0 0 16px ${meta.color}40` }}
               >
                 {formatMsHuman(msLeft)}
               </p>
-              <p className="font-label text-[8px] uppercase tracking-widest text-secondary/30 mt-0.5">
+              <p
+                data-role="labelTiny"
+                className="typo-label-xs mt-0.5"
+                style={{ color: 'rgba(198,198,199,0.30)' }}
+              >
                 UNTIL ROTATION
               </p>
             </div>
           ) : (
-            <p className="font-label text-[8px] uppercase tracking-widest text-secondary/25">
+            <p
+              data-role="labelTiny"
+              className="typo-label-xs"
+              style={{ color: 'rgba(198,198,199,0.25)' }}
+            >
               ROTATING…
             </p>
           )}
@@ -98,7 +108,8 @@ function SyndicateCard({
           {/* Job tier count */}
           {mission.jobs.length > 0 && (
             <p
-              className="font-label text-[8px] uppercase tracking-[0.18em] mt-auto"
+              data-role="labelTiny"
+              className="typo-label-xs mt-auto"
               style={{ color: meta.color, opacity: 0.4 }}
             >
               {mission.jobs.length} JOB TIER{mission.jobs.length !== 1 ? 'S' : ''} AVAILABLE
@@ -106,7 +117,11 @@ function SyndicateCard({
           )}
         </>
       ) : (
-        <p className="font-label text-[8px] uppercase tracking-widest text-secondary/25">
+        <p
+          data-role="labelTiny"
+          className="typo-label-xs"
+          style={{ color: 'rgba(198,198,199,0.25)' }}
+        >
           {isLoading ? 'ESTABLISHING LINK…' : isError ? 'DISPATCH UNAVAILABLE' : 'NO ACTIVE DISPATCH'}
         </p>
       )}
@@ -137,10 +152,18 @@ export function SyndicateMissionsPanel() {
 
       {/* Section header */}
       <div className="flex items-center gap-4 mb-4">
-        <p className="font-label text-[10px] uppercase tracking-[0.4em] text-primary/50">
+        <p
+          data-role="sectionHeader"
+          className="typo-section-header"
+          style={{ color: 'rgba(227,195,114,0.50)' }}
+        >
           Syndicate Dispatches
         </p>
-        <span className="font-label text-[9px] uppercase tracking-[0.25em] text-secondary/25">
+        <span
+          data-role="labelTiny"
+          className="typo-label-xs"
+          style={{ color: 'rgba(198,198,199,0.25)' }}
+        >
           — Daily Bounty Rotations
         </span>
       </div>
@@ -161,7 +184,11 @@ export function SyndicateMissionsPanel() {
 
       {/* Stale cache banner */}
       {isStale && (
-        <p className="font-label text-[8px] uppercase tracking-widest text-secondary/25 mt-3">
+        <p
+          data-role="labelTiny"
+          className="mt-3 typo-label-xs"
+          style={{ color: 'rgba(198,198,199,0.25)' }}
+        >
           Stale cache · Syndicate data may be outdated
         </p>
       )}

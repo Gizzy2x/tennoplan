@@ -7,10 +7,6 @@ export interface CompletionToggleProps {
   onToggle: () => void;
 }
 
-/**
- * A single-row completion toggle — used for Sortie (daily) and Archon Hunt (weekly).
- * Stores completion state in Dexie via the parent hook; this component is display-only.
- */
 export function CompletionToggle({ label, sublabel, checked, onToggle }: CompletionToggleProps) {
   const color = '#E3C372';
 
@@ -48,12 +44,17 @@ export function CompletionToggle({ label, sublabel, checked, onToggle }: Complet
       {/* Labels */}
       <div className="flex-1 min-w-0">
         <p
-          className="font-label text-sm leading-snug transition-colors duration-300"
+          data-role="body"
+          className="typo-body leading-snug transition-colors duration-300"
           style={{ color: checked ? color : 'rgba(229,226,225,0.65)' }}
         >
           {label}
         </p>
-        <p className="font-label text-[9px] uppercase tracking-[0.25em] mt-0.5" style={{ color: '#C6C6C7', opacity: 0.30 }}>
+        <p
+          data-role="labelTiny"
+          className="typo-label-xs mt-0.5"
+          style={{ color: '#C6C6C7', opacity: 0.30 }}
+        >
           {sublabel}
         </p>
       </div>
@@ -61,8 +62,13 @@ export function CompletionToggle({ label, sublabel, checked, onToggle }: Complet
       {/* Completed chip */}
       {checked && (
         <span
-          className="font-label text-[8px] uppercase tracking-[0.3em] px-2 py-0.5 font-bold flex-shrink-0"
-          style={{ color, border: `1px solid ${color}35`, backgroundColor: `${color}0A` }}
+          data-role="labelTiny"
+          className="typo-label-xs flex-shrink-0 px-2 py-0.5"
+          style={{
+            color,
+            border:          `1px solid ${color}35`,
+            backgroundColor: `${color}0A`,
+          }}
         >
           Completed
         </span>

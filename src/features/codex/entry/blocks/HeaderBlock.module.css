@@ -1,0 +1,90 @@
+/* ================================================================
+   HeaderBlock — name + classification + flag pills.
+   Universal: every codex entry uses this as its first block.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+  padding:        var(--space-md) var(--space-md) var(--space-lg);
+  border-bottom:  1px solid var(--color-border-default);
+}
+
+.topRow {
+  display:         flex;
+  align-items:     flex-end;
+  justify-content: space-between;
+  gap:             var(--space-md);
+  flex-wrap:       wrap;
+}
+
+.title {
+  font-family:    var(--font-serif);
+  font-weight:    700;
+  font-size:      clamp(2rem, 3.6vw, 2.8rem);
+  letter-spacing: 0.01em;
+  line-height:    1.05;
+  color:          var(--color-accent-gold);
+  margin:         0;
+}
+
+.pills {
+  display:    flex;
+  gap:        6px;
+  flex-wrap:  wrap;
+  align-items: center;
+}
+
+.pill {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            5px;
+  padding:        3px 9px;
+  border:         1px solid var(--color-border-default);
+  border-radius:  10px;
+  font-family:    var(--font-sans);
+  font-size:      0.6rem;
+  font-weight:    700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  background:     rgba(0, 0, 0, 0.2);
+}
+
+.pill--vaulted {
+  color:        #c89a5f;
+  border-color: rgba(200, 154, 95, 0.4);
+}
+
+.pill--rare      { color: var(--color-accent-teal); border-color: rgba(0, 212, 255, 0.4); }
+.pill--legendary { color: var(--color-accent-gold); border-color: rgba(227, 195, 114, 0.45); }
+.pill--uncommon  { color: #7ab0dd;                  border-color: rgba(122, 176, 221, 0.35); }
+.pill--common    { color: #8a857a;                  border-color: rgba(138, 133, 122, 0.35); }
+
+.pillDot {
+  width:         6px;
+  height:        6px;
+  border-radius: 50%;
+  background:    currentColor;
+}
+
+.subtitleRow {
+  display:        flex;
+  align-items:    center;
+  gap:            8px;
+  flex-wrap:      wrap;
+  font-family:    var(--font-sans);
+  font-size:      0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+.subtitleDot { opacity: 0.4; }
+
+.mrBadge {
+  color:       var(--color-accent-gold);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}

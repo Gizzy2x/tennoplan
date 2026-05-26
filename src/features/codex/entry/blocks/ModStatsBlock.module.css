@@ -1,0 +1,137 @@
+/* ================================================================
+   ModStatsBlock — rank slider + per-rank stat lines for mods.
+   Extracted from ModDetailModal so it can be reused by the future
+   full-page CodexEntry shell.
+
+   Class names are CSS-Module-scoped. Tokens (--color-accent-gold,
+   --font-serif, ...) come from src/index.css.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+}
+
+/* ── Rank header ───────────────────────────────────────────────── */
+
+.rankSection {
+  margin-bottom: 4px;
+}
+
+.rankHeader {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     baseline;
+  margin-bottom:   8px;
+}
+
+.rankLabel {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.1em;
+  color:          var(--color-text-muted);
+}
+
+.rankValue {
+  font-family: var(--font-sans);
+  font-size:   1.1rem;
+  font-weight: 700;
+  color:       var(--color-accent-gold);
+}
+
+/* ── Slider ────────────────────────────────────────────────────── */
+
+.slider {
+  -webkit-appearance: none;
+  appearance:         none;
+  width:              100%;
+  height:             4px;
+  border-radius:      2px;
+  background:         var(--color-border-default);
+  outline:            none;
+  margin-bottom:      6px;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width:         16px;
+  height:        16px;
+  border-radius: 50%;
+  background:    var(--color-accent-gold);
+  cursor:        pointer;
+  border:        2px solid var(--color-bg-secondary);
+  box-shadow:    0 0 6px rgba(227, 195, 114, 0.4);
+}
+
+.slider::-moz-range-thumb {
+  width:         16px;
+  height:        16px;
+  border-radius: 50%;
+  background:    var(--color-accent-gold);
+  cursor:        pointer;
+  border:        2px solid var(--color-bg-secondary);
+  box-shadow:    0 0 6px rgba(227, 195, 114, 0.4);
+}
+
+.ticks {
+  display:         flex;
+  justify-content: space-between;
+}
+
+.tick {
+  background:  none;
+  border:      none;
+  padding:     2px 4px;
+  font-family: var(--font-sans);
+  font-size:   0.6rem;
+  color:       var(--color-text-muted);
+  cursor:      pointer;
+  transition:  color 0.12s ease-out;
+  min-width:   18px;
+  text-align:  center;
+}
+
+.tick:hover {
+  color: var(--color-text-primary);
+}
+
+.tick--active {
+  color:       var(--color-accent-gold);
+  font-weight: 700;
+}
+
+/* ── Stat lines ────────────────────────────────────────────────── */
+
+.divider {
+  height:     1px;
+  background: var(--color-border-default);
+  margin:     16px 0;
+}
+
+.statsSection {
+  display:        flex;
+  flex-direction: column;
+  gap:            6px;
+}
+
+.statsHeader {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.1em;
+  color:          var(--color-text-muted);
+  margin-bottom:  4px;
+}
+
+.statRow {
+  font-family: var(--font-sans);
+  font-size:   0.9rem;
+  color:       var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.statEmpty {
+  color:      var(--color-text-muted);
+  font-style: italic;
+}

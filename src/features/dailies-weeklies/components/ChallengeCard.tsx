@@ -1,25 +1,7 @@
 import {
-  Skull,
-  Heart,
-  Shield,
-  Radio,
-  Eye,
-  Crosshair,
-  LogOut,
-  Shovel,
-  KeyRound,
-  Orbit,
-  Medal,
-  ArrowLeftRight,
-  TrendingUp,
-  Zap,
-  FlaskConical,
-  Swords,
-  Hammer,
-  Rocket,
-  Home,
-  Target,
-  Check,
+  Skull, Heart, Shield, Radio, Eye, Crosshair, LogOut, Shovel,
+  KeyRound, Orbit, Medal, ArrowLeftRight, TrendingUp, Zap,
+  FlaskConical, Swords, Hammer, Rocket, Home, Target, Check,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { formatMsHuman } from '@/core/services/cycleService';
@@ -108,13 +90,12 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
   const standingK = (Math.max(0, Number(raw.reputation) || 0) / 1000).toFixed(0);
 
   return (
-    // Outer wrapper: paddingTop creates room for the overhanging kind tag
     <div
       className="relative cursor-pointer select-none"
       style={{ paddingTop: '14px' }}
       onClick={() => onToggle(raw.id)}
     >
-      {/* ── Kind tag — overhangs above card top edge ─────────────────── */}
+      {/* ── Kind tag ─────────────────────────────────────────────────────── */}
       <div
         className="fissure-variant-tag absolute top-0 right-3 z-10"
         style={{
@@ -130,7 +111,7 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
         {tag.label}
       </div>
 
-      {/* ── Card body ─────────────────────────────────────────────────── */}
+      {/* ── Card body ─────────────────────────────────────────────────────── */}
       <div
         className="glass-panel fissure-card-hover relative overflow-hidden flex flex-col"
         style={{
@@ -150,17 +131,16 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
           }}
         />
 
-        {/* ── COMPLETED OVERLAY ────────────────────────────────────────── */}
+        {/* ── COMPLETED OVERLAY ─────────────────────────────────────────── */}
         {completed && (
           <div
             className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3"
             style={{
-              background:     'linear-gradient(145deg, rgba(14,14,14,0.94) 0%, rgba(19,18,18,0.97) 100%)',
-              backdropFilter: 'blur(4px)',
+              background:           'linear-gradient(145deg, rgba(14,14,14,0.94) 0%, rgba(19,18,18,0.97) 100%)',
+              backdropFilter:       'blur(4px)',
               WebkitBackdropFilter: 'blur(4px)',
             }}
           >
-            {/* Large Orokin checkmark ring */}
             <div
               className="flex items-center justify-center"
               style={{
@@ -174,11 +154,10 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
               <Check size={30} strokeWidth={1.4} style={{ color }} />
             </div>
 
-            {/* Dimmed struck title */}
             <p
-              className="font-headline font-black text-center leading-tight px-4 line-clamp-2"
+              data-role="hero"
+              className="typo-hero text-center leading-tight px-4 line-clamp-2"
               style={{
-                fontSize:            '0.78rem',
                 color:               'rgba(197,192,190,0.30)',
                 textDecoration:      'line-through',
                 textDecorationColor: 'rgba(197,192,190,0.16)',
@@ -187,9 +166,9 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
               {raw.title}
             </p>
 
-            {/* Standing earned indicator */}
             <p
-              className="font-mono text-[9px] tabular-nums uppercase tracking-[0.28em]"
+              data-role="labelTiny"
+              className="typo-label-xs tabular-nums"
               style={{ color: `${color}50` }}
             >
               {standingK}k earned
@@ -197,25 +176,17 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
           </div>
         )}
 
-        {/* ── ACTIVE CONTENT ──────────────────────────────────────────── */}
+        {/* ── ACTIVE CONTENT ─────────────────────────────────────────────── */}
 
-        {/* Left radial spotlight — keeps icon readable against glass bg */}
+        {/* Left radial spotlight */}
         <div
           className="absolute top-0 left-0 bottom-0 w-1/2 pointer-events-none"
-          style={{
-            background: `radial-gradient(ellipse at 15% 45%, ${color}0D, transparent 65%)`,
-          }}
+          style={{ background: `radial-gradient(ellipse at 15% 45%, ${color}0D, transparent 65%)` }}
         />
 
         {/* Icon row */}
         <div className="flex items-start justify-between p-4 pb-0">
-          {/* Large dominant icon — near-edge */}
-          <div
-            style={{
-              background: `radial-gradient(circle at 38% 42%, ${color}10, transparent 58%)`,
-              padding:     2,
-            }}
-          >
+          <div style={{ background: `radial-gradient(circle at 38% 42%, ${color}10, transparent 58%)`, padding: 2 }}>
             <ChalIcon
               size={68}
               strokeWidth={0.82}
@@ -232,13 +203,10 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
             />
           </div>
 
-          {/* Timer — top-right, low urgency */}
+          {/* Timer */}
           {showTimer && (
             <p
-              className={[
-                'font-mono text-[10px] tabular-nums mt-1.5',
-                isPulsing ? 'orokin-countdown-glow' : '',
-              ].filter(Boolean).join(' ')}
+              className={`font-mono text-[10px] tabular-nums mt-1.5 ${isPulsing ? 'orokin-countdown-glow' : ''}`}
               style={{ color: isPulsing ? '#E3C372' : 'rgba(197,192,190,0.26)' }}
             >
               {formatMsHuman(msRemaining)}
@@ -261,10 +229,12 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
             {standingK}k
           </p>
           <p
-            className="font-label text-[9px] uppercase tracking-[0.32em] mt-0.5"
+            data-role="labelTiny"
+            className="typo-label-xs"
             style={{
               color,
-              opacity: completed ? 0.10 : 0.38,
+              opacity:    completed ? 0.10 : 0.38,
+              marginTop:  '0.125rem',
               transition: 'opacity 0.35s ease',
             }}
           >
@@ -272,18 +242,18 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
           </p>
         </div>
 
-        {/* Bottom: challenge title + short description */}
+        {/* Bottom: title + description */}
         <div
           className="px-4 pt-2.5 pb-4"
           style={{
-            borderTop: `1px solid ${completed ? 'rgba(197,192,190,0.06)' : `${color}14`}`,
+            borderTop:  `1px solid ${completed ? 'rgba(197,192,190,0.06)' : `${color}14`}`,
             transition: 'border-color 0.35s ease',
           }}
         >
           <p
-            className="font-headline font-black leading-tight line-clamp-2"
+            data-role="hero"
+            className="typo-hero leading-tight line-clamp-2"
             style={{
-              fontSize:   '0.80rem',
               color:      completed ? 'rgba(197,192,190,0.20)' : '#E5E2E1',
               textShadow: completed ? 'none' : '0 1px 3px rgba(227,195,114,0.25), 0 2px 4px rgba(0,0,0,0.70)',
               transition: 'color 0.35s ease',
@@ -293,7 +263,8 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
           </p>
           {raw.desc && raw.desc !== raw.title && (
             <p
-              className="font-label text-[10px] leading-snug mt-0.5 line-clamp-1"
+              data-role="labelSmall"
+              className="typo-label-sm mt-0.5 line-clamp-1"
               style={{
                 color:      '#C6C6C7',
                 opacity:    completed ? 0.10 : 0.38,
@@ -305,13 +276,10 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
           )}
         </div>
 
-        {/* Bottom-right filigree corner bracket */}
+        {/* Bottom-right filigree corner */}
         <span
           className="absolute bottom-0 right-0 w-3.5 h-3.5 pointer-events-none"
-          style={{
-            borderBottom: `1px solid ${color}22`,
-            borderRight:  `1px solid ${color}22`,
-          }}
+          style={{ borderBottom: `1px solid ${color}22`, borderRight: `1px solid ${color}22` }}
         />
       </div>
     </div>

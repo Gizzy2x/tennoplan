@@ -1,15 +1,45 @@
-import { useState } from 'react';
-import { useWorldCycles }       from './hooks/useWorldCycles';
-import { useSyndicateMissions } from './hooks/useSyndicateMissions';
-import { CinematicCyclePanel }  from './components/CinematicCyclePanel';
-import { WorldBackground }      from './components/WorldBackground';
-import { STATE, FALLBACK, getCardGradient } from './components/CycleCard';
-import { getWorldBg }           from './worldAssets';
-import { formatMsParts }        from '@/core/services/cycleService';
-import { formatCacheAge }       from '@/core/services/WorldstateService';
-import type { CycleId }         from '@/core/domain/cycles';
+/**
+ * CelestialPendulumPage — Live World Cycle Timers
+ *
+ * Layout:
+ *   PageHero  (title + refresh button in right slot)
+ *   CycleTabBar  (4 worlds, bg images, progress bars)
+ *   TimerHeroPanel  (cinematic hero + key resources for current world/state)
+ *   2-col grid:
+ *     BountyDetailPanel  (all rotations + rewards as ResourceTags)
+ *     CycleIntelPanel    (all-worlds summary + farming tips)
+ *   Footer  (drop data age)
+ *
+ * No hardcoded hex values. No inline design token constants.
+ * No redundant section headers — hierarchy comes from structure + spacing.
+ */
 
-// Maps each primary cycle to its corresponding syndicate name in the API
+import { useState, useCallback } from 'react';
+import { PageHero }           from '@/components/ui/PageHero';
+import { useWorldCycles }     from './hooks/useWorldCycles';
+import { useSyndicateMissions } from './hooks/useSyndicateMissions';
+import { useDropsLastSynced } from './hooks/useDropsLastSynced';
+import { useEnrichedBounties } from './hooks/useEnrichedBounties';
+import { WorldBackground }    from './components/WorldBackground';
+import { WorldNavigationDials } from './components/WorldNavigationDials';
+import { MasterHeader }       from './components/MasterHeader';
+import { TacticalRadar }      from './components/TacticalRadar';
+import { BountyBoard }        from './components/BountyBoard';
+import { CycleIntelPanel }    from './components/CycleIntelPanel';
+import { formatMsParts }      from '@/core/services/cycleService';
+import { getWorldBg }         from './worldAssets';
+import type { CycleId, CycleStatus } from '@/core/domain/cycles';
+import type { KeyResource }   from './components/TimerHeroPanel';
+
+// ─── Static config ────────────────────────────────────────────────────────────
+
+const WORLD_TABS: { id: CycleId; label: string }[] = [
+  { id: 'cetus',   label: 'CETUS'   },
+  { id: 'vallis',  label: 'FORTUNA' },
+  { id: 'cambion', label: 'DEIMOS'  },
+  { id: 'duviri',  label: 'DUVIRI'  },
+];
+
 const CYCLE_TO_SYNDICATE: Partial<Record<CycleId, string>> = {
   cetus:   'Ostron',
   vallis:  'Solaris United',
@@ -17,245 +47,272 @@ const CYCLE_TO_SYNDICATE: Partial<Record<CycleId, string>> = {
   zariman: 'The Holdfasts',
 };
 
-const WORLD_ORDER: CycleId[] = ['cetus', 'vallis', 'cambion', 'zariman', 'duviri', 'earth'];
+const KEY_RESOURCES: Partial<Record<string, KeyResource[]>> = {
+  'cetus-day': [
+    { name: 'Cetus Wisp',        source: 'Plains (night)' },
+    { name: 'Breath of Eidolon', source: 'Bounties Lv.4+' },
+    { name: 'Iradite',           source: 'Rock formations' },
+    { name: 'Grokdrul',          source: 'Grineer camps' },
+    { name: 'Sentirum',          source: 'Mining (rare)' },
+    { name: 'Nyth',              source: 'Mining (rare)' },
+  ],
+  'cetus-night': [
+    { name: 'Arcane Energize',  source: 'Eidolon hunts' },
+    { name: 'Cetus Wisp',       source: 'Plains (glowing)' },
+    { name: 'Brilliant Eidolon Shard', source: 'Eidolons' },
+    { name: 'Intact Sentient Core',    source: 'Sentients' },
+  ],
+  'vallis-warm': [
+    { name: 'Gyromag Systems',  source: 'Heist bounties' },
+    { name: 'Repeller Systems', source: 'Profit-Taker' },
+    { name: 'Atmo Systems',     source: 'Coolant pools' },
+    { name: 'Thermal Sludge',   source: 'Mining' },
+    { name: 'Mytocardia Spore', source: 'Conservation' },
+  ],
+  'vallis-cold': [
+    { name: 'Toroid',           source: 'Spiders & caves' },
+    { name: 'Repeller Systems', source: 'Profit-Taker' },
+    { name: 'Gyromag Systems',  source: 'Heist bounties' },
+    { name: 'Thermal Sludge',   source: 'Coolant pools' },
+    { name: 'Amarast',          source: 'Mining' },
+  ],
+  'cambion-fass': [
+    { name: 'Scintillant',     source: 'Isolation Vaults' },
+    { name: 'Son Token',       source: 'Conservation' },
+    { name: 'Mother Token',    source: 'Bounties' },
+    { name: 'Father Token',    source: 'Parts trading' },
+    { name: 'Ganglion',        source: 'Infested deposits' },
+  ],
+  'cambion-vome': [
+    { name: 'Vome Residue',    source: 'Vome worm' },
+    { name: 'Pustulite',       source: 'Mining' },
+    { name: 'Son Token',       source: 'Conservation' },
+    { name: 'Mother Token',    source: 'Bounties' },
+    { name: 'Ganglion',        source: 'Infested deposits' },
+  ],
+  'zariman-corpus': [
+    { name: 'Voidplume Quill',     source: 'Bounties Lv.3' },
+    { name: 'Voidplume Down',      source: 'Bounties Lv.2' },
+    { name: 'Holdfast Token',      source: 'Bounties' },
+    { name: 'Incarnon Genesis',    source: 'Bounties rare' },
+  ],
+  'zariman-grineer': [
+    { name: 'Voidplume Quill',     source: 'Bounties Lv.3' },
+    { name: 'Voidplume Down',      source: 'Bounties Lv.2' },
+    { name: 'Holdfast Token',      source: 'Bounties' },
+    { name: 'Incarnon Genesis',    source: 'Bounties rare' },
+  ],
+  'duviri-joy':    [{ name: 'Pathos Clamp', source: 'The Circuit' }],
+  'duviri-anger':  [{ name: 'Pathos Clamp', source: 'The Circuit' }],
+  'duviri-envy':   [{ name: 'Pathos Clamp', source: 'The Circuit' }],
+  'duviri-sorrow': [{ name: 'Pathos Clamp', source: 'The Circuit' }],
+  'duviri-fear':   [{ name: 'Pathos Clamp', source: 'The Circuit' }],
+};
 
-/** Compact tab countdown: "1H 22M" when ≥1h, "10M 22S" otherwise */
-function formatTabTime(msRemaining: number): string {
-  const { h, m, s } = formatMsParts(msRemaining);
+const WORLD_TIPS: Partial<Record<CycleId, string[]>> = {
+  cetus: [
+    'Eidolons roam the Plains at night — hunt Teralyst first, then chain to Gantulyst and Hydrolyst.',
+    'Bounty rotations reset every cycle — check before the current phase ends.',
+    'Cetus Wisps glow and are easier to spot at night near water.',
+  ],
+  vallis: [
+    'Exploiter Orb only spawns during warm cycles — prepare coolant canisters in advance.',
+    'Profit-Taker is available any cycle after completing all Vox Solaris heist bounties.',
+    'Toroids drop at high-density spots near the Spaceport and Temple of Profit.',
+  ],
+  cambion: [
+    'Fass Residue and Vome Residue are cycle-specific — collect both types for standing.',
+    'Scintillant has a low spawn rate inside Isolation Vault rooms — check every chamber.',
+    'Jugulus Rex and Carnis Rex require a specific cycle phase to spawn outdoors.',
+  ],
+  zariman: [
+    'Voidplume Quill is the primary currency for Holdfast rank — prioritize Lv.3 bounties.',
+    'Incarnon Genesis adapters rotate weekly — plan weapon upgrades around the schedule.',
+    'Void Flood missions grant the most Holdfast standing per run.',
+  ],
+  duviri: [
+    'The active Spiral determines which decree types appear — plan builds accordingly.',
+    'Pathos Clamps are the main crafting resource for Duviri intrinsics and weapons.',
+    'The Circuit weekly rotation changes available Warframes and weapons in Drifter mode.',
+  ],
+};
+
+/** Cycle-state to special note for the TimerHero callout */
+const CYCLE_NOTES: Partial<Record<string, string>> = {
+  'cetus-night':  'Eidolon Hunting Window',
+  'vallis-warm':  'Exploiter Orb Available',
+  'cambion-fass': 'Fass Cycle Active',
+  'cambion-vome': 'Vome Cycle Active',
+};
+
+// ─── Format helpers ───────────────────────────────────────────────────────────
+
+function formatTabTime(ms: number): string {
+  const { h, m } = formatMsParts(ms);
   const hNum = parseInt(h, 10);
   const mNum = parseInt(m, 10);
-  const sNum = parseInt(s, 10);
-  if (hNum > 0) return `${hNum}H ${mNum}M`;
-  return `${mNum}M ${sNum}S`;
+  return hNum > 0 ? `${hNum}h` : `${mNum}m`;
 }
 
+function formatHeroTime(ms: number): string {
+  const { h, m } = formatMsParts(ms);
+  const hNum = parseInt(h, 10);
+  const mNum = parseInt(m, 10);
+  return hNum > 0 ? `${hNum}H: ${mNum}M` : `${mNum}M`;
+}
+
+function formatForecastTime(ms: number): string {
+  const { h, m } = formatMsParts(ms);
+  const hNum = parseInt(h, 10);
+  const mNum = parseInt(m, 10);
+  return hNum > 0 ? `${hNum}h ${mNum}m` : `${mNum}m`;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export function CelestialPendulumPage() {
-  // Default to first world — tab strip is the world switcher
   const [selectedId, setSelectedId] = useState<CycleId>('cetus');
+  const [isSyncing,  setIsSyncing]  = useState(false);
 
-  const {
-    statuses,
-    isLoading,
-    isError,
-    isStale,
-    cacheAgeMs,
-    hasEverLoaded,
-    now,
-  } = useWorldCycles();
+  const { statuses, urgency, hasEverLoaded, isError, forceRefetch: refetchCycles, isDataOutOfSync } = useWorldCycles();
+  const { missions, forceRefetch: refetchMissions } = useSyndicateMissions();
+  const { ageLabel: dropsAgeLabel } = useDropsLastSynced();
 
-  const { missions } = useSyndicateMissions();
+  // Build a keyed record for easy lookup
+  const byId = Object.fromEntries(
+    statuses.map(s => [s.cycle.id, s])
+  ) as Partial<Record<CycleId, CycleStatus>>;
 
-  const missionByName    = Object.fromEntries(missions.map(m => [m.syndicate, m]));
-  const missionByCycleId = Object.fromEntries(
-    (Object.entries(CYCLE_TO_SYNDICATE) as [CycleId, string][])
-      .map(([id, name]) => [id, missionByName[name] ?? null])
+  const selectedStatus = byId[selectedId] ?? byId['cetus'] ?? null;
+  const cycleState     = (selectedStatus?.cycle.state ?? 'day') as string;
+  const bgUrl          = getWorldBg(selectedId, cycleState);
+
+  // Syndicate mission + enriched bounties for selected world
+  const syndicateName   = CYCLE_TO_SYNDICATE[selectedId];
+  const selectedMission = syndicateName
+    ? (missions.find(m => m.syndicate === syndicateName) ?? null)
+    : null;
+
+  const { bounties } = useEnrichedBounties(selectedMission, selectedId, cycleState as Parameters<typeof useEnrichedBounties>[2]);
+
+  // Key resources + tips + cycle note for current world/state
+  const resources  = KEY_RESOURCES[`${selectedId}-${cycleState}`] ?? [];
+  const tips       = WORLD_TIPS[selectedId] ?? [];
+  const cycleNote  = CYCLE_NOTES[`${selectedId}-${cycleState}`] ?? null;
+
+  // Pre-formatted times for tabs
+  const tabTimes = Object.fromEntries(
+    statuses.map(s => [s.cycle.id, formatTabTime(s.msRemaining)])
+  ) as Partial<Record<CycleId, string>>;
+
+  // Pre-formatted forecast times for intel panel
+  const forecastTimes = Object.fromEntries(
+    statuses.map(s => [s.cycle.id, formatForecastTime(s.msRemaining)])
+  ) as Partial<Record<CycleId, string>>;
+
+  const heroTime  = selectedStatus ? formatHeroTime(selectedStatus.msRemaining) : '—';
+
+  const handleRefresh = useCallback(async () => {
+    if (isSyncing) return;
+    setIsSyncing(true);
+    try {
+      await Promise.all([
+        refetchCycles(),
+        refetchMissions(),
+      ]);
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [isSyncing, refetchCycles, refetchMissions]);
+
+  // ── Loading state ─────────────────────────────────────────────────────────
+  if (!hasEverLoaded && !isError) {
+    return (
+      <div className="cp-loading">
+        <div className="cp-loading-dot" />
+        <span className="typo-label-xs">Initializing Systems…</span>
+      </div>
+    );
+  }
+
+  // ── Refresh button (injected into PageHero right slot) ────────────────────
+  const refreshBtn = (
+    <button
+      onClick={() => void handleRefresh()}
+      disabled={isSyncing}
+      className="cp-refresh-btn"
+    >
+      {isSyncing ? 'Syncing…' : '↻ Refresh'}
+    </button>
   );
 
-  const byId            = Object.fromEntries(statuses.map(s => [s.cycle.id, s]));
-  const orderedStatuses = WORLD_ORDER.map(id => byId[id]).filter(Boolean);
-
-  // Fall back to first loaded world if selectedId has no data yet
-  const selectedStatus = byId[selectedId] ?? orderedStatuses[0] ?? null;
-  const activeId       = selectedStatus?.cycle.id ?? selectedId;
-
-  const bgUrl       = selectedStatus ? getWorldBg(selectedStatus.cycle.id, selectedStatus.cycle.state) : '';
-  const cssGradient = selectedStatus
-    ? getCardGradient(selectedStatus.cycle.id, selectedStatus.cycle.state)
-    : '#131313';
-
+  // ── Main layout ───────────────────────────────────────────────────────────
   return (
-    <>
-    {/* WorldBackground is fixed-position — owns the bg image + bottom fade.
-        Swap world images in worldAssets.ts. Sidebar width via --sidebar-w in index.css. */}
-    <WorldBackground url={bgUrl} fallbackColor={cssGradient} />
+    <div data-world={selectedId} style={{ position: 'relative', color: 'var(--color-text-primary)' }}>
 
-    <div
-      className="-mx-12 -mt-24 relative flex flex-col"
-      style={{ height: '100dvh', overflow: 'hidden' }}
-    >
+      {/* Cinematic world background */}
+      <WorldBackground url={bgUrl} />
 
-      {/* ── Initializing (no cached data yet) ───────────────────────────── */}
-      {!hasEverLoaded && (
-        <div
-          className="relative flex-1 flex items-center justify-center"
-          style={{ zIndex: 5, paddingTop: 96 }}
-        >
-          <div className="glass-panel p-10 max-w-lg text-center flex flex-col gap-4">
-            <div className="w-2 h-2 rounded-full bg-primary animate-pulse mx-auto" />
-            <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/40">
-              Initializing Systems…
-            </p>
-          </div>
+      {/* Content layer */}
+      <div style={{ position: 'relative', zIndex: 1 }}>
+
+        {/* Page header */}
+        <PageHero
+          prefix="CELESTIAL"
+          title="PENDULUM"
+          right={refreshBtn}
+        />
+
+        {/* Global radar — sticky pre-heat spotter, world-agnostic */}
+        <MasterHeader
+          statuses={byId}
+          urgency={urgency}
+        />
+
+        {/* World navigation dials — swing rail with theme broadcasting */}
+        <WorldNavigationDials
+          tabs={WORLD_TABS}
+          statuses={byId}
+          urgency={urgency}
+          activeId={selectedId}
+          onSelect={setSelectedId}
+          times={tabTimes}
+        />
+
+        {/* Tactical radar — SVG blueprint hero, replaces TimerHeroPanel */}
+        <TacticalRadar
+          worldId={selectedId}
+          cycleState={cycleState}
+          timeRemaining={heroTime}
+          cycleNote={cycleNote}
+          resources={resources}
+          urgency={urgency[selectedId]}
+          isDataOutOfSync={isDataOutOfSync}
+        />
+
+        {/* Bottom 2-column: bounties | intel */}
+        <div className="cp-grid">
+          <BountyBoard
+            bounties={bounties}
+            hasMission={selectedMission !== null}
+            cycleProgress={selectedStatus?.progress ?? 0}
+          />
+          <CycleIntelPanel
+            activeId={selectedId}
+            statuses={byId}
+            forecastTimes={forecastTimes}
+            tips={tips}
+            isDataOutOfSync={isDataOutOfSync}
+          />
         </div>
-      )}
 
-      {/* ── System Offline — no data, API unreachable ───────────────────── */}
-      {isError && (
-        <div
-          className="relative flex-1 flex items-center justify-center"
-          style={{ zIndex: 5, paddingTop: 96 }}
-        >
-          <div className="glass-panel p-10 max-w-lg text-center flex flex-col gap-4">
-            <div className="w-2 h-2 rounded-full bg-error/70 mx-auto" />
-            <p className="font-label text-xs uppercase tracking-[0.3em] text-secondary/50">
-              System Offline · Data Unavailable
-            </p>
-            <p className="font-label text-[10px] uppercase tracking-[0.25em] text-secondary/30">
-              Unable to reach the Void relay. Check your network connection.
-            </p>
-          </div>
+        {/* Footer: reward data freshness */}
+        <div className="cp-footer">
+          <div className="cp-footer-dot" />
+          <span className="cp-footer-label">Reward data updated {dropsAgeLabel}</span>
         </div>
-      )}
 
-      {/* ── Main content ─────────────────────────────────────────────────── */}
-      {orderedStatuses.length > 0 && (
-        <div className="relative flex flex-col" style={{ zIndex: 5, height: '100%' }}>
-
-          {/* ════════════════════════════════════════════════════════════════
-              TOP AREA — page title + world tab strip
-          ════════════════════════════════════════════════════════════════ */}
-          <div style={{ padding: '88px 44px 0' }}>
-
-            {/* Page heading */}
-            <p
-              style={{
-                fontFamily:    'var(--font-body)',
-                fontWeight:    700,
-                fontSize:      '0.52rem',
-                letterSpacing: '0.42em',
-                color:         '#E3C372',
-                textTransform: 'uppercase',
-                marginBottom:  14,
-              }}
-            >
-              Celestial Pendulum
-            </p>
-
-            {/* World tab strip */}
-            <div
-              style={{
-                display:       'flex',
-                alignItems:    'center',
-                gap:           0,
-                flexWrap:      'nowrap',
-                overflowX:     'auto',
-                scrollbarWidth: 'none',
-              }}
-            >
-              {orderedStatuses.map(status => {
-                const { cycle, msRemaining } = status;
-                const pres     = STATE[cycle.state] ?? FALLBACK;
-                const isActive = activeId === cycle.id;
-                const tabTime  = formatTabTime(msRemaining);
-
-                return (
-                  <button
-                    key={cycle.id}
-                    onClick={() => setSelectedId(cycle.id as CycleId)}
-                    style={{
-                      display:       'flex',
-                      alignItems:    'center',
-                      gap:           6,
-                      padding:       '6px 14px',
-                      fontFamily:    'var(--font-body)',
-                      fontSize:      '0.52rem',
-                      fontWeight:    700,
-                      letterSpacing: '0.18em',
-                      textTransform: 'uppercase',
-                      color:         isActive ? pres.color : 'rgba(198,198,199,0.60)',
-                      background:    isActive ? `${pres.color}14` : 'transparent',
-                      border:        isActive
-                        ? `1px solid ${pres.color}45`
-                        : '1px solid transparent',
-                      cursor:      'pointer',
-                      whiteSpace:  'nowrap',
-                      flexShrink:  0,
-                      transition:  'color 0.18s, border-color 0.18s, background 0.18s',
-                    }}
-                    onMouseEnter={e => {
-                      if (!isActive) {
-                        (e.currentTarget as HTMLButtonElement).style.color = 'rgba(227,195,114,0.80)';
-                        (e.currentTarget as HTMLButtonElement).style.border = `1px solid ${pres.color}28`;
-                        (e.currentTarget as HTMLButtonElement).style.background = `${pres.color}08`;
-                      }
-                    }}
-                    onMouseLeave={e => {
-                      if (!isActive) {
-                        (e.currentTarget as HTMLButtonElement).style.color = 'rgba(198,198,199,0.60)';
-                        (e.currentTarget as HTMLButtonElement).style.border = '1px solid transparent';
-                        (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                      }
-                    }}
-                  >
-                    <span style={{ fontSize: '0.75rem', lineHeight: 1, opacity: isActive ? 1 : 0.55 }}>
-                      {pres.icon}
-                    </span>
-                    <span>{cycle.location.toUpperCase()}</span>
-                    <span
-                      style={{
-                        fontFamily:         'var(--font-body)',
-                        fontSize:           '0.46rem',
-                        fontVariantNumeric: 'tabular-nums',
-                        opacity:            isActive ? 0.82 : 0.52,
-                        letterSpacing:      '0.10em',
-                      }}
-                    >
-                      {tabTime}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* ════════════════════════════════════════════════════════════════
-              CINEMATIC DETAIL — full-bleed single world (always visible)
-          ════════════════════════════════════════════════════════════════ */}
-          {selectedStatus && (
-            <div
-              className="relative flex"
-              style={{ flex: '1 1 0', minHeight: 0, overflow: 'hidden' }}
-            >
-              <CinematicCyclePanel
-                key={activeId}
-                status={selectedStatus}
-                syndicateMission={missionByCycleId[activeId] ?? null}
-                now={now}
-              />
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── Stale / offline banner ───────────────────────────────────────── */}
-      {isStale && orderedStatuses.length > 0 && (
-        <div
-          className="flex items-center gap-3 px-8 py-2"
-          style={{
-            zIndex:     10,
-            background: 'rgba(13,13,13,0.88)',
-            borderTop:  '1px solid rgba(255,255,255,0.05)',
-            flexShrink: 0,
-          }}
-        >
-          <div className="w-1.5 h-1.5 rounded-full bg-error/50 flex-shrink-0" />
-          <p className="font-label text-[9px] uppercase tracking-widest text-secondary/30 flex-1">
-            Offline · Cached {formatCacheAge(cacheAgeMs)} · Timers extrapolated
-          </p>
-        </div>
-      )}
-
-      {/* ── Sync pulse ───────────────────────────────────────────────────── */}
-      {orderedStatuses.length > 0 && !isStale && isLoading && (
-        <div
-          className="absolute flex items-center gap-2"
-          style={{ top: 22, right: 24, zIndex: 12 }}
-        >
-          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-        </div>
-      )}
-
+      </div>
     </div>
-    </>
   );
 }

@@ -16,8 +16,8 @@ export function InvasionCard({ status }: InvasionCardProps) {
   const nodeName   = nodeMatch ? nodeMatch[1] : invasion.node;
   const nodeRegion = nodeMatch ? nodeMatch[2] : '';
 
-  const cardBg         = 'linear-gradient(to right, transparent 0%, rgba(22,20,20,0.46) 42%, rgba(24,23,23,0.64) 100%)';
-  const tintOverlay    = `linear-gradient(to right, ${attackerColor}0D 0%, transparent 50%, ${defenderColor}0D 100%)`;
+  const cardBg      = 'linear-gradient(to right, transparent 0%, rgba(22,20,20,0.46) 42%, rgba(24,23,23,0.64) 100%)';
+  const tintOverlay = `linear-gradient(to right, ${attackerColor}0D 0%, transparent 50%, ${defenderColor}0D 100%)`;
 
   return (
     <div
@@ -40,31 +40,66 @@ export function InvasionCard({ status }: InvasionCardProps) {
       <div className="flex items-start gap-3">
         <Sword size={48} strokeWidth={1.1} style={{ color: attackerColor, opacity: 0.85, flexShrink: 0 }} />
         <div className="flex-1 min-w-0">
-          <p className="font-headline text-xl font-black leading-tight orokin-etched text-on-surface truncate">
+          <p
+            data-role="hero"
+            className="typo-hero leading-tight orokin-etched truncate"
+            style={{ color: '#e5e2e1' }}
+          >
             {nodeName}
             {nodeRegion && (
-              <span className="font-label text-[10px] font-normal ml-1.5 opacity-40 not-italic">
+              <span
+                data-role="labelTiny"
+                className="typo-label-xs ml-1.5 not-italic"
+                style={{ opacity: 0.40 }}
+              >
                 ({nodeRegion})
               </span>
             )}
           </p>
-          <p className="font-label text-[9px] uppercase tracking-[0.3em] opacity-40 mt-0.5">
+          <p
+            data-role="labelSmall"
+            className="typo-label-sm mt-0.5"
+            style={{ opacity: 0.40 }}
+          >
             {invasion.desc}
           </p>
           {/* Faction matchup */}
-          <p className="font-label text-xs mt-1.5 flex items-center gap-1.5">
-            <span style={{ color: attackerColor }}>{invasion.attackingFaction}</span>
-            <span className="opacity-30">vs</span>
-            <span style={{ color: defenderColor }}>{invasion.defendingFaction}</span>
+          <div className="flex items-center gap-1.5 mt-1.5">
+            <p
+              data-role="emphasis"
+              className="typo-emphasis"
+              style={{ color: attackerColor }}
+            >
+              {invasion.attackingFaction}
+            </p>
+            <span
+              data-role="labelTiny"
+              className="typo-label-xs"
+              style={{ opacity: 0.30 }}
+            >
+              vs
+            </span>
+            <p
+              data-role="emphasis"
+              className="typo-emphasis"
+              style={{ color: defenderColor }}
+            >
+              {invasion.defendingFaction}
+            </p>
             {invasion.vsInfestation && (
               <span
-                className="font-label text-[8px] uppercase tracking-[0.2em] px-1.5 py-0.5 ml-1"
-                style={{ color: '#86efac', border: '1px solid rgba(134,239,172,0.30)', backgroundColor: 'rgba(134,239,172,0.07)' }}
+                data-role="labelTiny"
+                className="typo-label-xs ml-1 px-1.5 py-0.5"
+                style={{
+                  color:           '#86efac',
+                  border:          '1px solid rgba(134,239,172,0.30)',
+                  backgroundColor: 'rgba(134,239,172,0.07)',
+                }}
               >
                 Infestation
               </span>
             )}
-          </p>
+          </div>
         </div>
       </div>
 
@@ -75,10 +110,18 @@ export function InvasionCard({ status }: InvasionCardProps) {
           { label: 'DEF REWARD', reward: invasion.defenderReward, credits: invasion.defenderCredits, color: defenderColor },
         ].map(({ label, reward, credits, color }) => (
           <div key={label}>
-            <p className="font-label text-[9px] uppercase tracking-[0.28em] mb-0.5" style={{ color, opacity: 0.45 }}>
+            <p
+              data-role="labelTiny"
+              className="typo-label-xs mb-0.5"
+              style={{ color, opacity: 0.45 }}
+            >
               {label}
             </p>
-            <p className="font-label text-xs leading-snug text-on-surface">
+            <p
+              data-role="body"
+              className="typo-body leading-snug"
+              style={{ color: '#e5e2e1' }}
+            >
               {reward || (credits > 0 ? `${credits.toLocaleString()} cr` : '—')}
             </p>
             {credits > 0 && reward && (

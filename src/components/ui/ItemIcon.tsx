@@ -1,17 +1,26 @@
 /**
- * ItemIcon — renders a Warframe item icon from the WFCD CDN.
+ * ItemIcon — renders a Warframe item icon.
  *
  * Usage:
  *   <ItemIcon imageName="ash-f2c6f3ab3f.png" name="Ash" size="md" />
  *   <ItemIcon item={warframeItem} size={48} />
+ *   <ItemIcon uniqueName="/Lotus/Powersuits/Ninja/Ninja" name="Ash" />
  *
- * Falls back to lotus-placeholder.svg on load error.
- * Tinting applies a gold CSS filter matching the Orokin design system.
+ * Resolution order:
+ *   1. item.imageName / imageName / uniqueName → CDN URL
+ *   2. iconBlobCache: Cache API hit (instant after first load)
+ *   3. iconBlobCache: CDN fetch + persist to Cache API
+ *   4. /lotus-placeholder.svg on network failure
+ *
+ * Icons are fetched once and cached to the Cache API so subsequent renders
+ * (and app restarts) serve from local storage — fully offline after first sync.
  */
 
-import { useState } from 'react';
+import { type CSSProperties } from 'react';
 import { cn } from '@/lib/utils';
 import { getIconUrl, getIconUrlByItem } from '@/lib/icons/IconResolver';
+import { findByUniqueName } from '@/adapters/items/itemsAdapter';
+import { useIconBlobUrl } from '@/lib/icons/iconBlobCache';
 import type { WarframeItem } from '@/core/domain/items';
 
 // ─── Size presets (px) ───────────────────────────────────────────────────────
@@ -30,8 +39,8 @@ type SizePreset = keyof typeof SIZE_MAP;
 
 type ItemIconSource =
   | { item: WarframeItem; imageName?: never; uniqueName?: never }
-  | { imageName: string; item?: never; uniqueName?: never }
-  | { uniqueName?: string; imageName?: never; item?: never };
+  | { imageName: string;  item?: never;      uniqueName?: never }
+  | { uniqueName: string; imageName?: never; item?: never };
 
 export type ItemIconProps = ItemIconSource & {
   /** Display name used as alt text. Defaults to "Warframe item". */
@@ -42,39 +51,54 @@ export type ItemIconProps = ItemIconSource & {
   tint?: boolean;
   /** Additional class names. */
   className?: string;
+  /** Inline style — merged with internal sizing + filter styles. */
+  style?: CSSProperties;
 };
 
 // ─── Gold tint filter ────────────────────────────────────────────────────────
-// Approximates --color-primary (#E3C372) as a CSS filter overlay.
-// sepia → saturate → hue-rotate shift gold hue.
-const GOLD_TINT_FILTER =
-  'sepia(1) saturate(3) hue-rotate(5deg) brightness(1.05)';
+
+const GOLD_TINT_FILTER = 'sepia(1) saturate(3) hue-rotate(5deg) brightness(1.05)';
+
+// ─── CDN URL resolution (sync, from bundled items-map.json) ──────────────────
+
+function resolveCdnUrl(
+  props: Pick<ItemIconProps, 'item' | 'imageName' | 'uniqueName'>,
+): string {
+  if ('item' in props && props.item) {
+    return props.item.imageName ? getIconUrlByItem(props.item) : '/lotus-placeholder.svg';
+  }
+  if ('imageName' in props && props.imageName) {
+    return props.imageName.trim() ? getIconUrl(props.imageName) : '/lotus-placeholder.svg';
+  }
+  if ('uniqueName' in props && props.uniqueName) {
+    const entry = findByUniqueName(props.uniqueName);
+    return entry?.imageName ? getIconUrl(entry.imageName) : '/lotus-placeholder.svg';
+  }
+  return '/lotus-placeholder.svg';
+}
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function ItemIcon({
   item,
   imageName,
+  uniqueName,
   name,
   size = 'md',
   tint = false,
   className,
-}: ItemIconProps) {
-  const [errored, setErrored] = useState(false);
+  style: styleProp,
+}: ItemIconProps & { item?: WarframeItem; imageName?: string; uniqueName?: string }) {
+  const px = typeof size === 'number' ? size : SIZE_MAP[size as SizePreset] ?? 48;
 
-  const px = typeof size === 'number' ? size : SIZE_MAP[size];
+  const cdnUrl = resolveCdnUrl(
+    { item, imageName, uniqueName } as Parameters<typeof resolveCdnUrl>[0],
+  );
 
-  // Resolve the source URL from whatever identifier was provided.
-  let src: string;
-  if (errored) {
-    src = '/lotus-placeholder.svg';
-  } else if (item) {
-    src = getIconUrlByItem(item);
-  } else if (imageName) {
-    src = getIconUrl(imageName);
-  } else {
-    src = '/lotus-placeholder.svg';
-  }
+  // Resolves: in-memory cache → Cache API → CDN fetch → placeholder
+  const src = useIconBlobUrl(cdnUrl);
+
+  const isPlaceholder = src === '/lotus-placeholder.svg';
 
   return (
     <img
@@ -82,14 +106,13 @@ export function ItemIcon({
       alt={name ?? item?.name ?? 'Warframe item'}
       width={px}
       height={px}
-      loading="lazy"
       decoding="async"
-      onError={() => setErrored(true)}
       className={cn('object-contain shrink-0', className)}
       style={{
-        width: px,
+        width:  px,
         height: px,
-        filter: tint && !errored ? GOLD_TINT_FILTER : undefined,
+        filter: tint && !isPlaceholder ? GOLD_TINT_FILTER : undefined,
+        ...styleProp,
       }}
     />
   );

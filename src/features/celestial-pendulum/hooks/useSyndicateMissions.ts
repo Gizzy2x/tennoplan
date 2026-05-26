@@ -1,64 +1,53 @@
+/**
+ * useSyndicateMissions — open-world bounty rotations (Phase D.6).
+ *
+ * Reads ParsedWorldstate.syndicateMissions from the V2 worldstate store
+ * via useWorldstate(). The Worker already filters to the four wanted
+ * syndicates (Ostron / Solaris United / Entrati / The Holdfasts) and
+ * canonicalises their labels, so the hook just maps timestamp shape and
+ * de-duplicates by syndicate name (preferring the longest-lived entry).
+ *
+ * Migration notes:
+ *   • Legacy hook subscribed to `db.cache.get('worldstate_master')`,
+ *     parsed RawSyndicateMission ISO strings, applied alias lookups, and
+ *     filtered the 9-syndicate upstream list down to four. All four steps
+ *     now happen in the Worker — the frontend just renders.
+ *   • V2 expiry is Unix-ms; legacy SyndicateMission keeps both `expiry`
+ *     (ISO string for legacy display code) and `expiryMs` (the live one).
+ *     We synthesise the ISO string from the Unix-ms field via toISOString.
+ *
+ * The return signature matches the legacy useSyndicateMissions exactly so
+ * the Celestial Pendulum syndicate panel does not need any changes.
+ */
+
 import { useMemo } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '@/adapters/storage/db';
-import { SyncService } from '@/services/SyncService';
 import type { SyndicateMission, SyndicateJob } from '@/core/domain/syndicates';
+import type {
+  SyndicateMissionInfo,
+  SyndicateJob as ApiSyndicateJob,
+} from '@/core/domain/tennoplanApi';
+import { useWorldstate } from '@/hooks/useWorldstate';
 
 // ---------------------------------------------------------------------------
-// Raw API shapes (kept local)
+// V2 → legacy adapter
 // ---------------------------------------------------------------------------
 
-interface RawSyndicateJob {
-  type?:           string;
-  enemyLevels?:    [number, number];
-  standingStages?: number[];
-  rewardPool?:     string[];
-}
-
-interface RawSyndicateMission {
-  id?:        string;
-  syndicate?: string;
-  expiry?:    string;
-  jobs?:      RawSyndicateJob[];
-}
-
-// ---------------------------------------------------------------------------
-// Mapping helpers
-// ---------------------------------------------------------------------------
-
-const WANTED_SYNDICATES = new Set(['Ostron', 'Solaris United', 'Entrati', 'The Holdfasts']);
-
-const SYNDICATE_ALIASES: Record<string, string> = {
-  'ostron':         'Ostron',
-  'solaris united': 'Solaris United',
-  'entrati':        'Entrati',
-  'the holdfasts':  'The Holdfasts',
-  'holdfasts':      'The Holdfasts',
-};
-
-function canonicalizeName(raw: string): string {
-  return SYNDICATE_ALIASES[raw.toLowerCase()] ?? raw;
-}
-
-function rawToJob(raw: RawSyndicateJob): SyndicateJob {
+function apiToJob(raw: ApiSyndicateJob): SyndicateJob {
   return {
-    type:           raw.type           ?? 'Unknown',
-    enemyLevels:    raw.enemyLevels    ?? [0, 0],
-    standingStages: raw.standingStages ?? [],
+    type:           raw.type,
+    enemyLevels:    raw.enemyLevels,
+    standingStages: raw.standingStages,
     rewardPool:     raw.rewardPool,
   };
 }
 
-function rawToMission(raw: RawSyndicateMission): SyndicateMission {
-  const rawName   = raw.syndicate ?? '';
-  const syndicate = canonicalizeName(rawName) || rawName || 'Unknown';
-  const expiry    = raw.expiry ?? '';
+function apiToMission(raw: SyndicateMissionInfo): SyndicateMission {
   return {
-    id:       raw.id      ?? syndicate,
-    syndicate,
-    expiry,
-    expiryMs: expiry ? new Date(expiry).getTime() : 0,
-    jobs:     (raw.jobs ?? []).map(rawToJob),
+    id:       raw.id,
+    syndicate: raw.syndicate,
+    expiry:   raw.expiry > 0 ? new Date(raw.expiry).toISOString() : '',
+    expiryMs: raw.expiry,
+    jobs:     raw.jobs.map(apiToJob),
   };
 }
 
@@ -67,49 +56,37 @@ function rawToMission(raw: RawSyndicateMission): SyndicateMission {
 // ---------------------------------------------------------------------------
 
 /**
- * Provides the four open-world syndicate mission rotations from worldstate_master.
- * No fetch, no TanStack Query — useLiveQuery re-renders on SyncService write.
+ * Provides the four open-world syndicate mission rotations from V2 worldstate.
+ * Pure read-side: WorldstateSync is the only writer.
  */
 export function useSyndicateMissions() {
-  const wsEntry = useLiveQuery(
-    () => db.cache.get('worldstate_master').then(e => e ?? null),
-    []
-  );
-
-  const isLoading = wsEntry === undefined;
-  const ws        = (wsEntry?.data ?? null) as Record<string, unknown> | null;
-  const cachedAt  = wsEntry?.updatedAt ?? 0;
-  const isStale   = wsEntry ? wsEntry.expiresAt < Date.now() : false;
+  const { data: ws, lastSync, isLoading, isError, isStale, forceRefetch } =
+    useWorldstate();
 
   const missions = useMemo((): SyndicateMission[] => {
-    if (!ws) return [];
+    if (!ws?.syndicateMissions?.length) return [];
 
-    const rawAll = (ws['syndicateMissions'] ?? []) as RawSyndicateMission[];
-
+    // Worker already filtered + canonicalised; the only thing left is to
+    // keep the longest-lived entry per syndicate when duplicates slip
+    // through (the upstream parser occasionally emits stale + live pairs).
     const seen = new Map<string, SyndicateMission>();
-    for (const raw of rawAll) {
-      const canonical = canonicalizeName(raw.syndicate ?? '');
-      if (!WANTED_SYNDICATES.has(canonical)) continue;
-      const mission  = rawToMission(raw);
-      const existing = seen.get(canonical);
+    for (const raw of ws.syndicateMissions) {
+      const mission  = apiToMission(raw);
+      const existing = seen.get(mission.syndicate);
       if (!existing || mission.expiryMs > existing.expiryMs) {
-        seen.set(canonical, mission);
+        seen.set(mission.syndicate, mission);
       }
     }
     return Array.from(seen.values());
   }, [ws]);
 
-  async function forceRefetch() {
-    await SyncService.performSync(true);
-  }
-
   return {
     missions,
     isLoading,
-    isError:  !isLoading && wsEntry === null,
+    isError,
     isStale,
-    cachedAt,
-    lastSync: cachedAt,
+    cachedAt: lastSync,
+    lastSync,
     forceRefetch,
   };
 }
