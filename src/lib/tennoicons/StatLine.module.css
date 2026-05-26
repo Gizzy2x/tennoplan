@@ -1,0 +1,29 @@
+/* StatLine — inline stat rendering with embedded icons.
+ *
+ * Icons render at 1.1em so they sit slightly larger than the cap-height of
+ * surrounding text, matching how Warframe shows them in-game. The negative
+ * vertical-align nudge centers them on the text baseline.
+ */
+
+.line {
+  display: inline;
+  white-space: normal;
+}
+
+.icon {
+  display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
+  vertical-align: -0.2em;
+  margin: 0 0.15em;
+  object-fit: contain;
+  /* No filter — the Dmg*Small64 icons are pre-colored to their damage type
+   * (Heat orange, Cold blue, etc.) which matches Warframe's in-game UI. */
+}
+
+/* Stats whose value is "better when lower" (e.g. -45% Shield Recharge Delay).
+ * Currently no visual treatment — the minus sign already communicates intent —
+ * but the hook is wired so it can be styled later without touching parsers. */
+.lowerIsBetter {
+  /* reserved for future styling */
+}

@@ -29,6 +29,10 @@ src-tauri/target/
 # Developer-only reference assets (do not ship)
 Reference-for-Tennoplan/
 
+# Installers and archive dumps accidentally dropped in /src or /public
+*.exe
+*.zip
+
 # wrangler files
 .wrangler
 .dev.vars*
