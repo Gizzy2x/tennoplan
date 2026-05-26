@@ -30,7 +30,7 @@ import { makeEtag, makeVersion } from '../storage/metadata';
 
 import { fetchAllCodexSources } from './fetcher';
 import { parseCodex } from './parser';
-import { mergeCodex } from './merger';
+import { buildCodex } from './builder';
 import { enrichCodex } from './enricher';
 import { normalizeCodex } from './normalizer';
 import { validateCodex } from './validator';
@@ -77,22 +77,23 @@ export async function runCodexUpdate(env: Env): Promise<void> {
     const parsed = parseCodex(blobs);
     log('parse complete', {
       ms: Date.now() - tParse,
-      calamityRows: parsed.stats.totalCalamityRows,
+      totalItems: parsed.stats.totalItems,
+      perCategory: parsed.stats.perCategory,
       drops: parsed.stats.totalDrops,
     });
 
-    // ── 3. MERGE ──
-    const tMerge = Date.now();
-    const merged = mergeCodex(parsed);
-    log('merge complete', {
-      ms: Date.now() - tMerge,
-      items: merged.stats.totalItems,
-      withDrops: merged.stats.itemsWithDrops,
+    // ── 3. BUILD ──
+    const tBuild = Date.now();
+    const built = buildCodex(parsed);
+    log('build complete', {
+      ms: Date.now() - tBuild,
+      items: built.stats.totalItems,
+      withDrops: built.stats.itemsWithDrops,
     });
 
     // ── 4. ENRICH ──
     const tEnrich = Date.now();
-    const enriched = enrichCodex(merged, parsed);
+    const enriched = enrichCodex(built, parsed);
     log('enrich complete', {
       ms: Date.now() - tEnrich,
       withIcons: enriched.stats.itemsWithIcons,
@@ -101,7 +102,8 @@ export async function runCodexUpdate(env: Env): Promise<void> {
     });
 
     // ── 5. NORMALIZE ──
-    const source: DataSource = blobs.dropsSource ? 'enriched' : 'calamity-plus';
+    // WFCD-only pipeline — always 'wfcd' source, drops absence doesn't change attribution.
+    const source: DataSource = 'wfcd';
     const version = makeVersion(source);
     const generatedAt = Date.now();
 

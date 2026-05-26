@@ -18,12 +18,21 @@ id = "a520a78ecd264bff9b0abf38adff3f8a"
 
 # ---------------------------------------------------------------------------
 # Scheduled triggers
-#   * * * * *    — every minute  → worldstate updater
-#   */5 * * * *  — every 5 min   → codex heartbeat (smart sync state machine)
-#                  actual syncs: 24h normal | 6h patch/hotfix | 6min retry
+#   */5 * * * *  — every 5 min → worldstate updater
+#
+# Worldstate runs every 5 min (not every minute) to stay under the Free-plan
+# KV write quota: 1,000 writes/day account-wide. Every-minute syncs wrote 2
+# keys/tick × 1440 ticks/day = 2,880 writes/day, blowing the limit. 5-min
+# cadence = 576 writes/day, leaves headroom for the codex CI cron and any
+# manual ops. Cycles + bounties update slowly enough that 5 min staleness is
+# imperceptible.
+#
+# Codex builds run in GitHub Actions instead (see
+# .github/workflows/build-codex.yml). The worker only SERVES the codex blob
+# via /v1/codex — building it here would blow the Free-plan CPU budget.
 # ---------------------------------------------------------------------------
 [triggers]
-crons = ["* * * * *", "*/5 * * * *"]
+crons = ["*/5 * * * *"]
 
 [vars]
 LOG_LEVEL = "info"

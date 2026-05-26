@@ -102,9 +102,22 @@ Font sans  (body):       var(--font-sans)    → "Inter"
 |--------|-----|
 | `https://api.warframestat.us/` | Worldstate, Nightwave, Fissures (live) |
 | `https://api.warframe.market/v2/` | Market prices |
-| Cloudflare Worker (KV) | Worldstate proxy + cache |
+| Cloudflare Worker (KV) | Worldstate proxy + codex serving (read-only for codex) |
+| GitHub Actions (`build-codex.yml`) | **Builds the codex blob in CI** and pushes to KV every 6h |
 | Dexie (IndexedDB) | Drop data, items, icons (download-once) |
 | EE.log | Future Tauri Rust parser |
+
+### Codex pipeline lives in CI, not the worker
+
+The codex parse+build+enrich pipeline runs in **GitHub Actions** (`.github/workflows/build-codex.yml`), not inside the Cloudflare Worker.
+
+Why: parsing ~7 MB across 11 WFCD endpoints exceeds Cloudflare Workers' Free-plan 10 ms CPU budget per invocation. GitHub Actions has no CPU limit, runs the same `cloudflare-worker/scripts/build-codex.ts` script, and PUTs the resulting blob to `codex:current` / `codex:metadata` via the Cloudflare API.
+
+The worker stays simple — it only serves the blob via `GET /v1/codex`. Manual rebuilds: GitHub repo → Actions → "Build & Publish Codex" → Run workflow.
+
+### Free-plan KV write budget
+
+Cloudflare Workers Free = **1,000 KV writes per day, account-wide**. Worldstate cron runs `*/5 * * * *` (576 writes/day), codex CI runs every 6h (12 writes/day). Total ~590/day, leaves room for manual ops. Don't tighten worldstate cron without checking this budget.
 
 ---
 
@@ -112,7 +125,8 @@ Font sans  (body):       var(--font-sans)    → "Inter"
 
 When I say "Archive this bug," "Log this," or "Post-mortem":
 1. Identify the root cause and final working solution.
-2. Use the Obsidian MCP to create or append to `Notes/Post_Mortems.md`.
+2. Use the **Edit tool** to append to `C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Post_Mortems.md`.
+   (The `mcp__obsidian__edit-note` tool has a broken schema and will always fail — use direct file Edit instead.)
 3. Format:
    - **Date:** [Current Date]
    - **The Bug:** Short description.
@@ -121,9 +135,11 @@ When I say "Archive this bug," "Log this," or "Post-mortem":
 
 ## Workflow: Session Context Sync
 
-At the end of a significant session, use Obsidian MCP to update `Notes/Tennoplan-Context.md` with:
+At the end of a significant session, use the **Edit tool** to append a session-ended block to
+`C:/Users/Nuclear Spaceship/Main_Vault/Main_Vault/Notes/Tennoplan-Context.md` with:
 - Current phase and what was just completed
 - Any active blockers
 - Concrete next steps
 
+Note: `mcp__obsidian__read-note` works fine (used at session start). Only `edit-note` is broken.
 This note is auto-read at session start (via hook) so future sessions have instant context without token-expensive re-exploration.

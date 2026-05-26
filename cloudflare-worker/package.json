@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --config wrangler.toml",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "build-codex": "tsx scripts/build-codex.ts",
+    "upload-codex": "tsx scripts/upload-codex.ts"
   },
   "dependencies": {
     "reflect-metadata": "^0.2.2",
@@ -13,7 +15,9 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240909.0",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.2",
     "typescript": "^5.5.2",
-    "wrangler": "^3.78.7"
+    "wrangler": "^4.94.0"
   }
 }

@@ -1,9 +1,16 @@
-import 'reflect-metadata';
 import type { Env } from './types';
 import { route } from './api/routes';
 import { logger } from './logger';
-import { runWorldstateUpdate } from './worldstate/updater';
-import { runCodexUpdate } from './codex/updater';
+
+// NOTE: worldstate/updater is dynamically imported inside scheduled() so the
+// worldstate-parser dependency (heavy NestJS decorator tree) only compiles
+// when the cron actually fires — keeps cold-start CPU low.
+//
+// The codex pipeline is NOT run from the worker. The full parse+build+enrich
+// chain over ~8,800 items exceeds the Free-plan CPU budget. Instead, GitHub
+// Actions builds the blob in Node and uploads it to KV
+// (.github/workflows/build-codex.yml). The worker only serves the cached blob
+// via /v1/codex (api/handlers/codex.ts), which is fast and within budget.
 
 export default {
   async fetch(request: Request, env: Env, _ctx: ExecutionContext): Promise<Response> {
@@ -13,14 +20,14 @@ export default {
   async scheduled(controller: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
     logger.info('scheduler', 'cron tick', { cron: controller.cron });
 
-    // Cloudflare fires scheduled() once PER cron expression, even when two
-    // crons land on the same minute. Dispatch by exact cron string.
-    if (controller.cron === '* * * * *') {
-      ctx.waitUntil(runWorldstateUpdate(env));
-    }
-
     if (controller.cron === '*/5 * * * *') {
-      ctx.waitUntil(runCodexUpdate(env));
+      ctx.waitUntil(
+        (async () => {
+          await import('reflect-metadata');
+          const { runWorldstateUpdate } = await import('./worldstate/updater');
+          return runWorldstateUpdate(env);
+        })(),
+      );
     }
   },
 } satisfies ExportedHandler<Env>;

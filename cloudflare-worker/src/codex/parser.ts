@@ -1,82 +1,260 @@
 // ---------------------------------------------------------------------------
-// Codex parser — turn raw upstream blobs into typed lookup maps.
+// Codex parser — turn raw WFCD JSON into per-category typed lookup maps.
 //
-// Inputs:
-//   • RawCalamityBlobs — 12 calamity-inc Public Export Plus JSON files
-//   • Drops blob from drops.warframestat.us (WFCD), or null
+// WFCD-only pipeline (post-2026-05-26 refactor). Each per-category blob is
+// already in @wfcd/items shape: explicit fields, English strings, normalised
+// polarities. No locale resolution needed.
 //
-// Calamity files come in three possible shapes — we accept all of them:
-//   1. { ExportFoo: [...] }              wrapper-keyed array (current shape)
-//   2. [...]                              bare array
-//   3. { "/Lotus/...": {...}, ... }       dictionary keyed by uniqueName
-//
-// WFCD drops come location-keyed (planet → node → rotation → reward[]). The
-// merger needs item-keyed lookup, so we INVERT here: every reward becomes a
-// flat ParsedDrop with full source context, then we group by `itemName`.
-//
-// What this file does NOT do:
-//   • No category resolution (merger.ts decides Warframe vs Weapon vs ...)
-//   • No icon resolution, no bestFarms scoring (enricher.ts)
-//   • No TennoplanItem construction (normalizer.ts)
+// Drops come location-keyed (planet → node → rotation → reward[]). Builder
+// needs item-keyed lookup, so we INVERT here: every reward becomes a flat
+// ParsedDrop with full source context, then we group by `itemName`.
 //
 // Defensive style: every field access through optional chaining, every
-// shape-narrowing wrapped. Calamity occasionally renames fields between
-// patches; we'd rather drop a row than throw.
+// shape-narrowing wrapped. WFCD occasionally renames fields between releases;
+// we'd rather drop a row than throw the whole sync.
 // ---------------------------------------------------------------------------
 
 import { logger } from '../logger';
-import type { RawCalamityBlobs, RawCodexBlobs } from './fetcher';
+import type { RawCodexBlobs } from './fetcher';
 
 const log  = (msg: string, data?: unknown) => logger.info ('codex-parser', msg, data);
 const warn = (msg: string, data?: unknown) => logger.warn ('codex-parser', msg, data);
 
-// ─── Public types ─────────────────────────────────────────────────────────────
+// ─── Shared WFCD record fragments ─────────────────────────────────────────────
 
-/**
- * Minimal calamity row contract. Every row we accept has at least uniqueName
- * and name. Everything else stays as `unknown` so the merger / enricher /
- * normalizer can narrow per-category without us locking in a shape that may
- * shift between Warframe patches.
- */
-export interface CalamityRow {
-  uniqueName: string;
+export interface WfcdIntroduced {
+  name:    string;
+  date?:   string;
+  url?:    string;
+  parent?: string;
+}
+
+export interface WfcdPatchLog {
   name:       string;
-  [key: string]: unknown;
+  date:       string;
+  url?:       string;
+  additions?: string;
+  changes?:   string;
+  fixes?:     string;
+}
+
+/** Component sub-piece, used by warframes / weapons / sentinels / pets. */
+export interface WfcdComponent {
+  uniqueName?:  string;
+  name:         string;
+  description?: string;
+  itemCount:    number;
+  imageName?:   string;
+  tradable?:    boolean;
+  /**
+   * Drops attached directly to this component by WFCD — already joined,
+   * no name lookup needed. Each entry: { location, type, chance, rarity, uniqueName }.
+   * `type` is the drop's inventory name (e.g. "Volt Prime Chassis Blueprint")
+   * which differs from our synthesized item name ("Volt Prime Chassis"). We
+   * consume these directly in the builder rather than via dropsByName.
+   */
+  drops?:       WfcdComponentDrop[];
+}
+
+export interface WfcdComponentDrop {
+  location?:    string;
+  type?:        string;
+  chance?:      number;
+  rarity?:      string;
+  uniqueName?:  string;
+}
+
+// ─── Per-category records ─────────────────────────────────────────────────────
+
+export interface WfcdMod {
+  uniqueName:   string;
+  name:         string;
+  levelStats?:  Array<{ stats?: string[] }>;
+  polarity?:    string;
+  rarity?:      string;
+  baseDrain?:   number;
+  compatName?:  string;
+  description?: string;
+  isAugment?:   boolean;
+  isExilus?:    boolean;
+  modSet?:      string;
+  imageName?:   string;
+  tradable?:    boolean;
+  type?:        string;
+  wikiaUrl?:    string;
+  releaseDate?: string;
+  transmutable?: boolean;
+  introduced?:  WfcdIntroduced;
+  patchlogs?:   WfcdPatchLog[];
+}
+
+export interface WfcdWarframe {
+  uniqueName:   string;
+  name:         string;
+  description?: string;
+  polarities?:  string[];
+  aura?:        string;
+  abilities?:   WfcdAbility[];
+  components?:  WfcdComponent[];
+  health?:      number;
+  shield?:      number;
+  armor?:       number;
+  power?:       number;
+  sprintSpeed?: number;
+  wikiaUrl?:    string;
+  releaseDate?: string;
+  introduced?:  WfcdIntroduced;
+  patchlogs?:   WfcdPatchLog[];
+  masterable?:  boolean;
+  isPrime?:     boolean;
+  imageName?:   string;
+  type?:        string;
+}
+
+export interface WfcdAbility {
+  uniqueName:  string;
+  name:        string;
+  description: string;
+  imageName?:  string;
+}
+
+export interface WfcdWeapon {
+  uniqueName:        string;
+  name:              string;
+  description?:      string;
+  type?:             string;
+  category?:         string;
+  productCategory?:  string;
+  masteryReq?:       number;
+  totalDamage?:      number;
+  fireRate?:         number;
+  criticalChance?:   number;
+  criticalMultiplier?: number;
+  procChance?:       number;
+  magazineSize?:     number;
+  reloadTime?:       number;
+  components?:       WfcdComponent[];
+  imageName?:        string;
+  wikiaUrl?:         string;
+  introduced?:       WfcdIntroduced;
+  patchlogs?:        WfcdPatchLog[];
+  releaseDate?:      string;
+  tradable?:         boolean;
+  isPrime?:          boolean;
+  polarities?:       string[];
+}
+
+export interface WfcdSentinel {
+  uniqueName:   string;
+  name:         string;
+  description?: string;
+  health?:      number;
+  shield?:      number;
+  armor?:       number;
+  components?:  WfcdComponent[];
+  imageName?:   string;
+  wikiaUrl?:    string;
+  introduced?:  WfcdIntroduced;
+  patchlogs?:   WfcdPatchLog[];
+  releaseDate?: string;
+  tradable?:    boolean;
+  isPrime?:     boolean;
+  polarities?:  string[];
+  abilities?:   WfcdAbility[];
+  masteryReq?:  number;
+}
+
+export interface WfcdPet {
+  uniqueName:   string;
+  name:         string;
+  description?: string;
+  health?:      number;
+  shield?:      number;
+  armor?:       number;
+  components?:  WfcdComponent[];
+  imageName?:   string;
+  wikiaUrl?:    string;
+  introduced?:  WfcdIntroduced;
+  patchlogs?:   WfcdPatchLog[];
+  releaseDate?: string;
+  tradable?:    boolean;
+  polarities?:  string[];
+  abilities?:   WfcdAbility[];
+  masteryReq?:  number;
+  type?:        string;
+}
+
+export interface WfcdArcane {
+  uniqueName:   string;
+  name:         string;
+  description?: string;
+  rarity?:      string;
+  levelStats?:  Array<{ stats?: string[] }>;
+  imageName?:   string;
+  wikiaUrl?:    string;
+  introduced?:  WfcdIntroduced;
+  patchlogs?:   WfcdPatchLog[];
+  releaseDate?: string;
+  tradable?:    boolean;
+  type?:        string;
+}
+
+export interface WfcdRelic {
+  uniqueName:   string;
+  name:         string;
+  description?: string;
+  rewards?:     WfcdRelicReward[];
+  imageName?:   string;
+  wikiaUrl?:    string;
+  vaulted?:     boolean;
+  tier?:        string;
+  locations?:   string[];
+}
+
+export interface WfcdRelicReward {
+  itemName?:   string;
+  rarity?:     string;
+  chance?:     number;
+  rotation?:   string;
+}
+
+export interface WfcdResource {
+  uniqueName:   string;
+  name:         string;
+  description?: string;
+  type?:        string;
+  category?:    string;
+  imageName?:   string;
+  wikiaUrl?:    string;
+  tradable?:    boolean;
+  /** Items that this resource is a component of (rare; some prime-part rows expose it). */
+  parents?:     string[];
+}
+
+export interface WfcdGear {
+  uniqueName:   string;
+  name:         string;
+  description?: string;
+  type?:        string;
+  imageName?:   string;
+  wikiaUrl?:    string;
+  tradable?:    boolean;
 }
 
 /**
- * Recipe row. `resultType` points at the item the recipe produces (e.g. a
- * Warframe component or a Prime warframe itself). `ingredients` lists the
- * required items by uniqueName.
+ * Misc — WFCD's catch-all for core crafting resources that /resources skips:
+ * Orokin Cell, Argon Crystal, Neural Sensors, Forma, Orokin Catalyst, etc.
+ * Same shape as WfcdResource; classified as Resource downstream.
  */
-export interface CalamityRecipe extends CalamityRow {
-  resultType?:         string;
-  ingredients?:        RecipeIngredient[];
-  buildPrice?:         number;       // credits to build
-  buildTime?:          number;       // seconds
-  skipBuildTimePrice?: number;       // platinum to rush
-  consumeOnBuild?:     boolean;
-  num?:                number;       // how many produced per craft
-}
-
-export interface RecipeIngredient {
-  itemType:        string;           // ingredient uniqueName
-  itemCount:       number;
-  productCategory?: string;
-}
-
-/**
- * Relic row from ExportRelicArcane. Relics list their reward pool; arcanes
- * sit alongside in the same file. Both share this shape; we filter by
- * uniqueName patterns in the merger.
- */
-export interface CalamityRelicArcane extends CalamityRow {
-  // Relic-specific (arcanes leave this empty)
-  rewards?: Array<{
-    rewardName?: string;             // uniqueName of the produced item
-    rarity?:     string;
-    itemCount?:  number;
-  }>;
+export interface WfcdMisc {
+  uniqueName:   string;
+  name:         string;
+  description?: string;
+  type?:        string;
+  category?:    string;
+  imageName?:   string;
+  wikiaUrl?:    string;
+  tradable?:    boolean;
 }
 
 // ─── ParsedDrop ───────────────────────────────────────────────────────────────
@@ -125,34 +303,30 @@ export interface ParsedDrop {
 // ─── ParsedCodex ──────────────────────────────────────────────────────────────
 
 export interface ParsedCodex {
-  // Calamity calamity calamity calamity calamity calamity calamity calamity ──
-  warframes:       Map<string, CalamityRow>;
-  weapons:         Map<string, CalamityRow>;
-  sentinels:       Map<string, CalamityRow>;
-  abilities:  Map<string, CalamityRow>;
-  mods:            Map<string, CalamityRow>;        // ExportUpgrades
-  recipes:         Map<string, CalamityRecipe>;     // keyed by recipe.uniqueName
-  recipesByResult: Map<string, CalamityRecipe>;     // keyed by recipe.resultType
-  relicArcane:     Map<string, CalamityRelicArcane>;
-  resources:       Map<string, CalamityRow>;
-  keys:            Map<string, CalamityRow>;
-  flavour:         Map<string, CalamityRow>;
-  fusionBundles:   Map<string, CalamityRow>;
-  gear:            Map<string, CalamityRow>;
+  // Per-category maps keyed by uniqueName. null when the upstream fetch failed.
+  mods:        Map<string, WfcdMod>      | null;
+  warframes:   Map<string, WfcdWarframe> | null;
+  weapons:     Map<string, WfcdWeapon>   | null;
+  sentinels:   Map<string, WfcdSentinel> | null;
+  pets:        Map<string, WfcdPet>      | null;
+  arcanes:     Map<string, WfcdArcane>   | null;
+  relics:      Map<string, WfcdRelic>    | null;
+  resources:   Map<string, WfcdResource> | null;
+  gear:        Map<string, WfcdGear>     | null;
+  misc:        Map<string, WfcdMisc>     | null;
 
-  // Drops, indexed by item display name (case-preserved). null = WFCD failed.
-  dropsByName:     Map<string, ParsedDrop[]> | null;
-
-  // All drops as a flat list (for relic content lookup, debugging, stats).
-  allDrops:        ParsedDrop[];
+  // Drops indexed by item display name (case-preserved). null = drops fetch failed.
+  dropsByName: Map<string, ParsedDrop[]> | null;
+  /** All drops as a flat list — used for relic content lookup + active-relic detection. */
+  allDrops:    ParsedDrop[];
 
   // Source / quality bookkeeping
-  hasDrops:        boolean;
-  dropsSource:     'wfcd' | 'wfcd-github' | null;
+  hasDrops:    boolean;
+  dropsSource: 'wfcd' | 'wfcd-github' | null;
   stats: {
-    totalCalamityRows: number;
-    totalDrops:        number;
-    droppedRows:       number;     // calamity rows discarded for missing fields
+    totalItems:   number;
+    totalDrops:   number;
+    perCategory:  Record<string, number>;
   };
 }
 
@@ -161,309 +335,705 @@ export interface ParsedCodex {
 export function parseCodex(blobs: RawCodexBlobs): ParsedCodex {
   const t0 = Date.now();
 
-  const cal = parseCalamity(blobs);
+  const mods      = blobs.mods      != null ? parseWfcdMods     (blobs.mods)      : null;
+  const warframes = blobs.warframes != null ? parseWfcdWarframes(blobs.warframes) : null;
+  const weapons   = blobs.weapons   != null ? parseWfcdWeapons  (blobs.weapons)   : null;
+  const sentinels = blobs.sentinels != null ? parseWfcdSentinels(blobs.sentinels) : null;
+  const pets      = blobs.pets      != null ? parseWfcdPets     (blobs.pets)      : null;
+  const arcanes   = blobs.arcanes   != null ? parseWfcdArcanes  (blobs.arcanes)   : null;
+  const relics    = blobs.relics    != null ? parseWfcdRelics   (blobs.relics)    : null;
+  const resources = blobs.resources != null ? parseWfcdResources(blobs.resources) : null;
+  const gear      = blobs.gear      != null ? parseWfcdGear     (blobs.gear)      : null;
+  const misc      = blobs.misc      != null ? parseWfcdMisc     (blobs.misc)      : null;
 
-  // Build secondary recipe lookup by what they produce. Multiple recipes for
-  // the same result is rare but possible (e.g. SP variants); we warn and keep
-  // the first since the merger only needs one canonical recipe per item.
-  const recipesByResult = new Map<string, CalamityRecipe>();
-  for (const recipe of cal.recipes.values()) {
-    const result = recipe.resultType;
-    if (!result) continue;
-    if (recipesByResult.has(result)) {
-      warn('duplicate recipe resultType', { resultType: result, recipe: recipe.uniqueName });
-      continue;
-    }
-    recipesByResult.set(result, recipe);
-  }
-
-  // Drops — invert WFCD into a flat ParsedDrop[] keyed by item name.
-  const drops = blobs.drops != null ? parseDrops(blobs.drops) : null;
-
+  const drops       = blobs.drops != null ? parseDrops(blobs.drops) : null;
   const dropsByName = drops != null ? indexDropsByName(drops) : null;
   const allDrops    = drops ?? [];
 
-  const totalCalamityRows =
-    cal.warframes.size + cal.weapons.size + cal.sentinels.size +
-    cal.abilities.size + cal.mods.size + cal.recipes.size +
-    cal.relicArcane.size + cal.resources.size + cal.keys.size +
-    cal.flavour.size + cal.fusionBundles.size + cal.gear.size;
+  const perCategory: Record<string, number> = {
+    mods:      mods?.size      ?? 0,
+    warframes: warframes?.size ?? 0,
+    weapons:   weapons?.size   ?? 0,
+    sentinels: sentinels?.size ?? 0,
+    pets:      pets?.size      ?? 0,
+    arcanes:   arcanes?.size   ?? 0,
+    relics:    relics?.size    ?? 0,
+    resources: resources?.size ?? 0,
+    gear:      gear?.size      ?? 0,
+    misc:      misc?.size      ?? 0,
+  };
+  const totalItems = Object.values(perCategory).reduce((sum, n) => sum + n, 0);
 
   const result: ParsedCodex = {
-    ...cal,
-    recipesByResult,
+    mods, warframes, weapons, sentinels, pets, arcanes, relics, resources, gear, misc,
     dropsByName,
     allDrops,
     hasDrops:    drops != null && drops.length > 0,
     dropsSource: blobs.dropsSource,
     stats: {
-      totalCalamityRows,
+      totalItems,
       totalDrops:  allDrops.length,
-      droppedRows: cal.droppedRows,
+      perCategory,
     },
   };
 
   log('parsed codex', {
-    ms:           Date.now() - t0,
-    rows:         totalCalamityRows,
-    drops:        allDrops.length,
-    droppedRows:  cal.droppedRows,
-    dropsSource:  blobs.dropsSource ?? 'unavailable',
+    ms:          Date.now() - t0,
+    totalItems,
+    perCategory,
+    drops:       allDrops.length,
+    dropsSource: blobs.dropsSource ?? 'unavailable',
   });
 
   return result;
 }
 
-// ─── Calamity unpacking ───────────────────────────────────────────────────────
+// ─── WFCD Mods ────────────────────────────────────────────────────────────────
+//
+// Returns a Map keyed by uniqueName. Every field is preserved as-is — the
+// enricher decides which ones to copy onto TennoplanItem.
 
-interface ParsedCalamity {
-  warframes:      Map<string, CalamityRow>;
-  weapons:        Map<string, CalamityRow>;
-  sentinels:      Map<string, CalamityRow>;
-  abilities: Map<string, CalamityRow>;
-  mods:           Map<string, CalamityRow>;
-  recipes:        Map<string, CalamityRecipe>;
-  relicArcane:    Map<string, CalamityRelicArcane>;
-  resources:      Map<string, CalamityRow>;
-  keys:           Map<string, CalamityRow>;
-  flavour:        Map<string, CalamityRow>;
-  fusionBundles:  Map<string, CalamityRow>;
-  gear:           Map<string, CalamityRow>;
-  droppedRows:    number;          // total rows discarded across all files
-}
+const KNOWN_POLARITIES = new Set([
+  'madurai', 'vazarin', 'naramon', 'zenurik', 'unairu',
+  'penjaga', 'umbra', 'aura', 'universal', 'none',
+]);
 
-// ─── Locale resolution ────────────────────────────────────────────────────────
+// Real-world baseline: ~10% of mods legitimately lack levelStats (stance
+// variants, focus ways, mod-set bonus tokens). Threshold catches catastrophic
+// upstream shape changes (50%+); normal variance stays quiet.
+const SHAPE_DRIFT_THRESHOLD_PCT = 25;
 
-/**
- * Build a lookup map from the English locale dictionary (dict.en.json).
- * Keys are localization paths like "/Lotus/Language/Items/AshName",
- * values are resolved English strings like "<WARFRAME> Ash".
- */
-function buildLocaleDict(blob: unknown): Map<string, string> {
-  if (!blob || typeof blob !== 'object' || Array.isArray(blob)) return new Map();
-  const out = new Map<string, string>();
-  for (const [key, val] of Object.entries(blob as Record<string, unknown>)) {
-    if (typeof val === 'string') out.set(key, val);
+export function parseWfcdMods(raw: unknown): Map<string, WfcdMod> {
+  const out = new Map<string, WfcdMod>();
+  if (!Array.isArray(raw)) {
+    warn('wfcd /mods response is not an array — upstream shape may have changed', {
+      type: raw === null ? 'null' : typeof raw,
+    });
+    return out;
   }
+
+  let missingLevelStats = 0;
+  let missingPolarity   = 0;
+  let missingRarity     = 0;
+  let unknownPolarity   = 0;
+  let droppedRows       = 0;
+
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') { droppedRows++; continue; }
+    const row = r as Record<string, unknown>;
+    const uniqueName = typeof row['uniqueName'] === 'string' ? row['uniqueName'] : null;
+    const name       = typeof row['name']       === 'string' ? row['name']       : null;
+    if (!uniqueName || !name) { droppedRows++; continue; }
+
+    const mod: WfcdMod = { uniqueName, name };
+
+    if (Array.isArray(row['levelStats'])) mod.levelStats = row['levelStats'] as WfcdMod['levelStats'];
+    else                                   missingLevelStats++;
+
+    if (typeof row['polarity'] === 'string') {
+      mod.polarity = row['polarity'];
+      if (!KNOWN_POLARITIES.has(mod.polarity)) unknownPolarity++;
+    } else {
+      missingPolarity++;
+    }
+
+    if (typeof row['rarity'] === 'string') mod.rarity = row['rarity'];
+    else                                   missingRarity++;
+
+    if (typeof row['baseDrain']    === 'number')  mod.baseDrain    = row['baseDrain']    as number;
+    if (typeof row['compatName']   === 'string')  mod.compatName   = row['compatName']   as string;
+    if (typeof row['description']  === 'string')  mod.description  = row['description']  as string;
+    if (typeof row['imageName']    === 'string')  mod.imageName    = row['imageName']    as string;
+    if (typeof row['modSet']       === 'string')  mod.modSet       = row['modSet']       as string;
+    if (typeof row['type']         === 'string')  mod.type         = row['type']         as string;
+    if (row['isAugment'] === true) mod.isAugment = true;
+    if (row['isExilus']  === true) mod.isExilus  = true;
+    if (typeof row['tradable']     === 'boolean') mod.tradable     = row['tradable']     as boolean;
+    if (typeof row['wikiaUrl']     === 'string')  mod.wikiaUrl     = row['wikiaUrl']     as string;
+    if (typeof row['releaseDate']  === 'string')  mod.releaseDate  = row['releaseDate']  as string;
+    if (typeof row['transmutable'] === 'boolean') mod.transmutable = row['transmutable'] as boolean;
+
+    const introduced = parseIntroduced(row['introduced']);
+    if (introduced) mod.introduced = introduced;
+
+    const patchlogs = parsePatchLogs(row['patchlogs']);
+    if (patchlogs.length > 0) mod.patchlogs = patchlogs;
+
+    if (!out.has(uniqueName)) out.set(uniqueName, mod);
+  }
+
+  const total = out.size;
+  const pct = (n: number) => total === 0 ? 100 : Math.round((n / total) * 1000) / 10;
+
+  log('parsed wfcd mods', {
+    total,
+    droppedRows,
+    missingLevelStats: `${missingLevelStats} (${pct(missingLevelStats)}%)`,
+    missingPolarity:   `${missingPolarity} (${pct(missingPolarity)}%)`,
+    missingRarity:     `${missingRarity} (${pct(missingRarity)}%)`,
+    unknownPolarity,
+  });
+
+  if (total === 0) warn('wfcd /mods produced ZERO mods — upstream shape likely broke');
+  if (pct(missingLevelStats) > SHAPE_DRIFT_THRESHOLD_PCT) {
+    warn('wfcd /mods shape may have shifted — many entries lack levelStats', { missingLevelStats, total });
+  }
+  if (pct(missingPolarity) > SHAPE_DRIFT_THRESHOLD_PCT) {
+    warn('wfcd /mods shape may have shifted — many entries lack polarity', { missingPolarity, total });
+  }
+
   return out;
 }
 
-/** Strip game-engine tag prefixes: "<ARCHWING> Itzal" → "Itzal" */
-function stripLocaleTag(s: string): string {
-  return s.replace(/^<[A-Z_]+>\s*/u, '').trim();
+// ─── WFCD Warframes ───────────────────────────────────────────────────────────
+
+export function parseWfcdWarframes(raw: unknown): Map<string, WfcdWarframe> {
+  const out = new Map<string, WfcdWarframe>();
+  if (!Array.isArray(raw)) {
+    warn('wfcd /warframes response is not an array', { type: raw === null ? 'null' : typeof raw });
+    return out;
+  }
+
+  let droppedRows       = 0;
+  let missingPolarities = 0;
+  let missingAbilities  = 0;
+  let missingComponents = 0;
+
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') { droppedRows++; continue; }
+    const row = r as Record<string, unknown>;
+    const uniqueName = typeof row['uniqueName'] === 'string' ? row['uniqueName'] : null;
+    const name       = typeof row['name']       === 'string' ? row['name']       : null;
+    if (!uniqueName || !name) { droppedRows++; continue; }
+
+    const wf: WfcdWarframe = { uniqueName, name };
+
+    if (Array.isArray(row['polarities']) && (row['polarities'] as unknown[]).every(p => typeof p === 'string')) {
+      wf.polarities = row['polarities'] as string[];
+    } else {
+      missingPolarities++;
+    }
+    if (typeof row['aura']        === 'string') wf.aura        = row['aura']        as string;
+    if (typeof row['description'] === 'string') wf.description = row['description'] as string;
+    if (typeof row['imageName']   === 'string') wf.imageName   = row['imageName']   as string;
+    if (typeof row['type']        === 'string') wf.type        = row['type']        as string;
+    if (typeof row['health']      === 'number') wf.health      = row['health']      as number;
+    if (typeof row['shield']      === 'number') wf.shield      = row['shield']      as number;
+    if (typeof row['armor']       === 'number') wf.armor       = row['armor']       as number;
+    if (typeof row['power']       === 'number') wf.power       = row['power']       as number;
+    if (typeof row['sprintSpeed'] === 'number') wf.sprintSpeed = row['sprintSpeed'] as number;
+
+    const abilities = parseAbilities(row['abilities']);
+    if (abilities.length > 0) wf.abilities = abilities;
+    else missingAbilities++;
+
+    const components = parseComponents(row['components']);
+    if (components.length > 0) wf.components = components;
+    else missingComponents++;
+
+    if (typeof row['wikiaUrl']    === 'string')  wf.wikiaUrl    = row['wikiaUrl']    as string;
+    if (typeof row['releaseDate'] === 'string')  wf.releaseDate = row['releaseDate'] as string;
+    if (typeof row['masterable']  === 'boolean') wf.masterable  = row['masterable']  as boolean;
+    if (typeof row['isPrime']     === 'boolean') wf.isPrime     = row['isPrime']     as boolean;
+
+    const introduced = parseIntroduced(row['introduced']);
+    if (introduced) wf.introduced = introduced;
+
+    const patchlogs = parsePatchLogs(row['patchlogs']);
+    if (patchlogs.length > 0) wf.patchlogs = patchlogs;
+
+    if (!out.has(uniqueName)) out.set(uniqueName, wf);
+  }
+
+  const total = out.size;
+  const pct = (n: number) => total === 0 ? 100 : Math.round((n / total) * 1000) / 10;
+
+  log('parsed wfcd warframes', {
+    total,
+    droppedRows,
+    missingPolarities: `${missingPolarities} (${pct(missingPolarities)}%)`,
+    missingAbilities:  `${missingAbilities} (${pct(missingAbilities)}%)`,
+    missingComponents: `${missingComponents} (${pct(missingComponents)}%)`,
+  });
+
+  if (total === 0) warn('wfcd /warframes produced ZERO entries — upstream shape likely broke');
+
+  return out;
 }
 
-/**
- * Resolve a calamity `name` field to its English display name.
- * Non-locale strings (already English) are returned unchanged.
- * Locale keys not present in the dict fall back to the raw key.
- */
-function resolveLocaleName(raw: string, locale: Map<string, string>): string {
-  if (!raw.startsWith('/Lotus/Language/')) return raw;
-  const resolved = locale.get(raw);
-  if (!resolved) return raw;
-  return stripLocaleTag(resolved);
-}
+// ─── WFCD Weapons ─────────────────────────────────────────────────────────────
 
-// ─── Calamity parsing ─────────────────────────────────────────────────────────
+export function parseWfcdWeapons(raw: unknown): Map<string, WfcdWeapon> {
+  const out = new Map<string, WfcdWeapon>();
+  if (!Array.isArray(raw)) {
+    warn('wfcd /weapons response is not an array', { type: raw === null ? 'null' : typeof raw });
+    return out;
+  }
 
-function parseCalamity(blobs: RawCalamityBlobs): ParsedCalamity {
-  const counter = { dropped: 0 };
-  const locale  = buildLocaleDict(blobs.localeDict);
+  let droppedRows = 0;
 
-  log('locale dict', { entries: locale.size });
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') { droppedRows++; continue; }
+    const row = r as Record<string, unknown>;
+    const uniqueName = typeof row['uniqueName'] === 'string' ? row['uniqueName'] : null;
+    const name       = typeof row['name']       === 'string' ? row['name']       : null;
+    if (!uniqueName || !name) { droppedRows++; continue; }
 
-  return {
-    warframes:     buildMap(blobs.warframes,        'ExportWarframes',     counter, locale),
-    weapons:       buildMap(blobs.weapons,          'ExportWeapons',       counter, locale),
-    sentinels:     buildMap(blobs.sentinels,        'ExportSentinels',     counter, locale),
-    abilities:     buildMap(blobs.abilities,        'ExportAbilities',     counter, locale),
-    mods:          buildMap(blobs.upgrades,         'ExportUpgrades',      counter, locale),
-    recipes:       buildRecipeMap(blobs.recipes,    'ExportRecipes',       counter, locale),
-    relicArcane:   buildRelicsArcanes(blobs.relics, blobs.arcanes, 'ExportRelics', 'ExportArcanes', counter, locale),
-    resources:     buildMap(blobs.resources,        'ExportResources',     counter, locale),
-    keys:          buildMap(blobs.keys,             'ExportKeys',          counter, locale),
-    flavour:       buildMap(blobs.flavour,          'ExportFlavour',       counter, locale),
-    fusionBundles: buildMap(blobs.fusionBundles,    'ExportFusionBundles', counter, locale),
-    gear:          buildMap(blobs.gear,             'ExportGear',          counter, locale),
-    droppedRows:   counter.dropped,
-  };
-}
+    const w: WfcdWeapon = { uniqueName, name };
 
-/**
- * Extract a flat array of rows from a calamity blob, regardless of which
- * shape the upstream JSON decided to ship today.
- */
-function extractCalamityRows(blob: unknown, wrapperKey: string): unknown[] {
-  if (Array.isArray(blob)) return blob;
+    if (typeof row['description']        === 'string')  w.description        = row['description']        as string;
+    if (typeof row['type']               === 'string')  w.type               = row['type']               as string;
+    if (typeof row['category']           === 'string')  w.category           = row['category']           as string;
+    if (typeof row['productCategory']    === 'string')  w.productCategory    = row['productCategory']    as string;
+    if (typeof row['masteryReq']         === 'number')  w.masteryReq         = row['masteryReq']         as number;
+    if (typeof row['totalDamage']        === 'number')  w.totalDamage        = row['totalDamage']        as number;
+    if (typeof row['fireRate']           === 'number')  w.fireRate           = row['fireRate']           as number;
+    if (typeof row['criticalChance']     === 'number')  w.criticalChance     = row['criticalChance']     as number;
+    if (typeof row['criticalMultiplier'] === 'number')  w.criticalMultiplier = row['criticalMultiplier'] as number;
+    if (typeof row['procChance']         === 'number')  w.procChance         = row['procChance']         as number;
+    if (typeof row['magazineSize']       === 'number')  w.magazineSize       = row['magazineSize']       as number;
+    if (typeof row['reloadTime']         === 'number')  w.reloadTime         = row['reloadTime']         as number;
+    if (typeof row['imageName']          === 'string')  w.imageName          = row['imageName']          as string;
+    if (typeof row['wikiaUrl']           === 'string')  w.wikiaUrl           = row['wikiaUrl']           as string;
+    if (typeof row['releaseDate']        === 'string')  w.releaseDate        = row['releaseDate']        as string;
+    if (typeof row['tradable']           === 'boolean') w.tradable           = row['tradable']           as boolean;
+    if (typeof row['isPrime']            === 'boolean') w.isPrime            = row['isPrime']            as boolean;
 
-  if (blob && typeof blob === 'object') {
-    const obj = blob as Record<string, unknown>;
-
-    // Wrapper-keyed array (current calamity-inc shape)
-    const wrapped = obj[wrapperKey];
-    if (Array.isArray(wrapped)) return wrapped;
-
-    // Single-key wrapper with a different name — accept it if there's exactly
-    // one top-level key whose value is an array.
-    const keys = Object.keys(obj);
-    if (keys.length === 1) {
-      const sole = obj[keys[0]!];
-      if (Array.isArray(sole)) return sole;
+    if (Array.isArray(row['polarities']) && (row['polarities'] as unknown[]).every(p => typeof p === 'string')) {
+      w.polarities = row['polarities'] as string[];
     }
 
-    // Dictionary keyed by uniqueName: convert values back to row form,
-    // synthesizing uniqueName from the key if the value is an object.
-    const dictRows: unknown[] = [];
-    let usable = true;
-    for (const [key, val] of Object.entries(obj)) {
-      if (val && typeof val === 'object' && !Array.isArray(val)) {
-        const row = val as Record<string, unknown>;
-        if (typeof row['uniqueName'] !== 'string') row['uniqueName'] = key;
-        dictRows.push(row);
-      } else {
-        usable = false;
-        break;
+    const components = parseComponents(row['components']);
+    if (components.length > 0) w.components = components;
+
+    const introduced = parseIntroduced(row['introduced']);
+    if (introduced) w.introduced = introduced;
+
+    const patchlogs = parsePatchLogs(row['patchlogs']);
+    if (patchlogs.length > 0) w.patchlogs = patchlogs;
+
+    if (!out.has(uniqueName)) out.set(uniqueName, w);
+  }
+
+  log('parsed wfcd weapons', { total: out.size, droppedRows });
+  if (out.size === 0) warn('wfcd /weapons produced ZERO entries');
+
+  return out;
+}
+
+// ─── WFCD Sentinels ───────────────────────────────────────────────────────────
+
+export function parseWfcdSentinels(raw: unknown): Map<string, WfcdSentinel> {
+  const out = new Map<string, WfcdSentinel>();
+  if (!Array.isArray(raw)) {
+    warn('wfcd /sentinels response is not an array', { type: raw === null ? 'null' : typeof raw });
+    return out;
+  }
+
+  let droppedRows = 0;
+
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') { droppedRows++; continue; }
+    const row = r as Record<string, unknown>;
+    const uniqueName = typeof row['uniqueName'] === 'string' ? row['uniqueName'] : null;
+    const name       = typeof row['name']       === 'string' ? row['name']       : null;
+    if (!uniqueName || !name) { droppedRows++; continue; }
+
+    const s: WfcdSentinel = { uniqueName, name };
+
+    if (typeof row['description'] === 'string')  s.description = row['description'] as string;
+    if (typeof row['health']      === 'number')  s.health      = row['health']      as number;
+    if (typeof row['shield']      === 'number')  s.shield      = row['shield']      as number;
+    if (typeof row['armor']       === 'number')  s.armor       = row['armor']       as number;
+    if (typeof row['imageName']   === 'string')  s.imageName   = row['imageName']   as string;
+    if (typeof row['wikiaUrl']    === 'string')  s.wikiaUrl    = row['wikiaUrl']    as string;
+    if (typeof row['releaseDate'] === 'string')  s.releaseDate = row['releaseDate'] as string;
+    if (typeof row['tradable']    === 'boolean') s.tradable    = row['tradable']    as boolean;
+    if (typeof row['isPrime']     === 'boolean') s.isPrime     = row['isPrime']     as boolean;
+    if (typeof row['masteryReq']  === 'number')  s.masteryReq  = row['masteryReq']  as number;
+
+    if (Array.isArray(row['polarities']) && (row['polarities'] as unknown[]).every(p => typeof p === 'string')) {
+      s.polarities = row['polarities'] as string[];
+    }
+
+    const components = parseComponents(row['components']);
+    if (components.length > 0) s.components = components;
+
+    const abilities = parseAbilities(row['abilities']);
+    if (abilities.length > 0) s.abilities = abilities;
+
+    const introduced = parseIntroduced(row['introduced']);
+    if (introduced) s.introduced = introduced;
+
+    const patchlogs = parsePatchLogs(row['patchlogs']);
+    if (patchlogs.length > 0) s.patchlogs = patchlogs;
+
+    if (!out.has(uniqueName)) out.set(uniqueName, s);
+  }
+
+  log('parsed wfcd sentinels', { total: out.size, droppedRows });
+
+  return out;
+}
+
+// ─── WFCD Pets ────────────────────────────────────────────────────────────────
+
+export function parseWfcdPets(raw: unknown): Map<string, WfcdPet> {
+  const out = new Map<string, WfcdPet>();
+  if (!Array.isArray(raw)) {
+    warn('wfcd /pets response is not an array', { type: raw === null ? 'null' : typeof raw });
+    return out;
+  }
+
+  let droppedRows = 0;
+
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') { droppedRows++; continue; }
+    const row = r as Record<string, unknown>;
+    const uniqueName = typeof row['uniqueName'] === 'string' ? row['uniqueName'] : null;
+    const name       = typeof row['name']       === 'string' ? row['name']       : null;
+    if (!uniqueName || !name) { droppedRows++; continue; }
+
+    const p: WfcdPet = { uniqueName, name };
+
+    if (typeof row['description'] === 'string')  p.description = row['description'] as string;
+    if (typeof row['health']      === 'number')  p.health      = row['health']      as number;
+    if (typeof row['shield']      === 'number')  p.shield      = row['shield']      as number;
+    if (typeof row['armor']       === 'number')  p.armor       = row['armor']       as number;
+    if (typeof row['imageName']   === 'string')  p.imageName   = row['imageName']   as string;
+    if (typeof row['wikiaUrl']    === 'string')  p.wikiaUrl    = row['wikiaUrl']    as string;
+    if (typeof row['releaseDate'] === 'string')  p.releaseDate = row['releaseDate'] as string;
+    if (typeof row['tradable']    === 'boolean') p.tradable    = row['tradable']    as boolean;
+    if (typeof row['masteryReq']  === 'number')  p.masteryReq  = row['masteryReq']  as number;
+    if (typeof row['type']        === 'string')  p.type        = row['type']        as string;
+
+    if (Array.isArray(row['polarities']) && (row['polarities'] as unknown[]).every(x => typeof x === 'string')) {
+      p.polarities = row['polarities'] as string[];
+    }
+
+    const components = parseComponents(row['components']);
+    if (components.length > 0) p.components = components;
+
+    const abilities = parseAbilities(row['abilities']);
+    if (abilities.length > 0) p.abilities = abilities;
+
+    const introduced = parseIntroduced(row['introduced']);
+    if (introduced) p.introduced = introduced;
+
+    const patchlogs = parsePatchLogs(row['patchlogs']);
+    if (patchlogs.length > 0) p.patchlogs = patchlogs;
+
+    if (!out.has(uniqueName)) out.set(uniqueName, p);
+  }
+
+  log('parsed wfcd pets', { total: out.size, droppedRows });
+
+  return out;
+}
+
+// ─── WFCD Arcanes ─────────────────────────────────────────────────────────────
+
+export function parseWfcdArcanes(raw: unknown): Map<string, WfcdArcane> {
+  const out = new Map<string, WfcdArcane>();
+  if (!Array.isArray(raw)) {
+    warn('wfcd /arcanes response is not an array', { type: raw === null ? 'null' : typeof raw });
+    return out;
+  }
+
+  let droppedRows = 0;
+
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') { droppedRows++; continue; }
+    const row = r as Record<string, unknown>;
+    const uniqueName = typeof row['uniqueName'] === 'string' ? row['uniqueName'] : null;
+    const name       = typeof row['name']       === 'string' ? row['name']       : null;
+    if (!uniqueName || !name) { droppedRows++; continue; }
+
+    const a: WfcdArcane = { uniqueName, name };
+
+    if (typeof row['description'] === 'string')  a.description = row['description'] as string;
+    if (typeof row['rarity']      === 'string')  a.rarity      = row['rarity']      as string;
+    if (typeof row['imageName']   === 'string')  a.imageName   = row['imageName']   as string;
+    if (typeof row['wikiaUrl']    === 'string')  a.wikiaUrl    = row['wikiaUrl']    as string;
+    if (typeof row['releaseDate'] === 'string')  a.releaseDate = row['releaseDate'] as string;
+    if (typeof row['tradable']    === 'boolean') a.tradable    = row['tradable']    as boolean;
+    if (typeof row['type']        === 'string')  a.type        = row['type']        as string;
+    if (Array.isArray(row['levelStats'])) a.levelStats = row['levelStats'] as WfcdArcane['levelStats'];
+
+    const introduced = parseIntroduced(row['introduced']);
+    if (introduced) a.introduced = introduced;
+
+    const patchlogs = parsePatchLogs(row['patchlogs']);
+    if (patchlogs.length > 0) a.patchlogs = patchlogs;
+
+    if (!out.has(uniqueName)) out.set(uniqueName, a);
+  }
+
+  log('parsed wfcd arcanes', { total: out.size, droppedRows });
+
+  return out;
+}
+
+// ─── WFCD Relics ──────────────────────────────────────────────────────────────
+
+export function parseWfcdRelics(raw: unknown): Map<string, WfcdRelic> {
+  const out = new Map<string, WfcdRelic>();
+  if (!Array.isArray(raw)) {
+    warn('wfcd /relics response is not an array', { type: raw === null ? 'null' : typeof raw });
+    return out;
+  }
+
+  let droppedRows = 0;
+
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') { droppedRows++; continue; }
+    const row = r as Record<string, unknown>;
+    const uniqueName = typeof row['uniqueName'] === 'string' ? row['uniqueName'] : null;
+    const name       = typeof row['name']       === 'string' ? row['name']       : null;
+    if (!uniqueName || !name) { droppedRows++; continue; }
+
+    const rel: WfcdRelic = { uniqueName, name };
+
+    if (typeof row['description'] === 'string')  rel.description = row['description'] as string;
+    if (typeof row['imageName']   === 'string')  rel.imageName   = row['imageName']   as string;
+    if (typeof row['wikiaUrl']    === 'string')  rel.wikiaUrl    = row['wikiaUrl']    as string;
+    if (typeof row['vaulted']     === 'boolean') rel.vaulted     = row['vaulted']     as boolean;
+    if (typeof row['tier']        === 'string')  rel.tier        = row['tier']        as string;
+
+    if (Array.isArray(row['locations']) && (row['locations'] as unknown[]).every(l => typeof l === 'string')) {
+      rel.locations = row['locations'] as string[];
+    }
+
+    if (Array.isArray(row['rewards'])) {
+      const rewards: WfcdRelicReward[] = [];
+      for (const rw of row['rewards'] as unknown[]) {
+        if (!rw || typeof rw !== 'object') continue;
+        const rr = rw as Record<string, unknown>;
+        const entry: WfcdRelicReward = {};
+        if (typeof rr['itemName'] === 'string') entry.itemName = rr['itemName'] as string;
+        if (typeof rr['rarity']   === 'string') entry.rarity   = rr['rarity']   as string;
+        if (typeof rr['chance']   === 'number') entry.chance   = rr['chance']   as number;
+        if (typeof rr['rotation'] === 'string') entry.rotation = rr['rotation'] as string;
+        if (entry.itemName) rewards.push(entry);
       }
+      if (rewards.length > 0) rel.rewards = rewards;
     }
-    if (usable && dictRows.length > 0) return dictRows;
+
+    if (!out.has(uniqueName)) out.set(uniqueName, rel);
   }
 
-  return [];
-}
-
-function buildMap(
-  blob:       unknown,
-  wrapperKey: string,
-  counter:    { dropped: number },
-  locale:     Map<string, string>,
-): Map<string, CalamityRow> {
-  const rows = extractCalamityRows(blob, wrapperKey);
-  const out  = new Map<string, CalamityRow>();
-
-  for (const raw of rows) {
-    const row = toCalamityRow(raw, locale);
-    if (!row) { counter.dropped++; continue; }
-    if (out.has(row.uniqueName)) continue;       // first wins; later dupes silently skipped
-    out.set(row.uniqueName, row);
-  }
+  log('parsed wfcd relics', { total: out.size, droppedRows });
 
   return out;
 }
 
-function buildRecipeMap(
-  blob:       unknown,
-  wrapperKey: string,
-  counter:    { dropped: number },
-  locale:     Map<string, string>,
-): Map<string, CalamityRecipe> {
-  const rows = extractCalamityRows(blob, wrapperKey);
-  const out  = new Map<string, CalamityRecipe>();
+// ─── WFCD Resources ───────────────────────────────────────────────────────────
 
-  for (const raw of rows) {
-    const recipe = toRecipeRow(raw, locale);
-    if (!recipe) { counter.dropped++; continue; }
-    if (out.has(recipe.uniqueName)) continue;
-    out.set(recipe.uniqueName, recipe);
+export function parseWfcdResources(raw: unknown): Map<string, WfcdResource> {
+  const out = new Map<string, WfcdResource>();
+  if (!Array.isArray(raw)) {
+    warn('wfcd /resources response is not an array', { type: raw === null ? 'null' : typeof raw });
+    return out;
   }
+
+  let droppedRows = 0;
+
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') { droppedRows++; continue; }
+    const row = r as Record<string, unknown>;
+    const uniqueName = typeof row['uniqueName'] === 'string' ? row['uniqueName'] : null;
+    const name       = typeof row['name']       === 'string' ? row['name']       : null;
+    if (!uniqueName || !name) { droppedRows++; continue; }
+
+    const res: WfcdResource = { uniqueName, name };
+
+    if (typeof row['description'] === 'string')  res.description = row['description'] as string;
+    if (typeof row['type']        === 'string')  res.type        = row['type']        as string;
+    if (typeof row['category']    === 'string')  res.category    = row['category']    as string;
+    if (typeof row['imageName']   === 'string')  res.imageName   = row['imageName']   as string;
+    if (typeof row['wikiaUrl']    === 'string')  res.wikiaUrl    = row['wikiaUrl']    as string;
+    if (typeof row['tradable']    === 'boolean') res.tradable    = row['tradable']    as boolean;
+
+    if (Array.isArray(row['parents']) && (row['parents'] as unknown[]).every(p => typeof p === 'string')) {
+      res.parents = row['parents'] as string[];
+    }
+
+    if (!out.has(uniqueName)) out.set(uniqueName, res);
+  }
+
+  log('parsed wfcd resources', { total: out.size, droppedRows });
 
   return out;
 }
 
-function buildRelicsArcanes(
-  relicsBlob:  unknown,
-  arcanesBlob: unknown,
-  relicsKey:   string,
-  arcanesKey:  string,
-  counter:     { dropped: number },
-  locale:      Map<string, string>,
-): Map<string, CalamityRelicArcane> {
-  const out = new Map<string, CalamityRelicArcane>();
+// ─── WFCD Gear ────────────────────────────────────────────────────────────────
 
-  // Merge relics
-  const relicsRows = extractCalamityRows(relicsBlob, relicsKey);
-  for (const raw of relicsRows) {
-    const row = toRelicArcaneRow(raw, locale);
-    if (!row) { counter.dropped++; continue; }
-    if (out.has(row.uniqueName)) continue;
-    out.set(row.uniqueName, row);
+export function parseWfcdGear(raw: unknown): Map<string, WfcdGear> {
+  const out = new Map<string, WfcdGear>();
+  if (!Array.isArray(raw)) {
+    warn('wfcd /gear response is not an array', { type: raw === null ? 'null' : typeof raw });
+    return out;
   }
 
-  // Merge arcanes
-  const arcanesRows = extractCalamityRows(arcanesBlob, arcanesKey);
-  for (const raw of arcanesRows) {
-    const row = toRelicArcaneRow(raw, locale);
-    if (!row) { counter.dropped++; continue; }
-    if (out.has(row.uniqueName)) continue;
-    out.set(row.uniqueName, row);
+  let droppedRows = 0;
+
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') { droppedRows++; continue; }
+    const row = r as Record<string, unknown>;
+    const uniqueName = typeof row['uniqueName'] === 'string' ? row['uniqueName'] : null;
+    const name       = typeof row['name']       === 'string' ? row['name']       : null;
+    if (!uniqueName || !name) { droppedRows++; continue; }
+
+    const g: WfcdGear = { uniqueName, name };
+
+    if (typeof row['description'] === 'string')  g.description = row['description'] as string;
+    if (typeof row['type']        === 'string')  g.type        = row['type']        as string;
+    if (typeof row['imageName']   === 'string')  g.imageName   = row['imageName']   as string;
+    if (typeof row['wikiaUrl']    === 'string')  g.wikiaUrl    = row['wikiaUrl']    as string;
+    if (typeof row['tradable']    === 'boolean') g.tradable    = row['tradable']    as boolean;
+
+    if (!out.has(uniqueName)) out.set(uniqueName, g);
   }
+
+  log('parsed wfcd gear', { total: out.size, droppedRows });
 
   return out;
 }
 
-function toCalamityRow(raw: unknown, locale: Map<string, string>): CalamityRow | null {
-  if (!raw || typeof raw !== 'object') return null;
-  const r = raw as Record<string, unknown>;
-  const uniqueName = typeof r['uniqueName'] === 'string' ? (r['uniqueName'] as string) : null;
-  const rawName    = typeof r['name']       === 'string' ? (r['name']       as string) : null;
-  if (!uniqueName || !rawName) return null;
-  const name = resolveLocaleName(rawName, locale);
-  return { ...r, uniqueName, name } as CalamityRow;
-}
+// ─── WFCD Misc ────────────────────────────────────────────────────────────────
+//
+// Catch-all for core crafting resources missing from /resources (Orokin Cell,
+// Argon Crystal, Neural Sensors, Forma, etc.). Same shape as WfcdResource;
+// builder classifies these as Resource (or Ingredient/Equipment per uniqueName).
 
-function toRecipeRow(raw: unknown, locale: Map<string, string>): CalamityRecipe | null {
-  const base = toCalamityRow(raw, locale);
-  if (!base) return null;
-
-  const r = raw as Record<string, unknown>;
-  const recipe: CalamityRecipe = { ...base };
-
-  if (typeof r['resultType']         === 'string')  recipe.resultType         = r['resultType'] as string;
-  if (typeof r['buildPrice']         === 'number')  recipe.buildPrice         = r['buildPrice'] as number;
-  if (typeof r['buildTime']          === 'number')  recipe.buildTime          = r['buildTime'] as number;
-  if (typeof r['skipBuildTimePrice'] === 'number')  recipe.skipBuildTimePrice = r['skipBuildTimePrice'] as number;
-  if (typeof r['consumeOnBuild']     === 'boolean') recipe.consumeOnBuild     = r['consumeOnBuild'] as boolean;
-  if (typeof r['num']                === 'number')  recipe.num                = r['num'] as number;
-
-  if (Array.isArray(r['ingredients'])) {
-    const ingredients: RecipeIngredient[] = [];
-    for (const ing of r['ingredients'] as unknown[]) {
-      if (!ing || typeof ing !== 'object') continue;
-      const ir = ing as Record<string, unknown>;
-      const itemType  = typeof ir['ItemType']  === 'string' ? (ir['ItemType']  as string) : null;
-      const itemCount = typeof ir['ItemCount'] === 'number' ? (ir['ItemCount'] as number) : null;
-      if (!itemType || itemCount == null) continue;
-      const entry: RecipeIngredient = { itemType, itemCount };
-      if (typeof ir['ProductCategory'] === 'string') entry.productCategory = ir['ProductCategory'] as string;
-      ingredients.push(entry);
-    }
-    if (ingredients.length > 0) recipe.ingredients = ingredients;
+export function parseWfcdMisc(raw: unknown): Map<string, WfcdMisc> {
+  const out = new Map<string, WfcdMisc>();
+  if (!Array.isArray(raw)) {
+    warn('wfcd misc response is not an array', { type: raw === null ? 'null' : typeof raw });
+    return out;
   }
 
-  return recipe;
-}
+  let droppedRows = 0;
 
-function toRelicArcaneRow(raw: unknown, locale: Map<string, string>): CalamityRelicArcane | null {
-  const base = toCalamityRow(raw, locale);
-  if (!base) return null;
+  for (const r of raw) {
+    if (!r || typeof r !== 'object') { droppedRows++; continue; }
+    const row = r as Record<string, unknown>;
+    const uniqueName = typeof row['uniqueName'] === 'string' ? row['uniqueName'] : null;
+    const name       = typeof row['name']       === 'string' ? row['name']       : null;
+    if (!uniqueName || !name) { droppedRows++; continue; }
 
-  const r = raw as Record<string, unknown>;
-  const out: CalamityRelicArcane = { ...base };
+    const m: WfcdMisc = { uniqueName, name };
 
-  if (Array.isArray(r['rewards'])) {
-    const rewards: NonNullable<CalamityRelicArcane['rewards']> = [];
-    for (const rw of r['rewards'] as unknown[]) {
-      if (!rw || typeof rw !== 'object') continue;
-      const row = rw as Record<string, unknown>;
-      const entry: NonNullable<CalamityRelicArcane['rewards']>[number] = {};
-      if (typeof row['rewardName'] === 'string') entry.rewardName = row['rewardName'] as string;
-      if (typeof row['rarity']     === 'string') entry.rarity     = row['rarity']     as string;
-      if (typeof row['itemCount']  === 'number') entry.itemCount  = row['itemCount']  as number;
-      if (entry.rewardName || entry.rarity) rewards.push(entry);
-    }
-    if (rewards.length > 0) out.rewards = rewards;
+    if (typeof row['description'] === 'string')  m.description = row['description'] as string;
+    if (typeof row['type']        === 'string')  m.type        = row['type']        as string;
+    if (typeof row['category']    === 'string')  m.category    = row['category']    as string;
+    if (typeof row['imageName']   === 'string')  m.imageName   = row['imageName']   as string;
+    if (typeof row['wikiaUrl']    === 'string')  m.wikiaUrl    = row['wikiaUrl']    as string;
+    if (typeof row['tradable']    === 'boolean') m.tradable    = row['tradable']    as boolean;
+
+    if (!out.has(uniqueName)) out.set(uniqueName, m);
   }
 
+  log('parsed wfcd misc', { total: out.size, droppedRows });
+
+  return out;
+}
+
+// ─── Shared per-row fragment parsers ──────────────────────────────────────────
+
+function parseAbilities(raw: unknown): WfcdAbility[] {
+  if (!Array.isArray(raw)) return [];
+  const out: WfcdAbility[] = [];
+  for (const a of raw) {
+    if (!a || typeof a !== 'object') continue;
+    const ar = a as Record<string, unknown>;
+    const aName = typeof ar['name']       === 'string' ? ar['name']       : null;
+    const aUniq = typeof ar['uniqueName'] === 'string' ? ar['uniqueName'] : null;
+    if (!aName || !aUniq) continue;
+    const entry: WfcdAbility = {
+      uniqueName:  aUniq,
+      name:        aName,
+      description: typeof ar['description'] === 'string' ? ar['description'] : '',
+    };
+    if (typeof ar['imageName'] === 'string') entry.imageName = ar['imageName'] as string;
+    out.push(entry);
+  }
+  return out;
+}
+
+function parseComponents(raw: unknown): WfcdComponent[] {
+  if (!Array.isArray(raw)) return [];
+  const out: WfcdComponent[] = [];
+  for (const c of raw) {
+    if (!c || typeof c !== 'object') continue;
+    const cr = c as Record<string, unknown>;
+    const cName  = typeof cr['name']      === 'string' ? cr['name']      : null;
+    const cCount = typeof cr['itemCount'] === 'number' ? cr['itemCount'] : null;
+    if (!cName || cCount == null) continue;
+    const entry: WfcdComponent = { name: cName, itemCount: cCount };
+    if (typeof cr['uniqueName']  === 'string')  entry.uniqueName  = cr['uniqueName']  as string;
+    if (typeof cr['description'] === 'string')  entry.description = cr['description'] as string;
+    if (typeof cr['imageName']   === 'string')  entry.imageName   = cr['imageName']   as string;
+    if (typeof cr['tradable']    === 'boolean') entry.tradable    = cr['tradable']    as boolean;
+
+    if (Array.isArray(cr['drops'])) {
+      const drops: WfcdComponentDrop[] = [];
+      for (const d of cr['drops'] as unknown[]) {
+        if (!d || typeof d !== 'object') continue;
+        const dr = d as Record<string, unknown>;
+        const drop: WfcdComponentDrop = {};
+        if (typeof dr['location']   === 'string') drop.location   = dr['location']   as string;
+        if (typeof dr['type']       === 'string') drop.type       = dr['type']       as string;
+        if (typeof dr['chance']     === 'number') drop.chance     = dr['chance']     as number;
+        if (typeof dr['rarity']     === 'string') drop.rarity     = dr['rarity']     as string;
+        if (typeof dr['uniqueName'] === 'string') drop.uniqueName = dr['uniqueName'] as string;
+        if (drop.location || drop.type) drops.push(drop);
+      }
+      if (drops.length > 0) entry.drops = drops;
+    }
+
+    out.push(entry);
+  }
+  return out;
+}
+
+export function parseIntroduced(raw: unknown): WfcdIntroduced | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const r = raw as Record<string, unknown>;
+  const name = typeof r['name'] === 'string' ? r['name'] : undefined;
+  if (!name) return undefined;
+  const out: WfcdIntroduced = { name };
+  if (typeof r['date']   === 'string') out.date   = r['date']   as string;
+  if (typeof r['url']    === 'string') out.url    = r['url']    as string;
+  if (typeof r['parent'] === 'string') out.parent = r['parent'] as string;
+  return out;
+}
+
+/** Cap patchlogs per row — Ash alone has 135 entries; older history is
+ *  rarely scrolled-to and explodes worker CPU + KV payload size. */
+const MAX_PATCHLOGS_PER_ROW = 20;
+
+export function parsePatchLogs(raw: unknown): WfcdPatchLog[] {
+  if (!Array.isArray(raw)) return [];
+  const out: WfcdPatchLog[] = [];
+  // Iterate the tail of the array — WFCD ships oldest-first, frontend wants
+  // newest-first. Walking from the end caps work AND yields the most-recent
+  // entries by default.
+  const start = Math.max(0, raw.length - MAX_PATCHLOGS_PER_ROW);
+  for (let i = raw.length - 1; i >= start; i--) {
+    const e = raw[i];
+    if (!e || typeof e !== 'object') continue;
+    const r = e as Record<string, unknown>;
+    const name = typeof r['name'] === 'string' ? r['name'] : undefined;
+    const date = typeof r['date'] === 'string' ? r['date'] : undefined;
+    if (!name || !date) continue;
+    const entry: WfcdPatchLog = { name, date };
+    if (typeof r['url']       === 'string') entry.url       = r['url']       as string;
+    if (typeof r['additions'] === 'string') entry.additions = r['additions'] as string;
+    if (typeof r['changes']   === 'string') entry.changes   = r['changes']   as string;
+    if (typeof r['fixes']     === 'string') entry.fixes     = r['fixes']     as string;
+    out.push(entry);
+  }
   return out;
 }
 
@@ -471,8 +1041,8 @@ function toRelicArcaneRow(raw: unknown, locale: Map<string, string>): CalamityRe
 
 /**
  * Top-level WFCD parse. Walks every section we know about, emits a flat
- * ParsedDrop[]. Unknown top-level keys are skipped with a warn so we notice
- * upstream schema additions instead of silently dropping data.
+ * ParsedDrop[]. Unknown top-level keys are skipped — adding a new section
+ * is one new walker + one new line below.
  */
 export function parseDrops(raw: unknown): ParsedDrop[] {
   if (!raw || typeof raw !== 'object') return [];
@@ -497,10 +1067,10 @@ export function parseDrops(raw: unknown): ParsedDrop[] {
   return out;
 }
 
-// ─── Section walkers ──────────────────────────────────────────────────────────
+// ─── Drop section walkers ─────────────────────────────────────────────────────
 //
-// Every walker pushes onto `out` directly to keep the call sites linear and
-// avoid intermediate arrays. None throw — bad rows are skipped.
+// Each walker pushes onto `out` directly to keep call sites linear. None throw
+// — bad rows are silently skipped.
 
 interface WfcdReward {
   itemName: string;
@@ -508,12 +1078,6 @@ interface WfcdReward {
   chance?:  number;            // 0–100 from upstream
 }
 
-/**
- * missionRewards: { [planet]: { [nodeLabel]: { rewards: { A|B|C: WfcdReward[] } } } }
- *
- * Some entries skip rotations and have a single `rewards: WfcdReward[]`. We
- * accept both shapes.
- */
 function walkMissionRewards(raw: unknown, out: ParsedDrop[]): void {
   if (!isObj(raw)) return;
   for (const [planet, planetVal] of Object.entries(raw as Record<string, unknown>)) {
@@ -571,49 +1135,49 @@ function pushMissionReward(
 }
 
 /**
- * relics: { [tier]: { [name]: { state, rewards: WfcdReward[] } } }
+ * WFCD drops.relics is a flat array of relic-state rows:
+ *   [{ tier, relicName, state, rewards: [{ itemName, rarity, chance }, ...] }, ...]
  *
- * The relic itself has a uniqueName like "Lith A1 Relic"; the rewards are
- * the items that come out when you crack it. Each reward becomes a drop with
- * source='relic' and full relic context attached.
+ * One relic appears once per state (Intact / Exceptional / Flawless / Radiant)
+ * because the reward chances differ per state. We emit one ParsedDrop per
+ * (state × reward).
+ *
+ * (Pre-2026-05 WFCD used a nested { tier: { name: { rewards } } } shape; the
+ * legacy walker that handled that is gone with the calamity pipeline.)
  */
 function walkRelics(raw: unknown, out: ParsedDrop[]): void {
-  if (!isObj(raw)) return;
-  for (const [tier, tierVal] of Object.entries(raw as Record<string, unknown>)) {
-    if (!isObj(tierVal)) continue;
-    if (!isRelicTier(tier)) continue;
+  if (!Array.isArray(raw)) return;
+  for (const r of raw) {
+    if (!isObj(r)) continue;
+    const row = r as Record<string, unknown>;
+    const tier = typeof row['tier']      === 'string' ? row['tier']      : '';
+    const name = typeof row['relicName'] === 'string' ? row['relicName'] : '';
+    if (!isRelicTier(tier) || !name) continue;
 
-    for (const [name, relicVal] of Object.entries(tierVal as Record<string, unknown>)) {
-      if (!isObj(relicVal)) continue;
-      const relic = relicVal as Record<string, unknown>;
-      const rewards = relic['rewards'];
-      if (!Array.isArray(rewards)) continue;
+    const rewards = row['rewards'];
+    if (!Array.isArray(rewards)) continue;
 
-      const stateRaw = String(relic['state'] ?? 'Intact');
-      const state    = isRelicState(stateRaw) ? stateRaw : 'Intact';
+    const stateRaw = String(row['state'] ?? 'Intact');
+    const state    = isRelicState(stateRaw) ? stateRaw : 'Intact';
 
-      for (const rw of rewards) {
-        const reward = toReward(rw);
-        if (!reward) continue;
-        const drop: ParsedDrop = {
-          itemName:     reward.itemName,
-          source:       'relic',
-          chance:       pctToFraction(reward.chance),
-          relicTier:    tier,
-          relicName:    name,
-          relicState:   state,
-          rawLocation:  `${tier} ${name} (${state})`,
-        };
-        if (reward.rarity) drop.rarity = normalizeRarity(reward.rarity);
-        out.push(drop);
-      }
+    for (const rw of rewards) {
+      const reward = toReward(rw);
+      if (!reward) continue;
+      const drop: ParsedDrop = {
+        itemName:     reward.itemName,
+        source:       'relic',
+        chance:       pctToFraction(reward.chance),
+        relicTier:    tier,
+        relicName:    name,
+        relicState:   state,
+        rawLocation:  `${tier} ${name} (${state})`,
+      };
+      if (reward.rarity) drop.rarity = normalizeRarity(reward.rarity);
+      out.push(drop);
     }
   }
 }
 
-/**
- * sortieRewards: WfcdReward[] (flat, no rotation)
- */
 function walkSortieRewards(raw: unknown, out: ParsedDrop[]): void {
   if (!Array.isArray(raw)) return;
   for (const rw of raw) {
@@ -630,10 +1194,6 @@ function walkSortieRewards(raw: unknown, out: ParsedDrop[]): void {
   }
 }
 
-/**
- * arbitrationRewards: { rotations: { rotationA|rotationB|rotationC: WfcdReward[] } }
- * Some shapes have `rewards: WfcdReward[]` directly. Accept both.
- */
 function walkArbitration(raw: unknown, out: ParsedDrop[]): void {
   if (Array.isArray(raw)) {
     for (const rw of raw) pushArbitration(rw, undefined, out);
@@ -671,10 +1231,6 @@ function pushArbitration(raw: unknown, rotation: 'A' | 'B' | 'C' | undefined, ou
   out.push(drop);
 }
 
-/**
- * transientRewards: { [eventName]: WfcdReward[] }
- * Used for time-limited events. Treated as a generic 'transient' source.
- */
 function walkTransient(raw: unknown, out: ParsedDrop[]): void {
   if (!isObj(raw)) return;
   for (const [eventName, val] of Object.entries(raw as Record<string, unknown>)) {
@@ -694,13 +1250,6 @@ function walkTransient(raw: unknown, out: ParsedDrop[]): void {
   }
 }
 
-/**
- * blueprintLocations: { [blueprintName]: WfcdLocation[] }
- *
- * Each location has { location, chance, rarity? }. We treat each location as
- * a generic 'blueprint' drop — the blueprint name is the itemName, the
- * location string is rawLocation.
- */
 function walkBlueprintLocs(raw: unknown, out: ParsedDrop[]): void {
   if (!isObj(raw)) return;
   for (const [bpName, locs] of Object.entries(raw as Record<string, unknown>)) {
@@ -721,11 +1270,6 @@ function walkBlueprintLocs(raw: unknown, out: ParsedDrop[]): void {
   }
 }
 
-/**
- * modLocations: [{ modName, enemies: [{ enemyName, chance }] }]
- *
- * One mod → many enemy sources. We flatten to per-enemy drops.
- */
 function walkModByDrop(raw: unknown, out: ParsedDrop[]): void {
   if (!Array.isArray(raw)) return;
   for (const entry of raw) {
@@ -751,9 +1295,6 @@ function walkModByDrop(raw: unknown, out: ParsedDrop[]): void {
   }
 }
 
-/**
- * keyRewards: { [keyName]: WfcdReward[] | { rewards: WfcdReward[] } }
- */
 function walkKeyRewards(raw: unknown, out: ParsedDrop[]): void {
   if (!isObj(raw)) return;
   for (const [keyName, val] of Object.entries(raw as Record<string, unknown>)) {
@@ -779,23 +1320,16 @@ function walkKeyRewards(raw: unknown, out: ParsedDrop[]): void {
 /**
  * Bounty walker — shared between Cetus / Fortuna / Cambion / Zariman / Vaults.
  *
- * Two common upstream shapes:
- *   1. [{ tier, rotations: { stageDefault | A | B | ...: WfcdReward[] } }]
- *   2. [{ tier, rewards: WfcdReward[] }]
- *
- * `tier` is a free-text string like "Level 5 - 15"; the merger maps that to
- * BountyTier later. Stage names are passed through as bountyStage.
+ * WFCD shape: [{ bountyLevel, rewards: { A: [...], B: [...], C: [...] } }]
+ * `bountyLevel` is a free-text string like "Level 5 - 15 Cetus Bounty".
  */
 function walkBounty(raw: unknown, location: NonNullable<ParsedDrop['bountyLocation']>, out: ParsedDrop[]): void {
   if (!Array.isArray(raw)) return;
   for (const tierEntry of raw) {
     if (!isObj(tierEntry)) continue;
     const t = tierEntry as Record<string, unknown>;
-    // WFCD uses 'bountyLevel' (e.g. "Level 5 - 15 Cetus Bounty"), not 'tier'
     const tier = typeof t['bountyLevel'] === 'string' ? (t['bountyLevel'] as string) : undefined;
 
-    // WFCD structure: rewards is an object { A: [...], B: [...], C: [...] }
-    // Each rotation key maps to an array of reward items
     if (isObj(t['rewards'])) {
       for (const [rotKey, rotRewards] of Object.entries(t['rewards'] as Record<string, unknown>)) {
         if (!Array.isArray(rotRewards)) continue;
@@ -805,7 +1339,6 @@ function walkBounty(raw: unknown, location: NonNullable<ParsedDrop['bountyLocati
       continue;
     }
 
-    // Fallback: flat rewards array (non-rotated format)
     if (Array.isArray(t['rewards'])) {
       for (const rw of t['rewards'] as unknown[]) pushBountyReward(rw, location, tier, undefined, out);
     }
@@ -834,7 +1367,7 @@ function pushBountyReward(
   out.push(drop);
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Drop helpers ─────────────────────────────────────────────────────────────
 
 function indexDropsByName(drops: readonly ParsedDrop[]): Map<string, ParsedDrop[]> {
   const out = new Map<string, ParsedDrop[]>();
@@ -859,10 +1392,6 @@ function toReward(raw: unknown): WfcdReward | null {
   return reward;
 }
 
-/**
- * Convert WFCD's percentage (0–100) to a 0–1 fraction. Clamp negatives,
- * rescue NaNs, accept already-normalized 0–1 inputs (rare but seen).
- */
 function pctToFraction(chance: number | undefined): number {
   if (chance == null || !Number.isFinite(chance)) return 0;
   if (chance < 0) return 0;
@@ -882,10 +1411,6 @@ function normalizeRarity(s: string): DropRarity | undefined {
   }
 }
 
-/**
- * "E Prime (Crossfire)" → { node: "E Prime", missionType: "Crossfire" }.
- * Falls back to the whole label as `node` if no parens found.
- */
 function parseNodeLabel(label: string): { node?: string; missionType?: string } {
   const m = /^(.+?)\s*\(([^)]+)\)\s*$/.exec(label);
   if (m && m[1] && m[2]) return { node: m[1].trim(), missionType: m[2].trim() };
@@ -910,11 +1435,6 @@ function isRelicState(s: string): s is 'Intact' | 'Exceptional' | 'Flawless' | '
   return s === 'Intact' || s === 'Exceptional' || s === 'Flawless' || s === 'Radiant';
 }
 
-/**
- * For shapes where we don't know the wrapper key, find the first array of
- * reward-shaped objects nested anywhere in the value. Cheap fallback used by
- * walkers like transient where upstream structure has drifted before.
- */
 function extractAnyRewardArray(obj: Record<string, unknown>): unknown[] {
   for (const v of Object.values(obj)) {
     if (Array.isArray(v) && v.length > 0 && isObj(v[0]) && typeof (v[0] as Record<string, unknown>)['itemName'] === 'string') {
