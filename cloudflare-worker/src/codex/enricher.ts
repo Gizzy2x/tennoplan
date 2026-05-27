@@ -308,6 +308,8 @@ function applyWarframeFields(item: EnrichedItem, wf: WfcdWarframe | undefined): 
     item.abilities = wf.abilities.map(toAbility);
   }
 
+  if (wf.passiveDescription) item.passiveDescription = wf.passiveDescription;
+
   const stats: ItemStats = {};
   if (typeof wf.health      === 'number' && wf.health      > 0) stats.health      = wf.health;
   if (typeof wf.shield      === 'number' && wf.shield      > 0) stats.shield      = wf.shield;
@@ -449,10 +451,12 @@ function componentsToBuildRequirements(components: readonly WfcdComponent[], par
 // ─── Mapping helpers ──────────────────────────────────────────────────────────
 
 function toAbility(a: WfcdAbility): Ability {
-  return {
+  const out: Ability = {
     name:        a.name,
     description: a.description ?? '',
   };
+  if (a.imageName) out.imageName = a.imageName;
+  return out;
 }
 
 function toIntroduced(i: WfcdIntroduced): IntroducedInfo {

@@ -9,6 +9,8 @@
 
 import { useMemo } from 'react';
 import type { CodexEntry } from '../../types';
+import type { Ability } from '@/core/domain/tennoplanApi';
+import { getIconUrl } from '@/lib/icons/IconResolver';
 import styles from './AbilitiesBlock.module.css';
 
 interface AbilitiesBlockProps {
@@ -32,15 +34,22 @@ export function AbilitiesBlock({ entry }: AbilitiesBlockProps) {
 }
 
 interface AbilityRowProps {
-  index:    number;
-  ability:  { name: string; description: string };
+  index:   number;
+  ability: Ability;
 }
 
 function AbilityRow({ index, ability }: AbilityRowProps) {
-  const desc = useMemo(() => sanitize(ability.description), [ability.description]);
+  const desc    = useMemo(() => sanitize(ability.description), [ability.description]);
+  const iconUrl = ability.imageName ? getIconUrl(ability.imageName) : null;
+
   return (
     <li className={styles.ability}>
-      <span className={styles.numberBadge} aria-hidden="true">{index}</span>
+      <div className={styles.iconSlot} aria-hidden="true">
+        {iconUrl
+          ? <img src={iconUrl} alt="" className={styles.abilityIcon} width={32} height={32} />
+          : <span className={styles.numberBadge}>{index}</span>
+        }
+      </div>
       <div className={styles.meta}>
         <h3 className={styles.name}>{ability.name}</h3>
         {desc && <p className={styles.description}>{desc}</p>}

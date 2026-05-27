@@ -27,6 +27,7 @@ export type BlockKey =
   | 'StatsCompanion'
   | 'Polarities'
   | 'Abilities'
+  | 'Passive'
   | 'Components'
   | 'ModStats'
   | 'RelicRewards'
@@ -43,7 +44,7 @@ export const UNIVERSAL_BLOCKS: BlockKey[] = [
 export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
   Warframe: [
     'Header', 'HeroIcon', 'StatsWarframe', 'Polarities', 'Description',
-    'Abilities', 'Components', 'BestFarms', 'PatchHistory', 'WikiFooter',
+    'Passive', 'Abilities', 'Components', 'BestFarms', 'PatchHistory', 'WikiFooter',
   ],
   Weapon: [
     'Header', 'HeroIcon', 'StatsWeapon', 'Polarities', 'Description',
@@ -55,7 +56,7 @@ export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
   ],
   Sentinel: [
     'Header', 'HeroIcon', 'StatsCompanion', 'Polarities', 'Description',
-    'Abilities', 'Components', 'BestFarms', 'WikiFooter',
+    'Passive', 'Abilities', 'Components', 'BestFarms', 'WikiFooter',
   ],
   Mod: [
     'Header', 'HeroIcon', 'ModStats', 'Description', 'Drops',

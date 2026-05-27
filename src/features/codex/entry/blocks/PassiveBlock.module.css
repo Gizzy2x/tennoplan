@@ -1,0 +1,36 @@
+/* ================================================================
+   PassiveBlock — warframe passive ability description.
+   Visually distinct from the main description (italic body, teal
+   label accent) so players can scan for it quickly.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            6px;
+  padding:        12px 16px;
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-left:    3px solid var(--color-accent-teal);
+  border-radius:  6px;
+}
+
+.label {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-accent-teal);
+  margin:         0;
+}
+
+.body {
+  font-family: var(--font-sans);
+  font-size:   0.88rem;
+  font-style:  italic;
+  color:       var(--color-text-muted);
+  line-height: 1.6;
+  margin:      0;
+  max-width:   72ch;
+}

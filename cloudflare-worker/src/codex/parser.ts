@@ -107,8 +107,9 @@ export interface WfcdWarframe {
   patchlogs?:   WfcdPatchLog[];
   masterable?:  boolean;
   isPrime?:     boolean;
-  imageName?:   string;
-  type?:        string;
+  imageName?:          string;
+  type?:               string;
+  passiveDescription?: string;
 }
 
 export interface WfcdAbility {
@@ -513,10 +514,11 @@ export function parseWfcdWarframes(raw: unknown): Map<string, WfcdWarframe> {
     } else {
       missingPolarities++;
     }
-    if (typeof row['aura']        === 'string') wf.aura        = row['aura']        as string;
-    if (typeof row['description'] === 'string') wf.description = row['description'] as string;
-    if (typeof row['imageName']   === 'string') wf.imageName   = row['imageName']   as string;
-    if (typeof row['type']        === 'string') wf.type        = row['type']        as string;
+    if (typeof row['aura']               === 'string') wf.aura               = row['aura']               as string;
+    if (typeof row['description']        === 'string') wf.description        = row['description']        as string;
+    if (typeof row['passiveDescription'] === 'string') wf.passiveDescription = row['passiveDescription'] as string;
+    if (typeof row['imageName']          === 'string') wf.imageName          = row['imageName']          as string;
+    if (typeof row['type']               === 'string') wf.type               = row['type']               as string;
     if (typeof row['health']      === 'number') wf.health      = row['health']      as number;
     if (typeof row['shield']      === 'number') wf.shield      = row['shield']      as number;
     if (typeof row['armor']       === 'number') wf.armor       = row['armor']       as number;
