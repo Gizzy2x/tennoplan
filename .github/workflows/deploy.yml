@@ -81,4 +81,8 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: cloudflare-worker
-          command: deploy
+          # --config wrangler.toml pins the deploy to THIS worker's config.
+          # Without it, wrangler walks up the directory tree and can pick
+          # up an unrelated config (a stray root-level wrangler.jsonc once
+          # caused the worker to be overwritten with the SPA bundle).
+          command: deploy --config wrangler.toml
