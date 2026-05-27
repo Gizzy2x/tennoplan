@@ -10,19 +10,25 @@
  * everything stacks. Container queries drive the collapse so the block
  * adapts to its parent's width, not the viewport.
  *
- * Spotlight item selection lives in [spotlightPool.ts]: weekly UTC
- * rotation with a fallback walk through the pool if the picked item
- * isn't in Dexie yet (e.g. on a fresh install before the codex syncs).
+ * Spotlight item selection — data-driven, zero maintenance:
+ *   1. Query Dexie for all items that have `introduced.date` populated.
+ *   2. Group by update name; pick the group whose newest date is latest.
+ *   3. Within that update, keep only "presentable" categories
+ *      (Warframe → Weapon → Arcane → Companion → Sentinel).
+ *   4. Rotate through those items weekly (same deterministic UTC-week
+ *      math as the old pool, just applied to a dynamic array).
+ *   5. Fall back to the hand-curated spotlightPool when introduced data
+ *      isn't available (fresh install, codex not yet synced).
  *
- * Click on the art or the CTA both fire the same `onSelectEntry`
- * callback — the parent decides whether to open a modal (mods) or a
- * full detail page (warframes / other categories).
+ * This means Featured automatically highlights the latest DE update's
+ * content as soon as the 6-hourly CI codex rebuild runs. No file edits
+ * needed when a new update ships.
  */
 
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ArrowRight } from 'lucide-react';
 import { db } from '@/adapters/storage/db';
-import type { TennoplanItem } from '@/core/domain/tennoplanApi';
+import type { TennoplanItem, ItemCategory } from '@/core/domain/tennoplanApi';
 import {
   SPOTLIGHT_POOL,
   currentSpotlightIndex,
@@ -30,6 +36,9 @@ import {
 } from '../spotlightPool';
 import { RecentlyAdded } from './RecentlyAdded';
 import styles from './FeaturedSpotlight.module.css';
+
+// Categories worth featuring, in descending preference order.
+const PRESENTABLE: ItemCategory[] = ['Warframe', 'Weapon', 'Arcane', 'Companion', 'Sentinel'];
 
 interface FeaturedSpotlightProps {
   onSelectEntry: (entry: TennoplanItem) => void;
@@ -39,11 +48,9 @@ interface FeaturedSpotlightProps {
 
 export function FeaturedSpotlight({ onSelectEntry, onShowMore }: FeaturedSpotlightProps) {
   const resolved = useLiveQuery(
-    async () => resolveSpotlightFromDexie(),
+    async () => resolveSpotlight(),
     [],
   );
-
-  const weekNum = weekOfYear(new Date());
 
   return (
     <section className={styles.root} aria-labelledby="codex-spotlight-label">
@@ -52,7 +59,9 @@ export function FeaturedSpotlight({ onSelectEntry, onShowMore }: FeaturedSpotlig
           <span className={styles.labelDot} aria-hidden="true" />
           Featured
         </h2>
-        <span className={styles.weekTag}>Week {weekNum}</span>
+        {resolved?.updateName && (
+          <span className={styles.weekTag}>{resolved.updateName}</span>
+        )}
       </div>
 
       <div className={styles.grid}>
@@ -83,9 +92,6 @@ interface SpotlightContentProps {
 }
 
 function SpotlightContent({ entry, onSelectEntry, onShowMore }: SpotlightContentProps) {
-  // Sanitize the description: strip `<TAG>` markers and unescape line breaks
-  // from DE's worldstate text. Keep the result clamped via CSS rather than
-  // truncating the string itself, so we don't lose data.
   const description = (entry.description ?? '')
     .replace(/<[A-Z0-9_]+>/g, '')
     .replace(/\\n/g, ' ')
@@ -123,6 +129,12 @@ function SpotlightContent({ entry, onSelectEntry, onShowMore }: SpotlightContent
               <span className={styles.vaultedBadge}>Vaulted</span>
             </>
           )}
+          {entry.introduced?.name && (
+            <>
+              <span className={styles.subtitleDot}>·</span>
+              <span>{entry.introduced.name}</span>
+            </>
+          )}
         </div>
         <hr className={styles.rule} aria-hidden="true" />
         {description.length > 0 && (
@@ -147,31 +159,95 @@ function SpotlightContent({ entry, onSelectEntry, onShowMore }: SpotlightContent
   );
 }
 
-// ─── Selection / resolution ──────────────────────────────────────────────────
+// ─── Resolution ───────────────────────────────────────────────────────────────
+
+interface SpotlightResult {
+  item:        TennoplanItem;
+  /** Update name shown in the header tag, e.g. "Dante Unbound". */
+  updateName?: string;
+}
 
 /**
- * Walk the curated pool starting at the current UTC week's index.
- * Returns the first pool entry that resolves to a TennoplanItem in
- * Dexie, or null if none are present (codex never synced).
+ * Primary strategy: find the most recently-introduced update in Dexie,
+ * pick the best presentable item from it, rotate weekly.
+ *
+ * Falls back to the hand-curated pool when introduced data is absent
+ * (codex not yet synced, or pre-introduced-field build in KV).
  */
-async function resolveSpotlightFromDexie(): Promise<
-  { entry: SpotlightPoolEntry; item: TennoplanItem } | null
-> {
-  const start = currentSpotlightIndex();
-  for (let i = 0; i < SPOTLIGHT_POOL.length; i++) {
-    const idx = (start + i) % SPOTLIGHT_POOL.length;
-    const pool = SPOTLIGHT_POOL[idx];
-    if (!pool) continue;
-    const item = await db.tennoplanItems.get(pool.uniqueName);
-    if (item) return { entry: pool, item };
+async function resolveSpotlight(): Promise<SpotlightResult | null> {
+  const all = await db.tennoplanItems.toArray();
+
+  // ── Strategy 1: data-driven from introduced.date ─────────────────
+  const updateResult = resolveFromUpdates(all);
+  if (updateResult) return updateResult;
+
+  // ── Strategy 2: fall back to hand-curated pool ───────────────────
+  return resolveFromPool(all);
+}
+
+/**
+ * Group items by update name, find the most recently-introduced update
+ * that has at least one presentable item, rotate through those weekly.
+ */
+function resolveFromUpdates(all: TennoplanItem[]): SpotlightResult | null {
+  // Build: updateName → { latestDate, presentableItems[] }
+  const updates = new Map<string, { latestDate: number; items: TennoplanItem[] }>();
+
+  for (const item of all) {
+    const iso  = item.introduced?.date;
+    const name = item.introduced?.name;
+    if (!iso || !name) continue;
+    if (!PRESENTABLE.includes(item.category)) continue;
+    if (!item.iconUrl) continue;
+
+    const t = Date.parse(iso);
+    if (!Number.isFinite(t)) continue;
+
+    const bucket = updates.get(name);
+    if (!bucket) {
+      updates.set(name, { latestDate: t, items: [item] });
+    } else {
+      bucket.items.push(item);
+      if (t > bucket.latestDate) bucket.latestDate = t;
+    }
   }
+
+  if (updates.size === 0) return null;
+
+  // Sort updates newest-first
+  const sorted = [...updates.entries()].sort((a, b) => b[1].latestDate - a[1].latestDate);
+
+  // Take the newest update with presentable items (already filtered above)
+  for (const [updateName, { items }] of sorted) {
+    if (items.length === 0) continue;
+
+    // Sort alphabetically for consistency, then rotate weekly
+    const pool = [...items].sort((a, b) => a.name.localeCompare(b.name));
+    const idx  = currentSpotlightIndex() % pool.length;
+    const item = pool[idx];
+    if (!item) continue;
+
+    return { item, updateName };
+  }
+
   return null;
 }
 
-function weekOfYear(d: Date): number {
-  // ISO week — close enough for a visual "Week N" tag, no need for the full
-  // ISO calendar dance here.
-  const start = Date.UTC(d.getUTCFullYear(), 0, 1);
-  const diff = d.getTime() - start;
-  return Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1;
+/**
+ * Legacy fallback: walk the hand-curated SPOTLIGHT_POOL, returning the
+ * first entry found in Dexie. Used when no items have introduced data.
+ */
+async function resolveFromPool(all: TennoplanItem[]): Promise<SpotlightResult | null> {
+  const byName = new Map(all.map(it => [it.uniqueName, it]));
+  const start  = currentSpotlightIndex();
+
+  for (let i = 0; i < SPOTLIGHT_POOL.length; i++) {
+    const idx:   number            = (start + i) % SPOTLIGHT_POOL.length;
+    const entry: SpotlightPoolEntry | undefined = SPOTLIGHT_POOL[idx];
+    if (!entry) continue;
+    const item = byName.get(entry.uniqueName);
+    if (item) return { item };
+  }
+
+  return null;
 }
