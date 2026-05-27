@@ -1,63 +1,25 @@
-name: Deploy to Cloudflare
+name: Deploy Worker
+
+# ---------------------------------------------------------------------------
+# Deploys the Worldstate / Codex cron worker to Cloudflare Workers.
+#
+# Tennoplan is a Tauri desktop app, not a hosted web frontend — there is no
+# Pages project to deploy. The previous `deploy-frontend` job pointed at a
+# non-existent `tennoplan` Pages project and failed on every run for over a
+# month; it was removed entirely.
+#
+# Codex KV blob is built and uploaded by .github/workflows/build-codex.yml
+# (separate workflow, runs every 6h + on demand).
+# ---------------------------------------------------------------------------
 
 on:
   push:
-    branches:
-      - main
-      - Development
+    branches: [main]
 
 jobs:
-  # ---------------------------------------------------------------------------
-  # Frontend — deploys the React SPA to Cloudflare Pages.
-  #
-  # main        → production deployment  (tennoplan.pages.dev / custom domain)
-  # Development → preview deployment     (auto-generated preview URL)
-  # ---------------------------------------------------------------------------
-  deploy-frontend:
-    name: Deploy Frontend (Pages)
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-        env:
-          # Production builds point at the live cron worker.
-          # Preview builds inherit the same URL so they hit real data.
-          VITE_WORLDSTATE_WORKER_URL: ${{ secrets.VITE_WORLDSTATE_WORKER_URL }}
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # Pass the current branch; Pages treats non-main branches as previews.
-          command: pages deploy dist --project-name=tennoplan --branch=${{ github.ref_name }}
-
-  # ---------------------------------------------------------------------------
-  # Backend — deploys the Worldstate cron worker to Cloudflare Workers.
-  #
-  # Only runs on main. The worker is shared between production and preview
-  # (there is one KV namespace and one cron schedule).
-  # ---------------------------------------------------------------------------
   deploy-worker:
     name: Deploy Worldstate Worker (app)
     runs-on: ubuntu-latest
-    if: github.ref_name == 'main'
     permissions:
       contents: read
 
@@ -70,6 +32,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: cloudflare-worker/package-lock.json
 
       - name: Install worker dependencies
         run: npm ci
