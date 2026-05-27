@@ -49,6 +49,7 @@ let hasSeenLandingThisSession = false;
 export function CodexPage() {
   const initialView: CodexView = hasSeenLandingThisSession ? 'browser' : 'landing';
   const [view, setView]                   = useState<CodexView>(initialView);
+  const [previousView, setPreviousView]   = useState<CodexView>('landing');
   const [subTab, setSubTab]               = useState<SubTab>('mods');
   const [selectedEntry, setSelectedEntry] = useState<TennoplanItem | null>(null);
   const [selectedMod, setSelectedMod]     = useState<ModEntry | null>(null);
@@ -77,9 +78,12 @@ export function CodexPage() {
       setSelectedMod(projectMod(entry));
       return;
     }
+    // Capture where we are NOW before switching — Back uses this to return
+    // to exactly the right view (landing or browser), not a guess.
+    setPreviousView(view);
     setSelectedEntry(entry);
     setView('detail');
-  }, [pushHistory]);
+  }, [pushHistory, view]);
 
   // Browsers pass projected ModEntry directly — no Dexie round-trip needed
   // since ModsBrowser already has the projection in hand.
@@ -129,19 +133,13 @@ export function CodexPage() {
     setSelectedEntry(null);
   }, []);
 
-  // From detail view, "back" returns to the browser that owns the item's
-  // category. For a warframe entry, that means the Warframes browser.
-  // From the landing-launched spotlight, return to the landing.
+  // From detail view, "back" returns to wherever the user actually came
+  // from — landing or browser. previousView is set at the moment of
+  // navigation so this is always exact, never guessed.
   const handleBackFromDetail = useCallback(() => {
     setSelectedEntry(null);
-    // If we entered detail from the landing (the landing was the previous
-    // view), bias back to landing rather than dumping the user into a
-    // browser they didn't open. The session flag tracks this implicitly:
-    // if hasSeenLandingThisSession is still false at this moment, the
-    // user came from the landing. After they move past it (set in the
-    // effect), this returns to browser.
-    setView(hasSeenLandingThisSession ? 'browser' : 'landing');
-  }, []);
+    setView(previousView);
+  }, [previousView]);
 
   const handleCloseModal = useCallback(() => setSelectedMod(null), []);
 
