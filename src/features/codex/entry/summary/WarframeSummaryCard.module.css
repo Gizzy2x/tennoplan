@@ -21,6 +21,8 @@
 }
 
 /* ── Portrait area ───────────────────────────────────────────── */
+/* Default (non-Prime): cool teal radial glow — matches the brand's
+   secondary accent and reads as the "base / vanilla" frame state. */
 .portrait {
   position:        relative;
   display:         flex;
@@ -35,6 +37,17 @@
   overflow:        hidden;
 }
 
+/* Prime variants: gold radial glow replaces the teal one. This is the
+   primary non-text "this is a Prime" cue — at-a-glance the portrait
+   warms up, and the eye learns gold = Prime, teal = base. The PRIME
+   subtitle below the name simply reinforces what the glow has already
+   announced. */
+.portrait[data-prime] {
+  background:
+    radial-gradient(ellipse at center, rgba(227, 195, 114, 0.10) 0%, rgba(10, 17, 23, 0) 70%),
+    color-mix(in srgb, var(--color-bg-primary) 50%, transparent);
+}
+
 .portraitImage {
   position:   relative;     /* sits above .nameBackdrop */
   z-index:    1;
@@ -47,18 +60,27 @@
 }
 
 /* ── Name watermark behind the portrait ───────────────────────
-   SVG auto-fits any warframe name to the container width via
-   textLength + lengthAdjust. Sits at z-index 0 with low-opacity
-   gold so it reads as atmosphere, not content. The portrait img
-   above carries the focus.
+   Two-tier layout: the base name on top (large, fills width via
+   SVG textLength), and for Prime variants a smaller PRIME line
+   below — narrower, letter-spaced, subordinate. Both sit at
+   z-index 0 with low-opacity gold so they read as atmosphere,
+   not content. The portrait img above carries the focus.
    ──────────────────────────────────────────────────────────── */
 .nameBackdrop {
-  position:       absolute;
-  inset:          var(--space-md);
-  width:          calc(100% - 2 * var(--space-md));
-  height:         auto;
-  pointer-events: none;
-  z-index:        0;
+  position:        absolute;
+  inset:           var(--space-md);
+  display:         flex;
+  flex-direction:  column;
+  justify-content: center;
+  align-items:     stretch;
+  gap:             6px;
+  pointer-events:  none;
+  z-index:         0;
+}
+
+.nameBackdropMain {
+  width:  100%;
+  height: auto;
 }
 
 .nameBackdropText {
@@ -67,6 +89,24 @@
   font-size:      24px;   /* nominal — SVG scales via viewBox + textLength */
   letter-spacing: -0.01em;
   fill:           color-mix(in srgb, var(--color-accent-gold) 18%, transparent);
+}
+
+/* The PRIME subtitle. Narrower (60% of the row), centered, letter-
+   spaced — reads as an Orokin-style subtitle, not a second headline.
+   Lower fill opacity than the base name so the visual hierarchy is
+   "name first, PRIME second". */
+.nameBackdropSuffix {
+  width:  60%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.nameBackdropSuffixText {
+  font-family:    var(--font-serif);
+  font-weight:    400;
+  font-size:      10px;
+  letter-spacing: 0.4em;
+  fill:           color-mix(in srgb, var(--color-accent-gold) 26%, transparent);
 }
 
 .portraitFallback {

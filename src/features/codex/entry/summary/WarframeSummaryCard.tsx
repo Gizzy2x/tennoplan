@@ -103,17 +103,26 @@ export function WarframeSummaryCard({ entry }: WarframeSummaryCardProps) {
 // ─── Sub-components ──────────────────────────────────────────────
 
 function Portrait({ entry }: { entry: CodexEntry }) {
+  const isPrime = /\bPrime\b/i.test(entry.name);
+  // data-prime attribute drives the gold-vs-teal radial glow in CSS —
+  // the visual "this is a Prime" cue that doesn't lean on a word badge.
+  const portraitProps = {
+    className:    styles.portrait,
+    'data-prime': isPrime || undefined,
+    'aria-hidden': true as const,
+  };
+
   if (!entry.iconUrl) {
     const initial = entry.name.slice(0, 1).toUpperCase();
     return (
-      <div className={styles.portrait} aria-hidden="true">
+      <div {...portraitProps}>
         <NameBackdrop name={entry.name} />
         <span className={styles.portraitFallback}>{initial}</span>
       </div>
     );
   }
   return (
-    <div className={styles.portrait} aria-hidden="true">
+    <div {...portraitProps}>
       <NameBackdrop name={entry.name} />
       <img
         src={entry.thumbUrl ?? entry.iconUrl}
@@ -127,31 +136,59 @@ function Portrait({ entry }: { entry: CodexEntry }) {
 }
 
 /**
- * Atmospheric name watermark behind the portrait. Uses SVG textLength +
- * lengthAdjust to auto-fit any name to the portrait container's width —
- * "Ember" (5 chars) and "Voruna Prime" (12 chars) both visually span
- * the card. The page's HeaderBlock and the card's aria-label both carry
- * the real name; this layer is purely decorative.
+ * Atmospheric name watermark behind the portrait.
+ *
+ * Layout:
+ *   • Base name on top, large, fills the container width via SVG textLength.
+ *   • For Prime variants, "PRIME" renders as a smaller line below — its
+ *     own SVG, centred, narrower so it reads as a subtitle, not a second
+ *     headline. The portrait's gold radial glow (driven by data-prime on
+ *     the container) is the primary non-text "this is a Prime" cue; the
+ *     PRIME text simply continues the name in a wiki-familiar two-line
+ *     form. The page header and aria-label carry the real semantic name.
  */
 function NameBackdrop({ name }: { name: string }) {
+  const isPrime  = /\bPrime\b/i.test(name);
+  const baseName = isPrime ? name.replace(/\s*Prime\s*$/i, '').trim() : name;
+
   return (
-    <svg
-      className={styles.nameBackdrop}
-      viewBox="0 0 100 26"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <text
-        x="50"
-        y="20"
-        textAnchor="middle"
-        textLength="98"
-        lengthAdjust="spacingAndGlyphs"
-        className={styles.nameBackdropText}
+    <div className={styles.nameBackdrop} aria-hidden="true">
+      <svg
+        className={styles.nameBackdropMain}
+        viewBox="0 0 100 24"
+        preserveAspectRatio="none"
       >
-        {name.toUpperCase()}
-      </text>
-    </svg>
+        <text
+          x="50"
+          y="20"
+          textAnchor="middle"
+          textLength="98"
+          lengthAdjust="spacingAndGlyphs"
+          className={styles.nameBackdropText}
+        >
+          {baseName.toUpperCase()}
+        </text>
+      </svg>
+
+      {isPrime && (
+        <svg
+          className={styles.nameBackdropSuffix}
+          viewBox="0 0 100 10"
+          preserveAspectRatio="none"
+        >
+          <text
+            x="50"
+            y="8"
+            textAnchor="middle"
+            textLength="55"
+            lengthAdjust="spacingAndGlyphs"
+            className={styles.nameBackdropSuffixText}
+          >
+            PRIME
+          </text>
+        </svg>
+      )}
+    </div>
   );
 }
 
