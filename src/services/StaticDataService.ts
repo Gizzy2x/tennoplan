@@ -85,8 +85,20 @@ const REQUEST_TIMEOUT_MS = 60_000;
  *   • '3' — WFCD-only pipeline. Calamity dropped entirely. Per-category
  *           parsers; new items in weapons/sentinels/pets/arcanes/relics/
  *           gear flow through directly from WFCD endpoints (May 2026)
+ *   • '4' — adds passiveDescription (warframe/sentinel) + ability.imageName.
+ *           These fields landed in the worker pipeline in late May 2026 but
+ *           the schema bump was missed — caches built before the worker's
+ *           ?only= filter was fixed (commit 54242bf, 2026-05-29) carry the
+ *           field as undefined, so PassiveBlock never renders. This bump
+ *           force-flushes those stale caches on next launch.
+ *   • '5' — paired bump with `cache: 'no-cache'` on the codex fetch
+ *           (2026-05-29). The v4 wipe + refetch could hit the browser's
+ *           HTTP cache (worker sets max-age=21600) and repopulate Dexie
+ *           with the very stale blob it was trying to escape. This bump
+ *           guarantees the refetch goes all the way to the worker now
+ *           that the cache directive is in place.
  */
-const CODEX_SCHEMA_VERSION = '3';
+const CODEX_SCHEMA_VERSION = '5';
 const SCHEMA_VERSION_KEY    = 'tennoplan:codex-schema-version';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
@@ -161,7 +173,15 @@ async function fetchWithTimeout(url: string, etag: string | null, timeoutMs: num
   try {
     const headers: Record<string, string> = { Accept: 'application/json' };
     if (etag) headers['If-None-Match'] = etag;
-    return await fetch(url, { signal: controller.signal, headers });
+    // cache: 'no-cache' bypasses the browser's HTTP cache and forces a
+    // revalidation hit to the worker every time. We can't trust the
+    // browser's HTTP cache here because the worker sets a 6h max-age
+    // on /v1/codex — without revalidation, a refetch triggered by a
+    // schema-version bump would silently return the old blob and the
+    // freshly-wiped Dexie would be repopulated with stale data. Our
+    // own ETag handling (via If-None-Match) gives us the 304 short-
+    // circuit when nothing has actually changed.
+    return await fetch(url, { signal: controller.signal, headers, cache: 'no-cache' });
   } finally {
     clearTimeout(timer);
   }
