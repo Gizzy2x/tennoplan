@@ -46,7 +46,7 @@ export const config = {
     wfcdModsFallbackUrl:       'https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/Mods.json',
 
     // Warframes — polarities, aura, components, resolved ability names.
-    wfcdWarframesUrl:          'https://api.warframestat.us/warframes?only=uniqueName,name,description,polarities,aura,abilities,components,wikiaUrl,introduced,patchlogs,releaseDate,masterable,isPrime,health,shield,armor,power,sprintSpeed,imageName,type',
+    wfcdWarframesUrl:          'https://api.warframestat.us/warframes?only=uniqueName,name,description,passiveDescription,polarities,aura,abilities,components,wikiaUrl,introduced,patchlogs,releaseDate,masterable,isPrime,health,shield,armor,power,sprintSpeed,imageName,type',
     wfcdWarframesFallbackUrl:  'https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/Warframes.json',
 
     // Weapons — combined endpoint covers Primary/Secondary/Melee/Arch-*.
