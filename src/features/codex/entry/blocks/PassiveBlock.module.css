@@ -1,7 +1,17 @@
 /* ================================================================
-   PassiveBlock — warframe passive ability description.
-   Visually distinct from the main description (italic body, teal
-   label accent) so players can scan for it quickly.
+   PassiveBlock — warframe / sentinel passive ability description.
+
+   Visually distinct from the main Description block via:
+     1. A subtle teal-tinted background (a hint of the brand secondary
+        accent, well within the "tint neutrals toward brand hue"
+        principle — not enough to count as a colored surface).
+     2. A teal label that calls out "PASSIVE" at a glance.
+     3. A teal-shifted border so the panel edge reinforces the tint.
+
+   Deliberately no border-left stripe — .impeccable.md BAN 1 forbids
+   side-stripe accents >1px regardless of color or token name. The
+   distinction is carried by tint + label, which scans just as fast
+   without the AI-design-tell of a coloured edge.
    ================================================================ */
 
 .root {
@@ -9,9 +19,8 @@
   flex-direction: column;
   gap:            6px;
   padding:        12px 16px;
-  background:     var(--color-bg-secondary);
-  border:         1px solid var(--color-border-default);
-  border-left:    3px solid var(--color-accent-teal);
+  background:     color-mix(in srgb, var(--color-bg-secondary) 92%, var(--color-accent-teal) 8%);
+  border:         1px solid color-mix(in srgb, var(--color-border-default) 70%, var(--color-accent-teal) 30%);
   border-radius:  6px;
 }
 
@@ -29,8 +38,27 @@
   font-family: var(--font-sans);
   font-size:   0.88rem;
   font-style:  italic;
-  color:       var(--color-text-muted);
+  /* Lift body text slightly from .muted so it stays readable against
+     the tinted background — gray-on-colour is an explicit anti-pattern,
+     and even at 8% tint we want the body to read as text-primary-ish. */
+  color:       color-mix(in srgb, var(--color-text-primary) 75%, var(--color-text-muted) 25%);
   line-height: 1.6;
   margin:      0;
   max-width:   72ch;
+}
+
+/* Variable placeholders from WFCD's templated passive strings
+   (|STRENGTH|, |DURATION|, etc.). Styled distinctly so the reader
+   recognises them as "a value goes here" rather than as broken text.
+   The body is already italic, so we lean on weight + accent colour
+   to mark these out without doubling the italic. */
+.placeholder {
+  font-style:  normal;
+  font-weight: 700;
+  color:       var(--color-accent-teal);
+  /* Subtle dotted underline cue, matching the formula-tooltip styling
+     elsewhere in the codex — communicates "this is a variable" without
+     a heavy box or background tint. */
+  text-decoration:       underline dotted color-mix(in srgb, var(--color-accent-teal) 45%, transparent);
+  text-underline-offset: 2px;
 }
