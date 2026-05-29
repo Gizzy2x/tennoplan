@@ -106,6 +106,18 @@ function ComponentCard({ component, onClick }: ComponentCardProps) {
       aria-label={`Open ${item.name} in codex`}
     >
       <div className={styles.cardHeader}>
+        {item.iconUrl && (
+          // Per-component-type icon — chassis / helmet / systems / blueprint /
+          // resource glyph, sourced from each component's own imageName in
+          // the worker enricher. Decorative; the cardName carries the label.
+          <img
+            src={item.iconUrl}
+            alt=""
+            className={styles.cardIcon}
+            draggable={false}
+            decoding="async"
+          />
+        )}
         <h3 className={styles.cardName}>{item.name}</h3>
         {item.vaulted === true && (
           <span className={styles.vaultedPill}>Vaulted</span>
