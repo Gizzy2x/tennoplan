@@ -190,6 +190,17 @@
   --color-status-error:   #f87171;
   --color-status-success: #4ade80;
 
+  /* Stat Colors — used by the codex summary card and any other surface
+     that displays warframe-style intrinsic stats. Tuned to read as the
+     in-game UI colours (red HP, blue energy) without going neon — each
+     passes 4.5:1 contrast on --color-bg-secondary at the weights we use
+     for stat values (0.95rem / 700). Shield is lavender per project
+     preference rather than the literal in-game cyan, which would clash
+     with --color-accent-teal. */
+  --color-stat-health:    #e25c5c;
+  --color-stat-shield:    #b07cd6;
+  --color-stat-energy:    #6da8e8;
+
   /* Challenge Kind Colors (Nightwave) */
   --color-kind-daily-bg:  rgba(229,226,225,0.92);
   --color-kind-daily-border: rgba(227,195,114,0.45);
@@ -3930,9 +3941,46 @@ a:focus-visible {
   container-name:  codex-landing;
   container-type:  inline-size;
 
+  /* Default: single column, flex stack. Categories with a registered
+     summary rail (currently: Warframe) opt into the grid layout below
+     via the `--with-rail` modifier. */
   display:        flex;
   flex-direction: column;
   gap:            var(--space-md);
+}
+
+.codex-entry--with-rail {
+  display:                grid;
+  grid-template-columns:  minmax(0, 1fr) clamp(280px, 30%, 340px);
+  align-items:            start;
+  gap:                    var(--space-xl);
+}
+
+.codex-entry__content {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-md);
+  min-width:      0;
+}
+
+.codex-entry__rail {
+  position: sticky;
+  /* Offset from the viewport top so the rail clears the app header.
+     --space-lg gives a comfortable visual gap; adjust if the AppShell
+     header height changes substantially. */
+  top:      var(--space-lg);
+}
+
+/* Below ~900px container width, drop the rail under the content so the
+   summary card doesn't squeeze. The container-name on .codex-entry above
+   means this query measures the shell's own width, not the viewport. */
+@container codex-landing (max-width: 900px) {
+  .codex-entry--with-rail {
+    grid-template-columns: 1fr;
+  }
+  .codex-entry__rail {
+    position: static;
+  }
 }
 
 .codex-entry-placeholder {
