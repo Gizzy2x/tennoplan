@@ -42,7 +42,7 @@ function getMissionIcon(missionType: string): LucideIcon {
 // ---------------------------------------------------------------------------
 
 const TIER_OVERLAY: Record<string, string> = {
-  Lith:    'rgba(227, 195, 114, 0.17)',
+  Lith:    'rgba(219, 176, 88, 0.17)',
   Meso:    'rgba(186, 195, 254, 0.17)',
   Neo:     'rgba(103, 232, 249, 0.15)',
   Axi:     'rgba(192, 132, 252, 0.17)',
@@ -60,7 +60,7 @@ export interface FissureCardProps {
 
 export function FissureCard({ status }: FissureCardProps) {
   const { fissure, msRemaining, progress, isExpired } = status;
-  const tierColor   = TIER_COLOR[fissure.tier]   ?? '#E3C372';
+  const tierColor   = TIER_COLOR[fissure.tier]   ?? '#DBB058';
   const enemyColor  = ENEMY_COLOR[fissure.enemy] ?? '#C6C6C7';
   const countdown   = isExpired ? 'EXPIRED' : formatMs(msRemaining);
   const isPulsing   = !isExpired && msRemaining < 600_000;
@@ -74,7 +74,7 @@ export function FissureCard({ status }: FissureCardProps) {
     ? 'linear-gradient(to right, transparent 0%, rgba(22,18,18,0.50) 42%, rgba(30,17,17,0.70) 100%)'
     : 'linear-gradient(to right, transparent 0%, rgba(22,20,20,0.46) 42%, rgba(24,23,23,0.64) 100%)';
 
-  const tierOverlayColor = TIER_OVERLAY[fissure.tier] ?? 'rgba(227,195,114,0.10)';
+  const tierOverlayColor = TIER_OVERLAY[fissure.tier] ?? 'rgba(219, 176, 88,0.10)';
   const tierOverlay = fissure.isHard
     ? `linear-gradient(to right, transparent 30%, rgba(248,113,113,0.12) 58%, ${tierOverlayColor} 100%)`
     : `linear-gradient(to right, transparent 42%, ${tierOverlayColor} 100%)`;
@@ -90,7 +90,7 @@ export function FissureCard({ status }: FissureCardProps) {
             background:   'rgba(185, 28, 28, 0.97)',
             borderTop:    '2px solid rgba(248,113,113,0.70)',
             borderRight:  '1px solid rgba(239,68,68,0.45)',
-            borderBottom: '1px solid rgba(227,195,114,0.45)',
+            borderBottom: '1px solid rgba(219, 176, 88,0.45)',
             borderLeft:   '1px solid rgba(239,68,68,0.45)',
             color:        '#ffffff',
           }}
@@ -104,9 +104,9 @@ export function FissureCard({ status }: FissureCardProps) {
           style={{
             background:   'rgba(200, 158, 8, 0.92)',
             borderTop:    '2px solid rgba(255,220,80,0.60)',
-            borderRight:  '1px solid rgba(227,195,114,0.50)',
-            borderBottom: '1px solid rgba(227,195,114,0.55)',
-            borderLeft:   '1px solid rgba(227,195,114,0.50)',
+            borderRight:  '1px solid rgba(219, 176, 88,0.50)',
+            borderBottom: '1px solid rgba(219, 176, 88,0.55)',
+            borderLeft:   '1px solid rgba(219, 176, 88,0.50)',
             color:        '#1a0c00',
           }}
         >
@@ -118,10 +118,10 @@ export function FissureCard({ status }: FissureCardProps) {
           className="fissure-variant-tag absolute top-0 right-3 z-20"
           style={{
             background:   'rgba(229, 226, 225, 0.93)',
-            borderTop:    '2px solid rgba(227,195,114,0.60)',
-            borderRight:  '1px solid rgba(227,195,114,0.30)',
-            borderBottom: '1px solid rgba(227,195,114,0.45)',
-            borderLeft:   '1px solid rgba(227,195,114,0.30)',
+            borderTop:    '2px solid rgba(219, 176, 88,0.60)',
+            borderRight:  '1px solid rgba(219, 176, 88,0.30)',
+            borderBottom: '1px solid rgba(219, 176, 88,0.45)',
+            borderLeft:   '1px solid rgba(219, 176, 88,0.30)',
             color:        '#131313',
           }}
         >
@@ -160,7 +160,7 @@ export function FissureCard({ status }: FissureCardProps) {
             <MissionIcon
               size={72}
               strokeWidth={1.1}
-              style={{ color: '#E3C372', position: 'relative', zIndex: 1 }}
+              style={{ color: '#DBB058', position: 'relative', zIndex: 1 }}
             />
           </div>
 
@@ -213,7 +213,7 @@ export function FissureCard({ status }: FissureCardProps) {
             color: isExpired
               ? 'rgba(197,192,190,0.3)'
               : isPulsing
-                ? '#E3C372'
+                ? '#DBB058'
                 : tierColor,
           }}
         >

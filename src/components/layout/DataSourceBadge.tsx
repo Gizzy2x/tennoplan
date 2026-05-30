@@ -23,7 +23,7 @@ import type { DataSource } from '@/core/domain/tennoplanApi';
 // is quieter than a placeholder "…" that tells the user nothing.
 // ---------------------------------------------------------------------------
 
-const GOLD = '#E3C372';
+const GOLD = '#DBB058';
 
 interface BadgeSpec {
   label:      string;
@@ -97,16 +97,16 @@ export function DataSourceBadge() {
         height:        20,
         padding:       '0 8px',
         borderRadius:  2,
-        border:        `1px solid ${isFallback ? `${GOLD}55` : 'rgba(227,195,114,0.20)'}`,
+        border:        `1px solid ${isFallback ? `${GOLD}55` : 'rgba(219, 176, 88,0.20)'}`,
         background:    isFallback ? `${GOLD}14` : 'transparent',
         fontFamily:    'var(--font-label)',
         fontSize:      '9px',
         fontWeight:    700,
         letterSpacing: '0.18em',
         textTransform: 'uppercase',
-        color:         isFallback ? GOLD : 'rgba(227,195,114,0.55)',
+        color:         isFallback ? GOLD : 'rgba(219, 176, 88,0.55)',
         textShadow:    isFallback
-          ? '0 1px 3px rgba(227,195,114,0.25), 0 0 8px rgba(227,195,114,0.15)'
+          ? '0 1px 3px rgba(219, 176, 88,0.25), 0 0 8px rgba(219, 176, 88,0.15)'
           : 'none',
         whiteSpace:    'nowrap',
         flexShrink:    0,

@@ -36,12 +36,12 @@ function ResetCounter({
   return (
     <div
       className="glass-panel px-5 py-3 flex flex-col gap-0.5 relative overflow-hidden"
-      style={{ borderColor: isUrgent ? 'rgba(251,146,60,0.09)' : 'rgba(227,195,114,0.09)' }}
+      style={{ borderColor: isUrgent ? 'rgba(251,146,60,0.09)' : 'rgba(219, 176, 88,0.09)' }}
     >
       {/* Top accent line */}
       <div
         className="absolute top-0 left-0 right-0 h-px pointer-events-none"
-        style={{ background: isUrgent ? 'linear-gradient(90deg, transparent, rgba(251,146,60,0.25), transparent)' : 'linear-gradient(90deg, transparent, rgba(227,195,114,0.25), transparent)' }}
+        style={{ background: isUrgent ? 'linear-gradient(90deg, transparent, rgba(251,146,60,0.25), transparent)' : 'linear-gradient(90deg, transparent, rgba(219, 176, 88,0.25), transparent)' }}
       />
       <p
         data-role="labelTiny"
@@ -223,7 +223,7 @@ export function DailiesWeekliesPage() {
       {totalChallenges > 0 && syncState === 'ONLINE' && (
         <div
           className="glass-panel relative overflow-hidden mb-9 px-6 py-5"
-          style={{ borderColor: 'rgba(227,195,114,0.12)' }}
+          style={{ borderColor: 'rgba(219, 176, 88,0.12)' }}
         >
           {/* Background gold glow */}
           <div
@@ -237,7 +237,7 @@ export function DailiesWeekliesPage() {
               <p
                 data-role="labelTiny"
                 className="typo-label-xs mb-1"
-                style={{ color: 'rgba(227,195,114,0.40)' }}
+                style={{ color: 'rgba(219, 176, 88,0.40)' }}
               >
                 Weekly Standing
               </p>
@@ -246,14 +246,14 @@ export function DailiesWeekliesPage() {
                 <p className="font-mono font-bold tabular-nums leading-none" style={{ fontSize: '2.4rem', color: 'var(--color-accent-gold)' }}>
                   {(weeklyEarned / 1000).toFixed(0)}k
                 </p>
-                <p className="font-mono text-xl font-bold tabular-nums leading-none mb-0.5" style={{ color: 'rgba(227,195,114,0.40)' }}>
+                <p className="font-mono text-xl font-bold tabular-nums leading-none mb-0.5" style={{ color: 'rgba(219, 176, 88,0.40)' }}>
                   / {(NW_WEEKLY_STANDING_CAP / 1000).toFixed(0)}k
                 </p>
               </div>
               <p
                 data-role="labelTiny"
                 className="typo-label-xs mt-1"
-                style={{ color: 'rgba(227,195,114,0.35)' }}
+                style={{ color: 'rgba(219, 176, 88,0.35)' }}
               >
                 earned toward weekly cap
               </p>
@@ -264,21 +264,21 @@ export function DailiesWeekliesPage() {
               <p
                 data-role="labelTiny"
                 className="typo-label-xs mb-1"
-                style={{ color: 'rgba(227,195,114,0.40)' }}
+                style={{ color: 'rgba(219, 176, 88,0.40)' }}
               >
                 Challenges Complete
               </p>
               {/* Large fraction — font-mono */}
               <p className="font-mono text-3xl font-bold tabular-nums leading-none text-primary">
                 {String(completedCount).padStart(2, '0')}
-                <span className="text-xl" style={{ color: 'rgba(227,195,114,0.35)' }}>
+                <span className="text-xl" style={{ color: 'rgba(219, 176, 88,0.35)' }}>
                   &nbsp;/ {String(totalChallenges).padStart(2, '0')}
                 </span>
               </p>
               <p
                 data-role="labelTiny"
                 className="typo-label-xs mt-1"
-                style={{ color: 'rgba(227,195,114,0.35)' }}
+                style={{ color: 'rgba(219, 176, 88,0.35)' }}
               >
                 {Math.round(weeklyPct * 100)}% of weekly cap
               </p>
@@ -295,7 +295,7 @@ export function DailiesWeekliesPage() {
             <p
               data-role="labelTiny"
               className="mt-2 typo-label-xs"
-              style={{ color: 'rgba(227,195,114,0.28)' }}
+              style={{ color: 'rgba(219, 176, 88,0.28)' }}
             >
               {(standingRemaining / 1000).toFixed(0)}k standing remaining toward cap
             </p>
@@ -351,8 +351,8 @@ export function DailiesWeekliesPage() {
                 className="typo-label-xs px-2 py-0.5"
                 style={{
                   color:           'var(--color-accent-gold)',
-                  border:          '1px solid rgba(227,195,114,0.25)',
-                  backgroundColor: 'rgba(227,195,114,0.06)',
+                  border:          '1px solid rgba(219, 176, 88,0.25)',
+                  backgroundColor: 'rgba(219, 176, 88,0.06)',
                 }}
               >
                 Season {season}
@@ -386,7 +386,7 @@ export function DailiesWeekliesPage() {
           {sortieStatus && (
             <>
               <div className="somatic-line mt-10 mb-6" />
-              <SectionHeader label="Daily Sortie" color="#E3C372" className="mb-5" />
+              <SectionHeader label="Daily Sortie" color="#DBB058" className="mb-5" />
               <div
                 className="grid gap-3 mb-4"
                 style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}
@@ -400,7 +400,7 @@ export function DailiesWeekliesPage() {
                   />
                 ))}
               </div>
-              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(227,195,114,0.08)' }}>
+              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(219, 176, 88,0.08)' }}>
                 <CompletionToggle
                   label="Sortie Completed Today"
                   sublabel="Resets daily"
@@ -415,7 +415,7 @@ export function DailiesWeekliesPage() {
           {archonHuntStatus && (
             <>
               <div className="somatic-line mt-10 mb-6" />
-              <SectionHeader label="Archon Hunt" color="#E3C372" className="mb-5" />
+              <SectionHeader label="Archon Hunt" color="#DBB058" className="mb-5" />
               <div
                 className="grid gap-3 mb-4"
                 style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}
@@ -429,7 +429,7 @@ export function DailiesWeekliesPage() {
                   />
                 ))}
               </div>
-              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(227,195,114,0.08)' }}>
+              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(219, 176, 88,0.08)' }}>
                 <CompletionToggle
                   label="Archon Hunt Completed This Week"
                   sublabel="Resets weekly"
@@ -444,7 +444,7 @@ export function DailiesWeekliesPage() {
           {deepArchimedeaStatus && (
             <>
               <div className="somatic-line mt-10 mb-6" />
-              <SectionHeader label="Deep Archimedea" color="#e7e1d3" className="mb-5" />
+              <SectionHeader label="Deep Archimedea" color="#58e88a" className="mb-5" />
               <div
                 className="grid gap-3 mb-4"
                 style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}
@@ -458,12 +458,12 @@ export function DailiesWeekliesPage() {
               {(deepArchimedeaStatus.raw.personalModifiers?.length ?? 0) > 0 && (
                 <div
                   className="glass-panel px-5 py-4 mb-4 flex flex-col gap-2"
-                  style={{ borderColor: 'rgba(231,225,211,0.10)' }}
+                  style={{ borderColor: 'rgba(88, 232, 138,0.10)' }}
                 >
                   <p
                     data-role="labelTiny"
                     className="typo-label-xs mb-1"
-                    style={{ color: 'rgba(231,225,211,0.45)' }}
+                    style={{ color: 'rgba(88, 232, 138,0.45)' }}
                   >
                     Personal Modifiers
                   </p>
@@ -472,9 +472,9 @@ export function DailiesWeekliesPage() {
                       <p
                         data-role="labelSmall"
                         className="typo-label-sm"
-                        style={{ color: '#a8a5a0', opacity: 0.75 }}
+                        style={{ color: '#959e8a', opacity: 0.75 }}
                       >
-                        <span style={{ color: 'rgba(231,225,211,0.75)' }}>{mod.name} · </span>
+                        <span style={{ color: 'rgba(88, 232, 138,0.75)' }}>{mod.name} · </span>
                         {mod.description}
                       </p>
                     </div>
@@ -482,7 +482,7 @@ export function DailiesWeekliesPage() {
                 </div>
               )}
 
-              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(231,225,211,0.08)' }}>
+              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(88, 232, 138,0.08)' }}>
                 <CompletionToggle
                   label="Deep Archimedea Completed"
                   sublabel="Resets weekly · Awards Netracells"
@@ -497,7 +497,7 @@ export function DailiesWeekliesPage() {
           {!sortieStatus && !archonHuntStatus && (
             <>
               <div className="somatic-line mt-10 mb-6" />
-              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(227,195,114,0.08)' }}>
+              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(219, 176, 88,0.08)' }}>
                 <CompletionToggle
                   label="Sortie Completed Today"
                   sublabel="Resets daily"

@@ -1,19 +1,19 @@
 import type { CycleId } from '@/core/domain/cycles';
 
 export interface WorldTheme {
-  /** Primary brand color — WCAG AA on #0a1117 */
+  /** Primary brand color — WCAG AA on #080a08 */
   accent:      string;
   /** Alpha version for background tints / halos (12% opacity) */
   glowLow:     string;
   /** Alpha version for border highlights (35% opacity) */
   border:      string;
-  /** Atmosphere-tinted text — 0.005–0.01 chroma shift from #e5e2e1 */
+  /** Atmosphere-tinted text — 0.005–0.01 chroma shift from #e3e8de */
   textPrimary: string;
 }
 
 /**
  * World-specific semantic themes.
- * All `accent` values are calibrated for WCAG AA contrast (≥4.5:1) on #0a1117.
+ * All `accent` values are calibrated for WCAG AA contrast (≥4.5:1) on #080a08.
  * Neutral tints are imperceptible by design — they create atmosphere, not contrast.
  */
 export const WORLD_THEMES: Record<CycleId, WorldTheme> = {

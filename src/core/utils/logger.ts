@@ -1,6 +1,6 @@
 const STYLES = {
   info:    'color: #7eb8d4; font-weight: bold;',
-  warn:    'color: #E3C372; font-weight: bold;',
+  warn:    'color: #DBB058; font-weight: bold;',
   error:   'color: #d46a6a; font-weight: bold;',
   success: 'color: #7ed47e; font-weight: bold;',
   label:   'color: #C6C6C7; font-weight: normal;',

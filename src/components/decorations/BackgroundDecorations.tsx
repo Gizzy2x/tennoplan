@@ -64,7 +64,7 @@ export function BackgroundDecorations() {
             cx={star.cx}
             cy={star.cy}
             r={star.r * 0.13}
-            fill={star.gold ? "#E3C372" : "#e5e2e1"}
+            fill={star.gold ? "#DBB058" : "#e3e8de"}
             opacity={star.opacity}
             filter={star.r > 0.85 ? "url(#star-glow)" : undefined}
           />
@@ -80,46 +80,46 @@ export function BackgroundDecorations() {
         aria-hidden="true"
       >
         {/* Diagonal somatic lines */}
-        <line x1="0"    y1="280"  x2="560"  y2="0"    stroke="#E3C372" strokeWidth="0.4" opacity="0.06" />
-        <line x1="0"    y1="560"  x2="960"  y2="0"    stroke="#E3C372" strokeWidth="0.4" opacity="0.04" />
-        <line x1="880"  y1="900"  x2="1440" y2="210"  stroke="#E3C372" strokeWidth="0.4" opacity="0.06" />
-        <line x1="360"  y1="900"  x2="1440" y2="60"   stroke="#E3C372" strokeWidth="0.3" opacity="0.03" />
-        <line x1="1200" y1="900"  x2="1440" y2="580"  stroke="#E3C372" strokeWidth="0.3" opacity="0.04" />
+        <line x1="0"    y1="280"  x2="560"  y2="0"    stroke="#DBB058" strokeWidth="0.4" opacity="0.06" />
+        <line x1="0"    y1="560"  x2="960"  y2="0"    stroke="#DBB058" strokeWidth="0.4" opacity="0.04" />
+        <line x1="880"  y1="900"  x2="1440" y2="210"  stroke="#DBB058" strokeWidth="0.4" opacity="0.06" />
+        <line x1="360"  y1="900"  x2="1440" y2="60"   stroke="#DBB058" strokeWidth="0.3" opacity="0.03" />
+        <line x1="1200" y1="900"  x2="1440" y2="580"  stroke="#DBB058" strokeWidth="0.3" opacity="0.04" />
 
         {/* Top-left Orokin corner bracket */}
         <path
           d="M0,0 L140,0 L140,8 L8,8 L8,140 L0,140 Z"
-          fill="none" stroke="#E3C372" strokeWidth="0.6" opacity="0.08"
+          fill="none" stroke="#DBB058" strokeWidth="0.6" opacity="0.08"
         />
         <path
           d="M36,0 L36,36 L0,36"
-          fill="none" stroke="#E3C372" strokeWidth="0.4" opacity="0.05"
+          fill="none" stroke="#DBB058" strokeWidth="0.4" opacity="0.05"
         />
 
         {/* Bottom-right Orokin corner bracket */}
         <path
           d="M1440,900 L1300,900 L1300,892 L1432,892 L1432,760 L1440,760 Z"
-          fill="none" stroke="#E3C372" strokeWidth="0.6" opacity="0.08"
+          fill="none" stroke="#DBB058" strokeWidth="0.6" opacity="0.08"
         />
         <path
           d="M1404,900 L1404,864 L1440,864"
-          fill="none" stroke="#E3C372" strokeWidth="0.4" opacity="0.05"
+          fill="none" stroke="#DBB058" strokeWidth="0.4" opacity="0.05"
         />
 
         {/* Central Orokin void sigil — octagonal frame, barely visible */}
         <polygon
           points="760,310 820,335 840,395 820,455 760,480 700,455 680,395 700,335"
-          fill="none" stroke="#E3C372" strokeWidth="0.35" opacity="0.045"
+          fill="none" stroke="#DBB058" strokeWidth="0.35" opacity="0.045"
         />
         <polygon
           points="760,340 808,360 824,408 808,456 760,476 712,456 696,408 712,360"
-          fill="none" stroke="#E3C372" strokeWidth="0.2" opacity="0.025"
+          fill="none" stroke="#DBB058" strokeWidth="0.2" opacity="0.025"
         />
 
         {/* Top-right subtle tick marks */}
-        <line x1="1380" y1="0"  x2="1380" y2="32" stroke="#E3C372" strokeWidth="0.4" opacity="0.06" />
-        <line x1="1410" y1="0"  x2="1410" y2="18" stroke="#E3C372" strokeWidth="0.4" opacity="0.04" />
-        <line x1="1440" y1="0"  x2="1440" y2="48" stroke="#E3C372" strokeWidth="0.4" opacity="0.06" />
+        <line x1="1380" y1="0"  x2="1380" y2="32" stroke="#DBB058" strokeWidth="0.4" opacity="0.06" />
+        <line x1="1410" y1="0"  x2="1410" y2="18" stroke="#DBB058" strokeWidth="0.4" opacity="0.04" />
+        <line x1="1440" y1="0"  x2="1440" y2="48" stroke="#DBB058" strokeWidth="0.4" opacity="0.06" />
       </svg>
 
       {/* ── Edge vignette ─────────────────────────────────────────── */}

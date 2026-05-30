@@ -55,7 +55,7 @@ export function PersistentEnemyCard({ status }: PersistentEnemyCardProps) {
       <p
         data-role="hero"
         className="typo-hero leading-tight orokin-etched"
-        style={{ color: '#e5e2e1' }}
+        style={{ color: '#e3e8de' }}
       >
         {enemy.agentType}
       </p>

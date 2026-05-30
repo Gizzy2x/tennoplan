@@ -24,8 +24,8 @@ export function InvasionCard({ status }: InvasionCardProps) {
       className="glass-panel relative overflow-hidden flex flex-col p-5 gap-4"
       style={{
         background:  cardBg,
-        borderColor: 'rgba(227,195,114,0.12)',
-        borderTop:   '1px solid rgba(227,195,114,0.18)',
+        borderColor: 'rgba(219, 176, 88,0.12)',
+        borderTop:   '1px solid rgba(219, 176, 88,0.18)',
       }}
     >
       {/* Color tint overlay */}
@@ -33,7 +33,7 @@ export function InvasionCard({ status }: InvasionCardProps) {
 
       {/* Top-left filigree corner */}
       <span className="absolute top-0 left-0 w-4 h-4 pointer-events-none"
-        style={{ borderTop: '1px solid rgba(227,195,114,0.35)', borderLeft: '1px solid rgba(227,195,114,0.35)' }}
+        style={{ borderTop: '1px solid rgba(219, 176, 88,0.35)', borderLeft: '1px solid rgba(219, 176, 88,0.35)' }}
       />
 
       {/* Top row: icon + node + factions */}
@@ -43,7 +43,7 @@ export function InvasionCard({ status }: InvasionCardProps) {
           <p
             data-role="hero"
             className="typo-hero leading-tight orokin-etched truncate"
-            style={{ color: '#e5e2e1' }}
+            style={{ color: '#e3e8de' }}
           >
             {nodeName}
             {nodeRegion && (
@@ -120,7 +120,7 @@ export function InvasionCard({ status }: InvasionCardProps) {
             <p
               data-role="body"
               className="typo-body leading-snug"
-              style={{ color: '#e5e2e1' }}
+              style={{ color: '#e3e8de' }}
             >
               {reward || (credits > 0 ? `${credits.toLocaleString()} cr` : '—')}
             </p>

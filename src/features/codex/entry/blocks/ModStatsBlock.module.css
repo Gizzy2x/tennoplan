@@ -61,7 +61,7 @@
   background:    var(--color-accent-gold);
   cursor:        pointer;
   border:        2px solid var(--color-bg-secondary);
-  box-shadow:    0 0 6px rgba(227, 195, 114, 0.4);
+  box-shadow:    0 0 6px rgba(219, 176, 88, 0.4);
 }
 
 .slider::-moz-range-thumb {
@@ -71,7 +71,7 @@
   background:    var(--color-accent-gold);
   cursor:        pointer;
   border:        2px solid var(--color-bg-secondary);
-  box-shadow:    0 0 6px rgba(227, 195, 114, 0.4);
+  box-shadow:    0 0 6px rgba(219, 176, 88, 0.4);
 }
 
 .ticks {

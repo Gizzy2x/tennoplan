@@ -26,7 +26,7 @@ function ProgressStat({ label, current, total }: { label: string; current: numbe
           className="h-full bg-primary rounded-full"
           style={{
             width:     `${percent}%`,
-            boxShadow: '0 0 8px rgba(227,195,114,0.40)',
+            boxShadow: '0 0 8px rgba(219, 176, 88,0.40)',
             transition: 'width 0.3s ease',
           }}
         />
@@ -66,7 +66,7 @@ export function AscensionRegistryPage() {
           >
             <div
               className="w-10 h-10 rounded-full border border-primary/30 flex items-center justify-center shrink-0"
-              style={{ background: 'rgba(227,195,114,0.06)' }}
+              style={{ background: 'rgba(219, 176, 88,0.06)' }}
             >
               <div className="w-4 h-4 rounded-full bg-primary/20" />
             </div>

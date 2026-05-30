@@ -81,7 +81,7 @@ export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPa
         cursor:      'pointer',
         background:  'transparent',
         padding:     0,
-        borderRight: isLast ? undefined : '1px solid rgba(227,195,114,0.08)',
+        borderRight: isLast ? undefined : '1px solid rgba(219, 176, 88,0.08)',
       }}
       aria-label={`${cycle.name} — ${label}`}
     >
@@ -99,7 +99,7 @@ export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPa
       {/* ── Hover brightening layer ──────────────────────────────────────── */}
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-300 opacity-0 group-hover:opacity-100"
-        style={{ background: 'rgba(227,195,114,0.06)', zIndex: 1 }}
+        style={{ background: 'rgba(219, 176, 88,0.06)', zIndex: 1 }}
       />
 
       {/* ── Dark vignette ──────────────────────────────────────────────────── */}
@@ -144,7 +144,7 @@ export function WorldOverviewPanel({ status, onSelect, isLast }: WorldOverviewPa
             fontWeight:         900,
             fontSize:           'clamp(1.8rem, 3.2vw, 3.4rem)',
             lineHeight:         1,
-            color:              '#E3C372',
+            color:              '#DBB058',
             textShadow:         `0 2px 24px rgba(0,0,0,0.95), 0 0 40px ${pres.color}28`,
             fontVariantNumeric: 'tabular-nums',
             letterSpacing:      '0.04em',

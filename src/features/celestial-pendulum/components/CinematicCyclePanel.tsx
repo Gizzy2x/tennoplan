@@ -286,8 +286,8 @@ export function CinematicCyclePanel({
               style={{
                 fontSize:      'clamp(2.4rem, 4.8vw, 5.2rem)',
                 lineHeight:    1,
-                color:         '#E3C372',
-                textShadow:    '0 2px 32px rgba(0,0,0,0.98), 0 0 80px rgba(227,195,114,0.12)',
+                color:         '#DBB058',
+                textShadow:    '0 2px 32px rgba(0,0,0,0.98), 0 0 80px rgba(219, 176, 88,0.12)',
                 letterSpacing: '0.05em',
               }}
             >
@@ -308,7 +308,7 @@ export function CinematicCyclePanel({
             className="typo-label-sm"
             style={{
               fontWeight:   500,
-              color:        'rgba(227,195,114,0.50)',
+              color:        'rgba(219, 176, 88,0.50)',
               marginBottom: 18,
             }}
           >
@@ -333,7 +333,7 @@ export function CinematicCyclePanel({
                     fontWeight:         900,
                     fontSize:           'clamp(2.2rem, 4.2vw, 4.8rem)',
                     lineHeight:         0.9,
-                    color:              '#E3C372',
+                    color:              '#DBB058',
                     textShadow:         '0 2px 28px rgba(0,0,0,0.98)',
                     fontVariantNumeric: 'tabular-nums',
                   }}
@@ -345,7 +345,7 @@ export function CinematicCyclePanel({
                     fontFamily:    '"Noto Serif", Georgia, serif',
                     fontWeight:    700,
                     fontSize:      'clamp(1rem, 2vw, 2rem)',
-                    color:         '#E3C372',
+                    color:         '#DBB058',
                     opacity:       0.40,
                     lineHeight:    1,
                     paddingBottom: '0.14em',
@@ -407,7 +407,7 @@ export function CinematicCyclePanel({
                 className="typo-label-sm"
                 style={{
                   fontWeight:   700,
-                  color:        'rgba(227,195,114,0.50)',
+                  color:        'rgba(219, 176, 88,0.50)',
                   marginBottom: 12,
                 }}
               >
@@ -422,11 +422,11 @@ export function CinematicCyclePanel({
                       alignItems: 'flex-start',
                       gap:        8,
                       padding:    '7px 11px',
-                      border:     '1px solid rgba(227,195,114,0.22)',
+                      border:     '1px solid rgba(219, 176, 88,0.22)',
                       background: 'rgba(0,0,0,0.28)',
                     }}
                   >
-                    <span style={{ color: '#E3C372', opacity: 0.65, fontSize: '0.62rem', marginTop: 3, flexShrink: 0 }}>
+                    <span style={{ color: '#DBB058', opacity: 0.65, fontSize: '0.62rem', marginTop: 3, flexShrink: 0 }}>
                       {res.icon}
                     </span>
                     <div>
@@ -463,7 +463,7 @@ export function CinematicCyclePanel({
           <div
             style={{
               height:       1,
-              background:   'linear-gradient(to right, rgba(227,195,114,0.18) 0%, rgba(227,195,114,0.06) 100%)',
+              background:   'linear-gradient(to right, rgba(219, 176, 88,0.18) 0%, rgba(219, 176, 88,0.06) 100%)',
               marginBottom: 16,
               flexShrink:   0,
             }}
@@ -484,7 +484,7 @@ export function CinematicCyclePanel({
                 className="typo-label-sm"
                 style={{
                   fontWeight:   700,
-                  color:        'rgba(227,195,114,0.45)',
+                  color:        'rgba(219, 176, 88,0.45)',
                   marginBottom: 8,
                 }}
               >
@@ -512,7 +512,7 @@ export function CinematicCyclePanel({
                 className="typo-label-sm"
                 style={{
                   fontWeight:   700,
-                  color:        'rgba(227,195,114,0.50)',
+                  color:        'rgba(219, 176, 88,0.50)',
                   marginBottom: 10,
                 }}
               >
@@ -527,7 +527,7 @@ export function CinematicCyclePanel({
                       alignItems: 'center',
                       gap:        10,
                       padding:    '7px 0',
-                      borderTop:  '1px solid rgba(227,195,114,0.06)',
+                      borderTop:  '1px solid rgba(219, 176, 88,0.06)',
                     }}
                   >
                     <div

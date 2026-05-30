@@ -38,7 +38,7 @@ export function SteelPathCard({ status }: SteelPathCardProps) {
         <p
           data-role="hero"
           className="typo-hero leading-tight orokin-etched"
-          style={{ color: '#E3C372' }}
+          style={{ color: '#DBB058' }}
         >
           {steelPath.rewardName}
         </p>
@@ -53,7 +53,7 @@ export function SteelPathCard({ status }: SteelPathCardProps) {
 
       {/* Reset countdown */}
       <div className="flex items-end gap-2 mt-1">
-        <p className="font-mono text-xl font-bold tabular-nums leading-none" style={{ color: '#E3C372', opacity: 0.80 }}>
+        <p className="font-mono text-xl font-bold tabular-nums leading-none" style={{ color: '#DBB058', opacity: 0.80 }}>
           {msRemaining > 0 ? formatMsHuman(msRemaining) : '—'}
         </p>
         <p data-role="labelTiny" className="typo-label-xs mb-0.5" style={{ color: '#C6C6C7', opacity: 0.30 }}>
@@ -73,7 +73,7 @@ export function SteelPathCard({ status }: SteelPathCardProps) {
               <p
                 data-role="body"
                 className="typo-body truncate"
-                style={{ color: '#e5e2e1' }}
+                style={{ color: '#e3e8de' }}
               >
                 {r.name}
               </p>

@@ -49,8 +49,8 @@ const KIND_TAG: Record<ChallengeKind, {
 }> = {
   daily: {
     bg:      'rgba(229,226,225,0.92)',
-    border:  'rgba(227,195,114,0.45)',
-    topBord: 'rgba(227,195,114,0.75)',
+    border:  'rgba(219, 176, 88,0.45)',
+    topBord: 'rgba(219, 176, 88,0.75)',
     color:   '#1a1a1a',
     label:   'Daily',
   },
@@ -207,7 +207,7 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
           {showTimer && (
             <p
               className={`font-mono text-[10px] tabular-nums mt-1.5 ${isPulsing ? 'orokin-countdown-glow' : ''}`}
-              style={{ color: isPulsing ? '#E3C372' : 'rgba(197,192,190,0.26)' }}
+              style={{ color: isPulsing ? '#DBB058' : 'rgba(197,192,190,0.26)' }}
             >
               {formatMsHuman(msRemaining)}
             </p>
@@ -255,7 +255,7 @@ export function ChallengeCard({ status, onToggle }: ChallengeCardProps) {
             className="typo-hero leading-tight line-clamp-2"
             style={{
               color:      completed ? 'rgba(197,192,190,0.20)' : '#E5E2E1',
-              textShadow: completed ? 'none' : '0 1px 3px rgba(227,195,114,0.25), 0 2px 4px rgba(0,0,0,0.70)',
+              textShadow: completed ? 'none' : '0 1px 3px rgba(219, 176, 88,0.25), 0 2px 4px rgba(0,0,0,0.70)',
               transition: 'color 0.35s ease',
             }}
           >
