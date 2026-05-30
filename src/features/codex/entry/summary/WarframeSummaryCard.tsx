@@ -2,14 +2,14 @@
  * WarframeSummaryCard — the at-a-glance card that lives in the codex
  * entry page's sticky right rail for Warframe (and Prime-frame) entries.
  *
- * Three stat groups, deliberately ordered:
- *   1. Intrinsic  — Energy / Health / Shield / Sprint Speed (from data)
- *   2. Baselines  — Duration / Efficiency / Range / Strength at 100%
- *                   (static — the mod-system multipliers a future build
- *                   planner will mutate; showing them now primes the eye
- *                   and reserves the slots)
- *   3. Derived    — Armor / Damage Reduction / Effective Hit Points
- *                   (computed; formulas documented on hover via title)
+ * Two stat groups, deliberately ordered:
+ *   1. Intrinsic — Energy / Health / Shield with rank-30 projection
+ *                  shown inline as "base (max)", plus Sprint Speed and
+ *                  Starting Energy. Wiki authoritative when it provides
+ *                  explicit Rank30 overrides; otherwise standard
+ *                  multiplier (×3 H/S, ×1.5 E).
+ *   2. Derived   — Armor / Damage Reduction / Effective Hit Points
+ *                  (computed; formulas documented on hover via title)
  *
  * Formulas (deliberately transparent — labels carry the math in `title`):
  *   DR  = Armor / (Armor + 300)            … as a percentage
@@ -19,6 +19,10 @@
  * publishes different EHP figures because it folds in passive uptime or
  * shield-gating assumptions; we deliberately don't, because those are
  * build-context and belong in a future planner — not the codex card.
+ *
+ * The previous "mod baselines" group (Duration/Efficiency/Range/Strength
+ * all at 100%) was removed — without an active build context those rows
+ * carried no information, only visual weight.
  *
  * Ability icons currently render as static tiles. They become real
  * buttons once the ability detail view ships; that's why the tiles are
@@ -57,23 +61,41 @@ export function WarframeSummaryCard({ entry }: WarframeSummaryCardProps) {
       <Identity category={entry.category} />
       <AbilityStrip entry={entry} />
 
-      {/* ─── Group 1: intrinsic stats ─────────────────────────── */}
+      {/* ─── Group 1: intrinsic stats with rank-30 projection ──── */}
       <dl className={styles.statGroup}>
-        {s.energy      != null && <StatRow label="Energy"       value={fmtInt(s.energy)} variant="energy" />}
-        {s.health      != null && <StatRow label="Health"       value={fmtInt(s.health)} variant="health" />}
-        {s.shield      != null && <StatRow label="Shield"       value={fmtInt(s.shield)} variant="shield" />}
-        {s.sprintSpeed != null && <StatRow label="Sprint Speed" value={s.sprintSpeed.toFixed(2)} />}
+        {s.energy != null && (
+          <StatRow
+            label="Energy"
+            value={fmtInt(s.energy)}
+            rankMax={projectRank30(s.energy, entry.statsRank30?.energy, 1.5)}
+            variant="energy"
+          />
+        )}
+        {s.health != null && (
+          <StatRow
+            label="Health"
+            value={fmtInt(s.health)}
+            rankMax={projectRank30(s.health, entry.statsRank30?.health, 3)}
+            variant="health"
+          />
+        )}
+        {s.shield != null && (
+          <StatRow
+            label="Shield"
+            value={fmtInt(s.shield)}
+            rankMax={projectRank30(s.shield, entry.statsRank30?.shield, 3)}
+            variant="shield"
+          />
+        )}
+        {typeof entry.initialEnergy === 'number' && (
+          <StatRow label="Starting Energy" value={fmtInt(entry.initialEnergy)} />
+        )}
+        {s.sprintSpeed != null && (
+          <StatRow label="Sprint Speed" value={s.sprintSpeed.toFixed(2)} />
+        )}
       </dl>
 
-      {/* ─── Group 2: mod-system baselines (static 100%) ──────── */}
-      <dl className={styles.statGroup}>
-        <StatRow label="Duration"   value="100" unit="%" />
-        <StatRow label="Efficiency" value="100" unit="%" />
-        <StatRow label="Range"      value="100" unit="%" />
-        <StatRow label="Strength"   value="100" unit="%" />
-      </dl>
-
-      {/* ─── Group 3: derived (only render rows we can compute) ── */}
+      {/* ─── Group 2: derived (only render rows we can compute) ── */}
       {(s.armor != null || dr != null || ehp != null) && (
         <dl className={styles.statGroup}>
           {s.armor != null && (
@@ -98,6 +120,17 @@ export function WarframeSummaryCard({ entry }: WarframeSummaryCardProps) {
       )}
     </aside>
   );
+}
+
+/**
+ * Project a stat's rank-30 value. Wiki-explicit wins; otherwise multiply
+ * by the standard formula. Returns null when the projection equals the
+ * base (no point rendering "100 (100)").
+ */
+function projectRank30(base: number, explicit: number | undefined, multiplier: number): string | null {
+  const r30 = explicit ?? Math.round(base * multiplier);
+  if (r30 === Math.round(base)) return null;
+  return fmtInt(r30);
 }
 
 // ─── Sub-components ──────────────────────────────────────────────
@@ -215,11 +248,14 @@ interface StatRowProps {
   label:       string;
   labelTitle?: string;
   value:       string;
+  /** When set, renders inline next to the value as " (rankMax)" — used to
+   *  surface the wiki's rank-30 projection on intrinsic stats. */
+  rankMax?:    string | null;
   unit?:       string;
   variant?:    StatVariant;
 }
 
-function StatRow({ label, labelTitle, value, unit, variant }: StatRowProps) {
+function StatRow({ label, labelTitle, value, rankMax, unit, variant }: StatRowProps) {
   const valueClass = clsx(
     styles.statValue,
     variant && styles[`statValue--${variant}`],
@@ -229,6 +265,7 @@ function StatRow({ label, labelTitle, value, unit, variant }: StatRowProps) {
       <dt className={styles.statLabel} title={labelTitle}>{label}</dt>
       <dd className={valueClass}>
         {value}
+        {rankMax && <span className={styles.statRankMax} title="At rank 30"> ({rankMax})</span>}
         {unit && <span className={styles.statUnit}>{unit}</span>}
       </dd>
     </div>

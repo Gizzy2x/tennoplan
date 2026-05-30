@@ -213,3 +213,15 @@
   color:          var(--color-text-muted);
   letter-spacing: 0.04em;
 }
+
+/* Rank-30 projection: quiet parenthetical next to the base stat — same
+   colour family as the active stat but at muted weight + size so the
+   eye still lands on the base number first. Tooltip "At rank 30"
+   explains the parenthetical without forcing extra label chrome. */
+.statRankMax {
+  font-weight:    500;
+  font-size:      0.75rem;
+  color:          color-mix(in srgb, currentColor 55%, var(--color-text-muted) 45%);
+  letter-spacing: 0.01em;
+  cursor:         help;
+}

@@ -141,9 +141,10 @@ interface EnrichmentContext {
   /** Set of relic display names that currently appear as a drop in a
    *  non-relic source. Used for vaulted detection. */
   activeRelics: Set<string>;
-  /** Wiki-sourced passive prose; takes precedence over WFCD's |TOKEN|-laden
-   *  text when both are available. Empty when the wiki fetch failed. */
-  wikiPassives: ReadonlyMap<string, string>;
+  /** Wiki-sourced per-warframe records (passive prose + Sex/Subsumed/etc).
+   *  Wiki values take precedence over WFCD field-by-field when both are
+   *  populated. Empty when the wiki fetch failed. */
+  wikiWarframes: ReadonlyMap<string, import('./wikiWarframes').WikiWarframeRecord>;
 }
 
 function buildContext(parsed: ParsedCodex): EnrichmentContext {
@@ -154,7 +155,7 @@ function buildContext(parsed: ParsedCodex): EnrichmentContext {
       if (looksLikeRelicName(drop.itemName)) activeRelics.add(drop.itemName);
     }
   }
-  return { parsed, activeRelics, wikiPassives: parsed.wikiPassives };
+  return { parsed, activeRelics, wikiWarframes: parsed.wikiWarframes };
 }
 
 // ─── Per-item enrichment ──────────────────────────────────────────────────────
@@ -311,9 +312,10 @@ function applyWarframeFields(item: EnrichedItem, wf: WfcdWarframe | undefined, c
     item.abilities = wf.abilities.map(toAbility);
   }
 
+  const wiki = ctx.wikiWarframes.get(wf.name);
+
   // Wiki passive (pre-resolved prose) wins over WFCD (raw |TOKEN| template).
-  const wikiPassive = ctx.wikiPassives.get(wf.name);
-  if (wikiPassive)                item.passiveDescription = wikiPassive;
+  if (wiki?.passive)              item.passiveDescription = wiki.passive;
   else if (wf.passiveDescription) item.passiveDescription = wf.passiveDescription;
 
   const stats: ItemStats = {};
@@ -330,6 +332,25 @@ function applyWarframeFields(item: EnrichedItem, wf: WfcdWarframe | undefined, c
   }
 
   if (wf.type) item.type = wf.type;
+
+  // Wiki-sourced general info — pure wiki, no WFCD analogue.
+  if (wiki) {
+    if (wiki.sex)                                   item.sex                 = wiki.sex;
+    if (wiki.subsumedAbility)                       item.subsumedAbility     = wiki.subsumedAbility;
+    if (wiki.tacticalAbility)                       item.tacticalAbility     = wiki.tacticalAbility;
+    if (wiki.progenitorElement)                     item.progenitorElement   = wiki.progenitorElement;
+    if (wiki.themes)                                item.themes              = wiki.themes;
+    if (wiki.playstyle?.length)                     item.playstyle           = wiki.playstyle;
+    if (typeof wiki.initialEnergy === 'number')     item.initialEnergy       = wiki.initialEnergy;
+    if (typeof wiki.sellPrice     === 'number')     item.sellPrice           = wiki.sellPrice;
+
+    const r30: ItemStats = {};
+    if (typeof wiki.healthRank30 === 'number' && wiki.healthRank30 > 0) r30.health = wiki.healthRank30;
+    if (typeof wiki.shieldRank30 === 'number' && wiki.shieldRank30 > 0) r30.shield = wiki.shieldRank30;
+    if (typeof wiki.energyRank30 === 'number' && wiki.energyRank30 > 0) r30.energy = wiki.energyRank30;
+    if (typeof wiki.armorRank30  === 'number' && wiki.armorRank30  > 0) r30.armor  = wiki.armorRank30;
+    if (Object.keys(r30).length > 0) item.statsRank30 = r30;
+  }
 }
 
 function applyWeaponFields(item: EnrichedItem, w: WfcdWeapon | undefined): void {

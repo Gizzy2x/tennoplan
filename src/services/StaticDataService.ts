@@ -97,8 +97,15 @@ const REQUEST_TIMEOUT_MS = 60_000;
  *           with the very stale blob it was trying to escape. This bump
  *           guarantees the refetch goes all the way to the worker now
  *           that the cache directive is in place.
+ *   • '6' — adds wiki-sourced warframe metadata (sex, subsumedAbility,
+ *           tacticalAbility, progenitorElement, themes, playstyle,
+ *           initialEnergy, sellPrice, statsRank30) sourced from
+ *           wiki.warframe.com Module:Warframes/data. Pre-bump caches
+ *           lack these fields → GeneralInformationBlock would render empty
+ *           until the next natural refresh; the bump force-wipes so the
+ *           block lights up immediately (2026-05-30).
  */
-const CODEX_SCHEMA_VERSION = '5';
+const CODEX_SCHEMA_VERSION = '6';
 const SCHEMA_VERSION_KEY    = 'tennoplan:codex-schema-version';
 
 // ─── Public types ─────────────────────────────────────────────────────────────

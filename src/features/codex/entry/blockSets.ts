@@ -28,6 +28,7 @@ export type BlockKey =
   | 'Polarities'
   | 'Abilities'
   | 'Passive'
+  | 'GeneralInformation'
   | 'Components'
   | 'ModStats'
   | 'RelicRewards'
@@ -46,7 +47,7 @@ export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
   // WarframeSummaryCard, so they're intentionally absent here.
   // Polarities stays left — it's build-context, not at-a-glance summary.
   Warframe: [
-    'Header', 'Polarities', 'Description',
+    'Header', 'Polarities', 'GeneralInformation', 'Description',
     'Passive', 'Abilities', 'Components', 'BestFarms', 'PatchHistory', 'WikiFooter',
   ],
   Weapon: [
