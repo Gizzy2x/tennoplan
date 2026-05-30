@@ -19,7 +19,7 @@ const REFINEMENT_COLOR: Record<Refinement, string> = {
   Intact:      '#9ca3af',
   Exceptional: '#67e8f9',
   Flawless:    '#c084fc',
-  Radiant:     '#E3C372',
+  Radiant:     '#DBB058',
 };
 
 interface MockRelic {
@@ -108,7 +108,7 @@ function RelicCard({
         display:       'flex',
         flexDirection: 'column',
         background:    active ? `rgba(28,27,24,0.97)` : 'rgba(22,21,19,0.92)',
-        border:        `1px solid ${active ? `${c}55` : 'rgba(227,195,114,0.10)'}`,
+        border:        `1px solid ${active ? `${c}55` : 'rgba(219, 176, 88,0.10)'}`,
         borderRadius:  '4px',
         padding:       '16px',
         gap:           '12px',
@@ -140,11 +140,11 @@ function RelicCard({
         {relic.owned > 0 ? (
           <div style={{
             display: 'flex', alignItems: 'center', gap: '4px',
-            background: 'rgba(227,195,114,0.10)',
-            border: '1px solid rgba(227,195,114,0.22)',
+            background: 'rgba(219, 176, 88,0.10)',
+            border: '1px solid rgba(219, 176, 88,0.22)',
             borderRadius: '3px', padding: '2px 7px',
           }}>
-            <span className="typo-label-xs" style={{ color: 'rgba(227,195,114,0.85)' }}>
+            <span className="typo-label-xs" style={{ color: 'rgba(219, 176, 88,0.85)' }}>
               ×{relic.owned} OWNED
             </span>
           </div>
@@ -287,7 +287,7 @@ function FissureRow({
         }}>
           {fissure.missionType}{region ? ` · ${region}` : ''}
           {fissure.isHard && <span style={{ color: '#f87171', marginLeft: 4 }}>SP</span>}
-          {fissure.isStorm && <span style={{ color: '#E3C372', marginLeft: 3 }}>⚡</span>}
+          {fissure.isStorm && <span style={{ color: '#DBB058', marginLeft: 3 }}>⚡</span>}
         </div>
       </div>
 
@@ -338,7 +338,7 @@ function FissuresSidebar({
       width: '268px', flexShrink: 0,
       display: 'flex', flexDirection: 'column',
       background: 'rgba(18,17,15,0.95)',
-      border: '1px solid rgba(227,195,114,0.12)',
+      border: '1px solid rgba(219, 176, 88,0.12)',
       borderRadius: '4px',
       maxHeight: 'calc(100vh - 120px)',
       position: 'sticky', top: '80px',
@@ -347,22 +347,22 @@ function FissuresSidebar({
       <div style={{
         display: 'flex', alignItems: 'center', gap: '6px',
         padding: '9px 12px',
-        borderBottom: '1px solid rgba(227,195,114,0.08)',
+        borderBottom: '1px solid rgba(219, 176, 88,0.08)',
       }}>
-        <span className="typo-section-header" style={{ color: 'rgba(227,195,114,0.75)', flex: 1 }}>
+        <span className="typo-section-header" style={{ color: 'rgba(219, 176, 88,0.75)', flex: 1 }}>
           ACTIVE FISSURES
         </span>
         <span className="typo-label-xs" style={{
-          background: 'rgba(227,195,114,0.10)', border: '1px solid rgba(227,195,114,0.20)',
+          background: 'rgba(219, 176, 88,0.10)', border: '1px solid rgba(219, 176, 88,0.20)',
           borderRadius: '2px', padding: '1px 6px',
-          color: 'rgba(227,195,114,0.70)',
+          color: 'rgba(219, 176, 88,0.70)',
         }}>
           {totalActive}
         </span>
         <button onClick={handleRefresh} style={{
           background: 'transparent', border: 'none', cursor: 'pointer',
           padding: '2px', display: 'flex', alignItems: 'center',
-          color: refreshing ? '#E3C372' : 'rgba(198,198,199,0.28)',
+          color: refreshing ? '#DBB058' : 'rgba(198,198,199,0.28)',
           transition: 'color 0.15s',
         }}>
           <RefreshCw size={10} style={{ animation: refreshing ? 'spin 1s linear infinite' : 'none' }} />
@@ -372,7 +372,7 @@ function FissuresSidebar({
       {/* Tier filter strip */}
       <div style={{
         display: 'flex', gap: '3px', padding: '6px 10px',
-        borderBottom: '1px solid rgba(227,195,114,0.05)', flexWrap: 'wrap',
+        borderBottom: '1px solid rgba(219, 176, 88,0.05)', flexWrap: 'wrap',
       }}>
         {TIER_ORDER.map(tier => {
           const count  = (grouped.get(tier) ?? []).filter(s => !s.isExpired).length;
@@ -452,7 +452,7 @@ function FissuresSidebar({
       {/* Footer: cache age */}
       <div style={{
         padding: '5px 12px',
-        borderTop: '1px solid rgba(227,195,114,0.05)',
+        borderTop: '1px solid rgba(219, 176, 88,0.05)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       }}>
         <span className="typo-label-xs" style={{ color: 'rgba(198,198,199,0.22)', fontSize: '0.575rem' }}>
@@ -496,7 +496,7 @@ export function VoidReliquariesPage() {
   if (!hasEverLoaded && fissuresLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '24px', color: 'rgba(198,198,199,0.40)' }}>
-        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#E3C372', animation: 'pulse 1.5s ease-in-out infinite' }} />
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#DBB058', animation: 'pulse 1.5s ease-in-out infinite' }} />
         <span className="typo-label-sm" style={{ color: 'rgba(198,198,199,0.38)' }}>
           Initializing Void Reliquaries…
         </span>
@@ -514,7 +514,7 @@ export function VoidReliquariesPage() {
         display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap',
         padding: '8px 12px',
         background: 'rgba(18,17,15,0.85)',
-        border: '1px solid rgba(227,195,114,0.10)',
+        border: '1px solid rgba(219, 176, 88,0.10)',
         borderRadius: '4px',
       }}>
         {/* View tabs */}
@@ -523,10 +523,10 @@ export function VoidReliquariesPage() {
           return (
             <button key={view} onClick={() => setActiveView(view)} className="typo-label-sm" style={{
               padding: '4px 12px',
-              background: active ? 'rgba(227,195,114,0.08)' : 'transparent',
-              border: `1px solid ${active ? 'rgba(227,195,114,0.30)' : 'rgba(198,198,199,0.10)'}`,
+              background: active ? 'rgba(219, 176, 88,0.08)' : 'transparent',
+              border: `1px solid ${active ? 'rgba(219, 176, 88,0.30)' : 'rgba(198,198,199,0.10)'}`,
               borderRadius: '3px',
-              color: active ? '#E3C372' : 'rgba(198,198,199,0.40)',
+              color: active ? '#DBB058' : 'rgba(198,198,199,0.40)',
               cursor: 'pointer', transition: 'all 0.15s',
             }}>
               {view === 'myRelics' ? 'MY RELICS' : 'ALL RELICS'}
@@ -611,12 +611,12 @@ export function VoidReliquariesPage() {
 
       {/* ── Results count ─────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span className="typo-section-header" style={{ color: 'rgba(227,195,114,0.65)' }}>
+        <span className="typo-section-header" style={{ color: 'rgba(219, 176, 88,0.65)' }}>
           {activeView === 'myRelics' ? 'MY RELICS' : 'ALL RELICS'}
         </span>
         <span className="typo-label-xs" style={{
-          background: 'rgba(227,195,114,0.08)', border: '1px solid rgba(227,195,114,0.18)',
-          borderRadius: '2px', padding: '1px 6px', color: 'rgba(227,195,114,0.55)',
+          background: 'rgba(219, 176, 88,0.08)', border: '1px solid rgba(219, 176, 88,0.18)',
+          borderRadius: '2px', padding: '1px 6px', color: 'rgba(219, 176, 88,0.55)',
         }}>
           {filteredRelics.length}
         </span>
@@ -643,7 +643,7 @@ export function VoidReliquariesPage() {
           {filteredRelics.length === 0 ? (
             <div style={{
               background: 'rgba(18,17,15,0.85)',
-              border: '1px solid rgba(227,195,114,0.10)',
+              border: '1px solid rgba(219, 176, 88,0.10)',
               borderRadius: '4px',
               padding: '40px 24px', textAlign: 'center',
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px',
@@ -673,15 +673,15 @@ export function VoidReliquariesPage() {
           {/* Vault Deficiencies panel */}
           <div style={{
             background: 'rgba(18,17,15,0.85)',
-            border: '1px solid rgba(227,195,114,0.10)',
+            border: '1px solid rgba(219, 176, 88,0.10)',
             borderRadius: '4px',
           }}>
             <div style={{
               display: 'flex', alignItems: 'center', gap: '8px',
               padding: '8px 14px',
-              borderBottom: '1px solid rgba(227,195,114,0.07)',
+              borderBottom: '1px solid rgba(219, 176, 88,0.07)',
             }}>
-              <span className="typo-section-header" style={{ color: 'rgba(227,195,114,0.65)' }}>
+              <span className="typo-section-header" style={{ color: 'rgba(219, 176, 88,0.65)' }}>
                 VAULT DEFICIENCIES
               </span>
               <span className="typo-label-xs" style={{ color: 'rgba(198,198,199,0.22)' }}>

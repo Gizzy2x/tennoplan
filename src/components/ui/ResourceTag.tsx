@@ -40,7 +40,7 @@ interface ResourceTagProps {
 
 function rarityColor(rarity: string): string {
   switch (rarity.toLowerCase()) {
-    case 'rare':      return 'rgba(227, 195, 114, 0.90)';
+    case 'rare':      return 'rgba(219, 176, 88, 0.90)';
     case 'uncommon':  return 'rgba(186, 195, 254, 0.80)';
     case 'common':    return 'rgba(168, 165, 160, 0.65)';
     default:          return 'rgba(168, 165, 160, 0.45)';
@@ -102,14 +102,14 @@ export function ResourceTag({
           <div style={{
             width:          iconPx,
             height:         iconPx,
-            background:     'rgba(227, 195, 114, 0.06)',
-            border:         '1px solid rgba(227, 195, 114, 0.14)',
+            background:     'rgba(219, 176, 88, 0.06)',
+            border:         '1px solid rgba(219, 176, 88, 0.14)',
             borderRadius:   'var(--radius-sm)',
             display:        'flex',
             alignItems:     'center',
             justifyContent: 'center',
             fontSize:       size === 'sm' ? '0.65rem' : '0.85rem',
-            color:          'rgba(227, 195, 114, 0.35)',
+            color:          'rgba(219, 176, 88, 0.35)',
             flexShrink:     0,
           }}>
             ◆
@@ -170,7 +170,7 @@ export function ResourceTag({
                 fontWeight:    700,
                 color:         chance >= 20
                   ? 'var(--color-accent-gold)'
-                  : 'rgba(227, 195, 114, 0.55)',
+                  : 'rgba(219, 176, 88, 0.55)',
                 marginBottom:  4,
               }}>
                 {chance.toFixed(2)}% drop chance
@@ -238,7 +238,7 @@ export function ResourceTag({
             fontWeight: 700,
             color:      chance >= 20
               ? 'var(--color-accent-gold)'
-              : 'rgba(227, 195, 114, 0.48)',
+              : 'rgba(219, 176, 88, 0.48)',
             lineHeight: 1,
           }}>
             {chance.toFixed(1)}%

@@ -7,9 +7,9 @@
      3. A subtly accent-shifted border so the panel edge reinforces
         the tint.
 
-   --color-accent-teal currently renders bone (#e7e1d3) per the brand
-   pivot. Token will be renamed to --color-accent-bone in a cleanup
-   pass once the direction is locked.
+   --color-accent-teal currently renders bioluminescent jade (#58e88a)
+   under the Mutalist Glow theme (2026-05-29). Token will be renamed to
+   --color-accent-jade in a cleanup pass once the direction is locked.
 
    Deliberately no border-left stripe — .impeccable.md BAN 1 forbids
    side-stripe accents >1px regardless of color or token name. The

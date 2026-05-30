@@ -15,7 +15,7 @@ export function Divider({ label, variant = 'gold', className = '', style }: Divi
       ? {
           flex:       1,
           height:     '1px',
-          background: 'linear-gradient(90deg, transparent, rgba(227,195,114,0.25), transparent)',
+          background: 'linear-gradient(90deg, transparent, rgba(219, 176, 88,0.25), transparent)',
         }
       : {
           flex:       1,
@@ -44,7 +44,7 @@ export function Divider({ label, variant = 'gold', className = '', style }: Divi
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
               color:         variant === 'gold'
-                ? 'rgba(227, 195, 114, 0.45)'
+                ? 'rgba(219, 176, 88, 0.45)'
                 : 'var(--color-text-muted)',
               whiteSpace: 'nowrap',
             }}

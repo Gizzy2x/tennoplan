@@ -99,7 +99,7 @@ export function filterFissures(fissures: Fissure[], filters: FissureFilters): Fi
 
 /** Hex color for each tier. */
 export const TIER_COLOR: Record<FissureTier, string> = {
-  Lith:    '#E3C372',  // gold   — most common
+  Lith:    '#DBB058',  // gold   — most common
   Meso:    '#bac3fe',  // violet
   Neo:     '#67e8f9',  // cyan
   Axi:     '#c084fc',  // purple
@@ -112,7 +112,7 @@ export const ENEMY_COLOR: Record<string, string> = {
   Grineer:   '#f87171',
   Corpus:    '#60a5fa',
   Infested:  '#86efac',
-  Corrupted: '#E3C372',
-  Orokin:    '#E3C372',
+  Corrupted: '#DBB058',
+  Orokin:    '#DBB058',
   Crossfire: '#bac3fe',
 };

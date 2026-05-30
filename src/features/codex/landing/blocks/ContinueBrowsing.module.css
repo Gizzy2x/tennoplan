@@ -45,7 +45,7 @@
 
 .card:hover {
   transform:    translateY(-1px);
-  border-color: rgba(231, 225, 211,0.45);
+  border-color: rgba(88, 232, 138,0.45);
 }
 
 .card:focus-visible {

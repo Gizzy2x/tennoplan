@@ -157,7 +157,7 @@
   font-family:    var(--font-sans);
   font-size:      0.7rem;
   letter-spacing: 0.04em;
-  color:          rgba(227, 195, 114, 0.70);
+  color:          rgba(219, 176, 88, 0.70);
   margin-top:     var(--space-sm);
   animation:      fadeIn 0.25s ease-out;
 }
@@ -192,8 +192,8 @@
   font-weight:     700;
   letter-spacing:  0.08em;
   text-transform:  uppercase;
-  background:      rgba(227, 195, 114, 0.85);
-  border:          1px solid rgba(227, 195, 114, 0.85);
+  background:      rgba(219, 176, 88, 0.85);
+  border:          1px solid rgba(219, 176, 88, 0.85);
   color:           var(--color-bg-primary);
   cursor:          pointer;
   border-radius:   2px;
@@ -207,7 +207,7 @@
   background:   var(--color-accent-gold);
   border-color: var(--color-accent-gold);
   transform:    translateY(-1px);
-  box-shadow:   0 4px 12px -4px rgba(227, 195, 114, 0.35);
+  box-shadow:   0 4px 12px -4px rgba(219, 176, 88, 0.35);
 }
 
 .btn:active:not(:disabled) {
@@ -430,7 +430,7 @@
 
 .eventRowClickable        { cursor: pointer; }
 .eventRowClickable:hover  { background: rgba(255, 255, 255, 0.025); }
-.eventRowOpen             { background: rgba(231, 225, 211,0.04); }
+.eventRowOpen             { background: rgba(88, 232, 138,0.04); }
 
 .eventPip {
   width:         6px;

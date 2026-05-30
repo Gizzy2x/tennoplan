@@ -14,7 +14,7 @@ export interface StatePresentation {
 }
 
 export const STATE: Record<string, StatePresentation> = {
-  day:     { label: 'DAY CYCLE',          badge: 'DAY',     color: '#E3C372', nextLabel: 'NIGHT',           icon: '☀' },
+  day:     { label: 'DAY CYCLE',          badge: 'DAY',     color: '#DBB058', nextLabel: 'NIGHT',           icon: '☀' },
   night:   { label: 'NIGHT CYCLE',        badge: 'NIGHT',   color: '#bac3fe', nextLabel: 'DAY',             icon: '☽' },
   warm:    { label: 'THERMAL SURGE',      badge: 'WARM',    color: '#fb923c', nextLabel: 'COLD FRONT',      icon: '◎' },
   cold:    { label: 'COLD FRONT',         badge: 'COLD',    color: '#67e8f9', nextLabel: 'WARM SURGE',      icon: '❄' },
@@ -22,7 +22,7 @@ export const STATE: Record<string, StatePresentation> = {
   vome:    { label: 'VOME ASCENDANT',     badge: 'VOME',    color: '#c084fc', nextLabel: 'FASS',            icon: '◈' },
   corpus:  { label: 'CORPUS CONTROL',     badge: 'CORPUS',  color: '#60a5fa', nextLabel: 'GRINEER ADV.',    icon: '⊕' },
   grineer: { label: 'GRINEER OCCUPATION', badge: 'GRINEER', color: '#f87171', nextLabel: 'CORPUS RET.',     icon: '☠' },
-  joy:     { label: 'JOY',               badge: 'JOY',     color: '#E3C372', nextLabel: 'ANGER APPROACHES', icon: '◌' },
+  joy:     { label: 'JOY',               badge: 'JOY',     color: '#DBB058', nextLabel: 'ANGER APPROACHES', icon: '◌' },
   anger:   { label: 'ANGER',             badge: 'ANGER',   color: '#ef4444', nextLabel: 'ENVY RISES',       icon: '△' },
   envy:    { label: 'ENVY',              badge: 'ENVY',    color: '#22c55e', nextLabel: 'SORROW FALLS',     icon: '◆' },
   sorrow:  { label: 'SORROW',            badge: 'SORROW',  color: '#60a5fa', nextLabel: 'FEAR COMES',       icon: '▽' },

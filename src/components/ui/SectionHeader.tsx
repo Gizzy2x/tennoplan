@@ -20,7 +20,7 @@ export function SectionHeader({
   icon: Icon,
   label,
   count,
-  color = '#E3C372',
+  color = '#DBB058',
   className = '',
 }: SectionHeaderProps) {
   return (

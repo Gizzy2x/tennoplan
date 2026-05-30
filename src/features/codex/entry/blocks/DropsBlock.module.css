@@ -157,7 +157,7 @@
 }
 
 .toggle:hover {
-  border-color: rgba(231, 225, 211,0.5);
+  border-color: rgba(88, 232, 138,0.5);
   color:        var(--color-accent-teal);
 }
 

@@ -176,21 +176,21 @@
      var(--color-bg-primary) and color to var(--color-text-primary).
      ================================================================ */
 
-  /* Colors */
-  --color-bg-primary:     #0a1117;
-  --color-bg-secondary:   #161b22;
-  --color-text-primary:   #e5e2e1;
-  --color-text-muted:     #a8a5a0;
-  --color-border-default: #2d333b;
-  --color-accent-gold:    #e3c372;
-  /* Brand pivot 2026-05-29: secondary accent shifted from Lotus cyan
-     (#00d4ff) to bone / warm off-white (#e7e1d3) to distance the brand
-     from the Warframe-community-app genre default. Token name kept as
-     "teal" through the trial period — rename to "--color-accent-bone"
-     once the direction is locked. All teal opacity variants and the
-     hardcoded rgba(231, 225, 211,…) usages across the app were updated
-     in the same change to keep the surface visually consistent. */
-  --color-accent-teal:    #e7e1d3;
+  /* Colors — Mutalist Glow theme (2026-05-29)
+     Brand pivot from bone (#e7e1d3) → deep green-black + bioluminescent
+     jade. Pushes the surface decisively away from the Lotus-cyan genre
+     default and leans into the "infested dangerous" Warframe aesthetic
+     — surface reads as a chitinous Helminth chamber, with the jade
+     accent doing the work cyan/bone previously did. Token name kept as
+     "teal" through this trial period to limit churn; rename to
+     "--color-accent-jade" once the direction is locked. */
+  --color-bg-primary:     #080a08;
+  --color-bg-secondary:   #13180f;
+  --color-text-primary:   #e3e8de;
+  --color-text-muted:     #959e8a;
+  --color-border-default: #252e23;
+  --color-accent-gold:    #dbb058;
+  --color-accent-teal:    #58e88a;
 
   /* Status Colors */
   --color-status-urgent:  #fb923c;
@@ -202,14 +202,17 @@
      in-game UI colours (red HP, blue energy) without going neon — each
      passes 4.5:1 contrast on --color-bg-secondary at the weights we use
      for stat values (0.95rem / 700). Shield is lavender per project
-     preference rather than the literal in-game cyan, which would clash
-     with --color-accent-teal. */
+     preference; under the Mutalist Glow theme the jade accent
+     (--color-accent-teal) already sits in the green range, so any
+     literal-cyan/teal shield treatment would muddy the hierarchy. */
   --color-stat-health:    #e25c5c;
   --color-stat-shield:    #b07cd6;
   --color-stat-energy:    #6da8e8;
 
 
-  /* Challenge Kind Colors (Nightwave) */
+  /* Challenge Kind Colors (Nightwave) — intentionally preserved at
+     legacy gold-based values; these read as Nora-specific accent on a
+     warm card surface and don't follow the global accent palette. */
   --color-kind-daily-bg:  rgba(229,226,225,0.92);
   --color-kind-daily-border: rgba(227,195,114,0.45);
   --color-kind-daily-top: rgba(227,195,114,0.70);
@@ -290,31 +293,31 @@
   --radius-card: 6px;
   --radius-sm:   4px;
 
-  /* Gold accent opacity variants */
-  --color-accent-gold-10: rgba(227, 195, 114, 0.10);
-  --color-accent-gold-15: rgba(227, 195, 114, 0.15);
-  --color-accent-gold-20: rgba(227, 195, 114, 0.20);
-  --color-accent-gold-30: rgba(227, 195, 114, 0.30);
-  --color-accent-gold-38: rgba(227, 195, 114, 0.38);
-  --color-accent-gold-40: rgba(227, 195, 114, 0.40);
-  --color-accent-gold-45: rgba(227, 195, 114, 0.45);
-  --color-accent-gold-50: rgba(227, 195, 114, 0.50);
-  --color-accent-gold-55: rgba(227, 195, 114, 0.55);
-  --color-accent-gold-70: rgba(227, 195, 114, 0.70);
+  /* Gold accent opacity variants — Mutalist Glow gold (#dbb058) */
+  --color-accent-gold-10: rgba(219, 176, 88, 0.10);
+  --color-accent-gold-15: rgba(219, 176, 88, 0.15);
+  --color-accent-gold-20: rgba(219, 176, 88, 0.20);
+  --color-accent-gold-30: rgba(219, 176, 88, 0.30);
+  --color-accent-gold-38: rgba(219, 176, 88, 0.38);
+  --color-accent-gold-40: rgba(219, 176, 88, 0.40);
+  --color-accent-gold-45: rgba(219, 176, 88, 0.45);
+  --color-accent-gold-50: rgba(219, 176, 88, 0.50);
+  --color-accent-gold-55: rgba(219, 176, 88, 0.55);
+  --color-accent-gold-70: rgba(219, 176, 88, 0.70);
 
-  /* "Teal" accent opacity variants — actually bone (#e7e1d3) since the
-     2026-05-29 brand pivot. The previous block had several self-
-     referential entries (var(--color-accent-teal-10) referring to
-     itself) which silently resolved invalid; replaced with real rgba
-     values so the variants actually paint something. */
-  --color-accent-teal-10: rgba(231, 225, 211, 0.10);
-  --color-accent-teal-12: rgba(231, 225, 211, 0.12);
-  --color-accent-teal-18: rgba(231, 225, 211, 0.18);
-  --color-accent-teal-20: rgba(231, 225, 211, 0.20);
-  --color-accent-teal-25: rgba(231, 225, 211, 0.25);
-  --color-accent-teal-65: rgba(231, 225, 211, 0.65);
-  --color-accent-teal-80: rgba(231, 225, 211, 0.80);
-  --color-accent-teal-85: rgba(231, 225, 211, 0.85);
+  /* "Teal" accent opacity variants — actually bioluminescent jade
+     (#58e88a) since the 2026-05-29 Mutalist Glow pivot. Token name kept
+     through the trial period; rename to --color-accent-jade once the
+     direction locks. Earlier bone-trial values used rgba(88, 232, 138,
+     X); now jade rgb(88, 232, 138, X). */
+  --color-accent-teal-10: rgba(88, 232, 138, 0.10);
+  --color-accent-teal-12: rgba(88, 232, 138, 0.12);
+  --color-accent-teal-18: rgba(88, 232, 138, 0.18);
+  --color-accent-teal-20: rgba(88, 232, 138, 0.20);
+  --color-accent-teal-25: rgba(88, 232, 138, 0.25);
+  --color-accent-teal-65: rgba(88, 232, 138, 0.65);
+  --color-accent-teal-80: rgba(88, 232, 138, 0.80);
+  --color-accent-teal-85: rgba(88, 232, 138, 0.85);
 
   /* Semantic aliases — resolve old token names */
   --color-primary:                   var(--color-accent-gold);
@@ -477,7 +480,7 @@ a:focus-visible {
   flex-direction: column;
   padding: 24px 0 16px;
   background-color: var(--color-bg-primary);
-  border-right: 1px solid rgba(227, 195, 114, 0.10);
+  border-right: 1px solid rgba(219, 176, 88, 0.10);
   z-index: 50;
   overflow: visible;
 }
@@ -543,12 +546,12 @@ a:focus-visible {
 
 .sidebar-rail-btn:hover {
   color: rgba(229, 226, 225, 0.85);
-  background-color: rgba(227, 195, 114, 0.04);
+  background-color: rgba(219, 176, 88, 0.04);
 }
 
 .sidebar-rail-btn[data-active='true'] {
   color: var(--color-accent-gold);
-  background-color: rgba(227, 195, 114, 0.07);
+  background-color: rgba(219, 176, 88, 0.07);
 }
 
 /* Right-edge accent — visually points toward the header content area */
@@ -560,7 +563,7 @@ a:focus-visible {
   width: 2px;
   background: var(--color-accent-gold);
   border-radius: 2px 0 0 2px;
-  box-shadow: 0 0 8px rgba(227, 195, 114, 0.45);
+  box-shadow: 0 0 8px rgba(219, 176, 88, 0.45);
   opacity: 0;
   transition: opacity 200ms ease;
 }
@@ -578,7 +581,7 @@ a:focus-visible {
   transform: translate(-4px, -50%);
   z-index: 70;
   background: var(--color-bg-primary);
-  border: 1px solid rgba(227, 195, 114, 0.28);
+  border: 1px solid rgba(219, 176, 88, 0.28);
   color: var(--color-accent-gold);
   padding: 5px 10px;
   white-space: nowrap;
@@ -609,7 +612,7 @@ a:focus-visible {
   background-color: rgba(10, 17, 23, 0.82);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(227, 195, 114, 0.10);
+  border-bottom: 1px solid rgba(219, 176, 88, 0.10);
   z-index: 40;
 }
 
@@ -627,14 +630,14 @@ a:focus-visible {
   font-weight: 700;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: rgba(227, 195, 114, 0.40);
+  color: rgba(219, 176, 88, 0.40);
   white-space: nowrap;
 }
 
 .header-identity-sep {
   font-family: var(--font-serif);
   font-size: 0.875rem;
-  color: rgba(227, 195, 114, 0.30);
+  color: rgba(219, 176, 88, 0.30);
   font-weight: 300;
 }
 
@@ -648,7 +651,7 @@ a:focus-visible {
   line-height: 1;
   margin: 0;
   white-space: nowrap;
-  text-shadow: 0 0 14px rgba(227, 195, 114, 0.22);
+  text-shadow: 0 0 14px rgba(219, 176, 88, 0.22);
 }
 
 /* ── Actions (right) ── */
@@ -669,7 +672,7 @@ a:focus-visible {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  border: 1px solid rgba(227, 195, 114, 0.16);
+  border: 1px solid rgba(219, 176, 88, 0.16);
   background: transparent;
   color: rgba(168, 165, 160, 0.65);
   cursor: pointer;
@@ -679,16 +682,16 @@ a:focus-visible {
 }
 
 .header-quickbtn:hover {
-  color: rgba(227, 195, 114, 0.85);
-  border-color: rgba(227, 195, 114, 0.40);
-  background: rgba(227, 195, 114, 0.05);
+  color: rgba(219, 176, 88, 0.85);
+  border-color: rgba(219, 176, 88, 0.40);
+  background: rgba(219, 176, 88, 0.05);
 }
 
 .header-quickbtn[data-active='true'] {
   color: var(--color-accent-gold);
-  border-color: rgba(227, 195, 114, 0.50);
-  background: rgba(227, 195, 114, 0.10);
-  box-shadow: 0 0 12px rgba(227, 195, 114, 0.18);
+  border-color: rgba(219, 176, 88, 0.50);
+  background: rgba(219, 176, 88, 0.10);
+  box-shadow: 0 0 12px rgba(219, 176, 88, 0.18);
 }
 
 .header-pulse {
@@ -706,17 +709,17 @@ a:focus-visible {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 1px solid rgba(227, 195, 114, 0.16);
+  border: 1px solid rgba(219, 176, 88, 0.16);
   background: transparent;
-  color: rgba(227, 195, 114, 0.40);
+  color: rgba(219, 176, 88, 0.40);
   cursor: pointer;
   transition: border-color 200ms ease, background-color 200ms ease, color 200ms ease;
   flex-shrink: 0;
 }
 
 .header-pulse-btn:hover:not(:disabled) {
-  border-color: rgba(227, 195, 114, 0.45);
-  background: rgba(227, 195, 114, 0.06);
+  border-color: rgba(219, 176, 88, 0.45);
+  background: rgba(219, 176, 88, 0.06);
   color: var(--color-accent-gold);
 }
 
@@ -725,8 +728,8 @@ a:focus-visible {
 }
 
 .header-pulse-btn.is-syncing {
-  border-color: rgba(227, 195, 114, 0.50);
-  background: rgba(227, 195, 114, 0.05);
+  border-color: rgba(219, 176, 88, 0.50);
+  background: rgba(219, 176, 88, 0.05);
   color: var(--color-accent-gold);
 }
 
@@ -736,7 +739,7 @@ a:focus-visible {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(227, 195, 114, 0.38);
+  color: rgba(219, 176, 88, 0.38);
   white-space: nowrap;
   transition: color 200ms ease;
 }
@@ -753,7 +756,7 @@ a:focus-visible {
 }
 
 .header-pulse-label--link:hover {
-  color: rgba(227, 195, 114, 0.65);
+  color: rgba(219, 176, 88, 0.65);
 }
 
 .header-search {
@@ -762,16 +765,16 @@ a:focus-visible {
   align-items: center;
   gap: 8px;
   padding-bottom: 4px;
-  border-bottom: 1px solid rgba(227, 195, 114, 0.20);
+  border-bottom: 1px solid rgba(219, 176, 88, 0.20);
   transition: border-color 200ms ease;
 }
 
 .header-search:focus-within {
-  border-bottom-color: rgba(227, 195, 114, 0.55);
+  border-bottom-color: rgba(219, 176, 88, 0.55);
 }
 
 .header-search svg {
-  color: rgba(227, 195, 114, 0.40);
+  color: rgba(219, 176, 88, 0.40);
   flex-shrink: 0;
 }
 
@@ -790,7 +793,7 @@ a:focus-visible {
 }
 
 .header-search input::placeholder {
-  color: rgba(227, 195, 114, 0.32);
+  color: rgba(219, 176, 88, 0.32);
 }
 
 .header-icon-btn {
@@ -808,7 +811,7 @@ a:focus-visible {
 
 .header-icon-btn:hover {
   color: var(--color-text-primary);
-  background: rgba(227, 195, 114, 0.05);
+  background: rgba(219, 176, 88, 0.05);
 }
 
 .header-icon-btn[data-active='true'] {
@@ -846,7 +849,7 @@ a:focus-visible {
 }
 
 .relic-glow:hover {
-  box-shadow: 0 0 30px rgba(227, 195, 114, 0.2);
+  box-shadow: 0 0 30px rgba(219, 176, 88, 0.2);
   border-color: var(--color-accent-gold-40);
 }
 
@@ -871,7 +874,7 @@ a:focus-visible {
 /* Orokin Urgent Countdown Glow — activates when msRemaining < 10 min */
 .orokin-countdown-glow {
   text-shadow:
-    0 0 8px rgba(227, 195, 114, 0.6),
+    0 0 8px rgba(219, 176, 88, 0.6),
     0 0 16px var(--color-accent-gold-30);
 }
 
@@ -936,7 +939,7 @@ a:focus-visible {
 }
 
 .bounty-row:hover {
-  background-color: rgba(227, 195, 114, 0.04);
+  background-color: rgba(219, 176, 88, 0.04);
 }
 
 /* Cycle tooltip — tooltipinfo-v3 style dark teal card */
@@ -946,7 +949,7 @@ a:focus-visible {
   min-width: 240px;
   max-width: 300px;
   background: rgba(10, 20, 26, 0.97);
-  border: 1px solid rgba(227, 195, 114, 0.2);
+  border: 1px solid rgba(219, 176, 88, 0.2);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   padding: 14px 16px;
@@ -986,9 +989,9 @@ a:focus-visible {
 
 /* SystemPulse — golden ring radiates outward while syncing */
 @keyframes systemPulseRing {
-  0%   { box-shadow: 0 0 0 0   rgba(227,195,114,0.55), 0 0 0 0   rgba(227,195,114,0.20); }
-  60%  { box-shadow: 0 0 0 5px rgba(227,195,114,0),    0 0 0 10px rgba(227,195,114,0);   }
-  100% { box-shadow: 0 0 0 0   rgba(227,195,114,0),    0 0 0 0   rgba(227,195,114,0);    }
+  0%   { box-shadow: 0 0 0 0   rgba(219, 176, 88,0.55), 0 0 0 0   rgba(219, 176, 88,0.20); }
+  60%  { box-shadow: 0 0 0 5px rgba(219, 176, 88,0),    0 0 0 10px rgba(219, 176, 88,0);   }
+  100% { box-shadow: 0 0 0 0   rgba(219, 176, 88,0),    0 0 0 0   rgba(219, 176, 88,0);    }
 }
 
 .system-pulse-ring {
@@ -1068,7 +1071,7 @@ a:focus-visible {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.22em;
-  color: rgba(227, 195, 114, 0.55);
+  color: rgba(219, 176, 88, 0.55);
   margin: 8px 0 0;
 }
 
@@ -1215,17 +1218,17 @@ a:focus-visible {
 
 .panel {
   background: rgba(28, 27, 27, 0.6);
-  border: 1px solid rgba(227, 195, 114, 0.15);
+  border: 1px solid rgba(219, 176, 88, 0.15);
   border-radius: 4px;
 }
 
 .panel-highlight {
-  border-color: rgba(227, 195, 114, 0.35);
+  border-color: rgba(219, 176, 88, 0.35);
 }
 
 .panel-header {
   padding: 6px 12px;
-  border-bottom: 1px solid rgba(227, 195, 114, 0.15);
+  border-bottom: 1px solid rgba(219, 176, 88, 0.15);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1242,7 +1245,7 @@ a:focus-visible {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   line-height: 1.3;
-  color: rgba(227, 195, 114, 0.70);
+  color: rgba(219, 176, 88, 0.70);
 }
 
 .data-row {
@@ -1273,7 +1276,7 @@ a:focus-visible {
 }
 
 .data-row-value-accent {
-  color: #e3c372;
+  color: var(--color-accent-gold);
 }
 
 .section-divider {
@@ -1290,14 +1293,14 @@ a:focus-visible {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   line-height: 1.3;
-  color: rgba(227, 195, 114, 0.45);
+  color: rgba(219, 176, 88, 0.45);
   white-space: nowrap;
 }
 
 .section-divider-line {
   flex: 1;
   height: 1px;
-  background: rgba(227, 195, 114, 0.08);
+  background: rgba(219, 176, 88, 0.08);
 }
 
 /* ================================================================
@@ -1685,7 +1688,7 @@ a:focus-visible {
 
 /* Hover — non-primary lifts and brightens */
 .dial:not([data-primary]):hover .dial-inner {
-  border-color: rgba(227, 195, 114, 0.30);
+  border-color: rgba(219, 176, 88, 0.30);
   background: rgba(22, 27, 34, 0.78);
   transform: translateY(-2px);
 }
@@ -1846,7 +1849,7 @@ a:focus-visible {
 .cycle-tab {
   position: relative;
   /* No overflow:hidden — tooltips and natural bg bleed allowed */
-  border: 1px solid rgba(227, 195, 114, 0.12);
+  border: 1px solid rgba(219, 176, 88, 0.12);
   border-radius: var(--radius-card);
   cursor: pointer;
   /* Mostly opaque so inactive tabs feel passive */
@@ -1860,11 +1863,11 @@ a:focus-visible {
 }
 
 .cycle-tab:hover {
-  border-color: rgba(227, 195, 114, 0.28);
+  border-color: rgba(219, 176, 88, 0.28);
   /* Slightly more transparent on hover = more image bleeds through */
   background: rgba(10, 17, 23, 0.72);
   transform: scale(1.02);
-  box-shadow: 0 0 12px rgba(231, 225, 211,0.20), inset 0 0 8px rgba(227, 195, 114, 0.08);
+  box-shadow: 0 0 12px rgba(88, 232, 138,0.20), inset 0 0 8px rgba(219, 176, 88, 0.08);
 }
 
 /* ── Cycle State Visualization — animated patterns per cycle type ── */
@@ -1874,7 +1877,7 @@ a:focus-visible {
 }
 
 .cycle-tab[data-active='true'] {
-  border: 1px solid rgba(227, 195, 114, 0.45);
+  border: 1px solid rgba(219, 176, 88, 0.45);
   border-bottom: 2px solid var(--color-accent-gold);
   /* Left = solid app color, right = state-tinted gradient showing cycle visually */
   background: linear-gradient(
@@ -1883,7 +1886,7 @@ a:focus-visible {
     rgba(10, 17, 23, 0.80) 42%,
     rgba(10, 17, 23, 0.18) 100%
   );
-  box-shadow: 0 0 10px rgba(227, 195, 114, 0.5);
+  box-shadow: 0 0 10px rgba(219, 176, 88, 0.5);
   position: relative;
 }
 
@@ -1902,7 +1905,7 @@ a:focus-visible {
 
 /* State-specific tint colors — derived from Warframe cycle aesthetics */
 .cycle-tab[data-state='day']::before {
-  background: linear-gradient(90deg, #e3c372, #e3c372, #e3c372);
+  background: linear-gradient(90deg, #dbb058, #dbb058, #dbb058);
 }
 
 .cycle-tab[data-state='night']::before {
@@ -1935,7 +1938,7 @@ a:focus-visible {
 
 /* Duviri emotion states */
 .cycle-tab[data-state='joy']::before {
-  background: linear-gradient(90deg, #e3c372, #e3c372, #e3c372);
+  background: linear-gradient(90deg, #dbb058, #dbb058, #dbb058);
 }
 
 .cycle-tab[data-state='anger']::before {
@@ -1984,7 +1987,7 @@ a:focus-visible {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: capitalize;
-  color: rgba(227, 195, 114, 0.72);
+  color: rgba(219, 176, 88, 0.72);
   flex-shrink: 0;
 }
 
@@ -1999,7 +2002,7 @@ a:focus-visible {
   line-height: 1;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
-  color: rgba(227, 195, 114, 0.72);
+  color: rgba(219, 176, 88, 0.72);
   margin-top: 2px;
 }
 
@@ -2010,17 +2013,17 @@ a:focus-visible {
 /* Pulsing glow animation for high-progress state */
 @keyframes cycleProgressGlow {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(227, 195, 114, 0.60);
+    box-shadow: 0 0 0 0 rgba(219, 176, 88, 0.60);
   }
   50% {
-    box-shadow: 0 0 0 3px rgba(227, 195, 114, 0.20);
+    box-shadow: 0 0 0 3px rgba(219, 176, 88, 0.20);
   }
 }
 
 .cycle-tab-progress-bar {
   width: 100%;
   height: 2px;
-  background: rgba(227, 195, 114, 0.06);
+  background: rgba(219, 176, 88, 0.06);
   flex-shrink: 0;
   overflow: visible;
   position: relative;
@@ -2037,16 +2040,16 @@ a:focus-visible {
 
   /* Intensity curve: opacity + opacity-driven intensity */
   --intensity: calc(var(--progress-ratio) * 2);
-  background: rgba(227, 195, 114, clamp(0.25, var(--intensity), 1));
+  background: rgba(219, 176, 88, clamp(0.25, var(--intensity), 1));
 
   /* Subtle glow grows as progress increases */
-  box-shadow: 0 0 clamp(0px, calc(var(--progress-ratio) * 4px), 8px) rgba(227, 195, 114, calc(var(--progress-ratio) * 0.4));
+  box-shadow: 0 0 clamp(0px, calc(var(--progress-ratio) * 4px), 8px) rgba(219, 176, 88, calc(var(--progress-ratio) * 0.4));
 }
 
 /* High-intensity state (>90% progress) — add pulsing glow */
 .cycle-tab-progress-fill[data-high-intensity='true'] {
-  background: rgba(227, 195, 114, 0.85);
-  box-shadow: 0 0 8px rgba(227, 195, 114, 0.60);
+  background: rgba(219, 176, 88, 0.85);
+  box-shadow: 0 0 8px rgba(219, 176, 88, 0.60);
   animation: cycleProgressGlow 1.4s ease-in-out infinite;
 }
 
@@ -2057,7 +2060,7 @@ a:focus-visible {
 .timer-hero {
   position: relative;
   /* NO overflow:hidden — allows ResourceTag tooltips to escape the container */
-  border: 1px solid rgba(227, 195, 114, 0.12);
+  border: 1px solid rgba(219, 176, 88, 0.12);
   border-radius: var(--radius-card);
   min-height: 230px;
   /* Left portion = solid app color; right opens to WorldBackground */
@@ -2111,7 +2114,7 @@ a:focus-visible {
 
 .timer-hero-divider {
   width: 1px;
-  background: rgba(227, 195, 114, 0.08);
+  background: rgba(219, 176, 88, 0.08);
   flex-shrink: 0;
   margin: 20px 0;
 }
@@ -2131,8 +2134,8 @@ a:focus-visible {
   align-items: center;
   gap: 6px;
   padding: 4px 9px;
-  background: rgba(231, 225, 211,0.06);
-  border: 1px solid rgba(231, 225, 211,0.18);
+  background: rgba(88, 232, 138,0.06);
+  border: 1px solid rgba(88, 232, 138,0.18);
   border-radius: var(--radius-sm);
   width: fit-content;
 }
@@ -2156,7 +2159,7 @@ a:focus-visible {
 }
 
 .resource-tag[data-interactive='true']:hover {
-  background: rgba(227, 195, 114, 0.05);
+  background: rgba(219, 176, 88, 0.05);
 }
 
 .resource-tag[data-interactive='true']:hover .resource-tag-hint {
@@ -2185,7 +2188,7 @@ a:focus-visible {
   min-width: 210px;
   max-width: 270px;
   background: rgba(10, 17, 23, 0.98);
-  border: 1px solid rgba(227, 195, 114, 0.22);
+  border: 1px solid rgba(219, 176, 88, 0.22);
   border-radius: var(--radius-card);
   padding: 12px 14px;
   box-shadow: var(--shadow-md);
@@ -2202,8 +2205,8 @@ a:focus-visible {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(231, 225, 211,0.50);
-  border: 1px solid rgba(231, 225, 211,0.16);
+  color: rgba(88, 232, 138,0.50);
+  border: 1px solid rgba(88, 232, 138,0.16);
   border-radius: var(--radius-sm);
   padding: 4px 8px;
   background: transparent;
@@ -2434,8 +2437,8 @@ a:focus-visible {
 }
 
 .bm-badge--efficient {
-  background: rgba(231, 225, 211,0.10);
-  border: 1px solid rgba(231, 225, 211,0.30);
+  background: rgba(88, 232, 138,0.10);
+  border: 1px solid rgba(88, 232, 138,0.30);
   color: var(--color-accent-teal);
 }
 
@@ -2502,7 +2505,7 @@ a:focus-visible {
   gap: var(--space-md);
   padding: var(--space-xs) var(--space-md);
   border-radius: var(--radius-sm);
-  background: rgba(227, 195, 114, 0.06);
+  background: rgba(219, 176, 88, 0.06);
   border-left: 2px solid var(--color-accent-gold-38);
 }
 
@@ -2781,7 +2784,7 @@ a:focus-visible {
   gap: 6px;
   padding: 5px 8px;
   border-radius: 3px;
-  background: rgba(227, 195, 114, 0.05);
+  background: rgba(219, 176, 88, 0.05);
   border-left: 2px solid var(--color-accent-gold-38);
 }
 .bb-pane-why-icon {
@@ -2820,7 +2823,7 @@ a:focus-visible {
 }
 .bb-rotation-tab--active {
   border-bottom-color: var(--color-accent-teal);
-  background: rgba(231, 225, 211,0.05);
+  background: rgba(88, 232, 138,0.05);
 }
 .bb-rotation-tab-label {
   font-family: var(--font-sans);
@@ -3234,18 +3237,18 @@ a:focus-visible {
 
 .bounty-tier-btn:hover {
   background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(227, 195, 114, 0.15);
+  border-color: rgba(219, 176, 88, 0.15);
 }
 
 .bounty-tier-btn-expanded {
-  background: rgba(227, 195, 114, 0.06);
-  border: 1px solid rgba(227, 195, 114, 0.18);
+  background: rgba(219, 176, 88, 0.06);
+  border: 1px solid rgba(219, 176, 88, 0.18);
   border-radius: 4px 4px 0 0;
 }
 
 .bounty-tier-btn-expanded:hover {
-  background: rgba(227, 195, 114, 0.08);
-  border-color: rgba(227, 195, 114, 0.22);
+  background: rgba(219, 176, 88, 0.08);
+  border-color: rgba(219, 176, 88, 0.22);
 }
 
 .bounty-tier-label {
@@ -3285,7 +3288,7 @@ a:focus-visible {
 
 .bounty-tier-expanded-content {
   padding: 12px 10px 8px;
-  border: 1px solid rgba(227, 195, 114, 0.12);
+  border: 1px solid rgba(219, 176, 88, 0.12);
   border-top: none;
   border-radius: 0 0 4px 4px;
   background: rgba(0, 0, 0, 0.18);
@@ -3375,8 +3378,8 @@ a:focus-visible {
   width: 40px;
   height: 40px;
   border-radius: 2px;
-  background: rgba(227, 195, 114, 0.10);
-  border: 1px solid rgba(227, 195, 114, 0.15);
+  background: rgba(219, 176, 88, 0.10);
+  border: 1px solid rgba(219, 176, 88, 0.15);
 }
 
 .bounty-reward-chance {
@@ -3396,8 +3399,8 @@ a:focus-visible {
 
 .bounty-reward-chance-high {
   color: var(--color-accent-gold);
-  background: rgba(227, 195, 114, 0.18);
-  border-color: rgba(227, 195, 114, 0.30);
+  background: rgba(219, 176, 88, 0.18);
+  border-color: rgba(219, 176, 88, 0.30);
 }
 
 .bounty-reward-name {
@@ -3549,7 +3552,7 @@ a:focus-visible {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: rgba(227, 195, 114, 0.38);
+  background: rgba(219, 176, 88, 0.38);
   flex-shrink: 0;
 }
 
@@ -3573,14 +3576,14 @@ a:focus-visible {
 }
 
 .cp-refresh-btn:not(:disabled) {
-  color: rgba(227, 195, 114, 0.55);
-  border: 1px solid rgba(227, 195, 114, 0.22);
+  color: rgba(219, 176, 88, 0.55);
+  border: 1px solid rgba(219, 176, 88, 0.22);
   cursor: pointer;
 }
 
 .cp-refresh-btn:disabled {
-  color: rgba(227, 195, 114, 0.28);
-  border: 1px solid rgba(227, 195, 114, 0.10);
+  color: rgba(219, 176, 88, 0.28);
+  border: 1px solid rgba(219, 176, 88, 0.10);
   cursor: not-allowed;
 }
 
@@ -3628,7 +3631,7 @@ a:focus-visible {
   font-weight: 700;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: rgba(227, 195, 114, 0.58);
+  color: rgba(219, 176, 88, 0.58);
 }
 
 .timer-hero-state {
@@ -3704,7 +3707,7 @@ a:focus-visible {
   font-weight: 700;
   letter-spacing: 0.20em;
   text-transform: uppercase;
-  color: rgba(227, 195, 114, 0.55);
+  color: rgba(219, 176, 88, 0.55);
   margin-bottom: 10px;
 }
 
@@ -3730,8 +3733,8 @@ a:focus-visible {
   flex-shrink: 0;
 }
 
-.intel-world-name--active  { color: rgba(227, 195, 114, 0.82); }
-.intel-world-name--inactive { color: rgba(227, 195, 114, 0.35); }
+.intel-world-name--active  { color: rgba(219, 176, 88, 0.82); }
+.intel-world-name--inactive { color: rgba(219, 176, 88, 0.35); }
 
 .intel-world-state {
   font-family: var(--font-sans);
@@ -3741,7 +3744,7 @@ a:focus-visible {
 }
 
 .intel-world-sep {
-  color: rgba(227, 195, 114, 0.15);
+  color: rgba(219, 176, 88, 0.15);
   font-size: 0.65rem;
 }
 
@@ -3771,7 +3774,7 @@ a:focus-visible {
 }
 
 .intel-tip-bullet {
-  color: rgba(227, 195, 114, 0.38);
+  color: rgba(219, 176, 88, 0.38);
   flex-shrink: 0;
   font-size: 0.65rem;
   line-height: 1.6;
@@ -3837,9 +3840,9 @@ a:focus-visible {
 
 .error-boundary-btn {
   padding:         var(--space-sm) var(--space-lg);
-  background:      rgba(227, 195, 114, 0.85);
+  background:      rgba(219, 176, 88, 0.85);
   border:          none;
-  color:           #0a1117;
+  color:           var(--color-bg-primary);
   cursor:          pointer;
   font-weight:     700;
   letter-spacing:  0.06em;
@@ -3941,7 +3944,7 @@ a:focus-visible {
 
 .codex-back-btn:hover {
   color:        var(--color-text-primary);
-  border-color: rgba(231, 225, 211,0.45);
+  border-color: rgba(88, 232, 138,0.45);
 }
 
 /* ── Entry detail container + placeholder block ────────────────── */
@@ -4032,7 +4035,7 @@ a:focus-visible {
 }
 
 .codex-browse-search::placeholder { color: var(--color-text-muted); }
-.codex-browse-search:focus         { border-color: rgba(231, 225, 211,0.45); }
+.codex-browse-search:focus         { border-color: rgba(88, 232, 138,0.45); }
 
 /* ── Filter chips ───────────────────────────────────────────────── */
 
@@ -4071,13 +4074,13 @@ a:focus-visible {
 }
 
 .codex-browse-chip:hover {
-  border-color: rgba(231, 225, 211,0.3);
+  border-color: rgba(88, 232, 138,0.3);
   color:        var(--color-text-primary);
 }
 
 .codex-browse-chip--active {
-  background:   rgba(231, 225, 211,0.08);
-  border-color: rgba(231, 225, 211,0.5);
+  background:   rgba(88, 232, 138,0.08);
+  border-color: rgba(88, 232, 138,0.5);
   color:        var(--color-accent-teal);
 }
 
@@ -4085,7 +4088,7 @@ a:focus-visible {
   display:       inline-flex;
   align-items:   center;
   justify-content: center;
-  background:    rgba(231, 225, 211,0.15);
+  background:    rgba(88, 232, 138,0.15);
   border-radius: 10px;
   font-size:     0.65rem;
   font-weight:   700;
@@ -4184,7 +4187,7 @@ a:focus-visible {
 .mod-breadcrumb-link:hover { color: #fff; }
 
 .mod-breadcrumb-sep {
-  color:     rgba(168,165,160,0.4);
+  color:     rgba(168, 165, 160,0.4);
   font-size: 0.75rem;
 }
 
@@ -4247,8 +4250,8 @@ a:focus-visible {
 }
 
 .mod-sidebar-card:hover {
-  border-color: rgba(227,195,114,0.4);
-  box-shadow:   0 0 14px rgba(227,195,114,0.12);
+  border-color: rgba(219, 176, 88,0.4);
+  box-shadow:   0 0 14px rgba(219, 176, 88,0.12);
 }
 
 .mod-sidebar-art {
@@ -4266,27 +4269,27 @@ a:focus-visible {
   width:      120px;
   height:     120px;
   object-fit: contain;
-  filter:     drop-shadow(0 0 20px rgba(227,195,114,0.35));
+  filter:     drop-shadow(0 0 20px rgba(219, 176, 88,0.35));
 }
 
 .mod-sidebar-overlay {
   position:       absolute;
   inset:          0;
-  background:     linear-gradient(to bottom, transparent 40%, rgba(10,17,23,0.7) 100%);
+  background:     linear-gradient(to bottom, transparent 40%, rgba(10, 17, 23,0.7) 100%);
   pointer-events: none;
 }
 
 .mod-sidebar-footer {
   padding:    var(--space-sm) var(--space-md);
-  background: rgba(227,195,114,0.06);
-  border-top: 1px solid rgba(227,195,114,0.12);
+  background: rgba(219, 176, 88,0.06);
+  border-top: 1px solid rgba(219, 176, 88,0.12);
 }
 
 .mod-sidebar-label {
   font-family:    var(--font-serif);
   font-size:      0.8rem;
   font-weight:    600;
-  color:          rgba(229,226,225,0.9);
+  color:          rgba(229, 226, 225,0.9);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }

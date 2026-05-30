@@ -38,7 +38,7 @@ const WORLD_FACTION: Record<string, { label: string; color: string; icon: string
   cambion: { label: 'Infested', color: '#4ade80', icon: '◈' },
   zariman: { label: 'Varies',   color: '#c084fc', icon: '✗' },
   earth:   { label: 'Grineer',  color: '#f87171', icon: '☠' },
-  duviri:  { label: 'Dax',      color: '#E3C372', icon: '◆' },
+  duviri:  { label: 'Dax',      color: '#DBB058', icon: '◆' },
 };
 
 // ─── Rarity metadata ────────────────────────────────────────────────────────
@@ -49,7 +49,7 @@ const RARITY_META: Record<BountyRewardRarity, {
   glow:   string;
   border: string;
 }> = {
-  Rare:     { dot: '#E3C372',              label: 'Rare',     glow: 'rgba(227,195,114,0.30)', border: 'rgba(227,195,114,0.50)' },
+  Rare:     { dot: '#DBB058',              label: 'Rare',     glow: 'rgba(219, 176, 88,0.30)', border: 'rgba(219, 176, 88,0.50)' },
   Uncommon: { dot: '#60a5fa',              label: 'Uncommon', glow: 'rgba(96,165,250,0.22)',  border: 'rgba(96,165,250,0.35)'  },
   Common:   { dot: 'rgba(198,198,199,0.45)', label: 'Common',   glow: 'transparent',            border: 'rgba(255,255,255,0.10)' },
   Unknown:  { dot: 'rgba(198,198,199,0.30)', label: 'Unknown',  glow: 'transparent',            border: 'rgba(255,255,255,0.07)' },
@@ -77,7 +77,7 @@ function RewardIconCell({ reward }: RewardIconCellProps) {
 
   const iconFilter =
     reward.tier === 'Rare'
-      ? 'brightness(1.15) drop-shadow(0 0 4px rgba(227,195,114,0.45))'
+      ? 'brightness(1.15) drop-shadow(0 0 4px rgba(219, 176, 88,0.45))'
       : 'brightness(1.05)';
 
   return (
@@ -104,12 +104,12 @@ function RewardIconCell({ reward }: RewardIconCellProps) {
           position:       'relative',
           overflow:       'hidden',
           background:
-            reward.tier === 'Rare'     ? 'rgba(227,195,114,0.07)' :
+            reward.tier === 'Rare'     ? 'rgba(219, 176, 88,0.07)' :
             reward.tier === 'Uncommon' ? 'rgba(96,165,250,0.05)'  :
                                           'rgba(255,255,255,0.03)',
           border:         `1px solid ${meta.border}`,
           boxShadow:
-            reward.tier === 'Rare'     ? `0 0 14px ${meta.glow}, inset 0 0 10px rgba(227,195,114,0.04)` :
+            reward.tier === 'Rare'     ? `0 0 14px ${meta.glow}, inset 0 0 10px rgba(219, 176, 88,0.04)` :
             reward.tier === 'Uncommon' ? `0 0 8px ${meta.glow}` :
                                           'none',
           transition:     'box-shadow 0.2s',
@@ -164,7 +164,7 @@ function RewardIconCell({ reward }: RewardIconCellProps) {
         style={{
           fontSize:        '0.40rem',
           color:
-            reward.tier === 'Rare'     ? 'rgba(227,195,114,0.92)' :
+            reward.tier === 'Rare'     ? 'rgba(219, 176, 88,0.92)' :
             reward.tier === 'Uncommon' ? 'rgba(190,214,255,0.85)' :
                                           'rgba(198,198,199,0.60)',
           textAlign:       'center',
@@ -524,11 +524,11 @@ function EmptyTerminalState() {
         alignItems:     'center',
         justifyContent: 'center',
         gap:            12,
-        border:         '1px dashed rgba(227,195,114,0.10)',
+        border:         '1px dashed rgba(219, 176, 88,0.10)',
         background:     'rgba(0,0,0,0.18)',
       }}
     >
-      <span style={{ fontSize: '1.4rem', color: 'rgba(227,195,114,0.15)', lineHeight: 1 }}>◈</span>
+      <span style={{ fontSize: '1.4rem', color: 'rgba(219, 176, 88,0.15)', lineHeight: 1 }}>◈</span>
       <p
         data-role="labelSmall"
         className="typo-label-sm"
@@ -567,7 +567,7 @@ export function BountyJobList({
   worldId = 'cetus',
   cycleNote = null,
 }: BountyJobListProps) {
-  const faction = WORLD_FACTION[worldId] ?? { label: 'Enemy', color: '#E3C372', icon: '◆' };
+  const faction = WORLD_FACTION[worldId] ?? { label: 'Enemy', color: '#DBB058', icon: '◆' };
 
   // Highest tier first
   const reversed = [...bounties].reverse();
@@ -608,7 +608,7 @@ export function BountyJobList({
         className="typo-label-sm"
         style={{
           fontWeight:   700,
-          color:        'rgba(227,195,114,0.50)',
+          color:        'rgba(219, 176, 88,0.50)',
           marginBottom: cycleNote ? 6 : 10,
         }}
       >
@@ -659,7 +659,7 @@ export function BountyJobList({
                   background: isSelected ? `${accentColor}12` : 'transparent',
                   boxShadow:  [
                     `inset 2px 0 0 ${isSelected ? accentColor : 'transparent'}`,
-                    idx > 0 ? 'inset 0 1px 0 rgba(227,195,114,0.06)' : '',
+                    idx > 0 ? 'inset 0 1px 0 rgba(219, 176, 88,0.06)' : '',
                   ].filter(Boolean).join(', '),
                   cursor:    'pointer',
                   textAlign: 'left',

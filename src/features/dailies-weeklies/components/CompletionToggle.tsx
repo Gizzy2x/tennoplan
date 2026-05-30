@@ -8,7 +8,7 @@ export interface CompletionToggleProps {
 }
 
 export function CompletionToggle({ label, sublabel, checked, onToggle }: CompletionToggleProps) {
-  const color = '#E3C372';
+  const color = '#DBB058';
 
   return (
     <div

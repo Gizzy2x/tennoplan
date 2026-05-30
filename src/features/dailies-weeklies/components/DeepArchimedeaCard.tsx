@@ -27,7 +27,7 @@ function getMissionIcon(missionType: string): LucideIcon {
   return MISSION_ICON[missionType] ?? Hexagon;
 }
 
-const ACCENT      = '#e7e1d3';  // bone — Deep Archimedea identity (was #00d4ff teal; brand pivot 2026-05-29)
+const ACCENT      = '#58e88a';  // jade — Deep Archimedea identity (Mutalist Glow theme, 2026-05-29; was #00d4ff teal → #e7e1d3 bone trial → now bioluminescent jade)
 const HARD_COLOR  = '#c084fc';  // purple — Elite (isHard) risks
 
 export interface DeepArchimedeaCardProps {
@@ -88,7 +88,7 @@ export function DeepArchimedeaCard({ mission, index }: DeepArchimedeaCardProps) 
           <p
             data-role="labelTiny"
             className="typo-label-xs mt-0.5"
-            style={{ color: '#a8a5a0', opacity: 0.50 }}
+            style={{ color: '#959e8a', opacity: 0.50 }}
           >
             {mission.faction}
           </p>
@@ -116,7 +116,7 @@ export function DeepArchimedeaCard({ mission, index }: DeepArchimedeaCardProps) 
             <p
               data-role="labelTiny"
               className="typo-label-xs leading-snug mt-0.5"
-              style={{ color: '#a8a5a0', opacity: 0.65 }}
+              style={{ color: '#959e8a', opacity: 0.65 }}
             >
               {mission.deviation.description}
             </p>
@@ -129,13 +129,13 @@ export function DeepArchimedeaCard({ mission, index }: DeepArchimedeaCardProps) 
         <div className="mt-2 flex flex-col gap-1.5">
           {normalRisks.map((risk, i) => (
             <div key={i} className="flex items-start gap-1.5">
-              <AlertTriangle size={9} strokeWidth={2} style={{ color: '#E3C372', opacity: 0.55, flexShrink: 0, marginTop: 2 }} />
+              <AlertTriangle size={9} strokeWidth={2} style={{ color: '#DBB058', opacity: 0.55, flexShrink: 0, marginTop: 2 }} />
               <p
                 data-role="labelTiny"
                 className="typo-label-xs leading-snug"
-                style={{ color: '#a8a5a0', opacity: 0.70 }}
+                style={{ color: '#959e8a', opacity: 0.70 }}
               >
-                <span style={{ color: '#E3C372', opacity: 0.80 }}>{risk.name} · </span>
+                <span style={{ color: '#DBB058', opacity: 0.80 }}>{risk.name} · </span>
                 {risk.description}
               </p>
             </div>
@@ -152,7 +152,7 @@ export function DeepArchimedeaCard({ mission, index }: DeepArchimedeaCardProps) 
               <p
                 data-role="labelTiny"
                 className="typo-label-xs leading-snug"
-                style={{ color: '#a8a5a0', opacity: 0.70 }}
+                style={{ color: '#959e8a', opacity: 0.70 }}
               >
                 <span style={{ color: HARD_COLOR, opacity: 0.85 }}>{risk.name} · </span>
                 {risk.description}

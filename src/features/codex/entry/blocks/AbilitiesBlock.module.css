@@ -45,7 +45,7 @@
 }
 
 .ability:hover {
-  border-color: rgba(231, 225, 211,0.2);
+  border-color: rgba(88, 232, 138,0.2);
   background:   color-mix(in srgb, var(--color-bg-primary) 50%, transparent);
 }
 
@@ -77,8 +77,8 @@
   width:           32px;
   height:          32px;
   border-radius:   50%;
-  background:      rgba(227, 195, 114, 0.12);
-  border:          1px solid rgba(227, 195, 114, 0.35);
+  background:      rgba(219, 176, 88, 0.12);
+  border:          1px solid rgba(219, 176, 88, 0.35);
   color:           var(--color-accent-gold);
   font-family:     var(--font-serif);
   font-size:       1.05rem;

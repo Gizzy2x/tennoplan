@@ -21,10 +21,10 @@
 }
 
 /* ── Portrait area ───────────────────────────────────────────── */
-/* Default (non-Prime): bone radial glow via the secondary accent
-   token. Reads as "base / vanilla" frame state. Prime variants
-   override below to a gold glow — the silent, wordless "this is a
-   Prime" signal. */
+/* Default (non-Prime): jade radial glow via the secondary accent
+   token (Mutalist Glow theme). Reads as "base / vanilla / infested-
+   adjacent" frame state. Prime variants override below to a gold glow
+   — the silent, wordless "this is a Prime" signal. */
 .portrait {
   position:        relative;
   display:         flex;
@@ -39,14 +39,14 @@
   overflow:        hidden;
 }
 
-/* Prime variants: gold radial glow replaces the teal one. This is the
+/* Prime variants: gold radial glow replaces the jade one. This is the
    primary non-text "this is a Prime" cue — at-a-glance the portrait
-   warms up, and the eye learns gold = Prime, teal = base. The PRIME
+   warms up, and the eye learns gold = Prime, jade = base. The PRIME
    subtitle below the name simply reinforces what the glow has already
    announced. */
 .portrait[data-prime] {
   background:
-    radial-gradient(ellipse at center, rgba(227, 195, 114, 0.10) 0%, rgba(10, 17, 23, 0) 70%),
+    radial-gradient(ellipse at center, rgba(219, 176, 88, 0.10) 0%, rgba(10, 17, 23, 0) 70%),
     color-mix(in srgb, var(--color-bg-primary) 50%, transparent);
 }
 

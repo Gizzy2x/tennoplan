@@ -50,7 +50,7 @@
 
 .tile:hover:not(:disabled) {
   transform:    translateY(-2px);
-  border-color: rgba(231, 225, 211,0.45);
+  border-color: rgba(88, 232, 138,0.45);
   background:   color-mix(in srgb, var(--color-bg-secondary) 84%, var(--color-accent-teal) 4%);
 }
 
