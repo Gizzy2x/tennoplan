@@ -28,6 +28,8 @@ import { buildCodex }           from '../src/codex/builder';
 import { enrichCodex }          from '../src/codex/enricher';
 import { normalizeCodex }       from '../src/codex/normalizer';
 import { validateCodex }        from '../src/codex/validator';
+import { scanCodexTokens, formatUnknownTokens } from '../src/codex/tokenScanner';
+import { loadKnownTokens }      from './lib/loadKnownTokens';
 import { makeEtag, makeVersion } from '../src/storage/metadata';
 import type { SyncMetadata, DataSource } from '../src/types';
 
@@ -68,6 +70,18 @@ async function main(): Promise<void> {
   const validation = validateCodex(normalized);
   if (validation.report.fatal) {
     console.error('[build-codex] FATAL validation:', validation.report.notes);
+    process.exit(1);
+  }
+
+  // ── 6b. TOKEN SCAN ──
+  // Surface any `<CODE>` glyph tokens that appear in the data but aren't
+  // wired in the frontend's tennoIconMap.ts. Fails the build so unknown
+  // codes can't ship silently — see tokenScanner.ts for rationale.
+  const knownTokens = loadKnownTokens();
+  const scan        = scanCodexTokens(validation.items, knownTokens.all);
+  console.error(`[build-codex] token scan: ${scan.totalUniqueCodes} unique codes (${scan.knownInUse.length} known, ${scan.unknown.length} unknown)`);
+  if (scan.unknown.length > 0) {
+    console.error('[build-codex] ' + formatUnknownTokens(scan.unknown));
     process.exit(1);
   }
 
