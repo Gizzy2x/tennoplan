@@ -42,14 +42,18 @@ import focusZenurik   from '@/assets/tennoicons/focus/IconFocusCleanZenurik(xWhi
 // --- Stats / HUD glyphs ---
 import iconShield     from '@/assets/tennoicons/stats/IconShield.png';
 import iconEnergy     from '@/assets/tennoicons/stats/IconEnergy.gif';
+import iconHealth     from '@/assets/tennoicons/stats/IconHealth.gif';
 import iconAffinity   from '@/assets/tennoicons/rank/MasteryAffinity64(xDark).png';
+
+// --- Currency glyphs ---
+import iconCredits    from '@/assets/tennoicons/currency/IconCredits.png';
 
 /**
  * Code → asset URL. Unknown codes return `undefined` and the StatLine
  * component will strip them silently.
  */
 export const TENNOICON_MAP: Record<string, string> = {
-  // Damage
+  // Damage — _COLOR variants (the canonical DE form, used in most strings)
   '<DT_IMPACT_COLOR>':      dmgImpact,
   '<DT_PUNCTURE_COLOR>':    dmgPuncture,
   '<DT_SLASH_COLOR>':       dmgSlash,
@@ -65,7 +69,28 @@ export const TENNOICON_MAP: Record<string, string> = {
   '<DT_CORROSIVE_COLOR>':   dmgCorrosive,
   '<DT_RADIANT_COLOR>':     dmgVoid,        // RADIANT = Void
   '<DT_SENTIENT>':          dmgTau,         // Sentient/Tau damage
+  '<DT_SENTIENT_COLOR>':    dmgTau,         // alias — appears on Caliban abilities
   '<DT_TRUE_COLOR>':        dmgTrue,        // future-proofing
+
+  // Damage — bare codes (no _COLOR suffix). DE uses these on a handful of
+  // older mods (Meltdown, Short Circuit, Detonator, etc.); they render the
+  // same glyph as their _COLOR equivalent. Mapped explicitly so the CI
+  // token-scanner doesn't flag them on every build.
+  '<DT_IMPACT>':            dmgImpact,
+  '<DT_PUNCTURE>':          dmgPuncture,
+  '<DT_SLASH>':             dmgSlash,
+  '<DT_FIRE>':              dmgHeat,
+  '<DT_FREEZE>':            dmgCold,
+  '<DT_ELECTRICITY>':       dmgElectricity,
+  '<DT_POISON>':            dmgToxin,
+  '<DT_EXPLOSION>':         dmgBlast,
+  '<DT_RADIATION>':         dmgRadiation,
+  '<DT_GAS>':               dmgGas,
+  '<DT_MAGNETIC>':          dmgMagnetic,
+  '<DT_VIRAL>':             dmgViral,
+  '<DT_CORROSIVE>':         dmgCorrosive,
+  '<DT_RADIANT>':           dmgVoid,
+  '<DT_TRUE>':              dmgTrue,
 
   // Focus
   '<MADURAI_CLEAN>':        focusMadurai,
@@ -75,9 +100,13 @@ export const TENNOICON_MAP: Record<string, string> = {
   '<ZENURIK_CLEAN>':        focusZenurik,
 
   // Stats / HUD
+  '<HEALTH>':               iconHealth,
   '<SHIELD>':               iconShield,
   '<ENERGY>':               iconEnergy,
   '<AFFINITY_SHARE>':       iconAffinity,
+
+  // Currency
+  '<CREDITS>':              iconCredits,
 };
 
 /**
@@ -86,6 +115,8 @@ export const TENNOICON_MAP: Record<string, string> = {
  */
 export const TENNOICON_TEXT_TOKENS: Record<string, string> = {
   '<LINE_SEPARATOR>': ' · ',
+  // Typographic glyphs used in cosmetic item names ("File-A-Style™ Binder").
+  '<RETRO_TM>':       '™',
 };
 
 /**
@@ -96,4 +127,14 @@ export const TENNOICON_FLAG_CODES = new Set([
   '<LOWER_IS_BETTER>',
   '<SECONDARY_FIRE>',
   '<USE>',
+  // Keybind notation in mod / ability rules text (e.g. "After casting
+  // <ACTIVATE_ABILITY_1>"). The surrounding prose already names which
+  // ability is meant; the glyph itself adds nothing in static text.
+  '<ACTIVATE_ABILITY_1>',
+  '<ACTIVATE_ABILITY_2>',
+  '<ACTIVATE_ABILITY_3>',
+  '<ACTIVATE_ABILITY_4>',
+  '<ACTIVATE_ABILITY_5>',
+  // Stance-combo prelude notation (Emergence Dissipate etc.). No icon.
+  '<PRE_ATTACK>',
 ]);
