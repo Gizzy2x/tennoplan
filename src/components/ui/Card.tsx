@@ -8,7 +8,7 @@ const paddingMap = {
 
 const borderMap = {
   default: '1px solid var(--color-border-default)',
-  gold:    '1px solid rgba(227, 195, 114, 0.25)',
+  gold:    '1px solid rgba(219, 176, 88, 0.25)',
 } as const;
 
 interface CardProps {
@@ -46,7 +46,7 @@ export function Card({
       }}
       onMouseEnter={interactive ? (e) => {
         const el = e.currentTarget as HTMLDivElement;
-        el.style.borderColor = 'rgba(227, 195, 114, 0.35)';
+        el.style.borderColor = 'rgba(219, 176, 88, 0.35)';
         el.style.boxShadow   = 'var(--shadow-md)';
       } : undefined}
       onMouseLeave={interactive ? (e) => {

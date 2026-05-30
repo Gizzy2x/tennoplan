@@ -107,8 +107,9 @@ export interface WfcdWarframe {
   patchlogs?:   WfcdPatchLog[];
   masterable?:  boolean;
   isPrime?:     boolean;
-  imageName?:   string;
-  type?:        string;
+  imageName?:          string;
+  type?:               string;
+  passiveDescription?: string;
 }
 
 export interface WfcdAbility {
@@ -320,6 +321,10 @@ export interface ParsedCodex {
   /** All drops as a flat list — used for relic content lookup + active-relic detection. */
   allDrops:    ParsedDrop[];
 
+  /** Wiki-sourced passive prose, keyed by warframe display name. Empty when
+   *  the wiki fetch failed; enricher treats that as "no override". */
+  wikiPassives: ReadonlyMap<string, string>;
+
   // Source / quality bookkeeping
   hasDrops:    boolean;
   dropsSource: 'wfcd' | 'wfcd-github' | null;
@@ -368,6 +373,7 @@ export function parseCodex(blobs: RawCodexBlobs): ParsedCodex {
     mods, warframes, weapons, sentinels, pets, arcanes, relics, resources, gear, misc,
     dropsByName,
     allDrops,
+    wikiPassives: blobs.wikiPassives,
     hasDrops:    drops != null && drops.length > 0,
     dropsSource: blobs.dropsSource,
     stats: {
@@ -513,10 +519,11 @@ export function parseWfcdWarframes(raw: unknown): Map<string, WfcdWarframe> {
     } else {
       missingPolarities++;
     }
-    if (typeof row['aura']        === 'string') wf.aura        = row['aura']        as string;
-    if (typeof row['description'] === 'string') wf.description = row['description'] as string;
-    if (typeof row['imageName']   === 'string') wf.imageName   = row['imageName']   as string;
-    if (typeof row['type']        === 'string') wf.type        = row['type']        as string;
+    if (typeof row['aura']               === 'string') wf.aura               = row['aura']               as string;
+    if (typeof row['description']        === 'string') wf.description        = row['description']        as string;
+    if (typeof row['passiveDescription'] === 'string') wf.passiveDescription = row['passiveDescription'] as string;
+    if (typeof row['imageName']          === 'string') wf.imageName          = row['imageName']          as string;
+    if (typeof row['type']               === 'string') wf.type               = row['type']               as string;
     if (typeof row['health']      === 'number') wf.health      = row['health']      as number;
     if (typeof row['shield']      === 'number') wf.shield      = row['shield']      as number;
     if (typeof row['armor']       === 'number') wf.armor       = row['armor']       as number;

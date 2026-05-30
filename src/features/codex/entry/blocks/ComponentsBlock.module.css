@@ -54,7 +54,7 @@
 
 .card:hover {
   transform:    translateY(-1px);
-  border-color: rgba(0, 212, 255, 0.45);
+  border-color: rgba(88, 232, 138,0.45);
   background:   color-mix(in srgb, var(--color-bg-primary) 45%, var(--color-accent-teal) 4%);
 }
 
@@ -65,9 +65,24 @@
 
 .cardHeader {
   display:         flex;
-  align-items:     flex-start;
-  justify-content: space-between;
+  align-items:     center;  /* center the row vertically around the icon */
+  justify-content: flex-start;
   gap:             10px;
+}
+
+/* Per-component icon (chassis / helmet / systems / blueprint / resource glyph).
+   Sized to anchor the card without dominating it — the name is the label,
+   the icon is the type cue. Subtle tile bg matches the ability strip in
+   the warframe summary card so the visual vocabulary stays consistent. */
+.cardIcon {
+  width:         38px;
+  height:        38px;
+  flex-shrink:   0;
+  padding:       4px;
+  object-fit:    contain;
+  background:    color-mix(in srgb, var(--color-bg-primary) 60%, transparent);
+  border-radius: 5px;
+  filter:        brightness(0.95) saturate(1.05);
 }
 
 .cardName {

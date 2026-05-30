@@ -35,7 +35,7 @@
   height:        7px;
   border-radius: 50%;
   background:    var(--color-accent-gold);
-  box-shadow:    0 0 8px rgba(227, 195, 114, 0.5);
+  box-shadow:    0 0 8px rgba(219, 176, 88, 0.5);
 }
 
 .weekTag {
@@ -74,7 +74,7 @@
   justify-content: center;
   padding:         var(--space-lg);
   background:
-    radial-gradient(ellipse at center, rgba(0, 212, 255, 0.05) 0%, rgba(10, 17, 23, 0) 70%),
+    radial-gradient(ellipse at center, rgba(88, 232, 138,0.05) 0%, rgba(10, 17, 23, 0) 70%),
     var(--color-bg-secondary);
 }
 
@@ -87,7 +87,7 @@
 }
 
 .art:hover .artImage {
-  filter:    drop-shadow(0 12px 24px rgba(0, 212, 255, 0.18)) brightness(1.05);
+  filter:    drop-shadow(0 12px 24px rgba(88, 232, 138,0.18)) brightness(1.05);
   transform: translateY(-2px);
 }
 
@@ -184,7 +184,7 @@
 
 .actionBtn:hover {
   transform:  translateY(-1px);
-  box-shadow: 0 6px 14px rgba(227, 195, 114, 0.25);
+  box-shadow: 0 6px 14px rgba(219, 176, 88, 0.25);
   background: color-mix(in srgb, var(--color-accent-gold) 88%, white 12%);
 }
 

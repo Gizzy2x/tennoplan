@@ -47,7 +47,7 @@
 
 .slot:hover,
 .slot:focus-visible {
-  border-color: rgba(0, 212, 255, 0.4);
+  border-color: rgba(88, 232, 138,0.4);
 }
 
 .slot:focus-visible {
@@ -58,7 +58,7 @@
 /* Aura slot wears a teal ring to distinguish it from regular slots */
 .slot--aura {
   color:        var(--color-accent-teal);
-  border-color: rgba(0, 212, 255, 0.4);
+  border-color: rgba(88, 232, 138,0.4);
 }
 
 .icon {

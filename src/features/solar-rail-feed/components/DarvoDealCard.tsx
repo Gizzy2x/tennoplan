@@ -16,19 +16,19 @@ export function DarvoDealCard({ status }: DarvoDealCardProps) {
       className="glass-panel relative overflow-hidden flex flex-col p-5 gap-3"
       style={{
         background:  'linear-gradient(to right, transparent 0%, rgba(22,20,20,0.46) 42%, rgba(24,23,23,0.64) 100%)',
-        borderColor: 'rgba(227,195,114,0.14)',
-        borderTop:   '1px solid rgba(227,195,114,0.22)',
+        borderColor: 'rgba(219, 176, 88,0.14)',
+        borderTop:   '1px solid rgba(219, 176, 88,0.22)',
       }}
     >
       {/* Top-left filigree corner */}
       <span className="absolute top-0 left-0 w-4 h-4 pointer-events-none"
-        style={{ borderTop: '1px solid rgba(227,195,114,0.35)', borderLeft: '1px solid rgba(227,195,114,0.35)' }}
+        style={{ borderTop: '1px solid rgba(219, 176, 88,0.35)', borderLeft: '1px solid rgba(219, 176, 88,0.35)' }}
       />
 
       {/* Header label */}
       <div className="flex items-center gap-2">
-        <Tag size={14} strokeWidth={1.5} style={{ color: '#E3C372', opacity: 0.60 }} />
-        <p data-role="labelTiny" className="typo-label-xs" style={{ color: '#e3c372', opacity: 0.40 }}>
+        <Tag size={14} strokeWidth={1.5} style={{ color: '#DBB058', opacity: 0.60 }} />
+        <p data-role="labelTiny" className="typo-label-xs" style={{ color: '#dbb058', opacity: 0.40 }}>
           Darvo Deal
         </p>
       </div>
@@ -37,7 +37,7 @@ export function DarvoDealCard({ status }: DarvoDealCardProps) {
       <p
         data-role="hero"
         className="typo-hero leading-tight orokin-etched"
-        style={{ color: '#E3C372' }}
+        style={{ color: '#DBB058' }}
       >
         {deal.item}
       </p>
@@ -47,7 +47,7 @@ export function DarvoDealCard({ status }: DarvoDealCardProps) {
         <p className="font-mono text-[11px] tabular-nums line-through" style={{ color: '#C6C6C7', opacity: 0.35 }}>
           {deal.originalPrice}p
         </p>
-        <p className="font-mono text-2xl font-bold tabular-nums leading-none" style={{ color: '#E3C372' }}>
+        <p className="font-mono text-2xl font-bold tabular-nums leading-none" style={{ color: '#DBB058' }}>
           {deal.salePrice}p
         </p>
         {deal.discount > 0 && (
@@ -78,7 +78,7 @@ export function DarvoDealCard({ status }: DarvoDealCardProps) {
         <div className="relative overflow-hidden" style={{ height: 3, backgroundColor: 'rgba(197,192,190,0.07)' }}>
           <div
             className="absolute inset-y-0 left-0 h-full transition-all duration-700"
-            style={{ width: `${stockFilled * 100}%`, backgroundColor: 'rgba(227,195,114,0.60)' }}
+            style={{ width: `${stockFilled * 100}%`, backgroundColor: 'rgba(219, 176, 88,0.60)' }}
           />
         </div>
         {stockPct > 0 && null}

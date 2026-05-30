@@ -27,6 +27,7 @@ export type BlockKey =
   | 'StatsCompanion'
   | 'Polarities'
   | 'Abilities'
+  | 'Passive'
   | 'Components'
   | 'ModStats'
   | 'RelicRewards'
@@ -41,9 +42,12 @@ export const UNIVERSAL_BLOCKS: BlockKey[] = [
 ];
 
 export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
+  // HeroIcon + StatsWarframe move into the sticky right-rail
+  // WarframeSummaryCard, so they're intentionally absent here.
+  // Polarities stays left — it's build-context, not at-a-glance summary.
   Warframe: [
-    'Header', 'HeroIcon', 'StatsWarframe', 'Polarities', 'Description',
-    'Abilities', 'Components', 'BestFarms', 'PatchHistory', 'WikiFooter',
+    'Header', 'Polarities', 'Description',
+    'Passive', 'Abilities', 'Components', 'BestFarms', 'PatchHistory', 'WikiFooter',
   ],
   Weapon: [
     'Header', 'HeroIcon', 'StatsWeapon', 'Polarities', 'Description',
@@ -55,7 +59,7 @@ export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
   ],
   Sentinel: [
     'Header', 'HeroIcon', 'StatsCompanion', 'Polarities', 'Description',
-    'Abilities', 'Components', 'BestFarms', 'WikiFooter',
+    'Passive', 'Abilities', 'Components', 'BestFarms', 'WikiFooter',
   ],
   Mod: [
     'Header', 'HeroIcon', 'ModStats', 'Description', 'Drops',

@@ -403,6 +403,13 @@ export interface TennoplanItem {
    */
   description?:  string;
 
+  /**
+   * Warframe/Sentinel/Pet passive ability text.
+   * Raw WFCD string — may contain game markup tags like <DT_SLASH_COLOR>.
+   * Sanitize before rendering.
+   */
+  passiveDescription?: string;
+
   // ── Mod-specific (category === 'Mod') ──────────────────────
   /** Per-rank stat lines. levelStats[0] = R0, levelStats[N] = RN. */
   levelStats?:   string[][];
@@ -521,6 +528,8 @@ export interface ItemStats {
 export interface Ability {
   name:         string;
   description:  string;
+  /** Icon filename on cdn.warframestat.us/img/. */
+  imageName?:   string;
   stats?:       Record<string, number>;
 }
 

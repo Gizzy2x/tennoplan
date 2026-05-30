@@ -1,0 +1,215 @@
+/* ================================================================
+   WarframeSummaryCard — sticky right-rail summary primitive.
+
+   One coherent card: portrait → identity → ability strip → three
+   stat groups (intrinsic / mod baselines / derived).
+
+   Groups separate by spacing, not lines. No nested cards inside the
+   main card — stat rows are bare label/value pairs, and the ability
+   tiles read as buttons-in-waiting (interactive surface defined,
+   click handler arrives with the ability detail view).
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-lg);
+  padding:        var(--space-lg);
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  10px;
+}
+
+/* ── Portrait area ───────────────────────────────────────────── */
+/* Default (non-Prime): jade radial glow via the secondary accent
+   token (Mutalist Glow theme). Reads as "base / vanilla / infested-
+   adjacent" frame state. Prime variants override below to a gold glow
+   — the silent, wordless "this is a Prime" signal. */
+.portrait {
+  position:        relative;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         var(--space-md);
+  background:
+    radial-gradient(ellipse at center, color-mix(in srgb, var(--color-accent-teal) 9%, transparent) 0%, rgba(10, 17, 23, 0) 70%),
+    color-mix(in srgb, var(--color-bg-primary) 50%, transparent);
+  border-radius:   8px;
+  min-height:      220px;
+  overflow:        hidden;
+}
+
+/* Prime variants: gold radial glow replaces the jade one. This is the
+   primary non-text "this is a Prime" cue — at-a-glance the portrait
+   warms up, and the eye learns gold = Prime, jade = base. The PRIME
+   subtitle below the name simply reinforces what the glow has already
+   announced. */
+.portrait[data-prime] {
+  background:
+    radial-gradient(ellipse at center, rgba(219, 176, 88, 0.10) 0%, rgba(10, 17, 23, 0) 70%),
+    color-mix(in srgb, var(--color-bg-primary) 50%, transparent);
+}
+
+.portraitImage {
+  position:   relative;     /* sits above .nameBackdrop */
+  z-index:    1;
+  max-width:  100%;
+  max-height: 220px;
+  width:      auto;
+  height:     auto;
+  object-fit: contain;
+  filter:     drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+}
+
+/* ── Name watermark behind the portrait ───────────────────────
+   Single-line SVG that auto-fits any warframe name to the
+   container width via textLength + lengthAdjust. Sits at z-index
+   0 with low-opacity gold so it reads as atmosphere, not content.
+   For Prime variants the "Prime" word is stripped — the gold
+   radial glow on the portrait container carries the "this is a
+   Prime" signal silently, per spec.
+   ──────────────────────────────────────────────────────────── */
+.nameBackdrop {
+  position:       absolute;
+  inset:          var(--space-md);
+  width:          calc(100% - 2 * var(--space-md));
+  height:         auto;
+  pointer-events: none;
+  z-index:        0;
+}
+
+.nameBackdropText {
+  font-family:    var(--font-serif);
+  font-weight:    700;
+  font-size:      24px;   /* nominal — SVG scales via viewBox + textLength */
+  letter-spacing: -0.01em;
+  fill:           color-mix(in srgb, var(--color-accent-gold) 18%, transparent);
+}
+
+.portraitFallback {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           140px;
+  height:          140px;
+  border-radius:   50%;
+  background:      rgba(255, 255, 255, 0.03);
+  font-family:     var(--font-serif);
+  font-size:       3rem;
+  color:           var(--color-text-muted);
+}
+
+/* ── Identity (category label under portrait) ────────────────
+   Name moved to the portrait backdrop, so this row only carries
+   the category. Kept as a dedicated component for layout symmetry
+   and easy extension (e.g. add a status pill later). */
+.identity {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            4px;
+  text-align:     center;
+}
+
+.category {
+  font-family:    var(--font-sans);
+  font-size:      0.65rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+/* ── Ability strip ───────────────────────────────────────────── */
+.abilityStrip {
+  display:               grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:                   var(--space-sm);
+}
+
+.abilityTile {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  aspect-ratio:    1;
+  padding:         var(--space-sm);
+  background:      color-mix(in srgb, var(--color-bg-primary) 60%, transparent);
+  border-radius:   6px;
+  /* No border, no hover — interactivity arrives with the detail view */
+}
+
+.abilityIcon {
+  width:      100%;
+  max-width:  36px;
+  height:     auto;
+  object-fit: contain;
+  filter:     brightness(0.95) saturate(1.1);
+}
+
+.abilityNumber {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size:   1.1rem;
+  color:       var(--color-accent-gold);
+  line-height: 1;
+}
+
+/* ── Stat groups ─────────────────────────────────────────────── */
+.statGroup {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+  margin:         0;
+  padding:        0;
+}
+
+.statRow {
+  display:         flex;
+  align-items:     baseline;
+  justify-content: space-between;
+  gap:             var(--space-sm);
+  padding:         5px 0;
+}
+
+.statLabel {
+  margin:         0;
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+/* When a label carries a `title` (formula tooltip) — subtle hint */
+.statLabel[title] {
+  cursor:               help;
+  text-decoration:      underline dotted color-mix(in srgb, var(--color-text-muted) 40%, transparent);
+  text-underline-offset: 3px;
+}
+
+.statValue {
+  margin:               0;
+  font-family:          var(--font-sans);
+  font-size:            0.95rem;
+  font-weight:          700;
+  color:                var(--color-accent-gold);
+  letter-spacing:       0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Stat-specific value tints — applied additively to .statValue.
+   Used for the three intrinsic stats whose in-game UI carries a
+   well-known colour (HP red, shield purple, energy blue). Everything
+   else stays gold. */
+.statValue--health { color: var(--color-stat-health); }
+.statValue--shield { color: var(--color-stat-shield); }
+.statValue--energy { color: var(--color-stat-energy); }
+
+.statUnit {
+  margin-left:    3px;
+  font-size:      0.7rem;
+  font-weight:    600;
+  color:          var(--color-text-muted);
+  letter-spacing: 0.04em;
+}

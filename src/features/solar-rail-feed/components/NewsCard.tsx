@@ -12,9 +12,9 @@ function NewsTypeTag({ item }: { item: NewsItem }) {
         data-role="labelTiny"
         className="typo-label-xs px-2 py-0.5 flex-shrink-0"
         style={{
-          color:           '#E3C372',
-          border:          '1px solid rgba(227,195,114,0.35)',
-          backgroundColor: 'rgba(227,195,114,0.08)',
+          color:           '#DBB058',
+          border:          '1px solid rgba(219, 176, 88,0.35)',
+          backgroundColor: 'rgba(219, 176, 88,0.08)',
         }}
       >
         Update

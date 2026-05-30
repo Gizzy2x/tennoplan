@@ -28,8 +28,8 @@ export const FACTION_COLOR: Record<string, string> = {
   Grineer:   '#f87171',
   Corpus:    '#60a5fa',
   Infested:  '#86efac',
-  Corrupted: '#E3C372',
-  Orokin:    '#E3C372',
+  Corrupted: '#DBB058',
+  Orokin:    '#DBB058',
 };
 
 export const DEFAULT_FACTION_COLOR = '#C6C6C7';

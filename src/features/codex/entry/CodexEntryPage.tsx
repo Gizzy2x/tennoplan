@@ -1,10 +1,17 @@
 /**
  * CodexEntryPage — generic shell for a single codex entry.
  *
- * Renders the block sequence defined by [blockSets.ts] for the entry's
- * category. Each block is responsible for deciding whether it has enough
- * data to render — blocks return null when their data is absent, so
- * adding a new optional field to TennoplanItem doesn't require shell
+ * Two-column layout: left column hosts the long-scroll content blocks
+ * (description, abilities with prose, components, drops, etc.); the
+ * right column hosts a sticky per-category summary card (intrinsic
+ * stats, mod baselines, derived stats — built first for Warframes).
+ *
+ * Categories without a registered summary fall back to single-column
+ * automatically (see `hasSummaryFor`), so the rollout is incremental.
+ *
+ * Each left-column block is responsible for deciding whether it has
+ * enough data to render — blocks return null when their data is absent,
+ * so adding a new optional field to TennoplanItem doesn't require shell
  * changes and missing data doesn't leave empty boxes.
  *
  * Mods are rendered through ModDetailModal at the CodexPage level
@@ -13,14 +20,17 @@
  */
 
 import { useState } from 'react';
+import clsx from 'clsx';
 import type { CodexEntry } from '../types';
 import { blocksFor, type BlockKey } from './blockSets';
+import { CodexSummaryRail, hasSummaryFor } from './summary/CodexSummaryRail';
 import { HeaderBlock } from './blocks/HeaderBlock';
 import { HeroIconBlock } from './blocks/HeroIconBlock';
 import { StatsWarframeBlock } from './blocks/StatsWarframeBlock';
 import { DescriptionBlock } from './blocks/DescriptionBlock';
 import { PolaritiesBlock } from './blocks/PolaritiesBlock';
 import { AbilitiesBlock } from './blocks/AbilitiesBlock';
+import { PassiveBlock } from './blocks/PassiveBlock';
 import { WikiFooterBlock } from './blocks/WikiFooterBlock';
 import { ModStatsBlock } from './blocks/ModStatsBlock';
 import { BestFarmsBlock } from './blocks/BestFarmsBlock';
@@ -36,17 +46,26 @@ interface CodexEntryPageProps {
 }
 
 export function CodexEntryPage({ entry, onSelectEntry }: CodexEntryPageProps) {
-  const blocks = blocksFor(entry.category);
+  const blocks   = blocksFor(entry.category);
+  const withRail = hasSummaryFor(entry.category);
+
   return (
-    <div className="codex-entry">
-      {blocks.map((key) => (
-        <BlockSlot
-          key={key}
-          blockKey={key}
-          entry={entry}
-          onSelectEntry={onSelectEntry}
-        />
-      ))}
+    <div className={clsx('codex-entry', withRail && 'codex-entry--with-rail')}>
+      <main className="codex-entry__content">
+        {blocks.map((key) => (
+          <BlockSlot
+            key={key}
+            blockKey={key}
+            entry={entry}
+            onSelectEntry={onSelectEntry}
+          />
+        ))}
+      </main>
+      {withRail && (
+        <aside className="codex-entry__rail">
+          <CodexSummaryRail entry={entry} />
+        </aside>
+      )}
     </div>
   );
 }
@@ -60,8 +79,8 @@ interface BlockSlotProps {
 /**
  * Dispatcher — turns a BlockKey into a rendered component.
  * Unimplemented keys render a labelled placeholder so the shell stays
- * visually meaningful while the catalog continues to grow (Components,
- * BestFarms, Build, PatchHistory, RelicRewards, etc. land in later steps).
+ * visually meaningful while the catalog continues to grow (RelicRewards,
+ * DucatValue, etc. land in later steps).
  */
 function BlockSlot({ blockKey, entry, onSelectEntry }: BlockSlotProps) {
   switch (blockKey) {
@@ -71,6 +90,7 @@ function BlockSlot({ blockKey, entry, onSelectEntry }: BlockSlotProps) {
     case 'Description':    return <DescriptionBlock entry={entry} />;
     case 'Polarities':     return <PolaritiesBlock entry={entry} />;
     case 'Abilities':      return <AbilitiesBlock entry={entry} />;
+    case 'Passive':        return <PassiveBlock entry={entry} />;
     case 'WikiFooter':     return <WikiFooterBlock entry={entry} />;
     case 'ModStats':       return <ModStatsBlockSlot entry={entry} />;
     case 'BestFarms':      return <BestFarmsBlock entry={entry} />;

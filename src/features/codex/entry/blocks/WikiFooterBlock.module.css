@@ -41,7 +41,7 @@
 }
 
 .link:hover {
-  border-color: rgba(0, 212, 255, 0.5);
+  border-color: rgba(88, 232, 138,0.5);
   color:        var(--color-accent-teal);
   background:   color-mix(in srgb, var(--color-bg-secondary) 75%, var(--color-accent-teal) 5%);
 }

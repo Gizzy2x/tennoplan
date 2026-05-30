@@ -92,7 +92,7 @@ export const MasterHeader = memo(function MasterHeader({
   // Approaching world's accent color for header chrome (independent of selected world)
   const approachingTheme = primaryId ? WORLD_THEMES[primaryId] : null;
   const accentColor      = approachingTheme?.accent ?? 'var(--color-accent-gold)';
-  const glowColor        = approachingTheme?.glowLow ?? 'rgba(227,195,114,0.12)';
+  const glowColor        = approachingTheme?.glowLow ?? 'rgba(219, 176, 88,0.12)';
 
   return (
     <div

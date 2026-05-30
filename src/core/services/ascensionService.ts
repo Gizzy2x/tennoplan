@@ -111,14 +111,14 @@ export function computeStanding(statuses: ChallengeStatus[]): StandingSummary {
 
 /** Hex color per challenge kind. */
 export const KIND_COLOR: Record<ChallengeKind, string> = {
-  daily:  '#E3C372',  // gold
+  daily:  '#DBB058',  // gold
   weekly: '#C6C6C7',  // silver
   elite:  '#c084fc',  // purple
 };
 
 /** Subtle right-to-left overlay color per kind (rgba string). */
 export const KIND_OVERLAY: Record<ChallengeKind, string> = {
-  daily:  'rgba(227, 195, 114, 0.13)',
+  daily:  'rgba(219, 176, 88, 0.13)',
   weekly: 'rgba(198, 198, 199, 0.09)',
   elite:  'rgba(192, 132, 252, 0.14)',
 };
@@ -128,8 +128,8 @@ export const SORTIE_FACTION_COLOR: Record<string, string> = {
   Grineer:  '#f87171',
   Corpus:   '#60a5fa',
   Infested: '#86efac',
-  Corrupted:'#E3C372',
-  Orokin:   '#E3C372',
+  Corrupted:'#DBB058',
+  Orokin:   '#DBB058',
 };
 
 /** Warframe's hard weekly standing cap for Nightwave. Used as the denominator

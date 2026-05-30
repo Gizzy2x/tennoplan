@@ -57,8 +57,8 @@
   border-color: rgba(200, 154, 95, 0.4);
 }
 
-.pill--rare      { color: var(--color-accent-teal); border-color: rgba(0, 212, 255, 0.4); }
-.pill--legendary { color: var(--color-accent-gold); border-color: rgba(227, 195, 114, 0.45); }
+.pill--rare      { color: var(--color-accent-teal); border-color: rgba(88, 232, 138,0.4); }
+.pill--legendary { color: var(--color-accent-gold); border-color: rgba(219, 176, 88, 0.45); }
 .pill--uncommon  { color: #7ab0dd;                  border-color: rgba(122, 176, 221, 0.35); }
 .pill--common    { color: #8a857a;                  border-color: rgba(138, 133, 122, 0.35); }
 

@@ -102,7 +102,7 @@ export function SolarRailFeedPage() {
           {/* ── 1. Alerts ──────────────────────────────────────────────── */}
           {alertStatuses.length > 0 && (
             <section>
-              <SectionHeader icon={AlertTriangle} label="Active Alerts" count={alertStatuses.length} color="#E3C372" />
+              <SectionHeader icon={AlertTriangle} label="Active Alerts" count={alertStatuses.length} color="#DBB058" />
               <div className="grid gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
                 {alertStatuses.map(s => (
                   <div key={s.alert.id}>
@@ -135,7 +135,7 @@ export function SolarRailFeedPage() {
             <>
               <div className="somatic-line" />
               <section>
-                <SectionHeader icon={Tag} label="Darvo Deals" count={darvoDealStatuses.length} color="#E3C372" />
+                <SectionHeader icon={Tag} label="Darvo Deals" count={darvoDealStatuses.length} color="#DBB058" />
                 <div className="grid gap-5 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                   {darvoDealStatuses.map(s => (
                     <div key={s.deal.id}>
@@ -151,7 +151,7 @@ export function SolarRailFeedPage() {
           <>
             <div className="somatic-line" />
             <section>
-              <SectionHeader icon={Radio} label="Void Trader" color="#E3C372" />
+              <SectionHeader icon={Radio} label="Void Trader" color="#DBB058" />
               {voidTraderStatus ? (
                 <VoidTraderCard status={voidTraderStatus} />
               ) : (

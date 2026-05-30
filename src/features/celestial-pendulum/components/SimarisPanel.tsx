@@ -13,7 +13,7 @@ export function SimarisPanel({ standaloneSection = true }: { standaloneSection?:
           <p
             data-role="sectionHeader"
             className="typo-section-header"
-            style={{ color: '#E3C372', opacity: 0.50 }}
+            style={{ color: '#DBB058', opacity: 0.50 }}
           >
             Simaris Sanctuary
           </p>

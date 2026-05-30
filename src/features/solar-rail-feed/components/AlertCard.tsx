@@ -54,8 +54,8 @@ export function AlertCard({ status }: AlertCardProps) {
       className="glass-panel relative overflow-hidden flex flex-col p-5 gap-3"
       style={{
         background:  cardBg,
-        borderColor: 'rgba(227,195,114,0.15)',
-        borderTop:   '1px solid rgba(227,195,114,0.20)',
+        borderColor: 'rgba(219, 176, 88,0.15)',
+        borderTop:   '1px solid rgba(219, 176, 88,0.20)',
       }}
     >
       {/* Color tint overlay */}
@@ -63,7 +63,7 @@ export function AlertCard({ status }: AlertCardProps) {
 
       {/* Top-left filigree corner */}
       <span className="absolute top-0 left-0 w-4 h-4 pointer-events-none"
-        style={{ borderTop: '1px solid rgba(227,195,114,0.35)', borderLeft: '1px solid rgba(227,195,114,0.35)' }}
+        style={{ borderTop: '1px solid rgba(219, 176, 88,0.35)', borderLeft: '1px solid rgba(219, 176, 88,0.35)' }}
       />
 
       {/* Top row: icon + node + reward */}
@@ -109,13 +109,13 @@ export function AlertCard({ status }: AlertCardProps) {
           <p
             data-role="labelTiny"
             className="typo-label-xs mb-0.5"
-            style={{ color: '#E3C372', opacity: 0.40 }}
+            style={{ color: '#DBB058', opacity: 0.40 }}
           >
             Expires in
           </p>
           <p
             className={`font-mono text-lg font-bold tabular-nums leading-none ${isUrgent ? 'orokin-countdown-glow' : ''}`}
-            style={{ color: isUrgent ? '#fb923c' : '#E3C372' }}
+            style={{ color: isUrgent ? '#fb923c' : '#DBB058' }}
           >
             {msRemaining > 0 ? formatMs(msRemaining) : 'EXPIRED'}
           </p>

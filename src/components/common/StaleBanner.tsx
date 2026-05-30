@@ -29,7 +29,7 @@ export function StaleBanner({ staleInfo }: StaleBannerProps) {
         gap:            10,
         padding:        '6px 20px',
         background:     'rgba(30, 25, 10, 0.92)',
-        borderBottom:   '1px solid rgba(227,195,114,0.18)',
+        borderBottom:   '1px solid rgba(219, 176, 88,0.18)',
         zIndex:         45,
         flexShrink:     0,
       }}
@@ -72,8 +72,8 @@ export function StaleBanner({ staleInfo }: StaleBannerProps) {
           fontWeight:    700,
           letterSpacing: '0.18em',
           textTransform: 'uppercase',
-          color:         'rgba(227,195,114,0.70)',
-          border:        '1px solid rgba(227,195,114,0.22)',
+          color:         'rgba(219, 176, 88,0.70)',
+          border:        '1px solid rgba(219, 176, 88,0.22)',
           background:    'transparent',
           padding:       '2px 8px',
           cursor:        'pointer',
@@ -81,12 +81,12 @@ export function StaleBanner({ staleInfo }: StaleBannerProps) {
           transition:    'color 0.15s, border-color 0.15s',
         }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.color = 'rgba(227,195,114,0.95)';
-          (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(227,195,114,0.50)';
+          (e.currentTarget as HTMLButtonElement).style.color = 'rgba(219, 176, 88,0.95)';
+          (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(219, 176, 88,0.50)';
         }}
         onMouseLeave={(e) => {
-          (e.currentTarget as HTMLButtonElement).style.color = 'rgba(227,195,114,0.70)';
-          (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(227,195,114,0.22)';
+          (e.currentTarget as HTMLButtonElement).style.color = 'rgba(219, 176, 88,0.70)';
+          (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(219, 176, 88,0.22)';
         }}
       >
         Sync →

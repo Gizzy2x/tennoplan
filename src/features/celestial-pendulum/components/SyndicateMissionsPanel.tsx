@@ -14,7 +14,7 @@ interface SyndicateMeta {
 }
 
 const SYNDICATE_META: Record<string, SyndicateMeta> = {
-  'Ostron':         { displayName: 'Ostron',         subtitle: 'Plains of Eidolon', color: '#E3C372' },
+  'Ostron':         { displayName: 'Ostron',         subtitle: 'Plains of Eidolon', color: '#DBB058' },
   'Solaris United': { displayName: 'Solaris United', subtitle: 'Orb Vallis',        color: '#60a5fa' },
   'Entrati':        { displayName: 'Entrati',         subtitle: 'Cambion Drift',     color: '#a855f7' },
   'The Holdfasts':  { displayName: 'The Holdfasts',  subtitle: 'Zariman Ten Zero',  color: '#22c55e' },
@@ -155,7 +155,7 @@ export function SyndicateMissionsPanel() {
         <p
           data-role="sectionHeader"
           className="typo-section-header"
-          style={{ color: 'rgba(227,195,114,0.50)' }}
+          style={{ color: 'rgba(219, 176, 88,0.50)' }}
         >
           Syndicate Dispatches
         </p>
