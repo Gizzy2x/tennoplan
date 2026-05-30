@@ -2,11 +2,14 @@
    PassiveBlock — warframe / sentinel passive ability description.
 
    Visually distinct from the main Description block via:
-     1. A subtle teal-tinted background (a hint of the brand secondary
-        accent, well within the "tint neutrals toward brand hue"
-        principle — not enough to count as a colored surface).
-     2. A teal label that calls out "PASSIVE" at a glance.
-     3. A teal-shifted border so the panel edge reinforces the tint.
+     1. A subtle tint of the secondary brand accent in the background.
+     2. The "PASSIVE" label in the same accent.
+     3. A subtly accent-shifted border so the panel edge reinforces
+        the tint.
+
+   --color-accent-teal currently renders bone (#e7e1d3) per the brand
+   pivot. Token will be renamed to --color-accent-bone in a cleanup
+   pass once the direction is locked.
 
    Deliberately no border-left stripe — .impeccable.md BAN 1 forbids
    side-stripe accents >1px regardless of color or token name. The
@@ -19,8 +22,8 @@
   flex-direction: column;
   gap:            6px;
   padding:        12px 16px;
-  background:     color-mix(in srgb, var(--color-bg-secondary) 92%, var(--color-accent-teal) 8%);
-  border:         1px solid color-mix(in srgb, var(--color-border-default) 70%, var(--color-accent-teal) 30%);
+  background:     color-mix(in srgb, var(--color-bg-secondary) 93%, var(--color-accent-teal) 7%);
+  border:         1px solid color-mix(in srgb, var(--color-border-default) 65%, var(--color-accent-teal) 35%);
   border-radius:  6px;
 }
 
@@ -59,6 +62,6 @@
   /* Subtle dotted underline cue, matching the formula-tooltip styling
      elsewhere in the codex — communicates "this is a variable" without
      a heavy box or background tint. */
-  text-decoration:       underline dotted color-mix(in srgb, var(--color-accent-teal) 45%, transparent);
+  text-decoration:       underline dotted color-mix(in srgb, var(--color-accent-teal) 50%, transparent);
   text-underline-offset: 2px;
 }

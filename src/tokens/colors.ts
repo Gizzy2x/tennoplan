@@ -6,7 +6,10 @@ export const colorValues = {
   'text-muted':     '#a8a5a0',
   'border-default': '#2d333b',
   'accent-gold':    '#e3c372',
-  'accent-teal':    '#00d4ff',
+  // Brand pivot 2026-05-29: secondary accent shifted from Lotus cyan
+  // (#00d4ff) to bone (#e7e1d3). Key name kept as 'accent-teal' through
+  // the trial period — rename after the direction is locked.
+  'accent-teal':    '#e7e1d3',
 } as const;
 
 // CSS variable references — use in React inline styles or component style maps

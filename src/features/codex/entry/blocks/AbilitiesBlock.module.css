@@ -45,7 +45,7 @@
 }
 
 .ability:hover {
-  border-color: rgba(0, 212, 255, 0.2);
+  border-color: rgba(231, 225, 211,0.2);
   background:   color-mix(in srgb, var(--color-bg-primary) 50%, transparent);
 }
 

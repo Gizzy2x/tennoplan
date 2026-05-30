@@ -54,7 +54,7 @@
 
 .card:hover {
   transform:    translateY(-1px);
-  border-color: rgba(0, 212, 255, 0.45);
+  border-color: rgba(231, 225, 211,0.45);
   background:   color-mix(in srgb, var(--color-bg-primary) 45%, var(--color-accent-teal) 4%);
 }
 
