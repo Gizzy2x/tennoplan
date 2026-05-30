@@ -104,8 +104,14 @@ const REQUEST_TIMEOUT_MS = 60_000;
  *           lack these fields → GeneralInformationBlock would render empty
  *           until the next natural refresh; the bump force-wipes so the
  *           block lights up immediately (2026-05-30).
+ *   • '7' — adds weapon summary fields: rivenDisposition + accuracy + melee
+ *           numerics on ItemStats; weaponTrigger + weaponNoise + damageTypes
+ *           at top-level on TennoplanItem. Worker's ?only= filter widened
+ *           to pass these through from WFCD /weapons. Pre-bump caches lack
+ *           them → WeaponSummaryCard renders an incomplete card until the
+ *           next natural refresh; force-flush instead (2026-05-31).
  */
-const CODEX_SCHEMA_VERSION = '6';
+const CODEX_SCHEMA_VERSION = '7';
 const SCHEMA_VERSION_KEY    = 'tennoplan:codex-schema-version';
 
 // ─── Public types ─────────────────────────────────────────────────────────────

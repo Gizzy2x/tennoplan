@@ -1,0 +1,229 @@
+/* ================================================================
+   WeaponSummaryCard — sticky right-rail summary primitive for Weapon
+   entries. Parallel structure to WarframeSummaryCard so the rail reads
+   consistently across categories: portrait → identity → strip → stat
+   groups separated by spacing.
+
+   Damage-type strip replaces the warframe ability-tile grid. Riven
+   disposition dots get their own micro-component inside Group 3.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-lg);
+  padding:        var(--space-lg);
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  10px;
+}
+
+/* ── Portrait area ───────────────────────────────────────────── */
+.portrait {
+  position:        relative;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         var(--space-md);
+  background:
+    radial-gradient(ellipse at center, color-mix(in srgb, var(--color-accent-teal) 9%, transparent) 0%, rgba(10, 17, 23, 0) 70%),
+    color-mix(in srgb, var(--color-bg-primary) 50%, transparent);
+  border-radius:   8px;
+  min-height:      180px;
+  overflow:        hidden;
+}
+
+.portrait[data-prime] {
+  background:
+    radial-gradient(ellipse at center, rgba(219, 176, 88, 0.10) 0%, rgba(10, 17, 23, 0) 70%),
+    color-mix(in srgb, var(--color-bg-primary) 50%, transparent);
+}
+
+/* Weapon icons skew wide (the CDN art is typically a side-on render
+   wider than tall) — let object-fit handle the aspect, but cap the
+   height shorter than warframes so the rail stays compact. */
+.portraitImage {
+  position:   relative;
+  z-index:    1;
+  max-width:  100%;
+  max-height: 160px;
+  width:      auto;
+  height:     auto;
+  object-fit: contain;
+  filter:     drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+}
+
+.nameBackdrop {
+  position:       absolute;
+  inset:          var(--space-md);
+  width:          calc(100% - 2 * var(--space-md));
+  height:         auto;
+  pointer-events: none;
+  z-index:        0;
+}
+
+.nameBackdropText {
+  font-family:    var(--font-serif);
+  font-weight:    700;
+  font-size:      24px;
+  letter-spacing: -0.01em;
+  fill:           color-mix(in srgb, var(--color-accent-gold) 18%, transparent);
+}
+
+.portraitFallback {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           120px;
+  height:          120px;
+  border-radius:   50%;
+  background:      rgba(255, 255, 255, 0.03);
+  font-family:     var(--font-serif);
+  font-size:       2.5rem;
+  color:           var(--color-text-muted);
+}
+
+/* ── Identity ────────────────────────────────────────────────── */
+.identity {
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  gap:            4px;
+  text-align:     center;
+}
+
+.category {
+  font-family:    var(--font-sans);
+  font-size:      0.65rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+/* ── Damage-type strip ───────────────────────────────────────── */
+/* Wraps so weapons with many elemental types (Vasto Prime: 4 physical +
+   any from procs) don't overflow the rail. Chips align to start so a
+   short list reads as deliberate, not stretched-thin. */
+.damageStrip {
+  display:        flex;
+  flex-wrap:      wrap;
+  gap:            var(--space-xs);
+  align-items:    center;
+}
+
+.damageChip {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             4px;
+  padding:         3px 6px;
+  background:      color-mix(in srgb, var(--color-bg-primary) 60%, transparent);
+  border-radius:   4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.damageIcon {
+  width:      14px;
+  height:     14px;
+  object-fit: contain;
+}
+
+.damageValue {
+  font-family: var(--font-sans);
+  font-size:   0.75rem;
+  font-weight: 600;
+  color:       var(--color-text-primary);
+  line-height: 1;
+}
+
+/* ── Stat groups ─────────────────────────────────────────────── */
+.statGroup {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+  margin:         0;
+  padding:        0;
+}
+
+.statRow {
+  display:         flex;
+  align-items:     baseline;
+  justify-content: space-between;
+  gap:             var(--space-sm);
+  padding:         5px 0;
+}
+
+.statLabel {
+  margin:         0;
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+.statLabel[title] {
+  cursor:               help;
+  text-decoration:      underline dotted color-mix(in srgb, var(--color-text-muted) 40%, transparent);
+  text-underline-offset: 3px;
+}
+
+.statValue {
+  margin:               0;
+  font-family:          var(--font-sans);
+  font-size:            0.95rem;
+  font-weight:          700;
+  color:                var(--color-accent-gold);
+  letter-spacing:       0.02em;
+  font-variant-numeric: tabular-nums;
+  display:              inline-flex;
+  align-items:          baseline;
+  gap:                  var(--space-xs);
+}
+
+/* "Text" variant for non-numeric values (Trigger, Noise). Slightly
+   lighter font weight + smaller — these read as labels, not stats. */
+.statValueText {
+  font-size:   0.78rem;
+  font-weight: 600;
+  color:       var(--color-text-primary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.statUnit {
+  margin-left:    3px;
+  font-size:      0.7rem;
+  font-weight:    600;
+  color:          var(--color-text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ── Riven dot strip ─────────────────────────────────────────── */
+.dotStrip {
+  display:     inline-flex;
+  align-items: center;
+  gap:         3px;
+}
+
+.dot {
+  width:         7px;
+  height:        7px;
+  border-radius: 50%;
+  background:    color-mix(in srgb, var(--color-text-muted) 25%, transparent);
+  border:        1px solid color-mix(in srgb, var(--color-text-muted) 45%, transparent);
+}
+
+.dotFilled {
+  background: var(--color-accent-gold);
+  border-color: var(--color-accent-gold);
+  box-shadow: 0 0 4px color-mix(in srgb, var(--color-accent-gold) 40%, transparent);
+}
+
+.rivenNumeric {
+  font-size:      0.72rem;
+  font-weight:    600;
+  color:          var(--color-text-muted);
+  letter-spacing: 0.02em;
+}

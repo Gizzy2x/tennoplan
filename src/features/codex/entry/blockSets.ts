@@ -50,8 +50,10 @@ export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
     'Header', 'Polarities', 'GeneralInformation', 'Description',
     'Passive', 'Abilities', 'Components', 'BestFarms', 'PatchHistory', 'WikiFooter',
   ],
+  // HeroIcon + StatsWeapon are owned by the right-rail WeaponSummaryCard.
+  // Polarities stays left — it's build-context, not at-a-glance summary.
   Weapon: [
-    'Header', 'HeroIcon', 'StatsWeapon', 'Polarities', 'Description',
+    'Header', 'Polarities', 'Description',
     'Components', 'BestFarms', 'PatchHistory', 'WikiFooter',
   ],
   Companion: [

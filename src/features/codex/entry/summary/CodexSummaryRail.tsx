@@ -15,6 +15,7 @@ import type { ComponentType } from 'react';
 import type { ItemCategory } from '@/core/domain/tennoplanApi';
 import type { CodexEntry } from '../types';
 import { WarframeSummaryCard } from './WarframeSummaryCard';
+import { WeaponSummaryCard } from './WeaponSummaryCard';
 
 type SummaryComponent = ComponentType<{ entry: CodexEntry }>;
 
@@ -25,6 +26,7 @@ type SummaryComponent = ComponentType<{ entry: CodexEntry }>;
  */
 const SUMMARY_BY_CATEGORY: Partial<Record<ItemCategory, SummaryComponent>> = {
   Warframe: WarframeSummaryCard,
+  Weapon:   WeaponSummaryCard,
 };
 
 /** True when this entry's category has a summary primitive wired. */
