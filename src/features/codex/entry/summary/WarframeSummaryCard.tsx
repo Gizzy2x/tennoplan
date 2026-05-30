@@ -138,57 +138,33 @@ function Portrait({ entry }: { entry: CodexEntry }) {
 /**
  * Atmospheric name watermark behind the portrait.
  *
- * Layout:
- *   • Base name on top, large, fills the container width via SVG textLength.
- *   • For Prime variants, "PRIME" renders as a smaller line below — its
- *     own SVG, centred, narrower so it reads as a subtitle, not a second
- *     headline. The portrait's gold radial glow (driven by data-prime on
- *     the container) is the primary non-text "this is a Prime" cue; the
- *     PRIME text simply continues the name in a wiki-familiar two-line
- *     form. The page header and aria-label carry the real semantic name.
+ * The watermark only carries the base name — for Prime variants, the
+ * "Prime" word is stripped so the same headline reads identically for
+ * Ember and Ember Prime. The "this is a Prime" signal is carried
+ * entirely by the gold radial glow on the portrait container (see the
+ * .portrait[data-prime] rule), deliberately wordless per spec.
  */
 function NameBackdrop({ name }: { name: string }) {
-  const isPrime  = /\bPrime\b/i.test(name);
-  const baseName = isPrime ? name.replace(/\s*Prime\s*$/i, '').trim() : name;
+  const baseName = name.replace(/\s*Prime\s*$/i, '').trim();
 
   return (
-    <div className={styles.nameBackdrop} aria-hidden="true">
-      <svg
-        className={styles.nameBackdropMain}
-        viewBox="0 0 100 24"
-        preserveAspectRatio="none"
+    <svg
+      className={styles.nameBackdrop}
+      viewBox="0 0 100 26"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <text
+        x="50"
+        y="20"
+        textAnchor="middle"
+        textLength="98"
+        lengthAdjust="spacingAndGlyphs"
+        className={styles.nameBackdropText}
       >
-        <text
-          x="50"
-          y="20"
-          textAnchor="middle"
-          textLength="98"
-          lengthAdjust="spacingAndGlyphs"
-          className={styles.nameBackdropText}
-        >
-          {baseName.toUpperCase()}
-        </text>
-      </svg>
-
-      {isPrime && (
-        <svg
-          className={styles.nameBackdropSuffix}
-          viewBox="0 0 100 10"
-          preserveAspectRatio="none"
-        >
-          <text
-            x="50"
-            y="8"
-            textAnchor="middle"
-            textLength="55"
-            lengthAdjust="spacingAndGlyphs"
-            className={styles.nameBackdropSuffixText}
-          >
-            PRIME
-          </text>
-        </svg>
-      )}
-    </div>
+        {baseName.toUpperCase()}
+      </text>
+    </svg>
   );
 }
 
