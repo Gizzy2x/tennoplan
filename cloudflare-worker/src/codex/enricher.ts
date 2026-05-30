@@ -357,19 +357,32 @@ function applyWeaponFields(item: EnrichedItem, w: WfcdWeapon | undefined): void 
   if (!w) return;
 
   const stats: ItemStats = {};
-  if (typeof w.totalDamage         === 'number' && w.totalDamage         > 0) stats.damage         = w.totalDamage;
-  if (typeof w.fireRate            === 'number' && w.fireRate            > 0) stats.fireRate       = w.fireRate;
-  if (typeof w.criticalChance      === 'number' && w.criticalChance      > 0) stats.critChance     = w.criticalChance;
-  if (typeof w.criticalMultiplier  === 'number' && w.criticalMultiplier  > 0) stats.critMultiplier = w.criticalMultiplier;
-  if (typeof w.procChance          === 'number' && w.procChance          > 0) stats.statusChance   = w.procChance;
-  if (typeof w.magazineSize        === 'number' && w.magazineSize        > 0) stats.magazine       = w.magazineSize;
-  if (typeof w.reloadTime          === 'number' && w.reloadTime          > 0) stats.reload         = w.reloadTime;
+  if (typeof w.totalDamage         === 'number' && w.totalDamage         > 0) stats.damage           = w.totalDamage;
+  if (typeof w.fireRate            === 'number' && w.fireRate            > 0) stats.fireRate         = w.fireRate;
+  if (typeof w.criticalChance      === 'number' && w.criticalChance      > 0) stats.critChance       = w.criticalChance;
+  if (typeof w.criticalMultiplier  === 'number' && w.criticalMultiplier  > 0) stats.critMultiplier   = w.criticalMultiplier;
+  if (typeof w.procChance          === 'number' && w.procChance          > 0) stats.statusChance     = w.procChance;
+  if (typeof w.magazineSize        === 'number' && w.magazineSize        > 0) stats.magazine         = w.magazineSize;
+  if (typeof w.reloadTime          === 'number' && w.reloadTime          > 0) stats.reload           = w.reloadTime;
+  if (typeof w.omegaAttenuation    === 'number' && w.omegaAttenuation    > 0) stats.rivenDisposition = w.omegaAttenuation;
+  if (typeof w.accuracy            === 'number' && w.accuracy            > 0) stats.accuracy         = w.accuracy;
+  // Melee numerics — only emit when present so frontend can switch layout
+  // on group presence rather than weapon-class detection.
+  if (typeof w.range               === 'number' && w.range               > 0) stats.range            = w.range;
+  if (typeof w.blockingAngle       === 'number' && w.blockingAngle       > 0) stats.blockingAngle    = w.blockingAngle;
+  if (typeof w.comboDuration       === 'number' && w.comboDuration       > 0) stats.comboDuration    = w.comboDuration;
+  if (typeof w.followThrough       === 'number' && w.followThrough       > 0) stats.followThrough    = w.followThrough;
+  if (typeof w.slamAttack          === 'number' && w.slamAttack          > 0) stats.slamAttack       = w.slamAttack;
+  if (typeof w.slamRadialDamage    === 'number' && w.slamRadialDamage    > 0) stats.slamRadialDamage = w.slamRadialDamage;
   if (Object.keys(stats).length > 0) item.stats = stats;
 
-  if (typeof w.masteryReq === 'number') item.masteryRank = w.masteryReq;
-  if (w.polarities?.length)             item.polarities  = w.polarities;
-  if (w.type)                           item.type        = w.type;
-  if (w.productCategory)                item.subtype     = w.productCategory;
+  if (typeof w.masteryReq === 'number') item.masteryRank   = w.masteryReq;
+  if (w.polarities?.length)             item.polarities    = w.polarities;
+  if (w.type)                           item.type          = w.type;
+  if (w.productCategory)                item.subtype       = w.productCategory;
+  if (w.trigger)                        item.weaponTrigger = w.trigger;
+  if (w.noise)                          item.weaponNoise   = w.noise;
+  if (w.damage && Object.keys(w.damage).length > 0) item.damageTypes = w.damage;
 
   if (w.components?.length) {
     const reqs = componentsToBuildRequirements(w.components, w.name);

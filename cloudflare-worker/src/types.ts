@@ -424,6 +424,20 @@ export interface TennoplanItem {
    *  (otherwise the standard ×3 / ×1.5 multiplier applies in display code). */
   statsRank30?:         ItemStats;
 
+  // ── Weapon-specific (category === 'Weapon') ───────────────
+  /** Trigger type — "Auto" | "Semi-Auto" | "Burst" | "Held" | "Charge" | "Active". */
+  weaponTrigger?: string;
+  /** Audio profile — "Silent" | "Alarming". Drives un-suppressed enemy aggro. */
+  weaponNoise?:   string;
+  /**
+   * Per-damage-type breakdown for a single shot/hit. Keys: 'impact', 'slash',
+   * 'puncture', 'heat', 'cold', 'electricity', 'toxin' and combined elements
+   * ('blast', 'corrosive', 'gas', 'magnetic', 'radiation', 'viral'). Values
+   * are absolute damage; sum should approximate `stats.damage` but per-faction
+   * modifiers can shift it. Zero/missing entries are omitted by the parser.
+   */
+  damageTypes?:   Record<string, number>;
+
   // ── Mod-specific (category === 'Mod') ──────────────────────
   /** Per-rank stat lines. levelStats[0] = R0, levelStats[N] = RN. */
   levelStats?:   string[][];
@@ -550,6 +564,19 @@ export interface ItemStats {
   armor?:          number;
   energy?:         number;
   sprintSpeed?:    number;
+  // ── Weapon-specific extensions ──────────────────────────────
+  /** Riven disposition multiplier (0.50–1.55) — drives the 1-5 dot
+   *  display on the in-game modding screen. Source: WFCD omegaAttenuation. */
+  rivenDisposition?:  number;
+  /** Higher = tighter spread (ranged). */
+  accuracy?:          number;
+  // Melee numerics.
+  range?:             number;
+  blockingAngle?:     number;
+  comboDuration?:     number;
+  followThrough?:     number;
+  slamAttack?:        number;
+  slamRadialDamage?:  number;
   [key: string]:   number | undefined;   // extensible for future stats
 }
 
