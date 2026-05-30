@@ -1,0 +1,90 @@
+/* ================================================================
+   GeneralInformationBlock — wiki-sourced warframe data sheet.
+
+   Plain panel (no accent tint) — this is a reference table, not an
+   emphasized callout. The block sits in the long-scroll left column
+   between Polarities and Description, so it competes for attention
+   with the heavy Description prose and the Passive callout.
+
+   Compact two-column dl/dt/dd layout. Labels are muted + uppercase
+   (matches the rest of the codex's label rhythm); values are
+   text-primary at body weight.
+
+   Per `.impeccable.md`:
+     • No side-stripe borders.
+     • No glassmorphism / heavy shadows.
+     • CSS variables only — no hardcoded hex.
+     • 4pt spacing scale.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+  padding:        var(--space-md);
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  8px;
+}
+
+.label {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  margin:         0;
+}
+
+.list {
+  display:        flex;
+  flex-direction: column;
+  gap:            6px;
+  margin:         0;
+  padding:        0;
+}
+
+/* Each row is a labelled value. Grid keeps labels and values aligned
+   across rows without forcing a fixed pixel width — auto sizes the
+   label column to the widest term while values flow on the right. */
+.row {
+  display:               grid;
+  grid-template-columns: minmax(120px, max-content) 1fr;
+  gap:                   var(--space-sm);
+  align-items:           baseline;
+  padding-block:         3px;
+  border-bottom:         1px solid color-mix(in srgb, var(--color-border-default) 35%, transparent);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.term {
+  font-family:    var(--font-sans);
+  font-size:      0.72rem;
+  font-weight:    600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  margin:         0;
+  white-space:    nowrap;
+}
+
+.value {
+  font-family: var(--font-sans);
+  font-size:   0.88rem;
+  font-weight: 500;
+  color:       var(--color-text-primary);
+  margin:      0;
+  line-height: 1.5;
+}
+
+/* Sell price unit (" cr") — quiet suffix. */
+.unit {
+  font-weight: 400;
+  font-size:   0.78rem;
+  color:       var(--color-text-muted);
+  margin-left: 2px;
+}

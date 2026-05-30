@@ -52,6 +52,14 @@ export function CodexPage() {
   const [previousView, setPreviousView]   = useState<CodexView>('landing');
   const [subTab, setSubTab]               = useState<SubTab>('mods');
   const [selectedEntry, setSelectedEntry] = useState<TennoplanItem | null>(null);
+  /**
+   * Detail-nav breadcrumb. When the user opens an entry FROM another entry
+   * (e.g. clicks a component on a warframe page), the current entry is
+   * pushed here so Back unwinds the chain instead of jumping all the way
+   * out to landing/browser. Empties when the chain is fully unwound; at
+   * that point Back falls through to `previousView`.
+   */
+  const [detailStack, setDetailStack]     = useState<TennoplanItem[]>([]);
   const [selectedMod, setSelectedMod]     = useState<ModEntry | null>(null);
   const [modsCount, setModsCount]         = useState<number>(0);
   const [warframesCount, setWarframesCount] = useState<number>(0);
@@ -78,12 +86,21 @@ export function CodexPage() {
       setSelectedMod(projectMod(entry));
       return;
     }
-    // Capture where we are NOW before switching — Back uses this to return
-    // to exactly the right view (landing or browser), not a guess.
-    setPreviousView(view);
+    // Detail → Detail (e.g. clicking a component card from a warframe
+    // page): push the CURRENT entry onto the stack so Back returns to it
+    // rather than skipping straight back to landing/browser. previousView
+    // stays whatever it was when the chain began.
+    if (view === 'detail' && selectedEntry) {
+      setDetailStack((prev) => [...prev, selectedEntry]);
+    } else {
+      // Fresh entry into the detail view (from landing or browser) —
+      // record where we came from and start with an empty chain.
+      setPreviousView(view);
+      setDetailStack([]);
+    }
     setSelectedEntry(entry);
     setView('detail');
-  }, [pushHistory, view]);
+  }, [pushHistory, view, selectedEntry]);
 
   // Browsers pass projected ModEntry directly — no Dexie round-trip needed
   // since ModsBrowser already has the projection in hand.
@@ -133,13 +150,21 @@ export function CodexPage() {
     setSelectedEntry(null);
   }, []);
 
-  // From detail view, "back" returns to wherever the user actually came
-  // from — landing or browser. previousView is set at the moment of
-  // navigation so this is always exact, never guessed.
+  // Back unwinds one step:
+  //   1. If we're mid-chain (clicked into a component), pop the stack and
+  //      show the previous entry. Stays in 'detail' view.
+  //   2. Once the chain is empty, fall through to whichever view the user
+  //      was on before entering detail (landing or browser).
   const handleBackFromDetail = useCallback(() => {
+    if (detailStack.length > 0) {
+      const next = detailStack[detailStack.length - 1]!;
+      setDetailStack((prev) => prev.slice(0, -1));
+      setSelectedEntry(next);
+      return;
+    }
     setSelectedEntry(null);
     setView(previousView);
-  }, [previousView]);
+  }, [detailStack, previousView]);
 
   const handleCloseModal = useCallback(() => setSelectedMod(null), []);
 

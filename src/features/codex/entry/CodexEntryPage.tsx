@@ -31,6 +31,7 @@ import { DescriptionBlock } from './blocks/DescriptionBlock';
 import { PolaritiesBlock } from './blocks/PolaritiesBlock';
 import { AbilitiesBlock } from './blocks/AbilitiesBlock';
 import { PassiveBlock } from './blocks/PassiveBlock';
+import { GeneralInformationBlock } from './blocks/GeneralInformationBlock';
 import { WikiFooterBlock } from './blocks/WikiFooterBlock';
 import { ModStatsBlock } from './blocks/ModStatsBlock';
 import { BestFarmsBlock } from './blocks/BestFarmsBlock';
@@ -91,6 +92,7 @@ function BlockSlot({ blockKey, entry, onSelectEntry }: BlockSlotProps) {
     case 'Polarities':     return <PolaritiesBlock entry={entry} />;
     case 'Abilities':      return <AbilitiesBlock entry={entry} />;
     case 'Passive':        return <PassiveBlock entry={entry} />;
+    case 'GeneralInformation': return <GeneralInformationBlock entry={entry} />;
     case 'WikiFooter':     return <WikiFooterBlock entry={entry} />;
     case 'ModStats':       return <ModStatsBlockSlot entry={entry} />;
     case 'BestFarms':      return <BestFarmsBlock entry={entry} />;

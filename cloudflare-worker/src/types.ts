@@ -395,10 +395,34 @@ export interface TennoplanItem {
 
   /**
    * Warframe/Sentinel/Pet passive ability text.
-   * Raw WFCD string — may contain game markup tags like <DT_SLASH_COLOR>.
-   * Sanitize before rendering.
+   * Wiki-resolved prose when available (no |TOKEN| placeholders); falls back
+   * to WFCD's templated string. Sanitize for residual game-markup tags
+   * (<DT_SLASH_COLOR>) before rendering.
    */
   passiveDescription?: string;
+
+  // ── Wiki-sourced warframe metadata (Warframe only) ─────────
+  // All sourced from wiki.warframe.com Module:Warframes/data. Optional per-
+  // field — the wiki has gaps (e.g. only ~75/119 frames define `subsumedAbility`).
+  /** "Male" | "Female" | "Non-binary" — verbatim from wiki. */
+  sex?:                 string;
+  /** Helminth Subsumed ability name (e.g. "Shuriken"). */
+  subsumedAbility?:     string;
+  /** Tactical Ability name (squad UI cooldown power, e.g. "Smoke Screen"). */
+  tacticalAbility?:     string;
+  /** Progenitor element — drives Lich/Sister weapon roll (e.g. "Radiation"). */
+  progenitorElement?:   string;
+  /** Comma-separated themes string (e.g. "Assassin, Ninja"). */
+  themes?:              string;
+  /** Playstyle tags (e.g. ["Stealth", "Damage"]). */
+  playstyle?:           string[];
+  /** Starting energy on spawn — independent of max Energy in `stats`. */
+  initialEnergy?:       number;
+  /** Credit value when sold. */
+  sellPrice?:           number;
+  /** Explicit rank-30 stat overrides for frames whose wiki entry lists them
+   *  (otherwise the standard ×3 / ×1.5 multiplier applies in display code). */
+  statsRank30?:         ItemStats;
 
   // ── Mod-specific (category === 'Mod') ──────────────────────
   /** Per-rank stat lines. levelStats[0] = R0, levelStats[N] = RN. */

@@ -321,9 +321,10 @@ export interface ParsedCodex {
   /** All drops as a flat list — used for relic content lookup + active-relic detection. */
   allDrops:    ParsedDrop[];
 
-  /** Wiki-sourced passive prose, keyed by warframe display name. Empty when
-   *  the wiki fetch failed; enricher treats that as "no override". */
-  wikiPassives: ReadonlyMap<string, string>;
+  /** Wiki-sourced per-warframe records (passive prose + Sex/Subsumed/etc),
+   *  keyed by warframe display name. Empty when the wiki fetch failed;
+   *  enricher treats absent fields as "no override". */
+  wikiWarframes: ReadonlyMap<string, import('./wikiWarframes').WikiWarframeRecord>;
 
   // Source / quality bookkeeping
   hasDrops:    boolean;
@@ -373,7 +374,7 @@ export function parseCodex(blobs: RawCodexBlobs): ParsedCodex {
     mods, warframes, weapons, sentinels, pets, arcanes, relics, resources, gear, misc,
     dropsByName,
     allDrops,
-    wikiPassives: blobs.wikiPassives,
+    wikiWarframes: blobs.wikiWarframes,
     hasDrops:    drops != null && drops.length > 0,
     dropsSource: blobs.dropsSource,
     stats: {
