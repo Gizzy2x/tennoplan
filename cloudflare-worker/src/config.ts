@@ -82,6 +82,11 @@ export const config = {
     wfcdMiscUrl:               'https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/Misc.json',
     wfcdMiscFallbackUrl:       'https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/Misc.json',
 
+    // Wiki Lua module — pre-resolved warframe passive prose. Overrides WFCD's
+    // |TOKEN|-laden `passiveDescription`. Best-effort: failure → empty Map →
+    // enricher falls back to WFCD value. See wikiPassives.ts for details.
+    wikiWarframesDataUrl:      'https://wiki.warframe.com/api.php?action=query&prop=revisions&rvprop=content&rvslots=main&titles=Module:Warframes/data&format=json',
+
     kvTtlSeconds:         172_800,  // 48h — covers 24h normal cycle + buffer
     fetchTimeoutMs:       30_000,
     // Maximum simultaneous per-category fetches. Cloudflare Workers cap at

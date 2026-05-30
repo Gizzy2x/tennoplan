@@ -19,6 +19,7 @@
 import { config } from '../config';
 import { logger } from '../logger';
 import { fetchWithRetry } from '../utils/http';
+import { fetchWikiPassives } from './wikiPassives';
 
 const log  = (msg: string, data?: unknown) => logger.info('codex-fetcher',  msg, data);
 const warn = (msg: string, data?: unknown) => logger.warn('codex-fetcher',  msg, data);
@@ -42,6 +43,13 @@ export interface RawCodexBlobs {
   resources:    unknown | null;
   gear:         unknown | null;
   misc:         unknown | null;
+
+  /**
+   * Wiki-sourced passive prose, keyed by warframe display name. Empty Map on
+   * fetch/parse failure (never null) — enricher treats absence as "no
+   * override, use WFCD passiveDescription".
+   */
+  wikiPassives: ReadonlyMap<string, string>;
 }
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
@@ -115,6 +123,7 @@ export async function fetchAllCodexSources(): Promise<RawCodexBlobs> {
   const [
     drops,
     mods, warframes, weapons, sentinels, pets, arcanes, relics, resources, gear, misc,
+    wikiPassives,
   ] = await Promise.all([
     fetchDrops(),
     fetchWithFallback('mods',      c.wfcdModsUrl,      c.wfcdModsFallbackUrl),
@@ -127,26 +136,29 @@ export async function fetchAllCodexSources(): Promise<RawCodexBlobs> {
     fetchWithFallback('resources', c.wfcdResourcesUrl, c.wfcdResourcesFallbackUrl),
     fetchWithFallback('gear',      c.wfcdGearUrl,      c.wfcdGearFallbackUrl),
     fetchWithFallback('misc',      c.wfcdMiscUrl,      c.wfcdMiscFallbackUrl),
+    fetchWikiPassives(),
   ]);
 
   log('all codex sources fetched', {
-    ms:          Date.now() - started,
-    dropsSource: drops?.source ?? 'unavailable',
-    mods:        mods      != null ? 'ok' : 'unavailable',
-    warframes:   warframes != null ? 'ok' : 'unavailable',
-    weapons:     weapons   != null ? 'ok' : 'unavailable',
-    sentinels:   sentinels != null ? 'ok' : 'unavailable',
-    pets:        pets      != null ? 'ok' : 'unavailable',
-    arcanes:     arcanes   != null ? 'ok' : 'unavailable',
-    relics:      relics    != null ? 'ok' : 'unavailable',
-    resources:   resources != null ? 'ok' : 'unavailable',
-    gear:        gear      != null ? 'ok' : 'unavailable',
-    misc:        misc      != null ? 'ok' : 'unavailable',
+    ms:           Date.now() - started,
+    dropsSource:  drops?.source ?? 'unavailable',
+    mods:         mods      != null ? 'ok' : 'unavailable',
+    warframes:    warframes != null ? 'ok' : 'unavailable',
+    weapons:      weapons   != null ? 'ok' : 'unavailable',
+    sentinels:    sentinels != null ? 'ok' : 'unavailable',
+    pets:         pets      != null ? 'ok' : 'unavailable',
+    arcanes:      arcanes   != null ? 'ok' : 'unavailable',
+    relics:       relics    != null ? 'ok' : 'unavailable',
+    resources:    resources != null ? 'ok' : 'unavailable',
+    gear:         gear      != null ? 'ok' : 'unavailable',
+    misc:         misc      != null ? 'ok' : 'unavailable',
+    wikiPassives: wikiPassives.size,
   });
 
   return {
     drops:       drops?.data ?? null,
     dropsSource: drops?.source ?? null,
     mods, warframes, weapons, sentinels, pets, arcanes, relics, resources, gear, misc,
+    wikiPassives,
   };
 }

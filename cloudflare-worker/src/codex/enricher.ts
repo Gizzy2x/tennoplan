@@ -141,6 +141,9 @@ interface EnrichmentContext {
   /** Set of relic display names that currently appear as a drop in a
    *  non-relic source. Used for vaulted detection. */
   activeRelics: Set<string>;
+  /** Wiki-sourced passive prose; takes precedence over WFCD's |TOKEN|-laden
+   *  text when both are available. Empty when the wiki fetch failed. */
+  wikiPassives: ReadonlyMap<string, string>;
 }
 
 function buildContext(parsed: ParsedCodex): EnrichmentContext {
@@ -151,7 +154,7 @@ function buildContext(parsed: ParsedCodex): EnrichmentContext {
       if (looksLikeRelicName(drop.itemName)) activeRelics.add(drop.itemName);
     }
   }
-  return { parsed, activeRelics };
+  return { parsed, activeRelics, wikiPassives: parsed.wikiPassives };
 }
 
 // ─── Per-item enrichment ──────────────────────────────────────────────────────
@@ -219,7 +222,7 @@ function enrichItem(m: BuiltItem, ctx: EnrichmentContext): EnrichedItem {
   // Per-category field extraction.
   switch (m.source) {
     case 'mod':       applyModFields      (item, wfcd as WfcdMod | undefined);      break;
-    case 'warframe':  applyWarframeFields (item, wfcd as WfcdWarframe | undefined); break;
+    case 'warframe':  applyWarframeFields (item, wfcd as WfcdWarframe | undefined, ctx); break;
     case 'weapon':    applyWeaponFields   (item, wfcd as WfcdWeapon | undefined);   break;
     case 'sentinel':  applySentinelFields (item, wfcd as WfcdSentinel | undefined); break;
     case 'pet':       applyPetFields      (item, wfcd as WfcdPet | undefined);      break;
@@ -298,7 +301,7 @@ function applyModFields(item: EnrichedItem, mod: WfcdMod | undefined): void {
   if (modRarity) item.rarity = modRarity;
 }
 
-function applyWarframeFields(item: EnrichedItem, wf: WfcdWarframe | undefined): void {
+function applyWarframeFields(item: EnrichedItem, wf: WfcdWarframe | undefined, ctx: EnrichmentContext): void {
   if (!wf) return;
 
   if (wf.polarities?.length) item.polarities   = wf.polarities;
@@ -308,7 +311,10 @@ function applyWarframeFields(item: EnrichedItem, wf: WfcdWarframe | undefined): 
     item.abilities = wf.abilities.map(toAbility);
   }
 
-  if (wf.passiveDescription) item.passiveDescription = wf.passiveDescription;
+  // Wiki passive (pre-resolved prose) wins over WFCD (raw |TOKEN| template).
+  const wikiPassive = ctx.wikiPassives.get(wf.name);
+  if (wikiPassive)                item.passiveDescription = wikiPassive;
+  else if (wf.passiveDescription) item.passiveDescription = wf.passiveDescription;
 
   const stats: ItemStats = {};
   if (typeof wf.health      === 'number' && wf.health      > 0) stats.health      = wf.health;
