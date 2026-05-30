@@ -143,6 +143,27 @@ export interface WfcdWeapon {
   tradable?:         boolean;
   isPrime?:          boolean;
   polarities?:       string[];
+  /** Per-damage-type breakdown — keys like 'impact', 'slash', 'puncture',
+   *  'heat', 'cold', 'electricity', 'toxin', combined elements, etc.
+   *  Values are absolute damage on a single shot/hit. */
+  damage?:           Record<string, number>;
+  /** Riven disposition multiplier (0.50–1.55). Drives the in-game dot count
+   *  on the modding screen. We surface both the raw number and a derived
+   *  1–5 dot count in the frontend. */
+  omegaAttenuation?: number;
+  /** Ranged-only — projectile/hitscan accuracy (higher = tighter). */
+  accuracy?:         number;
+  /** "Silent" | "Alarming" — affects enemy aggro on un-suppressed shots. */
+  noise?:            string;
+  /** "Auto" | "Semi-Auto" | "Burst" | "Held" | "Charge" | "Active". */
+  trigger?:          string;
+  // Melee-specific numerics. Absent on ranged weapons.
+  range?:            number;
+  blockingAngle?:    number;
+  comboDuration?:    number;
+  followThrough?:    number;
+  slamAttack?:       number;
+  slamRadialDamage?: number;
 }
 
 export interface WfcdSentinel {
@@ -606,6 +627,19 @@ export function parseWfcdWeapons(raw: unknown): Map<string, WfcdWeapon> {
     if (typeof row['releaseDate']        === 'string')  w.releaseDate        = row['releaseDate']        as string;
     if (typeof row['tradable']           === 'boolean') w.tradable           = row['tradable']           as boolean;
     if (typeof row['isPrime']            === 'boolean') w.isPrime            = row['isPrime']            as boolean;
+    if (typeof row['omegaAttenuation']   === 'number')  w.omegaAttenuation   = row['omegaAttenuation']   as number;
+    if (typeof row['accuracy']           === 'number')  w.accuracy           = row['accuracy']           as number;
+    if (typeof row['noise']              === 'string')  w.noise              = row['noise']              as string;
+    if (typeof row['trigger']            === 'string')  w.trigger            = row['trigger']            as string;
+    if (typeof row['range']              === 'number')  w.range              = row['range']              as number;
+    if (typeof row['blockingAngle']      === 'number')  w.blockingAngle      = row['blockingAngle']      as number;
+    if (typeof row['comboDuration']      === 'number')  w.comboDuration      = row['comboDuration']      as number;
+    if (typeof row['followThrough']      === 'number')  w.followThrough      = row['followThrough']      as number;
+    if (typeof row['slamAttack']         === 'number')  w.slamAttack         = row['slamAttack']         as number;
+    if (typeof row['slamRadialDamage']   === 'number')  w.slamRadialDamage   = row['slamRadialDamage']   as number;
+
+    const damage = parseDamageMap(row['damage']);
+    if (damage) w.damage = damage;
 
     if (Array.isArray(row['polarities']) && (row['polarities'] as unknown[]).every(p => typeof p === 'string')) {
       w.polarities = row['polarities'] as string[];
@@ -1003,6 +1037,23 @@ function parseComponents(raw: unknown): WfcdComponent[] {
     out.push(entry);
   }
   return out;
+}
+
+/**
+ * Damage breakdown — WFCD ships an object with per-element keys
+ * ({ impact: 5, slash: 38.5, heat: 0, ... }). We drop zero/negative values
+ * so the consumer only iterates the elements that actually contribute,
+ * and reject the whole thing if every entry is zero (e.g. on melee
+ * weapons that publish per-attack damage via `attacks[]` instead).
+ */
+function parseDamageMap(raw: unknown): Record<string, number> | undefined {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined;
+  const out: Record<string, number> = {};
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof v !== 'number' || !Number.isFinite(v) || v <= 0) continue;
+    out[k] = v;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 export function parseIntroduced(raw: unknown): WfcdIntroduced | undefined {

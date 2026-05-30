@@ -50,7 +50,11 @@ export const config = {
     wfcdWarframesFallbackUrl:  'https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/Warframes.json',
 
     // Weapons — combined endpoint covers Primary/Secondary/Melee/Arch-*.
-    wfcdWeaponsUrl:            'https://api.warframestat.us/weapons?only=uniqueName,name,description,type,category,productCategory,masteryReq,totalDamage,fireRate,criticalChance,criticalMultiplier,procChance,magazineSize,reloadTime,components,imageName,wikiaUrl,introduced,patchlogs,releaseDate,tradable,isPrime,polarities,damage',
+    // Includes Riven disposition (omegaAttenuation), per-damage-type breakdown
+    // (damage), trigger/noise classification, accuracy, and melee numerics
+    // (range, blockingAngle, comboDuration, followThrough, slamAttack,
+    // slamRadialDamage). The summary rail consumes these end-to-end.
+    wfcdWeaponsUrl:            'https://api.warframestat.us/weapons?only=uniqueName,name,description,type,category,productCategory,masteryReq,totalDamage,fireRate,criticalChance,criticalMultiplier,procChance,magazineSize,reloadTime,components,imageName,wikiaUrl,introduced,patchlogs,releaseDate,tradable,isPrime,polarities,damage,omegaAttenuation,accuracy,noise,trigger,range,blockingAngle,comboDuration,followThrough,slamAttack,slamRadialDamage',
     wfcdWeaponsFallbackUrl:    'https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/All.json',
 
     // Sentinels / Pets / Relics / Resources / Gear:
