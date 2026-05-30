@@ -430,7 +430,7 @@
 
 .eventRowClickable        { cursor: pointer; }
 .eventRowClickable:hover  { background: rgba(255, 255, 255, 0.025); }
-.eventRowOpen             { background: rgba(0, 212, 255, 0.04); }
+.eventRowOpen             { background: rgba(231, 225, 211,0.04); }
 
 .eventPip {
   width:         6px;

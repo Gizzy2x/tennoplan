@@ -444,7 +444,7 @@ export function DailiesWeekliesPage() {
           {deepArchimedeaStatus && (
             <>
               <div className="somatic-line mt-10 mb-6" />
-              <SectionHeader label="Deep Archimedea" color="#00d4ff" className="mb-5" />
+              <SectionHeader label="Deep Archimedea" color="#e7e1d3" className="mb-5" />
               <div
                 className="grid gap-3 mb-4"
                 style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))' }}
@@ -458,12 +458,12 @@ export function DailiesWeekliesPage() {
               {(deepArchimedeaStatus.raw.personalModifiers?.length ?? 0) > 0 && (
                 <div
                   className="glass-panel px-5 py-4 mb-4 flex flex-col gap-2"
-                  style={{ borderColor: 'rgba(0,212,255,0.10)' }}
+                  style={{ borderColor: 'rgba(231,225,211,0.10)' }}
                 >
                   <p
                     data-role="labelTiny"
                     className="typo-label-xs mb-1"
-                    style={{ color: 'rgba(0,212,255,0.45)' }}
+                    style={{ color: 'rgba(231,225,211,0.45)' }}
                   >
                     Personal Modifiers
                   </p>
@@ -474,7 +474,7 @@ export function DailiesWeekliesPage() {
                         className="typo-label-sm"
                         style={{ color: '#a8a5a0', opacity: 0.75 }}
                       >
-                        <span style={{ color: 'rgba(0,212,255,0.75)' }}>{mod.name} · </span>
+                        <span style={{ color: 'rgba(231,225,211,0.75)' }}>{mod.name} · </span>
                         {mod.description}
                       </p>
                     </div>
@@ -482,7 +482,7 @@ export function DailiesWeekliesPage() {
                 </div>
               )}
 
-              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(0,212,255,0.08)' }}>
+              <div className="glass-panel overflow-hidden" style={{ borderColor: 'rgba(231,225,211,0.08)' }}>
                 <CompletionToggle
                   label="Deep Archimedea Completed"
                   sublabel="Resets weekly · Awards Netracells"

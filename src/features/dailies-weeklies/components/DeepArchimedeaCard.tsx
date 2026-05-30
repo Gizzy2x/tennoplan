@@ -27,7 +27,7 @@ function getMissionIcon(missionType: string): LucideIcon {
   return MISSION_ICON[missionType] ?? Hexagon;
 }
 
-const ACCENT      = '#00d4ff';  // teal — Deep Archimedea identity
+const ACCENT      = '#e7e1d3';  // bone — Deep Archimedea identity (was #00d4ff teal; brand pivot 2026-05-29)
 const HARD_COLOR  = '#c084fc';  // purple — Elite (isHard) risks
 
 export interface DeepArchimedeaCardProps {

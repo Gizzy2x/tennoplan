@@ -183,7 +183,14 @@
   --color-text-muted:     #a8a5a0;
   --color-border-default: #2d333b;
   --color-accent-gold:    #e3c372;
-  --color-accent-teal:    #00d4ff;
+  /* Brand pivot 2026-05-29: secondary accent shifted from Lotus cyan
+     (#00d4ff) to bone / warm off-white (#e7e1d3) to distance the brand
+     from the Warframe-community-app genre default. Token name kept as
+     "teal" through the trial period — rename to "--color-accent-bone"
+     once the direction is locked. All teal opacity variants and the
+     hardcoded rgba(231, 225, 211,…) usages across the app were updated
+     in the same change to keep the surface visually consistent. */
+  --color-accent-teal:    #e7e1d3;
 
   /* Status Colors */
   --color-status-urgent:  #fb923c;
@@ -200,6 +207,7 @@
   --color-stat-health:    #e25c5c;
   --color-stat-shield:    #b07cd6;
   --color-stat-energy:    #6da8e8;
+
 
   /* Challenge Kind Colors (Nightwave) */
   --color-kind-daily-bg:  rgba(229,226,225,0.92);
@@ -294,15 +302,19 @@
   --color-accent-gold-55: rgba(227, 195, 114, 0.55);
   --color-accent-gold-70: rgba(227, 195, 114, 0.70);
 
-  /* Teal accent opacity variants */
-  --color-accent-teal-10: var(--color-accent-teal-10);
-  --color-accent-teal-12: var(--color-accent-teal-12);
-  --color-accent-teal-18: rgba(0, 212, 255, 0.18);
-  --color-accent-teal-20: var(--color-accent-teal-20);
-  --color-accent-teal-25: var(--color-accent-teal-25);
-  --color-accent-teal-65: var(--color-accent-teal-65);
-  --color-accent-teal-80: var(--color-accent-teal-80);
-  --color-accent-teal-85: var(--color-accent-teal-85);
+  /* "Teal" accent opacity variants — actually bone (#e7e1d3) since the
+     2026-05-29 brand pivot. The previous block had several self-
+     referential entries (var(--color-accent-teal-10) referring to
+     itself) which silently resolved invalid; replaced with real rgba
+     values so the variants actually paint something. */
+  --color-accent-teal-10: rgba(231, 225, 211, 0.10);
+  --color-accent-teal-12: rgba(231, 225, 211, 0.12);
+  --color-accent-teal-18: rgba(231, 225, 211, 0.18);
+  --color-accent-teal-20: rgba(231, 225, 211, 0.20);
+  --color-accent-teal-25: rgba(231, 225, 211, 0.25);
+  --color-accent-teal-65: rgba(231, 225, 211, 0.65);
+  --color-accent-teal-80: rgba(231, 225, 211, 0.80);
+  --color-accent-teal-85: rgba(231, 225, 211, 0.85);
 
   /* Semantic aliases — resolve old token names */
   --color-primary:                   var(--color-accent-gold);
@@ -1852,7 +1864,7 @@ a:focus-visible {
   /* Slightly more transparent on hover = more image bleeds through */
   background: rgba(10, 17, 23, 0.72);
   transform: scale(1.02);
-  box-shadow: 0 0 12px rgba(0, 212, 255, 0.20), inset 0 0 8px rgba(227, 195, 114, 0.08);
+  box-shadow: 0 0 12px rgba(231, 225, 211,0.20), inset 0 0 8px rgba(227, 195, 114, 0.08);
 }
 
 /* ── Cycle State Visualization — animated patterns per cycle type ── */
@@ -2119,8 +2131,8 @@ a:focus-visible {
   align-items: center;
   gap: 6px;
   padding: 4px 9px;
-  background: rgba(0, 212, 255, 0.06);
-  border: 1px solid rgba(0, 212, 255, 0.18);
+  background: rgba(231, 225, 211,0.06);
+  border: 1px solid rgba(231, 225, 211,0.18);
   border-radius: var(--radius-sm);
   width: fit-content;
 }
@@ -2190,8 +2202,8 @@ a:focus-visible {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(0, 212, 255, 0.50);
-  border: 1px solid rgba(0, 212, 255, 0.16);
+  color: rgba(231, 225, 211,0.50);
+  border: 1px solid rgba(231, 225, 211,0.16);
   border-radius: var(--radius-sm);
   padding: 4px 8px;
   background: transparent;
@@ -2422,8 +2434,8 @@ a:focus-visible {
 }
 
 .bm-badge--efficient {
-  background: rgba(0, 212, 255, 0.10);
-  border: 1px solid rgba(0, 212, 255, 0.30);
+  background: rgba(231, 225, 211,0.10);
+  border: 1px solid rgba(231, 225, 211,0.30);
   color: var(--color-accent-teal);
 }
 
@@ -2808,7 +2820,7 @@ a:focus-visible {
 }
 .bb-rotation-tab--active {
   border-bottom-color: var(--color-accent-teal);
-  background: rgba(0, 212, 255, 0.05);
+  background: rgba(231, 225, 211,0.05);
 }
 .bb-rotation-tab-label {
   font-family: var(--font-sans);
@@ -3929,7 +3941,7 @@ a:focus-visible {
 
 .codex-back-btn:hover {
   color:        var(--color-text-primary);
-  border-color: rgba(0, 212, 255, 0.45);
+  border-color: rgba(231, 225, 211,0.45);
 }
 
 /* ── Entry detail container + placeholder block ────────────────── */
@@ -4020,7 +4032,7 @@ a:focus-visible {
 }
 
 .codex-browse-search::placeholder { color: var(--color-text-muted); }
-.codex-browse-search:focus         { border-color: rgba(0, 212, 255, 0.45); }
+.codex-browse-search:focus         { border-color: rgba(231, 225, 211,0.45); }
 
 /* ── Filter chips ───────────────────────────────────────────────── */
 
@@ -4059,13 +4071,13 @@ a:focus-visible {
 }
 
 .codex-browse-chip:hover {
-  border-color: rgba(0, 212, 255, 0.3);
+  border-color: rgba(231, 225, 211,0.3);
   color:        var(--color-text-primary);
 }
 
 .codex-browse-chip--active {
-  background:   rgba(0, 212, 255, 0.08);
-  border-color: rgba(0, 212, 255, 0.5);
+  background:   rgba(231, 225, 211,0.08);
+  border-color: rgba(231, 225, 211,0.5);
   color:        var(--color-accent-teal);
 }
 
@@ -4073,7 +4085,7 @@ a:focus-visible {
   display:       inline-flex;
   align-items:   center;
   justify-content: center;
-  background:    rgba(0, 212, 255, 0.15);
+  background:    rgba(231, 225, 211,0.15);
   border-radius: 10px;
   font-size:     0.65rem;
   font-weight:   700;
