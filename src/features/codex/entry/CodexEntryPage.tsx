@@ -40,6 +40,8 @@ import { BuildBlock } from './blocks/BuildBlock';
 import { DropsBlock } from './blocks/DropsBlock';
 import { ComponentsBlock } from './blocks/ComponentsBlock';
 import { AugmentContextBlock } from './blocks/AugmentContextBlock';
+import { PlanetaryOriginsBlock } from './blocks/PlanetaryOriginsBlock';
+import { ConsumersBlock } from './blocks/ConsumersBlock';
 
 interface CodexEntryPageProps {
   entry: CodexEntry;
@@ -105,6 +107,8 @@ function BlockSlot({ blockKey, entry, onSelectEntry }: BlockSlotProps) {
           onSelectWarframe={onSelectEntry}
         />
       );
+    case 'PlanetaryOrigins': return <PlanetaryOriginsBlock entry={entry} />;
+    case 'Consumers':        return <ConsumersBlock entry={entry} onSelectEntry={onSelectEntry} />;
     case 'BestFarms':      return <BestFarmsBlock entry={entry} />;
     case 'PatchHistory':   return <PatchHistoryBlock entry={entry} />;
     case 'Build':          return <BuildBlock entry={entry} />;

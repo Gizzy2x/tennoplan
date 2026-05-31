@@ -33,6 +33,8 @@ export type BlockKey =
   | 'ModStats'
   | 'ArcaneStats'
   | 'AugmentContext'
+  | 'PlanetaryOrigins'
+  | 'Consumers'
   | 'RelicRewards'
   | 'DucatValue';
 
@@ -83,6 +85,15 @@ export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
   ],
   Blueprint: [
     'Header', 'HeroIcon', 'Description', 'Build', 'Drops', 'BestFarms', 'WikiFooter',
+  ],
+  // Resources lead with the cinematic Planetary Origins hero (planet
+  // art + resource orb), then description, then the "Used in" reverse-
+  // join so the page answers both "where do I get it" and "what does
+  // it craft" in the first viewport. Drops + BestFarms keep the full
+  // node-level detail below for power users.
+  Resource: [
+    'Header', 'PlanetaryOrigins', 'Description', 'Consumers',
+    'BestFarms', 'Drops', 'WikiFooter',
   ],
 };
 
