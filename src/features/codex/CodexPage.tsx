@@ -29,19 +29,23 @@ import { ModsBrowser } from './browsers/ModsBrowser';
 import { WarframesBrowser } from './browsers/WarframesBrowser';
 import { WeaponsBrowser } from './browsers/WeaponsBrowser';
 import { CompanionsBrowser } from './browsers/CompanionsBrowser';
+import { ArcanesBrowser } from './browsers/ArcanesBrowser';
+import { ResourcesBrowser } from './browsers/ResourcesBrowser';
 import { ModDetailModal } from './components/ModDetailModal';
 import { CodexEntryPage } from './entry/CodexEntryPage';
 import { CodexLanding } from './landing/CodexLanding';
 import type { CodexCollectionKey } from './landing/blocks/CollectionsGrid';
 
 type CodexView = 'landing' | 'browser' | 'detail';
-type SubTab    = 'mods' | 'warframes' | 'weapons' | 'companions';
+type SubTab    = 'mods' | 'warframes' | 'weapons' | 'companions' | 'arcanes' | 'resources';
 
 const SUBTABS: Array<{ key: SubTab; label: string }> = [
   { key: 'mods',       label: 'Mods' },
   { key: 'warframes',  label: 'Warframes' },
   { key: 'weapons',    label: 'Weapons' },
   { key: 'companions', label: 'Companions' },
+  { key: 'arcanes',    label: 'Arcanes' },
+  { key: 'resources',  label: 'Resources' },
 ];
 
 // Session flag: did the user already see the landing this app session?
@@ -65,10 +69,12 @@ export function CodexPage() {
    */
   const [detailStack, setDetailStack]     = useState<TennoplanItem[]>([]);
   const [selectedMod, setSelectedMod]     = useState<ModEntry | null>(null);
-  const [modsCount, setModsCount]           = useState<number>(0);
-  const [warframesCount, setWarframesCount] = useState<number>(0);
-  const [weaponsCount, setWeaponsCount]     = useState<number>(0);
+  const [modsCount, setModsCount]             = useState<number>(0);
+  const [warframesCount, setWarframesCount]   = useState<number>(0);
+  const [weaponsCount, setWeaponsCount]       = useState<number>(0);
   const [companionsCount, setCompanionsCount] = useState<number>(0);
+  const [arcanesCount, setArcanesCount]       = useState<number>(0);
+  const [resourcesCount, setResourcesCount]   = useState<number>(0);
 
   // Mark landing as "seen" once the user moves past it. Subsequent
   // Codex tab visits in this session resume the browser instead.
@@ -144,6 +150,8 @@ export function CodexPage() {
     if (key === 'warframes')  setSubTab('warframes');
     if (key === 'weapons')    setSubTab('weapons');
     if (key === 'companions') setSubTab('companions');
+    if (key === 'arcanes')    setSubTab('arcanes');
+    if (key === 'resources')  setSubTab('resources');
     setView('browser');
   }, []);
 
@@ -182,9 +190,11 @@ export function CodexPage() {
       subTab === 'mods'       ? modsCount       :
       subTab === 'warframes'  ? warframesCount  :
       subTab === 'weapons'    ? weaponsCount    :
-                                companionsCount;
+      subTab === 'companions' ? companionsCount :
+      subTab === 'arcanes'    ? arcanesCount    :
+                                resourcesCount;
     return `${n.toLocaleString()} ${subTab} · Click to inspect`;
-  }, [subTab, modsCount, warframesCount, weaponsCount, companionsCount]);
+  }, [subTab, modsCount, warframesCount, weaponsCount, companionsCount, arcanesCount, resourcesCount]);
 
   // ── Render ────────────────────────────────────────────────────────────
 
@@ -264,6 +274,18 @@ export function CodexPage() {
             <CompanionsBrowser
               onSelect={handleSelectEntry}
               onCountChange={setCompanionsCount}
+            />
+          )}
+          {subTab === 'arcanes' && (
+            <ArcanesBrowser
+              onSelect={handleSelectEntry}
+              onCountChange={setArcanesCount}
+            />
+          )}
+          {subTab === 'resources' && (
+            <ResourcesBrowser
+              onSelect={handleSelectEntry}
+              onCountChange={setResourcesCount}
             />
           )}
         </div>

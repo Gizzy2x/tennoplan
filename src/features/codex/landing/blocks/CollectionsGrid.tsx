@@ -45,9 +45,11 @@ const COLLECTIONS: CollectionDef[] = [
   { key: 'warframes',  name: 'Warframes',  icon: Hexagon,   category: 'Warframe',  ready: true  },
   { key: 'weapons',    name: 'Weapons',    icon: Crosshair, category: 'Weapon',    ready: true  },
   { key: 'companions', name: 'Companions', icon: PawPrint,  category: 'Companion', ready: true  },
+  // Relics intentionally stays coming-soon — deferred for a bespoke
+  // treatment (see feedback_relic_rail_deferred.md in memory).
   { key: 'relics',     name: 'Relics',     icon: Archive,   category: 'Relic',     ready: false },
-  { key: 'arcanes',    name: 'Arcanes',    icon: Gem,       category: 'Arcane',    ready: false },
-  { key: 'resources',  name: 'Resources',  icon: Boxes,     category: 'Resource',  ready: false },
+  { key: 'arcanes',    name: 'Arcanes',    icon: Gem,       category: 'Arcane',    ready: true  },
+  { key: 'resources',  name: 'Resources',  icon: Boxes,     category: 'Resource',  ready: true  },
 ];
 
 interface CollectionsGridProps {
