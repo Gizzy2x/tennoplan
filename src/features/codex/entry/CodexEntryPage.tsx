@@ -96,6 +96,7 @@ function BlockSlot({ blockKey, entry, onSelectEntry }: BlockSlotProps) {
     case 'GeneralInformation': return <GeneralInformationBlock entry={entry} />;
     case 'WikiFooter':     return <WikiFooterBlock entry={entry} />;
     case 'ModStats':       return <ModStatsBlockSlot entry={entry} />;
+    case 'ArcaneStats':    return <ArcaneStatsBlockSlot entry={entry} />;
     case 'AugmentContext':
       return (
         <AugmentContextBlock
@@ -136,6 +137,31 @@ function ModStatsBlockSlot({ entry }: { entry: CodexEntry }) {
       baseDrain={entry.baseDrain ?? 0}
       rank={rank}
       onRankChange={setRank}
+    />
+  );
+}
+
+/**
+ * Sibling of ModStatsBlockSlot for arcane entries. Arcanes ship the same
+ * `levelStats` shape (per-rank stat-line arrays) as mods, so we reuse
+ * ModStatsBlock as the rendering primitive — only difference is no drain
+ * (arcanes don't cost mod capacity) and the slider's aria-label reads
+ * "Arcane rank" so screen-reader users hear the right noun.
+ */
+function ArcaneStatsBlockSlot({ entry }: { entry: CodexEntry }) {
+  const levelStats = entry.levelStats ?? [];
+  const maxRank = Math.max(0, levelStats.length - 1);
+  const [rank, setRank] = useState(maxRank);
+
+  if (levelStats.length === 0) return null;
+
+  return (
+    <ModStatsBlock
+      levelStats={levelStats}
+      baseDrain={0}
+      rank={rank}
+      onRankChange={setRank}
+      rankAriaLabel="Arcane rank"
     />
   );
 }

@@ -31,6 +31,7 @@ export type BlockKey =
   | 'GeneralInformation'
   | 'Components'
   | 'ModStats'
+  | 'ArcaneStats'
   | 'AugmentContext'
   | 'RelicRewards'
   | 'DucatValue';
@@ -78,7 +79,7 @@ export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
     'Header', 'RelicRewards', 'Drops', 'BestFarms', 'WikiFooter',
   ],
   Arcane: [
-    'Header', 'HeroIcon', 'Description', 'Drops', 'BestFarms', 'WikiFooter',
+    'Header', 'HeroIcon', 'ArcaneStats', 'Description', 'Drops', 'BestFarms', 'WikiFooter',
   ],
   Blueprint: [
     'Header', 'HeroIcon', 'Description', 'Build', 'Drops', 'BestFarms', 'WikiFooter',
