@@ -28,6 +28,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/adapters/storage/db';
 import type { TennoplanItem } from '@/core/domain/tennoplanApi';
 import type { CodexEntry } from '../../types';
+import { getPlanetArt, planetFromDropLocation } from '@/lib/planets/planetArt';
 import styles from './ComponentsBlock.module.css';
 
 const MAX_DROPS_PER_CARD = 2;
@@ -126,12 +127,24 @@ function ComponentCard({ component, onClick }: ComponentCardProps) {
 
       {topDrops.length > 0 && (
         <ul className={styles.drops}>
-          {topDrops.map((d, i) => (
-            <li key={`${d.location}-${i}`} className={styles.dropRow}>
-              <span className={styles.dropLocation}>{d.location}</span>
-              <span className={styles.dropChance}>{(d.chance * 100).toFixed(1)}%</span>
-            </li>
-          ))}
+          {topDrops.map((d, i) => {
+            const planet = planetFromDropLocation(d);
+            const planetArt = getPlanetArt(planet);
+            return (
+              <li key={`${d.location}-${i}`} className={styles.dropRow}>
+                {planetArt && (
+                  <span
+                    className={styles.dropPlanet}
+                    style={{ backgroundImage: `url(${planetArt})` }}
+                    aria-hidden="true"
+                    title={planet ?? undefined}
+                  />
+                )}
+                <span className={styles.dropLocation}>{d.location}</span>
+                <span className={styles.dropChance}>{(d.chance * 100).toFixed(1)}%</span>
+              </li>
+            );
+          })}
         </ul>
       )}
 
