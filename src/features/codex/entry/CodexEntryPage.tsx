@@ -39,6 +39,7 @@ import { PatchHistoryBlock } from './blocks/PatchHistoryBlock';
 import { BuildBlock } from './blocks/BuildBlock';
 import { DropsBlock } from './blocks/DropsBlock';
 import { ComponentsBlock } from './blocks/ComponentsBlock';
+import { AugmentContextBlock } from './blocks/AugmentContextBlock';
 
 interface CodexEntryPageProps {
   entry: CodexEntry;
@@ -95,6 +96,14 @@ function BlockSlot({ blockKey, entry, onSelectEntry }: BlockSlotProps) {
     case 'GeneralInformation': return <GeneralInformationBlock entry={entry} />;
     case 'WikiFooter':     return <WikiFooterBlock entry={entry} />;
     case 'ModStats':       return <ModStatsBlockSlot entry={entry} />;
+    case 'AugmentContext':
+      return (
+        <AugmentContextBlock
+          isAugment={entry.isAugment === true}
+          compatName={entry.compatName}
+          onSelectWarframe={onSelectEntry}
+        />
+      );
     case 'BestFarms':      return <BestFarmsBlock entry={entry} />;
     case 'PatchHistory':   return <PatchHistoryBlock entry={entry} />;
     case 'Build':          return <BuildBlock entry={entry} />;

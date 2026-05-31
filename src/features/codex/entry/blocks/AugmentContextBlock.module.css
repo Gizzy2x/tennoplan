@@ -1,0 +1,99 @@
+/* ================================================================
+   AugmentContextBlock — small "Augments [Frame]" context card.
+
+   Compact horizontal layout: portrait left, two-line copy right
+   ("Augments" label above warframe name). Sits in a panel matching
+   the codex-entry block family so it nests cleanly into mod pages
+   and the ModDetailModal alike.
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+  padding:        var(--space-md);
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  8px;
+}
+
+.label {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  margin:         0;
+}
+
+/* Default (non-interactive) variant — flat panel, no hover. */
+.card {
+  display:         flex;
+  align-items:     center;
+  gap:             var(--space-md);
+  padding:         var(--space-sm);
+  background:      color-mix(in srgb, var(--color-bg-primary) 60%, transparent);
+  border:          1px solid color-mix(in srgb, var(--color-border-default) 70%, transparent);
+  border-radius:   6px;
+  /* Reset button styling so the interactive variant inherits cleanly. */
+  font:            inherit;
+  color:           inherit;
+  text-align:      left;
+  width:           100%;
+  cursor:          default;
+}
+
+/* Interactive variant — adds the click affordances: pointer cursor,
+   gold-accent hover border, slight lift. Mirrors ComponentsBlock's
+   card-interactive tone so the codex feels consistent. */
+.cardInteractive {
+  cursor:        pointer;
+  transition:    border-color 150ms ease-out, transform 150ms ease-out;
+}
+
+.cardInteractive:hover {
+  border-color:  color-mix(in srgb, var(--color-accent-gold) 60%, var(--color-border-default));
+  transform:     translateY(-1px);
+}
+
+.cardInteractive:focus-visible {
+  outline:        2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+.portrait {
+  width:         48px;
+  height:        48px;
+  flex-shrink:   0;
+  object-fit:    contain;
+  filter:        drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+
+.copy {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+  min-width:      0;
+}
+
+.augmentsLabel {
+  font-family:    var(--font-sans);
+  font-size:      0.65rem;
+  font-weight:    700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+.warframeName {
+  font-family:    var(--font-serif);
+  font-size:      1.05rem;
+  font-weight:    700;
+  color:          var(--color-accent-gold);
+  letter-spacing: 0.01em;
+  /* Truncate gracefully — long Prime names can exceed the card width. */
+  overflow:       hidden;
+  text-overflow:  ellipsis;
+  white-space:    nowrap;
+}

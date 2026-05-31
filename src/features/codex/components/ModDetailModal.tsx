@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import clsx from 'clsx';
 import { ModCardV3 } from './ModCardV3';
 import { ModStatsBlock, computeDisplayDrain } from '@/features/codex/entry/blocks/ModStatsBlock';
+import { AugmentContextBlock } from '@/features/codex/entry/blocks/AugmentContextBlock';
 import type { ModEntry } from '@/lib/mods/codexModsAdapter';
 import styles from './ModDetailModal.module.css';
 
@@ -76,6 +77,17 @@ export function ModDetailModal({ mod, onClose }: ModDetailModalProps) {
                   {mod.description.replace(/<[A-Z0-9_]+>/g, '').replace(/\\n/g, ' ')}
                 </p>
               </>
+            )}
+
+            {/* Warframe augment context — only renders when this mod is
+                an augment AND its compatName resolves to a known frame.
+                Non-interactive in the modal (no navigation hookup yet);
+                pure informational signal. */}
+            {mod.isAugment && (
+              <AugmentContextBlock
+                isAugment={mod.isAugment}
+                compatName={mod.compatName}
+              />
             )}
 
             {/* Metadata */}

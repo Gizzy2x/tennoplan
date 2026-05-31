@@ -16,6 +16,7 @@ import type { ItemCategory } from '@/core/domain/tennoplanApi';
 import type { CodexEntry } from '../types';
 import { WarframeSummaryCard } from './WarframeSummaryCard';
 import { WeaponSummaryCard } from './WeaponSummaryCard';
+import { CompanionSummaryCard } from './CompanionSummaryCard';
 
 type SummaryComponent = ComponentType<{ entry: CodexEntry }>;
 
@@ -23,10 +24,18 @@ type SummaryComponent = ComponentType<{ entry: CodexEntry }>;
  * Registry of category → summary component. Add a row here when a new
  * category gets a summary primitive; the shell discovers it automatically
  * via `hasSummaryFor`.
+ *
+ * Companion + Sentinel share `CompanionSummaryCard` deliberately — their
+ * data shape is identical (health/shield/armor + polarities + abilities)
+ * and the card branches on `entry.category` for the identity label.
+ *
+ * Relic is intentionally absent — bespoke treatment planned separately.
  */
 const SUMMARY_BY_CATEGORY: Partial<Record<ItemCategory, SummaryComponent>> = {
-  Warframe: WarframeSummaryCard,
-  Weapon:   WeaponSummaryCard,
+  Warframe:  WarframeSummaryCard,
+  Weapon:    WeaponSummaryCard,
+  Companion: CompanionSummaryCard,
+  Sentinel:  CompanionSummaryCard,
 };
 
 /** True when this entry's category has a summary primitive wired. */

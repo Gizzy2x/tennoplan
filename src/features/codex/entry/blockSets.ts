@@ -31,6 +31,7 @@ export type BlockKey =
   | 'GeneralInformation'
   | 'Components'
   | 'ModStats'
+  | 'AugmentContext'
   | 'RelicRewards'
   | 'DucatValue';
 
@@ -56,16 +57,21 @@ export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
     'Header', 'Polarities', 'Description',
     'Components', 'BestFarms', 'PatchHistory', 'WikiFooter',
   ],
+  // HeroIcon + StatsCompanion live in the right-rail CompanionSummaryCard,
+  // which is shared with Sentinel below. Polarities stays left as build context.
   Companion: [
-    'Header', 'HeroIcon', 'StatsCompanion', 'Polarities', 'Description',
+    'Header', 'Polarities', 'Description',
     'Components', 'BestFarms', 'WikiFooter',
   ],
+  // Same rail as Companion; the left column keeps the prose blocks
+  // (Passive + Abilities carry the descriptions the rail tiles only
+  // gesture at).
   Sentinel: [
-    'Header', 'HeroIcon', 'StatsCompanion', 'Polarities', 'Description',
+    'Header', 'Polarities', 'Description',
     'Passive', 'Abilities', 'Components', 'BestFarms', 'WikiFooter',
   ],
   Mod: [
-    'Header', 'HeroIcon', 'ModStats', 'Description', 'Drops',
+    'Header', 'HeroIcon', 'ModStats', 'AugmentContext', 'Description', 'Drops',
     'BestFarms', 'PatchHistory', 'WikiFooter',
   ],
   Relic: [
