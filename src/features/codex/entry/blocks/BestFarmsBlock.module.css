@@ -40,7 +40,11 @@
 .row {
   position:       relative;
   display:        grid;
-  grid-template-columns: 40px minmax(0, 1fr) auto;
+  /* Columns: rank ordinal → planet thumb → meta column → chance.
+     The planet thumb slot is always 36px so rows align even when
+     a non-mission source can't be planet-anchored (the slot stays
+     empty for sorties / arbitrations / relics / mod-by-enemy). */
+  grid-template-columns: 40px 36px minmax(0, 1fr) auto;
   gap:            var(--space-md);
   align-items:    center;
   padding:        10px 12px;
@@ -68,6 +72,40 @@
   font-size:      1rem;
   font-weight:    700;
   line-height:    1;
+}
+
+/* ── Planet thumb slot ──────────────────────────────────────────
+   Always 36×36, even when empty, so all rows align on the meta-column
+   start. When the source can't be planet-anchored, the slot just
+   stays empty — no placeholder ring (would add visual noise without
+   carrying signal).
+   ───────────────────────────────────────────────────────────── */
+.planetSlot {
+  width:  36px;
+  height: 36px;
+}
+
+.planetThumb {
+  width:                36px;
+  height:               36px;
+  border-radius:        50%;
+  background-size:      cover;
+  background-position:  center;
+  background-repeat:    no-repeat;
+  box-shadow:
+    0 0 0 1px rgba(219, 176, 88, 0.28),
+    inset 0 0 8px rgba(0, 0, 0, 0.55);
+  /* Slight saturation so the orb pops against the row's dim background. */
+  filter: saturate(1.08);
+  transition: transform 150ms ease-out, box-shadow 150ms ease-out;
+}
+
+.row:hover .planetThumb {
+  transform:   scale(1.06);
+  box-shadow:
+    0 0 0 1px rgba(219, 176, 88, 0.5),
+    inset 0 0 8px rgba(0, 0, 0, 0.55),
+    0 0 14px rgba(219, 176, 88, 0.2);
 }
 
 .meta {
@@ -157,7 +195,10 @@
 }
 
 .notes {
-  grid-column:    2 / -1;
+  /* Meta is now column 3 (rank=1, planet=2, meta=3, chance=4) — the
+     notes line spans from meta start to the end of the row so the
+     italic flavour text always lines up under the location title. */
+  grid-column:    3 / -1;
   font-family:    var(--font-sans);
   font-size:      0.78rem;
   color:          var(--color-text-muted);
@@ -165,13 +206,13 @@
   font-style:     italic;
 }
 
-/* Narrow container — stack chance below meta, keep rank inline */
+/* Narrow container — stack chance below meta, keep rank + planet inline. */
 @container codex-landing (max-width: 560px) {
   .row {
-    grid-template-columns: 40px minmax(0, 1fr);
+    grid-template-columns: 40px 36px minmax(0, 1fr);
   }
   .chance {
-    grid-column: 2;
+    grid-column: 3;
     text-align:  left;
     font-size:   1.25rem;
   }

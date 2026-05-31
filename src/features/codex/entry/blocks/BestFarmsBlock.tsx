@@ -7,12 +7,19 @@
  * not the primary signal. The primary signal is the chance percentage
  * (gold serif, large) and the rank ordinal (1–5, gold).
  *
+ * Each row also carries a circular planet thumb derived from the drop
+ * location (open-world labels collapse to their parent planet — Cetus
+ * → Earth, Fortuna → Venus, etc.). When the source can't be planet-
+ * anchored (sortie / arbitration / relic / mod-by-enemy), the slot
+ * stays empty so the grid layout doesn't drift across rows.
+ *
  * Null when there are no recommendations — quiet, no "no data" copy.
  */
 
 import clsx from 'clsx';
 import type { CodexEntry } from '../../types';
 import type { BestFarmRecommendation } from '@/core/domain/tennoplanApi';
+import { getPlanetArt, planetFromDropLocation } from '@/lib/planets/planetArt';
 import styles from './BestFarmsBlock.module.css';
 
 interface BestFarmsBlockProps {
@@ -42,10 +49,22 @@ interface FarmRowProps {
 
 function FarmRow({ farm, rank }: FarmRowProps) {
   const chancePct = (farm.location.chance * 100).toFixed(2);
+  const planet = planetFromDropLocation(farm.location);
+  const planetArt = getPlanetArt(planet);
 
   return (
     <li className={styles.row}>
       <span className={styles.rank} aria-hidden="true">{rank}</span>
+
+      <div className={styles.planetSlot} aria-hidden="true">
+        {planetArt && (
+          <div
+            className={styles.planetThumb}
+            style={{ backgroundImage: `url(${planetArt})` }}
+            title={planet ?? undefined}
+          />
+        )}
+      </div>
 
       <div className={styles.meta}>
         <span className={styles.location}>{farm.location.location}</span>
