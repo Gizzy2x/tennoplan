@@ -17,13 +17,74 @@
   src: url("/fonts/noto-serif-vf.woff2") format("woff2");
 }
 
+/* ================================================================
+   Geist family — adopted 2026-05-31 (Impeccable v3)
+   Sans / Mono use the variable axis (one file, all weights 100-900).
+   Pixel variants ship as 5 distinct geometric glyph fonts and are
+   used as ORNAMENT only — dividers, polarity markers, status pips,
+   section bullets. Never as body text or label text.
+   Files live in /public/fonts/geist/ (copied from node_modules/geist).
+   ================================================================ */
+
 @font-face {
-  font-family: "Inter";
+  font-family: "Geist";
   font-style: normal;
-  font-weight: 300 700;
+  font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/inter-vf.woff2") format("woff2");
+  src: url("/fonts/geist/Geist-Variable.woff2") format("woff2-variations");
 }
+
+@font-face {
+  font-family: "Geist Mono";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/geist/GeistMono-Variable.woff2") format("woff2-variations");
+}
+
+@font-face {
+  font-family: "Geist Pixel Square";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/geist/GeistPixel-Square.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist Pixel Grid";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/geist/GeistPixel-Grid.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist Pixel Circle";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/geist/GeistPixel-Circle.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist Pixel Triangle";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/geist/GeistPixel-Triangle.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Geist Pixel Line";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/geist/GeistPixel-Line.woff2") format("woff2");
+}
+
+/* Legacy Inter @font-face removed 2026-05-31 — Inter is banned by
+   Impeccable v3 (.impeccable.md §5, §10). No component hardcodes
+   "Inter"; --font-sans now resolves to Geist. */
 
 /* ================================================================
    New Fonts for Mod Card Styling — Added Fonts
@@ -181,16 +242,20 @@
      jade. Pushes the surface decisively away from the Lotus-cyan genre
      default and leans into the "infested dangerous" Warframe aesthetic
      — surface reads as a chitinous Helminth chamber, with the jade
-     accent doing the work cyan/bone previously did. Token name kept as
-     "teal" through this trial period to limit churn; rename to
-     "--color-accent-jade" once the direction is locked. */
+     accent doing the work cyan/bone previously did.
+
+     Canonical name is --color-accent-jade. --color-accent-teal is kept
+     as a backwards-compat alias so off-limits surfaces (mod card
+     internals, legacy components) keep working without churn — new
+     code should prefer the jade name. */
   --color-bg-primary:     #080a08;
   --color-bg-secondary:   #13180f;
   --color-text-primary:   #e3e8de;
   --color-text-muted:     #959e8a;
   --color-border-default: #252e23;
   --color-accent-gold:    #dbb058;
-  --color-accent-teal:    #58e88a;
+  --color-accent-jade:    #58e88a;
+  --color-accent-teal:    var(--color-accent-jade);  /* deprecated alias — prefer jade */
 
   /* Status Colors */
   --color-status-urgent:  #fb923c;
@@ -203,7 +268,7 @@
      passes 4.5:1 contrast on --color-bg-secondary at the weights we use
      for stat values (0.95rem / 700). Shield is lavender per project
      preference; under the Mutalist Glow theme the jade accent
-     (--color-accent-teal) already sits in the green range, so any
+     (--color-accent-jade) already sits in the green range, so any
      literal-cyan/teal shield treatment would muddy the hierarchy. */
   --color-stat-health:    #e25c5c;
   --color-stat-shield:    #b07cd6;
@@ -233,9 +298,22 @@
   --space-3xl: 48px;
   --space-4xl: 64px;
 
-  /* Typography — font families */
+  /* Typography — font families (Impeccable v3, 2026-05-31)
+     Geist Sans replaces Inter for body/UI. Inter is banned by the spec.
+     Geist Mono for numeric columns / stat values / timers (tabular by default).
+     Geist Pixel variants are ornament-only — see .impeccable.md §5. */
   --font-serif: "Noto Serif", Georgia, serif;
-  --font-sans:  "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans:  "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:  "Geist Mono", ui-monospace, "SF Mono", Consolas, monospace;
+
+  /* Geist Pixel ornament tokens — apply via font-family on a small
+     element to render geometric glyph accents. Used for polarity
+     markers, dividers, section bullets, status pips. Ornament only. */
+  --font-pixel-square:   "Geist Pixel Square", monospace;
+  --font-pixel-grid:     "Geist Pixel Grid", monospace;
+  --font-pixel-circle:   "Geist Pixel Circle", monospace;
+  --font-pixel-triangle: "Geist Pixel Triangle", monospace;
+  --font-pixel-line:     "Geist Pixel Line", monospace;
 
   /* ════════════════════════════════════════════════════════════════
      MOD CARD FONT CONFIGURATION — Adjust all font settings here
@@ -305,25 +383,85 @@
   --color-accent-gold-55: rgba(219, 176, 88, 0.55);
   --color-accent-gold-70: rgba(219, 176, 88, 0.70);
 
-  /* "Teal" accent opacity variants — actually bioluminescent jade
-     (#58e88a) since the 2026-05-29 Mutalist Glow pivot. Token name kept
-     through the trial period; rename to --color-accent-jade once the
-     direction locks. Earlier bone-trial values used rgba(88, 232, 138,
-     X); now jade rgb(88, 232, 138, X). */
-  --color-accent-teal-10: rgba(88, 232, 138, 0.10);
-  --color-accent-teal-12: rgba(88, 232, 138, 0.12);
-  --color-accent-teal-18: rgba(88, 232, 138, 0.18);
-  --color-accent-teal-20: rgba(88, 232, 138, 0.20);
-  --color-accent-teal-25: rgba(88, 232, 138, 0.25);
-  --color-accent-teal-65: rgba(88, 232, 138, 0.65);
-  --color-accent-teal-80: rgba(88, 232, 138, 0.80);
-  --color-accent-teal-85: rgba(88, 232, 138, 0.85);
+  /* Jade accent opacity variants — bioluminescent jade (#58e88a) since
+     the 2026-05-29 Mutalist Glow pivot. The --color-accent-teal-XX
+     names remain below as backwards-compat aliases so existing
+     consumers (mod card internals, etc.) keep working; new code should
+     prefer the jade names. */
+  --color-accent-jade-10: rgba(88, 232, 138, 0.10);
+  --color-accent-jade-12: rgba(88, 232, 138, 0.12);
+  --color-accent-jade-18: rgba(88, 232, 138, 0.18);
+  --color-accent-jade-20: rgba(88, 232, 138, 0.20);
+  --color-accent-jade-25: rgba(88, 232, 138, 0.25);
+  --color-accent-jade-65: rgba(88, 232, 138, 0.65);
+  --color-accent-jade-80: rgba(88, 232, 138, 0.80);
+  --color-accent-jade-85: rgba(88, 232, 138, 0.85);
+
+  /* Deprecated teal-named aliases — kept so off-limits surfaces (mod
+     card internals, settings, older features) keep resolving without
+     a sweeping rename. Prefer --color-accent-jade-* in new code. */
+  --color-accent-teal-10: var(--color-accent-jade-10);
+  --color-accent-teal-12: var(--color-accent-jade-12);
+  --color-accent-teal-18: var(--color-accent-jade-18);
+  --color-accent-teal-20: var(--color-accent-jade-20);
+  --color-accent-teal-25: var(--color-accent-jade-25);
+  --color-accent-teal-65: var(--color-accent-jade-65);
+  --color-accent-teal-80: var(--color-accent-jade-80);
+  --color-accent-teal-85: var(--color-accent-jade-85);
 
   /* Semantic aliases — resolve old token names */
   --color-primary:                   var(--color-accent-gold);
   --font-label:                      var(--font-sans);
   --font-headline:                   var(--font-serif);
   --color-surface-container-lowest:  var(--color-bg-secondary);
+
+  /* ════════════════════════════════════════════════════════════════
+     Density System (Impeccable v3, 2026-05-31)
+
+     New surfaces opt into density-aware sizing by consuming the
+     --density-* tokens instead of the legacy --font-size-* scale.
+     Defaults below = Standard mode (≥1440px). The [data-density="compact"]
+     override block below activates Compact mode (<1440px or user toggle).
+
+     Legacy --font-size-* tokens are left untouched so existing
+     surfaces (codex shell, celestial pendulum, modcard) keep
+     rendering exactly as they do today. Surfaces migrate per-PR per
+     the migration order in .impeccable.md §12.
+     ════════════════════════════════════════════════════════════════ */
+
+  --density-display:  clamp(2rem, 5vw, 3.5rem);   /* hero compositions only */
+  --density-h1:       1.75rem;                    /* 28px — page hero       */
+  --density-h2:       1.25rem;                    /* 20px — section header  */
+  --density-h3:       1rem;                       /* 16px — subsection      */
+  --density-body:     0.875rem;                   /* 14px — default body    */
+  --density-label:    0.75rem;                    /* 12px — labels/meta     */
+  --density-caption:  0.6875rem;                  /* 11px — editorial caps  */
+  --density-pixel:    0.625rem;                   /* 10px — Pixel ornament  */
+
+  --density-gap:           var(--space-md);       /* 12px — composition gap */
+  --density-gap-tight:     var(--space-sm);       /* 8px  — tight clusters  */
+  --density-padding-edge:  var(--space-lg);       /* 16px — app-edge gutter */
+  --density-padding-block: var(--space-md);       /* 12px — block padding   */
+}
+
+/* Compact mode — default <1440px (Tennoplan is 1080p-friendly).
+   The useUiSettingsStore sets data-density="compact" on <html> when:
+   (a) viewport width is below 1440px on mount, or
+   (b) user has explicitly toggled compact via Settings.
+   See src/store/uiSettings.ts. */
+[data-density="compact"] {
+  --density-h1:       1.5rem;     /* 24px */
+  --density-h2:       1.125rem;   /* 18px */
+  --density-h3:       0.9375rem;  /* 15px */
+  --density-body:     0.8125rem;  /* 13px */
+  --density-label:    0.6875rem;  /* 11px */
+  --density-caption:  0.625rem;   /* 10px */
+  --density-pixel:    0.5625rem;  /*  9px */
+
+  --density-gap:           var(--space-sm);   /* 8px  */
+  --density-gap-tight:     var(--space-xs);   /* 4px  */
+  --density-padding-edge:  var(--space-md);   /* 12px */
+  --density-padding-block: var(--space-sm);   /* 8px  */
 }
 
 /* ================================================================
@@ -1210,6 +1348,23 @@ a:focus-visible {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   line-height: 1.3;
+}
+
+/* Codex section-header label — pulled out of 16 duplicated .label
+   rules across the codex blocks. Slightly wider letter-spacing than
+   .typo-label-sm so it reads as a "section marker" inside an entry
+   page rather than a form/data label. Default color is muted; blocks
+   that want gold or jade overrides should set `color:` on their own
+   class composed alongside this one. */
+.typo-section-label {
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height:    1.3;
+  color:          var(--color-text-muted);
+  margin:         0;
 }
 
 /* ================================================================
@@ -3917,7 +4072,132 @@ a:focus-visible {
   align-self:     center;
 }
 
-/* ── Entry detail "back" bar ───────────────────────────────────── */
+/* ── Codex breadcrumb — persistent location chain ──────────────
+   Replaces the bare back-bar. Shows the user's path through the
+   codex: `Codex / Warframes / Inaros / Inaros Chassis`. Each
+   non-current segment is a button that back-navigates to its own
+   level — clicking "Inaros" pops everything beneath it in one go,
+   rather than forcing the user to unwind a stack one Back at a time.
+   The current segment is gold and non-interactive.
+   ─────────────────────────────────────────────────────────────── */
+
+.codex-breadcrumb {
+  display:        flex;
+  align-items:    center;
+  flex-wrap:      wrap;
+  gap:            2px 4px;
+  margin-bottom:  var(--space-md);
+  font-family:    var(--font-sans);
+}
+
+.codex-breadcrumb-segment {
+  display:        inline-flex;
+  align-items:    center;
+  background:     none;
+  border:         none;
+  padding:        4px 6px;
+  font-family:    inherit;
+  font-size:      0.72rem;
+  font-weight:    700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  cursor:         pointer;
+  border-radius:  3px;
+  transition:     color 0.15s ease-out, background 0.15s ease-out;
+}
+
+button.codex-breadcrumb-segment:hover {
+  color:      var(--color-accent-gold);
+  background: var(--color-accent-gold-10);
+}
+
+.codex-breadcrumb-segment:focus-visible {
+  outline:        2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+.codex-breadcrumb-segment--current {
+  color:  var(--color-accent-gold);
+  cursor: default;
+}
+
+.codex-breadcrumb-sep {
+  font-family:    var(--font-serif);
+  font-size:      0.85rem;
+  color:          var(--color-text-muted);
+  opacity:        0.35;
+  user-select:    none;
+}
+
+/* ── Inline notice strip ───────────────────────────────────────
+   Used when a recoverable condition needs to surface (history entry
+   no longer in Dexie, vault-out, etc.). Replaces the previous silent
+   `console.warn`. Auto-dismisses after 6s via the CodexPage timer;
+   the X also dismisses manually. Amber tint reads as "informational"
+   without falling into red-error territory — vault-outs are routine,
+   not failures.
+   ─────────────────────────────────────────────────────────────── */
+
+.codex-notice {
+  display:        flex;
+  align-items:    center;
+  gap:            var(--space-md);
+  padding:        var(--space-sm) var(--space-md);
+  margin-bottom:  var(--space-md);
+  background:     color-mix(in srgb, var(--color-bg-secondary) 85%, var(--color-accent-gold) 8%);
+  border:         1px solid var(--color-accent-gold-30);
+  border-radius:  6px;
+  font-family:    var(--font-sans);
+  font-size:      0.8rem;
+  color:          var(--color-text-primary);
+  line-height:    1.4;
+  animation:      codex-notice-rise 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.codex-notice-message {
+  flex:        1;
+  min-width:   0;
+}
+
+.codex-notice-close {
+  flex-shrink:    0;
+  display:        flex;
+  align-items:    center;
+  justify-content: center;
+  width:          24px;
+  height:         24px;
+  background:     transparent;
+  border:         none;
+  border-radius:  3px;
+  color:          var(--color-text-muted);
+  cursor:         pointer;
+  transition:     color 0.15s ease-out, background 0.15s ease-out;
+}
+
+.codex-notice-close:hover {
+  color:      var(--color-accent-gold);
+  background: var(--color-accent-gold-10);
+}
+
+.codex-notice-close:focus-visible {
+  outline:        2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+@keyframes codex-notice-rise {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .codex-notice {
+    animation: none;
+  }
+}
+
+/* ── Entry detail "back" bar (legacy, kept for any non-codex
+   surface that still references it) ──────────────────────────── */
 
 .codex-back-bar {
   display:        flex;
@@ -4018,6 +4298,7 @@ a:focus-visible {
 /* ── Search bar ─────────────────────────────────────────────────── */
 
 .codex-browse-search-row {
+  position:      relative;       /* anchor for the inline clear button */
   margin-bottom: var(--space-md);
 }
 
@@ -4029,13 +4310,46 @@ a:focus-visible {
   color:            var(--color-text-primary);
   font-family:      var(--font-sans);
   font-size:        0.875rem;
-  padding:          8px 14px;
+  padding:          8px 38px 8px 14px;  /* room for the clear button */
   outline:          none;
   transition:       border-color 0.15s ease-out;
 }
 
 .codex-browse-search::placeholder { color: var(--color-text-muted); }
 .codex-browse-search:focus         { border-color: rgba(88, 232, 138,0.45); }
+
+/* Inline clear (×) button — shown only when the search has a value
+   so empty searches don't carry visual noise. Positioned absolute
+   inside the search row, vertically centred. Matches the rest of
+   the codex's quiet-affordance pattern: muted by default, gold on
+   hover, full-bleed focus ring for keyboard users. */
+.codex-browse-search-clear {
+  position:        absolute;
+  top:             50%;
+  right:           6px;
+  transform:       translateY(-50%);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           26px;
+  height:          26px;
+  background:      transparent;
+  border:          none;
+  border-radius:   3px;
+  color:           var(--color-text-muted);
+  cursor:          pointer;
+  transition:      color 0.15s ease-out, background 0.15s ease-out;
+}
+
+.codex-browse-search-clear:hover {
+  color:      var(--color-accent-gold);
+  background: var(--color-accent-gold-10);
+}
+
+.codex-browse-search-clear:focus-visible {
+  outline:        2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
 
 /* ── Filter chips ───────────────────────────────────────────────── */
 
