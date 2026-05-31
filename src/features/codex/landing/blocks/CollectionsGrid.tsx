@@ -35,11 +35,16 @@ interface CollectionDef {
   ready:    boolean;
 }
 
+// NOTE: the `companions` tile counts only TennoplanItem.category === 'Companion'
+// (i.e. pets), but the corresponding browser surfaces Companion + Sentinel
+// together to match Warframe's in-game equipment grouping. The tile count
+// therefore under-reports vs the browser's grid — that's intentional for
+// landing-page legibility; the browser's own counter shows the union.
 const COLLECTIONS: CollectionDef[] = [
   { key: 'mods',       name: 'Mods',       icon: Sparkles,  category: 'Mod',       ready: true  },
   { key: 'warframes',  name: 'Warframes',  icon: Hexagon,   category: 'Warframe',  ready: true  },
-  { key: 'weapons',    name: 'Weapons',    icon: Crosshair, category: 'Weapon',    ready: false },
-  { key: 'companions', name: 'Companions', icon: PawPrint,  category: 'Companion', ready: false },
+  { key: 'weapons',    name: 'Weapons',    icon: Crosshair, category: 'Weapon',    ready: true  },
+  { key: 'companions', name: 'Companions', icon: PawPrint,  category: 'Companion', ready: true  },
   { key: 'relics',     name: 'Relics',     icon: Archive,   category: 'Relic',     ready: false },
   { key: 'arcanes',    name: 'Arcanes',    icon: Gem,       category: 'Arcane',    ready: false },
   { key: 'resources',  name: 'Resources',  icon: Boxes,     category: 'Resource',  ready: false },

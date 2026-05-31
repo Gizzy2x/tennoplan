@@ -27,17 +27,21 @@ import { useCodexHistory, type CodexHistoryEntry } from '@/store/codexHistory';
 import { projectMod, type ModEntry } from '@/lib/mods/codexModsAdapter';
 import { ModsBrowser } from './browsers/ModsBrowser';
 import { WarframesBrowser } from './browsers/WarframesBrowser';
+import { WeaponsBrowser } from './browsers/WeaponsBrowser';
+import { CompanionsBrowser } from './browsers/CompanionsBrowser';
 import { ModDetailModal } from './components/ModDetailModal';
 import { CodexEntryPage } from './entry/CodexEntryPage';
 import { CodexLanding } from './landing/CodexLanding';
 import type { CodexCollectionKey } from './landing/blocks/CollectionsGrid';
 
 type CodexView = 'landing' | 'browser' | 'detail';
-type SubTab    = 'mods' | 'warframes';
+type SubTab    = 'mods' | 'warframes' | 'weapons' | 'companions';
 
 const SUBTABS: Array<{ key: SubTab; label: string }> = [
-  { key: 'mods',      label: 'Mods' },
-  { key: 'warframes', label: 'Warframes' },
+  { key: 'mods',       label: 'Mods' },
+  { key: 'warframes',  label: 'Warframes' },
+  { key: 'weapons',    label: 'Weapons' },
+  { key: 'companions', label: 'Companions' },
 ];
 
 // Session flag: did the user already see the landing this app session?
@@ -61,8 +65,10 @@ export function CodexPage() {
    */
   const [detailStack, setDetailStack]     = useState<TennoplanItem[]>([]);
   const [selectedMod, setSelectedMod]     = useState<ModEntry | null>(null);
-  const [modsCount, setModsCount]         = useState<number>(0);
+  const [modsCount, setModsCount]           = useState<number>(0);
   const [warframesCount, setWarframesCount] = useState<number>(0);
+  const [weaponsCount, setWeaponsCount]     = useState<number>(0);
+  const [companionsCount, setCompanionsCount] = useState<number>(0);
 
   // Mark landing as "seen" once the user moves past it. Subsequent
   // Codex tab visits in this session resume the browser instead.
@@ -132,10 +138,12 @@ export function CodexPage() {
   }, [handleSelectEntry]);
 
   const handleSelectCollection = useCallback((key: CodexCollectionKey) => {
-    // Only Mods + Warframes are wired today; coming-soon tiles can't fire
-    // this handler (they're disabled at the tile level).
-    if (key === 'mods')      setSubTab('mods');
-    if (key === 'warframes') setSubTab('warframes');
+    // Coming-soon tiles are disabled at the tile level, so this handler
+    // only fires for ready collections. Each key maps 1:1 to a subTab.
+    if (key === 'mods')       setSubTab('mods');
+    if (key === 'warframes')  setSubTab('warframes');
+    if (key === 'weapons')    setSubTab('weapons');
+    if (key === 'companions') setSubTab('companions');
     setView('browser');
   }, []);
 
@@ -170,9 +178,13 @@ export function CodexPage() {
 
   // The page hero subtitle reads the active sub-tab's count.
   const browserSubtitle = useMemo(() => {
-    const n = subTab === 'mods' ? modsCount : warframesCount;
+    const n =
+      subTab === 'mods'       ? modsCount       :
+      subTab === 'warframes'  ? warframesCount  :
+      subTab === 'weapons'    ? weaponsCount    :
+                                companionsCount;
     return `${n.toLocaleString()} ${subTab} · Click to inspect`;
-  }, [subTab, modsCount, warframesCount]);
+  }, [subTab, modsCount, warframesCount, weaponsCount, companionsCount]);
 
   // ── Render ────────────────────────────────────────────────────────────
 
@@ -240,6 +252,18 @@ export function CodexPage() {
             <WarframesBrowser
               onSelect={handleSelectEntry}
               onCountChange={setWarframesCount}
+            />
+          )}
+          {subTab === 'weapons' && (
+            <WeaponsBrowser
+              onSelect={handleSelectEntry}
+              onCountChange={setWeaponsCount}
+            />
+          )}
+          {subTab === 'companions' && (
+            <CompanionsBrowser
+              onSelect={handleSelectEntry}
+              onCountChange={setCompanionsCount}
             />
           )}
         </div>
