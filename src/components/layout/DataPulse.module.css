@@ -1,0 +1,113 @@
+/* ================================================================
+   DataPulse — single combined sync + source pill.
+   ================================================================ */
+
+.pill {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             8px;
+  height:          26px;
+  padding:         0 10px;
+  background:      transparent;
+  border:          1px solid var(--color-border-default);
+  border-radius:   13px;
+  color:           var(--color-text-muted);
+  font-family:     var(--font-sans);
+  font-size:       0.6875rem;
+  font-weight:     600;
+  letter-spacing:  0.10em;
+  text-transform:  uppercase;
+  cursor:          pointer;
+  white-space:     nowrap;
+  transition:      color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+
+.pill:hover {
+  color:        var(--color-text-primary);
+  border-color: color-mix(in srgb, var(--color-accent-gold) 50%, transparent);
+  background:   color-mix(in srgb, var(--color-accent-gold) 6%, transparent);
+}
+
+.pill[data-syncing='true'] {
+  color:        var(--color-accent-gold);
+  border-color: color-mix(in srgb, var(--color-accent-gold) 50%, transparent);
+  background:   color-mix(in srgb, var(--color-accent-gold) 8%, transparent);
+}
+
+/* ── Health dot ──────────────────────────────────────────────── */
+
+.dot {
+  width:         8px;
+  height:        8px;
+  border-radius: 50%;
+  flex-shrink:   0;
+  /* color comes from data-health */
+  background:    var(--dot-color, var(--color-text-muted));
+  box-shadow:    0 0 6px var(--dot-glow, transparent);
+}
+
+.pill[data-health='primary']  .dot { --dot-color: var(--color-status-success); --dot-glow: color-mix(in srgb, var(--color-status-success) 55%, transparent); }
+.pill[data-health='fallback'] .dot { --dot-color: var(--color-accent-gold);    --dot-glow: color-mix(in srgb, var(--color-accent-gold) 55%, transparent); }
+.pill[data-health='cached']   .dot { --dot-color: var(--color-text-muted);     --dot-glow: transparent; }
+.pill[data-health='down']     .dot { --dot-color: var(--color-status-error);   --dot-glow: color-mix(in srgb, var(--color-status-error) 55%, transparent); }
+
+/* Pulse the dot while syncing — slow, soft. */
+.pill[data-syncing='true'] .dot {
+  animation: dataPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes dataPulse {
+  0%, 100% { transform: scale(1);    opacity: 1;   }
+  50%      { transform: scale(1.25); opacity: 0.6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill[data-syncing='true'] .dot { animation: none; }
+}
+
+.text {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── PressTip content layout ─────────────────────────────────── */
+
+.tip {
+  display:        grid;
+  grid-template-columns: auto 1fr;
+  column-gap:     var(--space-md);
+  row-gap:        4px;
+  min-width:      200px;
+}
+
+.tipRow {
+  display:        contents;
+}
+
+.tipLabel {
+  font-family:    var(--font-sans);
+  font-size:      0.625rem;
+  font-weight:    600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+.tipValue {
+  font-family:           var(--font-mono);
+  font-size:             0.75rem;
+  font-variant-numeric:  tabular-nums;
+  color:                 var(--color-text-primary);
+  text-align:            right;
+}
+
+.tipHint {
+  grid-column:    1 / -1;
+  margin-top:     4px;
+  padding-top:    4px;
+  border-top:     1px solid var(--color-border-default);
+  font-family:    var(--font-sans);
+  font-size:      0.6875rem;
+  font-style:     italic;
+  color:          var(--color-text-muted);
+  text-align:     center;
+}

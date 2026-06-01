@@ -24,7 +24,7 @@
 import { useMemo } from 'react';
 import clsx from 'clsx';
 import type { CodexEntry } from '../../types';
-import { aggregateDropsByPlanet } from '@/lib/planets/planetArt';
+import { aggregateDropsByPlanet, getPlanetCrop } from '@/lib/planets/planetArt';
 import styles from './PlanetaryOriginsBlock.module.css';
 
 interface PlanetaryOriginsBlockProps {
@@ -44,7 +44,7 @@ export function PlanetaryOriginsBlock({ entry }: PlanetaryOriginsBlockProps) {
 
   return (
     <section className={styles.root} aria-labelledby="codex-planet-origins-label">
-      <h2 id="codex-planet-origins-label" className={styles.label}>
+      <h2 id="codex-planet-origins-label" className={`typo-section-label ${styles.label}`}>
         Planetary Origins
       </h2>
 
@@ -153,7 +153,7 @@ function SecondaryChip({
     <div className={styles.secondaryChip} role="listitem" title={`${planet.planet} — best chance ${chancePct}% across ${planet.nodeCount} node${planet.nodeCount === 1 ? '' : 's'}`}>
       <div
         className={styles.secondaryThumb}
-        style={{ backgroundImage: `url(${planet.art})` }}
+        style={{ backgroundImage: `url(${planet.art})`, backgroundPosition: getPlanetCrop(planet.planet).position }}
         aria-hidden="true"
       >
         {planet.steelPath && (

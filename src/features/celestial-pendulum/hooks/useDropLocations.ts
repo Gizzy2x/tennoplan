@@ -1,28 +1,40 @@
 /**
  * useBountyDropLocations — live Dexie subscription for one world's bounty rows.
  *
- * Reads from db.tennoplanItems (V2 pipeline) and reconstructs the per-tier +
- * per-rotation DropLocation shape that bountyEnrichmentService expects.
+ * Reads the real WFCD bounty reward tables from `db.dropLocations` (type
+ * 'Bounty'), populated by DropDataService from drops.warframestat.us. These
+ * are the accurate, per-rotation (A/B/C) tables the game shows — NOT the live
+ * worldstate job rewardPool (which warframestat leaves empty) and NOT the codex
+ * (which carries no open-world bounty data).
  *
- * sourceName mapping (Worker uses different world names from old domain type):
- *   Cetus Bounty   → BountyLocation 'Cetus'
- *   Fortuna Bounty → BountyLocation 'Solaris'
- *   Cambion Bounty → BountyLocation 'Deimos'
- *   Zariman Bounty → BountyLocation 'Zariman'
+ * Each reward also gets its codex `uniqueName` resolved here (the normalizer is
+ * a pure core service and can't import the items adapter), so reward tiles
+ * deep-link to the exact codex entry. Quantity-prefixed labels ("100X Oxium",
+ * "1,500 Credits Cache") are stripped before resolution; pure currency rewards
+ * resolve to nothing and render as accurate non-linkable tiles.
  */
 
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db }           from '@/adapters/storage/db';
-import type { BountyLocation, DropLocation, RotationTier } from '@/core/domain/drops';
+import { findByName }   from '@/adapters/items/itemsAdapter';
+import type { BountyLocation, DropLocation } from '@/core/domain/drops';
 
-const BOUNTY_TO_SOURCE: Record<BountyLocation, string> = {
-  Cetus:   'Cetus Bounty',
-  Solaris: 'Fortuna Bounty',
-  Deimos:  'Cambion Bounty',
-  Zariman: 'Zariman Bounty',
-};
+/**
+ * Resolve a reward label to a codex uniqueName. Tries the raw name first, then
+ * strips a leading quantity token ("100X ", "15X ", "3X 1,500 ", "50 ") and
+ * retries. Returns undefined for non-item rewards (credits, endo, caches).
+ */
+function resolveRewardUniqueName(itemName: string): string | undefined {
+  const direct = findByName(itemName);
+  if (direct) return direct.uniqueName;
 
-const LEVEL_RX = /(\d+)\s*[-–—]\s*(\d+)/;
+  const stripped = itemName.replace(/^(?:\d[\d,]*\s*[xX]?\s+)+/, '').trim();
+  if (stripped && stripped !== itemName) {
+    const f = findByName(stripped);
+    if (f) return f.uniqueName;
+  }
+  return undefined;
+}
 
 export function useBountyDropLocations(
   bountyLocation: BountyLocation | null | undefined,
@@ -30,45 +42,20 @@ export function useBountyDropLocations(
   const rows = useLiveQuery(
     async () => {
       if (!bountyLocation) return [] as DropLocation[];
-      const targetSource = BOUNTY_TO_SOURCE[bountyLocation];
 
-      const all = await db.tennoplanItems.toArray();
-      const locationMap = new Map<string, DropLocation>();
+      const locs = await db.dropLocations
+        .where('[type+bountyLocation]')
+        .equals(['Bounty', bountyLocation])
+        .toArray();
 
-      for (const item of all) {
-        for (const dl of item.dropLocations) {
-          if (dl.sourceName !== targetSource) continue;
-
-          const m = LEVEL_RX.exec(dl.location);
-          const levelRange = m ? `Level ${m[1]} - ${m[2]}` : dl.location;
-          const rotKey     = (dl.rotation ?? 'flat') as RotationTier | 'flat';
-          const locationKey = `${bountyLocation}|${levelRange}|${rotKey}`;
-
-          const reward = {
-            itemName: item.name,
-            chance:   dl.chance * 100,
-            rarity:   (dl.rarity as string) ?? 'Unknown',
-          };
-
-          const existing = locationMap.get(locationKey);
-          if (existing) {
-            existing.rewards.push(reward);
-          } else {
-            locationMap.set(locationKey, {
-              locationKey,
-              type:          'Bounty',
-              displayName:   `${levelRange} (${rotKey === 'flat' ? 'Pool' : `Rotation ${rotKey}`})`,
-              rewards:       [reward],
-              bountyLocation,
-              bountyLevel:   levelRange,
-              rotationTier:  rotKey === 'flat' ? undefined : (rotKey as RotationTier),
-              fetchedAt:     Date.now(),
-            });
-          }
-        }
-      }
-
-      return Array.from(locationMap.values());
+      // Attach codex identity to each reward for deterministic deep-linking.
+      return locs.map((loc) => ({
+        ...loc,
+        rewards: loc.rewards.map((r) => ({
+          ...r,
+          uniqueName: r.uniqueName ?? resolveRewardUniqueName(r.itemName),
+        })),
+      }));
     },
     [bountyLocation],
     [] as DropLocation[],

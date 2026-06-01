@@ -21,7 +21,7 @@ import { useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { CodexEntry } from '../../types';
 import type { TpDropLocation } from '@/core/domain/tennoplanApi';
-import { getPlanetArt, planetFromDropLocation } from '@/lib/planets/planetArt';
+import { getPlanetArt, getPlanetCrop, planetFromDropLocation } from '@/lib/planets/planetArt';
 import styles from './DropsBlock.module.css';
 
 const COLLAPSE_THRESHOLD = 12;
@@ -47,7 +47,7 @@ export function DropsBlock({ entry }: DropsBlockProps) {
 
   return (
     <section className={styles.root} aria-labelledby="codex-drops-label">
-      <h2 id="codex-drops-label" className={styles.label}>Drop Locations</h2>
+      <h2 id="codex-drops-label" className="typo-section-label">Drop Locations</h2>
 
       {visibleGroups.map((group) => (
         <div key={group.source} className={styles.group}>
@@ -93,7 +93,7 @@ function DropRow({ drop }: { drop: TpDropLocation }) {
         {planetArt && (
           <span
             className={styles.planetThumb}
-            style={{ backgroundImage: `url(${planetArt})` }}
+            style={{ backgroundImage: `url(${planetArt})`, backgroundPosition: getPlanetCrop(planet).position }}
             title={planet ?? undefined}
           />
         )}

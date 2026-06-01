@@ -127,6 +127,15 @@ export interface CycleInfo {
 export interface DuviriCycleInfo extends CycleInfo {
   mood?:         'Joy' | 'Anger' | 'Fear' | 'Envy' | 'Sorrow';
   moodTimeLeft?: number;
+  /**
+   * Weekly Circuit rotation. `normal` = the three Warframes earnable in the
+   * normal Circuit; `hard` = the Steel Path Circuit's Incarnon weapon list.
+   * Names are upstream display strings (e.g. "Ivara", "AckAndBrunt").
+   */
+  circuit?: {
+    normal: string[];
+    hard:   string[];
+  };
 }
 
 export interface Fissure {

@@ -1,317 +1,206 @@
 /**
- * CelestialPendulumPage — Live World Cycle Timers
+ * CelestialPendulumPage — the Orrery.
  *
- * Layout:
- *   PageHero  (title + refresh button in right slot)
- *   CycleTabBar  (4 worlds, bg images, progress bars)
- *   TimerHeroPanel  (cinematic hero + key resources for current world/state)
- *   2-col grid:
- *     BountyDetailPanel  (all rotations + rewards as ResourceTags)
- *     CycleIntelPanel    (all-worlds summary + farming tips)
- *   Footer  (drop data age)
+ * Live world-cycle timers, rebuilt (impeccable v3) as a single dense surface:
  *
- * No hardcoded hex values. No inline design token constants.
- * No redundant section headers — hierarchy comes from structure + spacing.
+ *   PageHero
+ *   Orrery grid   — every tracked world as a planet-anchored cycle card:
+ *                   draining ring (time made visible) + state + activity + clock
+ *   World detail  — anchored hero for the selected world (planet bleed, big
+ *                   countdown, activity intel, key-resource editorial rail)
+ *   Bounty board  — compact reward browser for the selected world
+ *   Footer        — reward-data freshness
+ *
+ * The previous six stacked panels (master header, dial rail, tactical radar,
+ * bounty board, intel panel, footer) collapsed into two zones. All styling
+ * lives in CelestialPendulum.module.css — no global index.css footprint.
  */
 
-import { useState, useCallback } from 'react';
-import { PageHero }           from '@/components/ui/PageHero';
-import { useWorldCycles }     from './hooks/useWorldCycles';
+import { useState, useCallback, useMemo } from 'react';
+import { PageHero }            from '@/components/ui/PageHero';
+import { WORLD_THEMES }        from '@/tokens/worldThemes';
+import type { CycleId, CycleState, CycleStatus } from '@/core/domain/cycles';
+import { useWorldCycles }      from './hooks/useWorldCycles';
 import { useSyndicateMissions } from './hooks/useSyndicateMissions';
-import { useDropsLastSynced } from './hooks/useDropsLastSynced';
+import { useDropsLastSynced }  from './hooks/useDropsLastSynced';
 import { useEnrichedBounties } from './hooks/useEnrichedBounties';
-import { WorldBackground }    from './components/WorldBackground';
-import { WorldNavigationDials } from './components/WorldNavigationDials';
-import { MasterHeader }       from './components/MasterHeader';
-import { TacticalRadar }      from './components/TacticalRadar';
-import { BountyBoard }        from './components/BountyBoard';
-import { CycleIntelPanel }    from './components/CycleIntelPanel';
-import { formatMsParts }      from '@/core/services/cycleService';
-import { getWorldBg }         from './worldAssets';
-import type { CycleId, CycleStatus } from '@/core/domain/cycles';
-import type { KeyResource }   from './components/TimerHeroPanel';
+import { WorldBackground }     from './components/WorldBackground';
+import { WorldCycleCard }      from './components/WorldCycleCard';
+import { WorldActivityDetail } from './components/WorldActivityDetail';
+import { BountyBoard }         from './components/BountyBoard';
+import { CircuitPanel }        from './components/CircuitPanel';
+import { useDuviriCircuit }    from './hooks/useDuviriCircuit';
+import {
+  ORRERY_ORDER,
+  CYCLE_TO_SYNDICATE,
+  getWorldMeta,
+  getActivity,
+  getKeyResources,
+}                              from './cycleActivity';
+import { getWorldBg }          from './worldAssets';
+import styles                  from './CelestialPendulum.module.css';
 
-// ─── Static config ────────────────────────────────────────────────────────────
-
-const WORLD_TABS: { id: CycleId; label: string }[] = [
-  { id: 'cetus',   label: 'CETUS'   },
-  { id: 'vallis',  label: 'FORTUNA' },
-  { id: 'cambion', label: 'DEIMOS'  },
-  { id: 'duviri',  label: 'DUVIRI'  },
-];
-
-const CYCLE_TO_SYNDICATE: Partial<Record<CycleId, string>> = {
-  cetus:   'Ostron',
-  vallis:  'Solaris United',
-  cambion: 'Entrati',
-  zariman: 'The Holdfasts',
-};
-
-const KEY_RESOURCES: Partial<Record<string, KeyResource[]>> = {
-  'cetus-day': [
-    { name: 'Cetus Wisp',        source: 'Plains (night)' },
-    { name: 'Breath of Eidolon', source: 'Bounties Lv.4+' },
-    { name: 'Iradite',           source: 'Rock formations' },
-    { name: 'Grokdrul',          source: 'Grineer camps' },
-    { name: 'Sentirum',          source: 'Mining (rare)' },
-    { name: 'Nyth',              source: 'Mining (rare)' },
-  ],
-  'cetus-night': [
-    { name: 'Arcane Energize',  source: 'Eidolon hunts' },
-    { name: 'Cetus Wisp',       source: 'Plains (glowing)' },
-    { name: 'Brilliant Eidolon Shard', source: 'Eidolons' },
-    { name: 'Intact Sentient Core',    source: 'Sentients' },
-  ],
-  'vallis-warm': [
-    { name: 'Gyromag Systems',  source: 'Heist bounties' },
-    { name: 'Repeller Systems', source: 'Profit-Taker' },
-    { name: 'Atmo Systems',     source: 'Coolant pools' },
-    { name: 'Thermal Sludge',   source: 'Mining' },
-    { name: 'Mytocardia Spore', source: 'Conservation' },
-  ],
-  'vallis-cold': [
-    { name: 'Toroid',           source: 'Spiders & caves' },
-    { name: 'Repeller Systems', source: 'Profit-Taker' },
-    { name: 'Gyromag Systems',  source: 'Heist bounties' },
-    { name: 'Thermal Sludge',   source: 'Coolant pools' },
-    { name: 'Amarast',          source: 'Mining' },
-  ],
-  'cambion-fass': [
-    { name: 'Scintillant',     source: 'Isolation Vaults' },
-    { name: 'Son Token',       source: 'Conservation' },
-    { name: 'Mother Token',    source: 'Bounties' },
-    { name: 'Father Token',    source: 'Parts trading' },
-    { name: 'Ganglion',        source: 'Infested deposits' },
-  ],
-  'cambion-vome': [
-    { name: 'Vome Residue',    source: 'Vome worm' },
-    { name: 'Pustulite',       source: 'Mining' },
-    { name: 'Son Token',       source: 'Conservation' },
-    { name: 'Mother Token',    source: 'Bounties' },
-    { name: 'Ganglion',        source: 'Infested deposits' },
-  ],
-  'zariman-corpus': [
-    { name: 'Voidplume Quill',     source: 'Bounties Lv.3' },
-    { name: 'Voidplume Down',      source: 'Bounties Lv.2' },
-    { name: 'Holdfast Token',      source: 'Bounties' },
-    { name: 'Incarnon Genesis',    source: 'Bounties rare' },
-  ],
-  'zariman-grineer': [
-    { name: 'Voidplume Quill',     source: 'Bounties Lv.3' },
-    { name: 'Voidplume Down',      source: 'Bounties Lv.2' },
-    { name: 'Holdfast Token',      source: 'Bounties' },
-    { name: 'Incarnon Genesis',    source: 'Bounties rare' },
-  ],
-  'duviri-joy':    [{ name: 'Pathos Clamp', source: 'The Circuit' }],
-  'duviri-anger':  [{ name: 'Pathos Clamp', source: 'The Circuit' }],
-  'duviri-envy':   [{ name: 'Pathos Clamp', source: 'The Circuit' }],
-  'duviri-sorrow': [{ name: 'Pathos Clamp', source: 'The Circuit' }],
-  'duviri-fear':   [{ name: 'Pathos Clamp', source: 'The Circuit' }],
-};
-
-const WORLD_TIPS: Partial<Record<CycleId, string[]>> = {
-  cetus: [
-    'Eidolons roam the Plains at night — hunt Teralyst first, then chain to Gantulyst and Hydrolyst.',
-    'Bounty rotations reset every cycle — check before the current phase ends.',
-    'Cetus Wisps glow and are easier to spot at night near water.',
-  ],
-  vallis: [
-    'Exploiter Orb only spawns during warm cycles — prepare coolant canisters in advance.',
-    'Profit-Taker is available any cycle after completing all Vox Solaris heist bounties.',
-    'Toroids drop at high-density spots near the Spaceport and Temple of Profit.',
-  ],
-  cambion: [
-    'Fass Residue and Vome Residue are cycle-specific — collect both types for standing.',
-    'Scintillant has a low spawn rate inside Isolation Vault rooms — check every chamber.',
-    'Jugulus Rex and Carnis Rex require a specific cycle phase to spawn outdoors.',
-  ],
-  zariman: [
-    'Voidplume Quill is the primary currency for Holdfast rank — prioritize Lv.3 bounties.',
-    'Incarnon Genesis adapters rotate weekly — plan weapon upgrades around the schedule.',
-    'Void Flood missions grant the most Holdfast standing per run.',
-  ],
-  duviri: [
-    'The active Spiral determines which decree types appear — plan builds accordingly.',
-    'Pathos Clamps are the main crafting resource for Duviri intrinsics and weapons.',
-    'The Circuit weekly rotation changes available Warframes and weapons in Drifter mode.',
-  ],
-};
-
-/** Cycle-state to special note for the TimerHero callout */
-const CYCLE_NOTES: Partial<Record<string, string>> = {
-  'cetus-night':  'Eidolon Hunting Window',
-  'vallis-warm':  'Exploiter Orb Available',
-  'cambion-fass': 'Fass Cycle Active',
-  'cambion-vome': 'Vome Cycle Active',
-};
-
-// ─── Format helpers ───────────────────────────────────────────────────────────
-
-function formatTabTime(ms: number): string {
-  const { h, m } = formatMsParts(ms);
-  const hNum = parseInt(h, 10);
-  const mNum = parseInt(m, 10);
-  return hNum > 0 ? `${hNum}h` : `${mNum}m`;
-}
-
-function formatHeroTime(ms: number): string {
-  const { h, m } = formatMsParts(ms);
-  const hNum = parseInt(h, 10);
-  const mNum = parseInt(m, 10);
-  return hNum > 0 ? `${hNum}H: ${mNum}M` : `${mNum}M`;
-}
-
-function formatForecastTime(ms: number): string {
-  const { h, m } = formatMsParts(ms);
-  const hNum = parseInt(h, 10);
-  const mNum = parseInt(m, 10);
-  return hNum > 0 ? `${hNum}h ${mNum}m` : `${mNum}m`;
-}
-
-// ─── Component ────────────────────────────────────────────────────────────────
+const ACCENT_FALLBACK = 'var(--color-accent-jade)';
 
 export function CelestialPendulumPage() {
   const [selectedId, setSelectedId] = useState<CycleId>('cetus');
   const [isSyncing,  setIsSyncing]  = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
-  const { statuses, urgency, hasEverLoaded, isError, forceRefetch: refetchCycles, isDataOutOfSync } = useWorldCycles();
+  const { statuses, urgency, hasEverLoaded, isError, forceRefetch: refetchCycles, isDataOutOfSync } =
+    useWorldCycles();
   const { missions, forceRefetch: refetchMissions } = useSyndicateMissions();
   const { ageLabel: dropsAgeLabel } = useDropsLastSynced();
 
-  // Build a keyed record for easy lookup
-  const byId = Object.fromEntries(
-    statuses.map(s => [s.cycle.id, s])
-  ) as Partial<Record<CycleId, CycleStatus>>;
+  // Keyed lookup
+  const byId = useMemo(
+    () => Object.fromEntries(statuses.map((s) => [s.cycle.id, s])) as Partial<Record<CycleId, CycleStatus>>,
+    [statuses],
+  );
 
-  const selectedStatus = byId[selectedId] ?? byId['cetus'] ?? null;
-  const cycleState     = (selectedStatus?.cycle.state ?? 'day') as string;
-  const bgUrl          = getWorldBg(selectedId, cycleState);
+  // Worlds to render: curated order, only those with live data
+  const worlds = useMemo(
+    () => ORRERY_ORDER.filter((id) => byId[id]),
+    [byId],
+  );
 
-  // Syndicate mission + enriched bounties for selected world
-  const syndicateName   = CYCLE_TO_SYNDICATE[selectedId];
+  const selectedStatus = byId[selectedId] ?? (worlds[0] ? byId[worlds[0]] : null) ?? null;
+  const activeId        = selectedStatus?.cycle.id ?? selectedId;
+  const cycleState      = (selectedStatus?.cycle.state ?? 'day') as CycleState;
+  const accent          = WORLD_THEMES[activeId]?.accent ?? ACCENT_FALLBACK;
+  const bgUrl           = getWorldBg(activeId, cycleState);
+
+  const meta      = getWorldMeta(activeId);
+  const activity  = getActivity(activeId, cycleState);
+  const resources = getKeyResources(activeId, cycleState);
+
+  // Bounties for the selected world
+  const syndicateName   = CYCLE_TO_SYNDICATE[activeId];
+  const supportsBounties = Boolean(syndicateName);
   const selectedMission = syndicateName
-    ? (missions.find(m => m.syndicate === syndicateName) ?? null)
+    ? (missions.find((m) => m.syndicate === syndicateName) ?? null)
     : null;
+  const { bounties } = useEnrichedBounties(selectedMission, activeId, cycleState);
+  const duviriCircuit = useDuviriCircuit();
 
-  const { bounties } = useEnrichedBounties(selectedMission, selectedId, cycleState as Parameters<typeof useEnrichedBounties>[2]);
+  // Bounty reward tables come from the drop-data sync (db.dropLocations). If a
+  // world has active job tiers but no reward rows, the tables haven't been
+  // synced — surface a clear prompt rather than empty reward grids.
+  const hasRewardData = useMemo(
+    () => bounties.some((b) => b.rotations.length > 0 || (b.fallbackPool?.length ?? 0) > 0),
+    [bounties],
+  );
+  const bountiesToShow = hasRewardData ? bounties : [];
 
-  // Key resources + tips + cycle note for current world/state
-  const resources  = KEY_RESOURCES[`${selectedId}-${cycleState}`] ?? [];
-  const tips       = WORLD_TIPS[selectedId] ?? [];
-  const cycleNote  = CYCLE_NOTES[`${selectedId}-${cycleState}`] ?? null;
+  const emptyReason = useMemo(() => {
+    if (!supportsBounties) {
+      return activeId === 'duviri'
+        ? 'No rotating bounties here — rewards come from The Circuit and Duviri runs.'
+        : 'No open-world bounty board for this world.';
+    }
+    if (!selectedMission) return 'Live bounty data hasn’t loaded yet — tap Refresh.';
+    if (!hasRewardData)   return 'Bounty reward tables aren’t loaded — open Settings and refresh Drop Data to populate them.';
+    return 'No active bounties in this rotation right now.';
+  }, [supportsBounties, selectedMission, activeId, hasRewardData]);
 
-  // Pre-formatted times for tabs
-  const tabTimes = Object.fromEntries(
-    statuses.map(s => [s.cycle.id, formatTabTime(s.msRemaining)])
-  ) as Partial<Record<CycleId, string>>;
-
-  // Pre-formatted forecast times for intel panel
-  const forecastTimes = Object.fromEntries(
-    statuses.map(s => [s.cycle.id, formatForecastTime(s.msRemaining)])
-  ) as Partial<Record<CycleId, string>>;
-
-  const heroTime  = selectedStatus ? formatHeroTime(selectedStatus.msRemaining) : '—';
+  // One-click load of the WFCD bounty/drop tables (~10 MB, download-once) for
+  // the bounty board's empty state — saves a trip to Settings.
+  const handleLoadBountyData = useCallback(async () => {
+    if (isLoadingData) return;
+    setIsLoadingData(true);
+    try {
+      const { DropDataService } = await import('@/adapters/api/DropDataService');
+      await DropDataService.fetchAndSync();
+    } catch {
+      /* live query stays empty; the user can retry */
+    } finally {
+      setIsLoadingData(false);
+    }
+  }, [isLoadingData]);
 
   const handleRefresh = useCallback(async () => {
     if (isSyncing) return;
     setIsSyncing(true);
     try {
-      await Promise.all([
-        refetchCycles(),
-        refetchMissions(),
-      ]);
+      await Promise.all([refetchCycles(), refetchMissions()]);
     } finally {
       setIsSyncing(false);
     }
   }, [isSyncing, refetchCycles, refetchMissions]);
 
-  // ── Loading state ─────────────────────────────────────────────────────────
+  // ── Loading ─────────────────────────────────────────────────────────────
   if (!hasEverLoaded && !isError) {
     return (
-      <div className="cp-loading">
-        <div className="cp-loading-dot" />
-        <span className="typo-label-xs">Initializing Systems…</span>
+      <div className={styles.loading}>
+        <span className={styles.loadingDot} />
+        <span className={styles.loadingText}>Aligning the orrery…</span>
       </div>
     );
   }
 
-  // ── Refresh button (injected into PageHero right slot) ────────────────────
   const refreshBtn = (
-    <button
-      onClick={() => void handleRefresh()}
-      disabled={isSyncing}
-      className="cp-refresh-btn"
-    >
+    <button onClick={() => void handleRefresh()} disabled={isSyncing} className={styles.refresh}>
       {isSyncing ? 'Syncing…' : '↻ Refresh'}
     </button>
   );
 
-  // ── Main layout ───────────────────────────────────────────────────────────
   return (
-    <div data-world={selectedId} style={{ position: 'relative', color: 'var(--color-text-primary)' }}>
-
-      {/* Cinematic world background */}
+    <div className={styles.page} data-world={activeId}>
       <WorldBackground url={bgUrl} />
 
-      {/* Content layer */}
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      <div className={styles.content}>
+        <PageHero prefix="CELESTIAL" title="PENDULUM" right={refreshBtn} />
 
-        {/* Page header */}
-        <PageHero
-          prefix="CELESTIAL"
-          title="PENDULUM"
-          right={refreshBtn}
-        />
-
-        {/* Global radar — sticky pre-heat spotter, world-agnostic */}
-        <MasterHeader
-          statuses={byId}
-          urgency={urgency}
-        />
-
-        {/* World navigation dials — swing rail with theme broadcasting */}
-        <WorldNavigationDials
-          tabs={WORLD_TABS}
-          statuses={byId}
-          urgency={urgency}
-          activeId={selectedId}
-          onSelect={setSelectedId}
-          times={tabTimes}
-        />
-
-        {/* Tactical radar — SVG blueprint hero, replaces TimerHeroPanel */}
-        <TacticalRadar
-          worldId={selectedId}
-          cycleState={cycleState}
-          timeRemaining={heroTime}
-          cycleNote={cycleNote}
-          resources={resources}
-          urgency={urgency[selectedId]}
-          isDataOutOfSync={isDataOutOfSync}
-        />
-
-        {/* Bottom 2-column: bounties | intel */}
-        <div className="cp-grid">
-          <BountyBoard
-            bounties={bounties}
-            hasMission={selectedMission !== null}
-            cycleProgress={selectedStatus?.progress ?? 0}
-          />
-          <CycleIntelPanel
-            activeId={selectedId}
-            statuses={byId}
-            forecastTimes={forecastTimes}
-            tips={tips}
-            isDataOutOfSync={isDataOutOfSync}
-          />
+        {/* ── Orrery: all worlds at a glance ──────────────────────────── */}
+        <div className={styles.orrery} role="group" aria-label="World cycles">
+          {worlds.map((id) => {
+            const status = byId[id]!;
+            const state  = status.cycle.state;
+            return (
+              <WorldCycleCard
+                key={id}
+                id={id}
+                meta={getWorldMeta(id)}
+                status={status}
+                urgency={urgency[id]}
+                activity={getActivity(id, state)}
+                accent={WORLD_THEMES[id]?.accent ?? ACCENT_FALLBACK}
+                selected={id === activeId}
+                onSelect={setSelectedId}
+              />
+            );
+          })}
         </div>
 
-        {/* Footer: reward data freshness */}
-        <div className="cp-footer">
-          <div className="cp-footer-dot" />
-          <span className="cp-footer-label">Reward data updated {dropsAgeLabel}</span>
-        </div>
+        {/* ── Selected world detail ───────────────────────────────────── */}
+        {selectedStatus && (
+          <WorldActivityDetail
+            meta={meta}
+            status={selectedStatus}
+            urgency={urgency[activeId]}
+            activity={activity}
+            accent={accent}
+            resources={resources}
+            staleData={isDataOutOfSync}
+          />
+        )}
 
+        {/* ── Bounties (or Duviri's Circuit rotation) ─────────────────── */}
+        {activeId === 'duviri'
+          ? <CircuitPanel circuit={duviriCircuit} accent={accent} />
+          : <BountyBoard
+              bounties={bountiesToShow}
+              accent={accent}
+              emptyReason={emptyReason}
+              onLoadData={supportsBounties && !hasRewardData ? handleLoadBountyData : undefined}
+              isLoadingData={isLoadingData}
+            />}
+
+        {/* ── Footer ──────────────────────────────────────────────────── */}
+        <div className={styles.footer}>
+          <span className={styles.footerDot} />
+          <span className={styles.footerLabel}>Reward data updated {dropsAgeLabel}</span>
+        </div>
       </div>
     </div>
   );

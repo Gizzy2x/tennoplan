@@ -1,40 +1,157 @@
 /* ================================================================
-   LandingHero — editorial title + tagline.
-   Left-aligned, no centering; the landscape canvas reads as an
-   editorial page, not a marketing centered headline.
+   LandingHero — power-user header rail, not a marketing hero.
+
+   Single row at all but the narrowest widths:
+     [Identity (flex)]  [Search (260px cap)]  [Meta (auto)]
+
+   The search bar lives inline here instead of taking its own row —
+   even when the canvas tightens. Dropping it to a dedicated row
+   was the exact "search bar takes a line" pattern the user flagged.
    ================================================================ */
 
 .root {
-  max-width:      720px;
+  display:        grid;
+  /* Identity flexes, search caps itself via max-width, meta hugs.
+     This stays a single row down to ~640px container width. */
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items:    end;
+  gap:            var(--space-lg);
+  padding-top:    var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom:  1px solid var(--color-border-default);
+}
+
+.identity {
   display:        flex;
   flex-direction: column;
-  gap:            8px;
-  padding-top:    var(--space-xl);
+  gap:            var(--space-xs);
+  min-width:      0;
 }
 
 .title {
   font-family:    var(--font-serif);
   font-weight:    700;
-  letter-spacing: 0.02em;
-  /* Fluid type — large on wide canvases, calm on narrow */
-  font-size:      clamp(2.5rem, 4.4vw, 3.5rem);
-  line-height:    1.05;
+  /* Bumped from --density-h1 (28px) to a display-class size — at
+     2.5rem the page identity has real anchor weight without
+     ballooning into landing-page territory. The codex tab is the
+     single most-visited surface, so the title earns more presence. */
+  font-size:      clamp(2rem, 3.2vw, 2.5rem);
+  letter-spacing: 0.005em;
+  line-height:    1;
   color:          var(--color-text-primary);
   margin:         0;
 }
 
 .tagline {
   font-family: var(--font-sans);
-  font-size:   1rem;
+  font-size:   var(--density-body);
+  font-weight: 300;
   color:       var(--color-text-muted);
-  line-height: 1.5;
+  line-height: 1.4;
   margin:      0;
   max-width:   56ch;
 }
 
-/* Narrow viewports — slightly less air at top */
-@container codex-landing (max-width: 720px) {
+/* ── Search slot (middle) ─────────────────────────────────────── */
+
+/* Stays inline with the hero at all widths. Capped at 260px so it
+   reads as a typical header search field (Linear / GitHub / Slack)
+   rather than a sprawling promotional input. */
+.search {
+  display:        flex;
+  justify-content: flex-end;
+  align-self:     end;
+  min-width:      0;
+  padding-bottom: 4px;
+}
+
+.search > * {
+  width:     100%;
+  max-width: 260px;
+  min-width: 180px;
+}
+
+/* ── Meta rail (right) ─────────────────────────────────────────── */
+
+.meta {
+  display:     flex;
+  align-items: center;
+  gap:         var(--space-md);
+  margin:      0;
+  flex-shrink: 0;
+  padding-bottom: 4px;
+}
+
+.metaCell {
+  display:        flex;
+  flex-direction: column;
+  align-items:    flex-end;
+  gap:            2px;
+}
+
+.metaLabel {
+  font-family:    var(--font-sans);
+  font-size:      var(--density-caption);
+  font-weight:    600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  line-height:    1;
+  margin:         0;
+}
+
+.metaValue {
+  font-family:           var(--font-mono);
+  font-size:             var(--density-body);
+  font-weight:           500;
+  font-variant-numeric:  tabular-nums;
+  color:                 var(--color-accent-gold);
+  line-height:           1;
+  margin:                0;
+}
+
+.metaSep {
+  font-family: var(--font-pixel-square);
+  font-size:   var(--density-pixel);
+  color:       var(--color-border-default);
+  line-height: 1;
+}
+
+/* ── Tight canvas: tagline hides before we stack ──────────────
+   Below this width the tagline starts squeezing into the title;
+   drop it so the row stays clean rather than forcing a vertical
+   collapse the user explicitly asked us to avoid. */
+@container codex-landing (max-width: 880px) {
+  .tagline {
+    display: none;
+  }
+}
+
+/* ── Genuinely narrow: stack only when no other option works ── */
+
+@container codex-landing (max-width: 640px) {
   .root {
-    padding-top: var(--space-md);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "identity"
+      "search"
+      "meta";
+    row-gap: var(--space-md);
+  }
+
+  .identity { grid-area: identity; }
+  .search   { grid-area: search;   justify-content: flex-start; }
+  .meta     { grid-area: meta;     justify-content: flex-start; }
+
+  .search > * {
+    max-width: none;
+  }
+
+  .metaCell {
+    align-items: flex-start;
+  }
+
+  .tagline {
+    display: block;
   }
 }

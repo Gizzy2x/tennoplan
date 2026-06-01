@@ -23,7 +23,7 @@ export function AbilitiesBlock({ entry }: AbilitiesBlockProps) {
 
   return (
     <section className={styles.root} aria-labelledby="codex-abilities-label">
-      <h2 id="codex-abilities-label" className={styles.label}>Abilities</h2>
+      <h2 id="codex-abilities-label" className="typo-section-label">Abilities</h2>
       <ol className={styles.list}>
         {abilities.map((ability, idx) => (
           <AbilityRow key={`${ability.name}-${idx}`} index={idx + 1} ability={ability} />

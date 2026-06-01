@@ -69,22 +69,9 @@
    radial glow on the portrait container carries the "this is a
    Prime" signal silently, per spec.
    ──────────────────────────────────────────────────────────── */
-.nameBackdrop {
-  position:       absolute;
-  inset:          var(--space-md);
-  width:          calc(100% - 2 * var(--space-md));
-  height:         auto;
-  pointer-events: none;
-  z-index:        0;
-}
-
-.nameBackdropText {
-  font-family:    var(--font-serif);
-  font-weight:    700;
-  font-size:      24px;   /* nominal — SVG scales via viewBox + textLength */
-  letter-spacing: -0.01em;
-  fill:           color-mix(in srgb, var(--color-accent-gold) 18%, transparent);
-}
+/* .nameBackdrop / .nameBackdropText now live in NameBackdrop.module.css
+   — see src/features/codex/entry/summary/NameBackdrop.tsx for the
+   shared SVG primitive consumed by all three summary cards. */
 
 .portraitFallback {
   display:         flex;
@@ -127,15 +114,17 @@
   gap:                   var(--space-sm);
 }
 
+/* Flat icon slot — no background, no padding, no border-radius.
+   The previous card-chrome (tinted bg + radius) read as "tappable
+   card" even without a cursor: pointer rule, so users would click
+   the tiles and nothing would happen. Until the per-ability detail
+   view ships, the icons stay pure icons — honest stillness reads
+   better than fake affordance. */
 .abilityTile {
   display:         flex;
   align-items:     center;
   justify-content: center;
   aspect-ratio:    1;
-  padding:         var(--space-sm);
-  background:      color-mix(in srgb, var(--color-bg-primary) 60%, transparent);
-  border-radius:   6px;
-  /* No border, no hover — interactivity arrives with the detail view */
 }
 
 .abilityIcon {

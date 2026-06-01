@@ -73,10 +73,12 @@ function normaliseRarity(rarity: string, chance: number): BountyRewardRarity {
 
 function toEnrichedReward(r: DropReward): EnrichedBountyReward {
   return {
-    itemName: r.itemName,
-    chance:   r.chance,
-    rawRarity: r.rarity,
-    tier:     normaliseRarity(r.rarity, r.chance),
+    itemName:   r.itemName,
+    uniqueName: r.uniqueName,
+    chance:     r.chance,
+    rawRarity:  r.rarity,
+    tier:       normaliseRarity(r.rarity, r.chance),
+    ...(r.stage ? { stage: r.stage } : {}),
   };
 }
 

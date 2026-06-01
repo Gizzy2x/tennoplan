@@ -1,477 +1,250 @@
 /**
- * BountyBoard — Warframe-style bounty selection + reward display.
+ * BountyBoard — full wiki-style bounty reward tables for the selected world.
  *
- * Replaces BountyMatrix. Layout:
- *   Tier strip   — scrollable horizontal tabs, one per bounty tier
- *   Reward pane  — selected bounty's reward breakdown
- *     Header     — level range + standing + "Why run this?" callout
- *     Rot. tabs  — A / B / C when rotation data is available
- *     Reward grid — RewardCard × N
- *       Hover: card expands downward (mod-card style) showing rotation + chance
- *       Click: RewardPopup floating window with codex stub
+ * Structure mirrors wiki.warframe.com/w/Bounty:
+ *   Tier (a live job, by level)  →  Rotation A/B/C  →  Stage groups  →  table
+ *
+ * Each stage group ("Stage 1", "Final Stage", …) shows its exact reward table
+ * with per-item drop chances — no dedup, no compacting. Items that exist in the
+ * codex are quick-look-able (click → smart window → full entry); currencies
+ * render as accurate non-linkable tiles.
+ *
+ * Data: the real WFCD bounty tables via useEnrichedBounties → db.dropLocations
+ * (populated by the drop-data sync). When that sync hasn't run, the empty state
+ * offers an inline "Load bounty data" action.
  */
 
 import { memo, useState, useEffect, useCallback, useMemo } from 'react';
 import { ItemIcon } from '@/components/ui/ItemIcon';
-import { findByName } from '@/adapters/items/itemsAdapter';
-import type { EnrichedBounty, BountyRewardRarity, EnrichedBountyReward } from '@/core/domain/bounty';
+import { findByName, findByUniqueName } from '@/adapters/items/itemsAdapter';
+import { useQuickLook } from '@/store/quickLook';
+import type { EnrichedBounty, EnrichedBountyReward, BountyRewardRarity } from '@/core/domain/bounty';
 import type { RotationTier } from '@/core/domain/drops';
-
-// ─── TTV Classification ───────────────────────────────────────────────────────
-
-type TtvTier = 'Fast' | 'Efficient' | 'High Yield';
-
-function classifyTtv(bounty: EnrichedBounty): TtvTier {
-  if (bounty.isSteelPath) return 'High Yield';
-  const maxLv = bounty.enemyLevels[1] ?? 0;
-  if (maxLv > 50)  return 'High Yield';
-  if (maxLv <= 25) return 'Fast';
-  return 'Efficient';
-}
-
-const TTV_LABELS: Record<TtvTier, string> = {
-  'Fast':       'FAST',
-  'Efficient':  'EFFICIENT',
-  'High Yield': 'HIGH YIELD',
-};
+import styles from '../CelestialPendulum.module.css';
 
 // ─── "Why run this?" editorial ────────────────────────────────────────────────
 
 const ITEM_PITCH: [RegExp, string][] = [
-  [/\bAya\b/i,              'Best source of Aya — trades for Prime Vault items.'],
-  [/arcane energize/i,      'Highest-value Eidolon Arcane. Night only.'],
-  [/arcane/i,               'Arcanes drop here — strong endgame mod alternatives.'],
-  [/scintillant/i,          'Scintillant has a low spawn rate; vaults are the best source.'],
-  [/breath of eidolon/i,    'Required for Eidolon-related crafting and ranking.'],
-  [/voidplume quill/i,      'Primary Holdfast standing currency — prioritise Lv.3.'],
-  [/incarnon genesis/i,     'Incarnon weapon upgrade — limited weekly rotation.'],
-  [/toroid/i,               'Toroids are the core Corpus standing currency on Vallis.'],
-  [/gyromag systems/i,      'Profit-Taker component — farm during Heist bounties.'],
+  [/\bAya\b/i,            'Best source of Aya — trades toward Prime Vault items.'],
+  [/arcane energize/i,    'Highest-value Eidolon arcane. Night only.'],
+  [/arcane/i,             'Arcanes drop here — strong endgame alternatives.'],
+  [/scintillant/i,        'Scintillant is rare; vaults are the best source.'],
+  [/voidplume/i,          'Primary Holdfast standing currency — prioritise Lv.3.'],
+  [/incarnon genesis/i,   'Incarnon weapon upgrade — limited weekly rotation.'],
+  [/toroid/i,             'Core Corpus standing currency on Vallis.'],
+  [/gyromag systems/i,    'Profit-Taker component — farm during Heist bounties.'],
 ];
 
 function whyRunThis(bounty: EnrichedBounty): string {
-  const allNames = [
-    ...bounty.rotations.flatMap(r => r.rewards.map(rw => rw.itemName)),
-    ...(bounty.fallbackPool ?? []),
-  ];
+  const allNames = bounty.rotations.flatMap((r) => r.rewards.map((rw) => rw.itemName));
   for (const [pattern, pitch] of ITEM_PITCH) {
-    if (allNames.some(n => pattern.test(n))) return pitch;
+    if (allNames.some((n) => pattern.test(n))) return pitch;
   }
-  const ttv = classifyTtv(bounty);
-  if (ttv === 'Fast')       return 'Quick clear, good for standing stacking between high-value runs.';
-  if (ttv === 'High Yield') return 'High enemy level = best drop weights for rare rewards.';
-  return 'Balanced standing-to-time ratio. Good mid-session option.';
+  const maxLv = bounty.enemyLevels[1] ?? 0;
+  if (bounty.isSteelPath || maxLv > 50) return 'High enemy level — best drop weights for rare rewards.';
+  if (maxLv <= 25) return 'Quick clear — good for stacking standing between high-value runs.';
+  return 'Balanced standing-to-time ratio. Solid mid-session option.';
 }
 
-// ─── Deduplicate rewards (same item can appear twice in a rotation pool) ─────
+// ─── Stage grouping ────────────────────────────────────────────────────────────
 
-function deduplicateRewards(rewards: EnrichedBountyReward[]): EnrichedBountyReward[] {
-  const seen = new Map<string, EnrichedBountyReward>();
+const RARITY_RANK: Record<BountyRewardRarity, number> = { Rare: 3, Uncommon: 2, Common: 1, Unknown: 0 };
+
+/** Order stages: Stage 1 → 2/3 → 4 → Final. */
+function stageRank(stage: string | undefined): number {
+  if (!stage) return 50;
+  if (/final/i.test(stage)) return 99;
+  const m = /\d+/.exec(stage);
+  return m ? Number(m[0]) : 50;
+}
+
+interface StageGroup { stage: string; rewards: EnrichedBountyReward[]; }
+
+function groupByStage(rewards: EnrichedBountyReward[]): StageGroup[] {
+  const map = new Map<string, StageGroup>();
   for (const r of rewards) {
-    const existing = seen.get(r.itemName);
-    if (!existing || r.chance > existing.chance) seen.set(r.itemName, r);
+    const stage = r.stage ?? 'Rewards';
+    let g = map.get(stage);
+    if (!g) { g = { stage, rewards: [] }; map.set(stage, g); }
+    g.rewards.push(r);
   }
-  return Array.from(seen.values());
+  const groups = [...map.values()].sort((a, b) => stageRank(a.stage) - stageRank(b.stage));
+  for (const g of groups) {
+    g.rewards.sort((a, b) => RARITY_RANK[b.tier] - RARITY_RANK[a.tier] || b.chance - a.chance);
+  }
+  return groups;
 }
 
-// ─── Popup data ───────────────────────────────────────────────────────────────
+type OpenPreview = (uniqueName: string, name: string) => void;
 
-interface PopupData {
-  itemName:             string;
-  rarity:               BountyRewardRarity;
-  chance:               number;
-  allRotationChances:   { tier: string; chance: number }[];
-  imageName?:           string;
-}
+// ─── Reward tile ──────────────────────────────────────────────────────────────
 
-// ─── Reward popup ─────────────────────────────────────────────────────────────
+const RewardTile = memo(function RewardTile({ reward, onPreview }: { reward: EnrichedBountyReward; onPreview: OpenPreview }) {
+  const found = useMemo(
+    () => (reward.uniqueName ? findByUniqueName(reward.uniqueName) : findByName(reward.itemName)),
+    [reward.uniqueName, reward.itemName],
+  );
+  const linkable = Boolean(reward.uniqueName);
+  const chance = `${reward.chance.toFixed(1)}%`;
 
-const RewardPopup = memo(function RewardPopup({
-  data,
-  onClose,
-}: {
-  data:    PopupData;
-  onClose: () => void;
-}) {
-  return (
+  const inner = (
     <>
-      <div className="bb-popup-backdrop" onClick={onClose} />
-      <div className="bb-popup" role="dialog" aria-modal="true" aria-label={data.itemName}>
-        <button className="bb-popup-close" onClick={onClose} aria-label="Close">✕</button>
-
-        <div className="bb-popup-icon-area">
-          {data.imageName ? (
-            <ItemIcon imageName={data.imageName} name={data.itemName} size={72} />
-          ) : (
-            <div className="bb-popup-icon-fallback" />
-          )}
-        </div>
-
-        <div className="bb-popup-name">{data.itemName}</div>
-
-        <div className="bb-popup-meta">
-          <span className={`bb-popup-rarity bb-popup-rarity--${data.rarity.toLowerCase()}`}>
-            {data.rarity}
-          </span>
-          <span className="bb-popup-chance">{data.chance.toFixed(1)}% drop chance</span>
-        </div>
-
-        {data.allRotationChances.length > 0 && (
-          <div className="bb-popup-rotations">
-            <div className="bb-popup-rotations-label">DROP BREAKDOWN BY ROTATION</div>
-            {data.allRotationChances.map(({ tier, chance }) => (
-              <div key={tier} className="bb-popup-rotation-row">
-                <span className="bb-popup-rotation-tier">Rotation {tier}</span>
-                <span className="bb-popup-rotation-chance">{chance.toFixed(1)}%</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="bb-popup-codex-section">
-          <button className="bb-popup-codex-btn" disabled title="Full codex coming soon">
-            Open in Codex →
-          </button>
-          <span className="bb-popup-codex-note">Codex integration coming soon</span>
-        </div>
-      </div>
+      <span className={styles.rewardIcon}>
+        {found?.imageName ? <ItemIcon imageName={found.imageName} name={reward.itemName} size={40} /> : <span className={styles.iconFallback} />}
+      </span>
+      <span className={styles.rewardName}>{reward.itemName}</span>
+      <span className={styles.rewardChance} data-rarity={reward.tier.toLowerCase()}>{chance}</span>
     </>
   );
-});
 
-// ─── Reward card ──────────────────────────────────────────────────────────────
-
-interface RewardCardProps {
-  reward:              EnrichedBountyReward;
-  allRotationChances:  { tier: string; chance: number }[];
-  onPopup:             (data: PopupData) => void;
-}
-
-const RewardCard = memo(function RewardCard({
-  reward,
-  allRotationChances,
-  onPopup,
-}: RewardCardProps) {
-  const found = useMemo(() => findByName(reward.itemName), [reward.itemName]);
-
-  const handleClick = useCallback(() => {
-    onPopup({
-      itemName:           reward.itemName,
-      rarity:             reward.tier,
-      chance:             reward.chance,
-      allRotationChances,
-      imageName:          found?.imageName,
-    });
-  }, [reward, allRotationChances, found, onPopup]);
-
-  const hoverInfo = useMemo(() => {
-    if (allRotationChances.length > 1) {
-      return `Drops in ${allRotationChances.length} rotations  ·  best ${Math.max(...allRotationChances.map(r => r.chance)).toFixed(1)}%`;
-    }
-    if (allRotationChances.length === 1) {
-      return `Rotation ${allRotationChances[0].tier}  ·  ${allRotationChances[0].chance.toFixed(1)}%`;
-    }
-    return `${reward.chance.toFixed(1)}% drop chance`;
-  }, [reward.chance, allRotationChances]);
-
+  if (linkable && reward.uniqueName) {
+    const un = reward.uniqueName;
+    return (
+      <button
+        type="button"
+        className={styles.reward}
+        data-rarity={reward.tier.toLowerCase()}
+        data-link
+        title={`${reward.itemName} — ${chance} · Click to preview`}
+        onClick={() => onPreview(un, reward.itemName)}
+        aria-label={`${reward.itemName}, ${reward.tier}, ${chance} — preview`}
+      >
+        {inner}
+      </button>
+    );
+  }
   return (
-    <div
-      className={`bb-reward-card bb-reward-card--${reward.tier.toLowerCase()}`}
-      onClick={handleClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={e => e.key === 'Enter' && handleClick()}
-      aria-label={`${reward.itemName}, ${reward.tier}, ${reward.chance.toFixed(1)}%`}
-    >
-      {/* Icon */}
-      <div className="bb-card-icon-area">
-        {found?.imageName ? (
-          <ItemIcon imageName={found.imageName} name={reward.itemName} size={72} />
-        ) : (
-          <div className="bb-card-icon-fallback" />
-        )}
-      </div>
-
-      {/* Name + chance (always visible) */}
-      <div className="bb-card-info">
-        <span className="bb-card-name">{reward.itemName}</span>
-        <span className={`bb-card-chance bb-card-chance--${reward.tier.toLowerCase()}`}>
-          {reward.chance.toFixed(1)}%
-        </span>
-      </div>
-
-      {/* Hover expansion — slides down like a mod card */}
-      <div className="bb-card-hover">
-        <span className="bb-card-hover-text">{hoverInfo}</span>
-        <span className="bb-card-hover-cta">Click for details</span>
-      </div>
+    <div className={styles.reward} data-rarity={reward.tier.toLowerCase()} title={`${reward.itemName} — ${chance}`}>
+      {inner}
     </div>
   );
 });
 
-// ─── Bounty tier tab ──────────────────────────────────────────────────────────
-
-interface TierTabProps {
-  bounty:        EnrichedBounty;
-  isActive:      boolean;
-  cycleProgress: number;
-  onClick:       () => void;
-}
-
-const TierTab = memo(function TierTab({
-  bounty,
-  isActive,
-  cycleProgress,
-  onClick,
-}: TierTabProps) {
-  const ttv     = classifyTtv(bounty);
-  const barPct  = ((1 - cycleProgress) * 100).toFixed(1);
-
-  // Best reward for the preview icon — prefer Rare, then Uncommon
-  const previewReward = useMemo(() => {
-    const all = bounty.rotations.flatMap(r => r.rewards);
-    return (
-      all.find(r => r.tier === 'Rare') ??
-      all.find(r => r.tier === 'Uncommon') ??
-      all[0] ??
-      null
-    );
-  }, [bounty]);
-
-  const found = previewReward ? findByName(previewReward.itemName) : null;
-
-  return (
-    <button
-      className={`bb-tier-tab${isActive ? ' bb-tier-tab--active' : ''}`}
-      onClick={onClick}
-      data-ttv={ttv.toLowerCase().replace(' ', '-')}
-      aria-pressed={isActive}
-      aria-label={bounty.tierLabel}
-    >
-      {/* Preview icon for the top reward */}
-      <div className="bb-tier-tab-icon">
-        {found?.imageName ? (
-          <ItemIcon imageName={found.imageName} name={previewReward?.itemName ?? ''} size={28} />
-        ) : (
-          <div className="bb-tier-tab-icon-fallback" />
-        )}
-      </div>
-
-      {/* Level range + SP flag */}
-      <div className="bb-tier-tab-info">
-        <span className="bb-tier-tab-level">{bounty.tierLabel}</span>
-        {bounty.isSteelPath && <span className="bb-tier-tab-sp">STEEL PATH</span>}
-      </div>
-
-      {/* TTV badge */}
-      <span className={`bb-tier-tab-ttv bm-badge--${ttv.toLowerCase().replace(' ', '-')}`}>
-        {TTV_LABELS[ttv]}
-      </span>
-
-      {/* Cycle heartbeat bar */}
-      <div className="bb-tier-heartbeat" aria-hidden="true">
-        <div className="bb-tier-heartbeat-fill" style={{ width: `${barPct}%` }} />
-      </div>
-    </button>
-  );
-});
-
-// ─── Main board ───────────────────────────────────────────────────────────────
+// ─── Board ────────────────────────────────────────────────────────────────────
 
 interface BountyBoardProps {
   bounties:      EnrichedBounty[];
-  hasMission:    boolean;
-  cycleProgress: number;
+  accent:        string;
+  emptyReason:   string;
+  /** Inline action to fetch the drop-data tables when they're missing. */
+  onLoadData?:   () => void;
+  isLoadingData?: boolean;
 }
 
-export const BountyBoard = memo(function BountyBoard({
-  bounties,
-  hasMission,
-  cycleProgress,
-}: BountyBoardProps) {
+export const BountyBoard = memo(function BountyBoard({ bounties, accent, emptyReason, onLoadData, isLoadingData }: BountyBoardProps) {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [activeRot,   setActiveRot]   = useState<RotationTier | null>(null);
-  const [popup,       setPopup]       = useState<PopupData | null>(null);
+  const openQuickLook = useQuickLook((s) => s.open);
+  const onPreview = useCallback<OpenPreview>((u, n) => openQuickLook(u, n), [openQuickLook]);
 
   const selectedBounty = bounties[selectedIdx] ?? null;
 
-  // Clamp selection when bounties list changes (world switch)
   useEffect(() => {
-    if (bounties.length > 0 && selectedIdx >= bounties.length) {
-      setSelectedIdx(0);
-    }
+    if (selectedIdx >= bounties.length) setSelectedIdx(0);
   }, [bounties.length, selectedIdx]);
 
-  // Reset active rotation when the selected bounty changes
+  const rotTabs = useMemo(
+    () => (selectedBounty ? selectedBounty.rotations.filter((r) => r.tier !== null) : []),
+    [selectedBounty],
+  );
+
   useEffect(() => {
     if (!selectedBounty) { setActiveRot(null); return; }
-    const hasTiers = selectedBounty.rotations.some(r => r.tier !== null);
-    setActiveRot(hasTiers ? (selectedBounty.rotations[0]?.tier ?? null) : null);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedIdx]);
+    setActiveRot(selectedBounty.rotations.find((r) => r.tier !== null)?.tier ?? null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedIdx, bounties]);
 
-  const hasTiers = useMemo(
-    () => selectedBounty?.rotations.some(r => r.tier !== null) ?? false,
-    [selectedBounty],
-  );
-
-  const rotations = selectedBounty?.rotations ?? [];
-
-  // Rewards shown for the active rotation (or flat pool) — deduplicated
-  const displayedRewards = useMemo<EnrichedBountyReward[]>(() => {
-    if (!selectedBounty || rotations.length === 0) return [];
-    const raw = hasTiers && activeRot !== null
-      ? (rotations.find(r => r.tier === activeRot)?.rewards ?? [])
-      : (rotations[0]?.rewards ?? []);
-    return deduplicateRewards(raw);
-  }, [selectedBounty, rotations, hasTiers, activeRot]);
-
-  // Map: itemName → all {tier, chance} pairs across every rotation
-  const itemRotationMap = useMemo(() => {
-    const map = new Map<string, { tier: string; chance: number }[]>();
-    if (!selectedBounty) return map;
-    for (const rot of selectedBounty.rotations) {
-      for (const rw of rot.rewards) {
-        const entries = map.get(rw.itemName) ?? [];
-        if (rot.tier) entries.push({ tier: rot.tier, chance: rw.chance });
-        map.set(rw.itemName, entries);
-      }
+  const activeRewards = useMemo<EnrichedBountyReward[]>(() => {
+    if (!selectedBounty) return [];
+    if (rotTabs.length > 0) {
+      const rot = selectedBounty.rotations.find((r) => r.tier === activeRot)
+        ?? selectedBounty.rotations.find((r) => r.tier !== null);
+      return rot?.rewards ?? [];
     }
-    return map;
-  }, [selectedBounty]);
+    return selectedBounty.rotations[0]?.rewards ?? [];
+  }, [selectedBounty, rotTabs, activeRot]);
 
-  const why = useMemo(
-    () => (selectedBounty ? whyRunThis(selectedBounty) : ''),
-    [selectedBounty],
-  );
-
-  const handlePopup  = useCallback((data: PopupData) => setPopup(data), []);
-  const handleClose  = useCallback(() => setPopup(null), []);
-
-  const hasFallback = displayedRewards.length === 0
-    && (selectedBounty?.fallbackPool?.length ?? 0) > 0;
+  const stageGroups = useMemo(() => groupByStage(activeRewards), [activeRewards]);
+  const why = useMemo(() => (selectedBounty ? whyRunThis(selectedBounty) : ''), [selectedBounty]);
 
   // ── Empty state ────────────────────────────────────────────────────────────
   if (bounties.length === 0) {
     return (
-      <div className="bb-empty">
-        <span className="bb-empty-text">
-          {hasMission
-            ? 'Tap Refresh to load bounty data.'
-            : 'No active bounties for this world.'}
-        </span>
+      <div className={styles.bountyEmpty}>
+        <span className={styles.bountyEmptyGlyph} aria-hidden="true">◇</span>
+        <span className={styles.bountyEmptyText}>{emptyReason}</span>
+        {onLoadData && (
+          <button type="button" className={styles.loadBtn} onClick={onLoadData} disabled={isLoadingData}>
+            {isLoadingData ? 'Loading… (~10 MB)' : 'Load bounty data'}
+          </button>
+        )}
       </div>
     );
   }
 
-  // ── Main render ────────────────────────────────────────────────────────────
+  // ── Board ──────────────────────────────────────────────────────────────────
   return (
-    <div className="bb-board">
+    <div className={styles.bounty} style={{ ['--accent' as string]: accent } as React.CSSProperties}>
+      <div className={styles.bountyHead}>
+        <span className={styles.bountyTitle}>BOUNTIES</span>
+        {selectedBounty && selectedBounty.standingTotal > 0 && (
+          <span className={styles.bountyRep}>{selectedBounty.standingTotal.toLocaleString()} standing</span>
+        )}
+      </div>
 
-      {/* ── Tier selection strip ─────────────────────────────────────── */}
-      <div className="bb-tier-strip" role="tablist" aria-label="Bounty tiers">
-        {bounties.map((bounty, i) => (
-          <TierTab
-            key={bounty.jobType}
-            bounty={bounty}
-            isActive={i === selectedIdx}
-            cycleProgress={cycleProgress}
+      <div className={styles.tierStrip} role="tablist" aria-label="Bounty tiers">
+        {bounties.map((b, i) => (
+          <button
+            key={b.jobType}
+            role="tab"
+            aria-selected={i === selectedIdx}
+            className={styles.tier}
+            data-active={i === selectedIdx || undefined}
             onClick={() => setSelectedIdx(i)}
-          />
+          >
+            <span className={styles.tierLabel}>{b.tierLabel}</span>
+            {b.isSteelPath && <span className={styles.tierSp}>SP</span>}
+          </button>
         ))}
       </div>
 
-      {/* ── Reward pane ──────────────────────────────────────────────── */}
       {selectedBounty && (
-        <div className="bb-reward-pane">
+        <>
+          <p className={styles.bountyWhy}>{why}</p>
 
-          {/* Header: tier label + standing + Why */}
-          <div className="bb-pane-header">
-            <div className="bb-pane-header-top">
-              <span className="bb-pane-title">{selectedBounty.tierLabel}</span>
-              {selectedBounty.standingTotal > 0 && (
-                <span className="bb-pane-rep">
-                  {selectedBounty.standingTotal.toLocaleString()} rep
-                </span>
-              )}
-            </div>
-            <div className="bb-pane-why">
-              <span className="bb-pane-why-icon">↗</span>
-              <span className="bb-pane-why-text">{why}</span>
-            </div>
-          </div>
-
-          {/* Rotation tabs — A / B / C (only when data has tiers) */}
-          {hasTiers && rotations.filter(r => r.tier !== null).length > 1 && (
-            <div className="bb-rotation-strip" role="tablist" aria-label="Reward rotations">
-              {rotations.filter(r => r.tier !== null).map(rot => (
+          {rotTabs.length > 1 && (
+            <div className={styles.rotStrip} role="tablist" aria-label="Reward rotations">
+              {rotTabs.map((rot) => (
                 <button
                   key={rot.tier}
                   role="tab"
                   aria-selected={activeRot === rot.tier}
-                  className={`bb-rotation-tab${activeRot === rot.tier ? ' bb-rotation-tab--active' : ''}`}
+                  className={styles.rot}
+                  data-active={activeRot === rot.tier || undefined}
                   onClick={() => setActiveRot(rot.tier as RotationTier)}
                 >
-                  <span className="bb-rotation-tab-label">ROT. {rot.tier}</span>
-                  {rot.rewards[0] && (
-                    <span
-                      className={`bb-rotation-dot bb-rotation-dot--${rot.rewards[0].tier.toLowerCase()}`}
-                    />
-                  )}
+                  ROT {rot.tier}
                 </button>
               ))}
             </div>
           )}
 
-          {/* Reward grid */}
-          <div className="bb-reward-grid">
-            {displayedRewards.map(reward => (
-              <RewardCard
-                key={reward.itemName}
-                reward={reward}
-                allRotationChances={itemRotationMap.get(reward.itemName) ?? []}
-                onPopup={handlePopup}
-              />
-            ))}
-
-            {/* Fallback pool (no rotation data) */}
-            {hasFallback && selectedBounty.fallbackPool!.map((name, i) => {
-              const item = findByName(name);
-              return (
-                <div key={`fb-${i}`} className="bb-reward-card bb-reward-card--unknown">
-                  <div className="bb-card-icon-area">
-                    {item?.imageName ? (
-                      <ItemIcon imageName={item.imageName} name={name} size={72} />
-                    ) : (
-                      <div className="bb-card-icon-fallback" />
-                    )}
-                  </div>
-                  <div className="bb-card-info">
-                    <span className="bb-card-name">{name}</span>
-                    <span className="bb-card-chance bb-card-chance--unknown">—</span>
-                  </div>
-                </div>
-              );
-            })}
-
-            {displayedRewards.length === 0 && !hasFallback && (
-              <div className="bb-reward-grid-empty">No drop data for this rotation.</div>
-            )}
-          </div>
-
-          {/* Cycle note */}
-          {selectedBounty.cycleNote && (
-            <div className="bb-cycle-note">
-              <span className="bb-cycle-note-icon" aria-hidden="true">◆</span>
-              <span className="bb-cycle-note-text">{selectedBounty.cycleNote}</span>
+          {stageGroups.map((g) => (
+            <div key={g.stage} className={styles.stageSection}>
+              <div className={styles.stageLabel}>{g.stage}</div>
+              <div className={styles.rewardGrid}>
+                {g.rewards.map((r, i) => (
+                  <RewardTile key={`${r.itemName}-${i}`} reward={r} onPreview={onPreview} />
+                ))}
+              </div>
             </div>
+          ))}
+
+          {stageGroups.length === 0 && (
+            <span className={styles.rewardGridEmpty}>No reward data for this tier.</span>
           )}
-
-        </div>
+        </>
       )}
-
-      {/* Item detail popup */}
-      {popup && <RewardPopup data={popup} onClose={handleClose} />}
     </div>
   );
 });

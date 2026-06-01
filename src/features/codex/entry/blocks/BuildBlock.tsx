@@ -27,7 +27,7 @@ export function BuildBlock({ entry }: BuildBlockProps) {
 
   return (
     <section className={styles.root} aria-labelledby="codex-build-label">
-      <h2 id="codex-build-label" className={styles.label}>Build Requirements</h2>
+      <h2 id="codex-build-label" className="typo-section-label">Build Requirements</h2>
       <ul className={styles.list}>
         {reqs.map((req, i) => (
           <li key={`${req.item}-${i}`} className={styles.row}>

@@ -1,0 +1,95 @@
+/* ================================================================
+   Toaster — bottom-right toast stack. Items lay out vertically with
+   gap; each toast is a small card with icon + message + close.
+   ================================================================ */
+
+.stack {
+  position:        fixed;
+  bottom:          var(--space-lg);
+  right:           var(--space-lg);
+  z-index:         85;
+  display:         flex;
+  flex-direction:  column-reverse;  /* newest toast at the bottom */
+  gap:             var(--space-sm);
+  pointer-events:  none;            /* let clicks pass through gaps */
+  max-width:       min(420px, calc(100vw - 32px));
+}
+
+/* On phone, anchor to the top so the toast doesn't fight the
+   bottom gesture area / sheets / native keyboard. */
+@media (max-width: 540px) {
+  .stack {
+    top:    calc(var(--header-h, 44px) + var(--space-md));
+    bottom: auto;
+    right:  var(--space-md);
+    left:   var(--space-md);
+    max-width: none;
+    flex-direction: column;  /* newest at the top */
+  }
+}
+
+.toast {
+  display:         grid;
+  grid-template-columns: auto 1fr auto;
+  align-items:     center;
+  gap:             var(--space-sm);
+  padding:         10px var(--space-sm) 10px var(--space-md);
+  background:      var(--color-bg-secondary);
+  /* Full 1px border, variant-tinted. NOT a side-stripe — §10.1
+     forbids `border-left/right` > 1px as variant indicator. The
+     leading variant-colored icon (see .icon below) does that job
+     here, and the full border carries a faint variant tint via
+     color-mix so the whole toast reads as its category. */
+  border:          1px solid color-mix(in srgb, var(--color-accent-gold) 35%, var(--color-border-default));
+  border-radius:   4px;
+  box-shadow:      0 8px 24px rgba(0, 0, 0, 0.55);
+  pointer-events:  auto;
+  font-family:     var(--font-sans);
+  font-size:       0.8125rem;
+  color:           var(--color-text-primary);
+}
+
+.toast[data-variant='success'] {
+  border-color: color-mix(in srgb, var(--color-status-success) 40%, var(--color-border-default));
+}
+.toast[data-variant='warning'] {
+  border-color: color-mix(in srgb, var(--color-status-urgent) 40%, var(--color-border-default));
+}
+.toast[data-variant='error'] {
+  border-color: color-mix(in srgb, var(--color-status-error) 40%, var(--color-border-default));
+}
+
+.icon {
+  display:     flex;
+  align-items: center;
+  color:       var(--color-accent-gold);
+}
+
+.toast[data-variant='success'] .icon { color: var(--color-status-success); }
+.toast[data-variant='warning'] .icon { color: var(--color-status-urgent); }
+.toast[data-variant='error']   .icon { color: var(--color-status-error); }
+
+.message {
+  line-height: 1.4;
+  min-width:   0;
+}
+
+.closeBtn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  width:           24px;
+  height:          24px;
+  padding:         0;
+  background:      transparent;
+  border:          none;
+  border-radius:   3px;
+  color:           var(--color-text-muted);
+  cursor:          pointer;
+  transition:      color 160ms ease-out, background 160ms ease-out;
+}
+
+.closeBtn:hover {
+  color:      var(--color-text-primary);
+  background: color-mix(in srgb, var(--color-accent-gold) 8%, transparent);
+}

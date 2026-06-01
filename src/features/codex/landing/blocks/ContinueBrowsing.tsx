@@ -5,9 +5,10 @@
  * "Your history is empty" placeholder. Returning visitors with no
  * history shouldn't see scaffolding for absent features.
  *
- * Each card click re-opens the entry through the same handler that
- * fresh opens use — so re-opening doesn't bypass the history push
- * (it just dedups to the front).
+ * v3: header rail matches the other landing sections (Pixel-Square
+ * glyph + label); cards use a horizontal thumbnail-anchored layout
+ * distinct from RecentlyAdded's vertical tiles so the two sections
+ * are visually differentiated even when their content overlaps.
  */
 
 import { useCodexHistory, type CodexHistoryEntry } from '@/store/codexHistory';
@@ -24,7 +25,14 @@ export function ContinueBrowsing({ onSelectEntry }: ContinueBrowsingProps) {
 
   return (
     <section className={styles.root} aria-labelledby="codex-continue-label">
-      <h2 id="codex-continue-label" className={styles.label}>Continue Browsing</h2>
+      <header className={styles.header}>
+        <h2 id="codex-continue-label" className={`typo-section-label ${styles.label}`}>
+          <span className={styles.labelGlyph} aria-hidden="true">▢</span>
+          Continue Browsing
+        </h2>
+        <span className={styles.headerMeta}>{entries.length} recent</span>
+      </header>
+
       <div className={styles.strip}>
         {entries.map((e) => (
           <HistoryCard key={e.uniqueName} entry={e} onClick={() => onSelectEntry(e)} />

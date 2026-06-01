@@ -8,6 +8,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { X } from 'lucide-react';
 import { CodexItemCard } from '../components/CodexItemCard';
 import {
   useAllCompanions,
@@ -91,6 +92,16 @@ export function CompanionsBrowser({ onSelect, onCountChange }: CompanionsBrowser
           autoComplete="off"
           spellCheck={false}
         />
+        {query.length > 0 && (
+          <button
+            type="button"
+            className="codex-browse-search-clear"
+            onClick={() => setQuery('')}
+            aria-label="Clear search"
+          >
+            <X size={14} strokeWidth={2.25} />
+          </button>
+        )}
       </div>
 
       <div className="codex-browse-filter-row">

@@ -14,9 +14,9 @@
  * so adding a new optional field to TennoplanItem doesn't require shell
  * changes and missing data doesn't leave empty boxes.
  *
- * Mods are rendered through ModDetailModal at the CodexPage level
- * rather than this shell, but the ModStats block dispatch is preserved
- * here so future per-page mod views (e.g. linked from search) work.
+ * Mods render here too, as a full detail page (ModCard block), so they flow
+ * through the same breadcrumb / back navigation as every other entry. The
+ * old ModDetailModal overlay is retired.
  */
 
 import { useState } from 'react';
@@ -34,6 +34,7 @@ import { PassiveBlock } from './blocks/PassiveBlock';
 import { GeneralInformationBlock } from './blocks/GeneralInformationBlock';
 import { WikiFooterBlock } from './blocks/WikiFooterBlock';
 import { ModStatsBlock } from './blocks/ModStatsBlock';
+import { ModDetailBlock } from './blocks/ModDetailBlock';
 import { BestFarmsBlock } from './blocks/BestFarmsBlock';
 import { PatchHistoryBlock } from './blocks/PatchHistoryBlock';
 import { BuildBlock } from './blocks/BuildBlock';
@@ -42,6 +43,7 @@ import { ComponentsBlock } from './blocks/ComponentsBlock';
 import { AugmentContextBlock } from './blocks/AugmentContextBlock';
 import { PlanetaryOriginsBlock } from './blocks/PlanetaryOriginsBlock';
 import { ConsumersBlock } from './blocks/ConsumersBlock';
+import { RelatedEntriesBlock } from './blocks/RelatedEntriesBlock';
 
 interface CodexEntryPageProps {
   entry: CodexEntry;
@@ -97,6 +99,7 @@ function BlockSlot({ blockKey, entry, onSelectEntry }: BlockSlotProps) {
     case 'Passive':        return <PassiveBlock entry={entry} />;
     case 'GeneralInformation': return <GeneralInformationBlock entry={entry} />;
     case 'WikiFooter':     return <WikiFooterBlock entry={entry} />;
+    case 'ModCard':        return <ModDetailBlock entry={entry} />;
     case 'ModStats':       return <ModStatsBlockSlot entry={entry} />;
     case 'ArcaneStats':    return <ArcaneStatsBlockSlot entry={entry} />;
     case 'AugmentContext':
@@ -114,6 +117,7 @@ function BlockSlot({ blockKey, entry, onSelectEntry }: BlockSlotProps) {
     case 'Build':          return <BuildBlock entry={entry} />;
     case 'Drops':          return <DropsBlock entry={entry} />;
     case 'Components':     return <ComponentsBlock entry={entry} onSelectEntry={onSelectEntry} />;
+    case 'Related':        return <RelatedEntriesBlock entry={entry} onSelectEntry={onSelectEntry} />;
     default:
       return (
         <div className="codex-entry-placeholder">

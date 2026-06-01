@@ -1,22 +1,25 @@
 /* ================================================================
    CodexLanding — wrapper that hosts the landing blocks.
-   Sets up the container-query context so blocks can adapt to the
+
+   Sets up the container-query context so blocks adapt to the
    landing's available width rather than viewport width.
 
-   Stagger entrance: each block fades in + lifts by 8px, offset by
-   80ms. One pass on mount, no looping motion.
+   Stagger entrance: each block fades + lifts 8px, offset 80ms.
+   One pass on mount, no looping motion.
    ================================================================ */
 
 .root {
   /* Container-query host. Every child block uses @container queries
      against this name, so the page adapts to its actual width
      (sidebar + window resizing both work without media queries). */
-  container-name:  codex-landing;
-  container-type:  inline-size;
+  container-name: codex-landing;
+  container-type: inline-size;
 
   display:         flex;
   flex-direction:  column;
-  gap:             var(--space-2xl);
+  /* Density-aware gap — Compact mode (1080p default) tightens to
+     16px between sections; Standard mode opens up to 32px. */
+  gap:             var(--space-xl);
   max-width:       1600px;
   padding-bottom:  var(--space-2xl);
 }
@@ -27,6 +30,13 @@
   opacity:   0;
   transform: translateY(8px);
   animation: codex-landing-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Band sections (FeaturedSpotlight) extend past the landing's
+   horizontal padding via negative margins, so the gradient + borders
+   read as full-width bands rather than another card in the column. */
+.sectionBand {
+  margin-inline: calc(-1 * var(--density-padding-edge));
 }
 
 .section:nth-child(1) { animation-delay:   0ms; }
@@ -45,9 +55,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .section {
-    animation:    none;
-    opacity:      1;
-    transform:    none;
+    animation: none;
+    opacity:   1;
+    transform: none;
   }
 }
 
@@ -57,16 +67,32 @@
   display:        flex;
   align-items:    center;
   flex-wrap:      wrap;
-  gap:            var(--space-md);
+  gap:            var(--space-sm);
   padding-top:    var(--space-lg);
   border-top:     1px solid var(--color-border-default);
   font-family:    var(--font-sans);
-  font-size:      0.72rem;
+  font-size:      var(--density-caption);
   color:          var(--color-text-muted);
 }
 
-.footerDot {
-  opacity: 0.4;
+/* Lead glyph — small Pixel-Square in gold, anchors the footer rail
+   like a bullet at the start of an editorial caption. */
+.footerGlyph {
+  font-family: var(--font-pixel-square);
+  font-size:   var(--density-pixel);
+  color:       var(--color-accent-gold);
+  line-height: 1;
+  margin-right: 2px;
+}
+
+/* Pixel separators between footer items — the ornament system stays
+   consistent (Pixel-Square at gold) so the footer reads as part of
+   the same visual family as the section labels above. */
+.footerSep {
+  font-family: var(--font-pixel-square);
+  font-size:   var(--density-pixel);
+  color:       var(--color-border-default);
+  line-height: 1;
 }
 
 .footerStale {

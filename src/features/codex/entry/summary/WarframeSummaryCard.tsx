@@ -33,6 +33,8 @@
 import clsx from 'clsx';
 import type { CodexEntry } from '../../types';
 import { getIconUrl } from '@/lib/icons/IconResolver';
+import { PressTip } from '@/components/common/PressTip';
+import { NameBackdrop } from './NameBackdrop';
 import styles from './WarframeSummaryCard.module.css';
 
 /**
@@ -168,39 +170,6 @@ function Portrait({ entry }: { entry: CodexEntry }) {
   );
 }
 
-/**
- * Atmospheric name watermark behind the portrait.
- *
- * The watermark only carries the base name — for Prime variants, the
- * "Prime" word is stripped so the same headline reads identically for
- * Ember and Ember Prime. The "this is a Prime" signal is carried
- * entirely by the gold radial glow on the portrait container (see the
- * .portrait[data-prime] rule), deliberately wordless per spec.
- */
-function NameBackdrop({ name }: { name: string }) {
-  const baseName = name.replace(/\s*Prime\s*$/i, '').trim();
-
-  return (
-    <svg
-      className={styles.nameBackdrop}
-      viewBox="0 0 100 26"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <text
-        x="50"
-        y="20"
-        textAnchor="middle"
-        textLength="98"
-        lengthAdjust="spacingAndGlyphs"
-        className={styles.nameBackdropText}
-      >
-        {baseName.toUpperCase()}
-      </text>
-    </svg>
-  );
-}
-
 function Identity({ category }: { category: string }) {
   return (
     <div className={styles.identity}>
@@ -218,26 +187,31 @@ function AbilityStrip({ entry }: { entry: CodexEntry }) {
       {abilities.map((ability, idx) => {
         const iconUrl = ability.imageName ? getIconUrl(ability.imageName) : null;
         return (
-          <div
+          <PressTip
             key={`${ability.name}-${idx}`}
-            className={styles.abilityTile}
-            role="listitem"
-            title={ability.name}
+            content={ability.name}
+            placement="top"
           >
-            {iconUrl ? (
-              <img
-                src={iconUrl}
-                alt={ability.name}
-                className={styles.abilityIcon}
-                draggable={false}
-                decoding="async"
-              />
-            ) : (
-              <span className={styles.abilityNumber} aria-hidden="true">
-                {idx + 1}
-              </span>
-            )}
-          </div>
+            <div
+              className={styles.abilityTile}
+              role="listitem"
+              aria-label={ability.name}
+            >
+              {iconUrl ? (
+                <img
+                  src={iconUrl}
+                  alt={ability.name}
+                  className={styles.abilityIcon}
+                  draggable={false}
+                  decoding="async"
+                />
+              ) : (
+                <span className={styles.abilityNumber} aria-hidden="true">
+                  {idx + 1}
+                </span>
+              )}
+            </div>
+          </PressTip>
         );
       })}
     </div>
@@ -260,12 +234,25 @@ function StatRow({ label, labelTitle, value, rankMax, unit, variant }: StatRowPr
     styles.statValue,
     variant && styles[`statValue--${variant}`],
   );
+  // Only labels that carry a formula or explanation get the PressTip; plain
+  // labels render as a bare dt to avoid surfacing meaningless tooltips.
+  const labelNode = labelTitle ? (
+    <PressTip content={labelTitle} placement="top">
+      <dt className={styles.statLabel}>{label}</dt>
+    </PressTip>
+  ) : (
+    <dt className={styles.statLabel}>{label}</dt>
+  );
   return (
     <div className={styles.statRow}>
-      <dt className={styles.statLabel} title={labelTitle}>{label}</dt>
+      {labelNode}
       <dd className={valueClass}>
         {value}
-        {rankMax && <span className={styles.statRankMax} title="At rank 30"> ({rankMax})</span>}
+        {rankMax && (
+          <PressTip content="At rank 30" placement="top">
+            <span className={styles.statRankMax}> ({rankMax})</span>
+          </PressTip>
+        )}
         {unit && <span className={styles.statUnit}>{unit}</span>}
       </dd>
     </div>

@@ -23,6 +23,13 @@ export interface DataSyncState {
   rowCount?: number;
   /** ETag returned by the source on the last 200/304 response. */
   etag?: string;
+  /**
+   * Version of the parser that produced the stored rows. When the app's
+   * PARSER_VERSION is bumped (parser logic changed), a sync forces a full
+   * re-parse even if the source ETag is unchanged — otherwise a 304 would
+   * keep stale rows produced by the old, buggy parser.
+   */
+  parserVersion?: number;
   /** Last error message, if the previous sync failed. Cleared on success. */
   lastErrorMessage?: string;
 }

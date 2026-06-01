@@ -53,22 +53,9 @@
   filter:     drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
 }
 
-.nameBackdrop {
-  position:       absolute;
-  inset:          var(--space-md);
-  width:          calc(100% - 2 * var(--space-md));
-  height:         auto;
-  pointer-events: none;
-  z-index:        0;
-}
-
-.nameBackdropText {
-  font-family:    var(--font-serif);
-  font-weight:    700;
-  font-size:      24px;
-  letter-spacing: -0.01em;
-  fill:           color-mix(in srgb, var(--color-accent-gold) 18%, transparent);
-}
+/* .nameBackdrop / .nameBackdropText now live in NameBackdrop.module.css
+   — see src/features/codex/entry/summary/NameBackdrop.tsx for the
+   shared SVG primitive consumed by all three summary cards. */
 
 .portraitFallback {
   display:         flex;

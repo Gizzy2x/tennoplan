@@ -42,7 +42,7 @@ export function StatsWarframeBlock({ entry }: StatsWarframeBlockProps) {
 
   return (
     <section className={styles.root} aria-label="Warframe base stats">
-      <h2 className={styles.label}>Base Stats (Rank 30)</h2>
+      <h2 className="typo-section-label">Base Stats (Rank 30)</h2>
       <div className={styles.grid}>
         {rows.map((r) => (
           <div key={r.key} className={styles.stat}>

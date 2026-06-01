@@ -20,14 +20,11 @@
   border:         none;
 }
 
+/* Overrides the canonical .typo-section-label zero margin with a small
+   left inset — the planetary hero card has no internal padding so the
+   label needs a hand-set inset to align with the card's text overlay. */
 .label {
-  font-family:    var(--font-sans);
-  font-size:      0.7rem;
-  font-weight:    700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color:          var(--color-text-muted);
-  margin:         0 0 0 var(--space-xs);
+  margin: 0 0 0 var(--space-xs);
 }
 
 /* ──────────────────────────────────────────────────────────────────

@@ -1,0 +1,88 @@
+/* ================================================================
+   HamburgerMenu — slide-in nav panel + scrim.
+
+   Sits BELOW the header (top: var(--header-h)) and runs to the
+   bottom of the viewport. Spring slide-in from the left via
+   motion/react. Active tab uses a chunky 4px left-tab accent so the
+   active state reads differently from the desktop bar's thin
+   underline — same data, different chrome per orientation.
+   ================================================================ */
+
+.scrim {
+  position:        fixed;
+  inset:           var(--header-h, 44px) 0 0 0;
+  z-index:         45;
+  background:      rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.panel {
+  position:        fixed;
+  top:             var(--header-h, 44px);
+  bottom:          0;
+  left:            0;
+  z-index:         46;
+  display:         flex;
+  flex-direction:  column;
+  padding:         var(--space-md) 0;
+  overflow-y:      auto;
+  background:      var(--color-bg-secondary);
+  border-right:    1px solid var(--color-border-default);
+  box-shadow:      8px 0 24px rgba(0, 0, 0, 0.5);
+}
+
+.nav {
+  display:        flex;
+  flex-direction: column;
+}
+
+.link {
+  display:        flex;
+  align-items:    center;
+  gap:            var(--space-sm);
+  padding:        10px var(--space-lg);
+  background:     none;
+  border:         none;
+  border-left:    4px solid transparent;
+  cursor:         pointer;
+  font-family:    var(--font-sans);
+  font-size:      0.875rem;
+  font-weight:    500;
+  letter-spacing: 0.04em;
+  color:          var(--color-text-primary);
+  text-align:     left;
+  transition:     background 160ms ease-out, color 160ms ease-out, border-color 160ms ease-out;
+}
+
+.link:hover {
+  background: color-mix(in srgb, var(--color-accent-gold) 8%, transparent);
+  color:      var(--color-accent-gold);
+}
+
+.link:focus-visible {
+  outline:        2px solid var(--color-accent-gold);
+  outline-offset: -2px;
+}
+
+/* Active state — chunky left tab. */
+.link[data-active='true'] {
+  background:   color-mix(in srgb, var(--color-accent-gold) 6%, transparent);
+  border-left:  4px solid var(--color-accent-gold);
+  color:        var(--color-accent-gold);
+}
+
+.linkIcon {
+  flex-shrink: 0;
+  opacity:     0.78;
+}
+
+.link[data-active='true'] .linkIcon {
+  opacity: 1;
+}
+
+.divider {
+  margin:    var(--space-sm) var(--space-lg);
+  border:    none;
+  border-top: 1px solid var(--color-border-default);
+}

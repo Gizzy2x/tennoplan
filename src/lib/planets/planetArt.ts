@@ -126,6 +126,40 @@ export function getPlanetArt(raw: string | null | undefined): string | undefined
 }
 
 /**
+ * Circular-crop hint for a planet thumb. The hand-curated art is framed
+ * inconsistently — some planets sit off-centre (Earth drifts left with a
+ * stray moon), some carry ship/asteroid ornaments in the margins. `position`
+ * recentres the planet for `background-position` / `object-position`; `scale`
+ * is an extra zoom used by the larger orrery thumbs (background thumbs rely on
+ * `cover` + the circular mask and only need `position`).
+ *
+ * These are set-once constants paired with static art — not recurring upkeep.
+ */
+export interface PlanetCrop {
+  position: string;
+  scale:    number;
+}
+
+const DEFAULT_PLANET_CROP: PlanetCrop = { position: '50% 50%', scale: 1.2 };
+
+const PLANET_CROP: Record<string, PlanetCrop> = {
+  'Earth':       { position: '41% 49%', scale: 1.34 },  // planet left + stray moon on the right
+  'Venus':       { position: '50% 51%', scale: 1.18 },  // centred, corner ships
+  'Mars':        { position: '46% 50%', scale: 1.22 },  // a touch left, ornaments
+  'Deimos':      { position: '46% 43%', scale: 1.04 },  // full-bleed mass, core high-left
+  'New Zariman': { position: '50% 45%', scale: 1.08 },  // portrait, structure centred
+  'Saturn':      { position: '50% 50%', scale: 1.12 },  // wide rings — keep the body
+  'Void':        { position: '50% 50%', scale: 1.0  },  // full nebula, no zoom
+  'Lua':         { position: '49% 50%', scale: 1.12 },
+};
+
+/** Resolve the crop hint for a planet/region name. Falls back to a centred default. */
+export function getPlanetCrop(raw: string | null | undefined): PlanetCrop {
+  const canonical = normalizePlanetName(raw);
+  return (canonical ? PLANET_CROP[canonical] : undefined) ?? DEFAULT_PLANET_CROP;
+}
+
+/**
  * Pull the planet name out of a DropLocation. Tries multiple sources
  * because the worker enricher stamps planet info into different fields
  * depending on the drop source (mission vs. bounty vs. blueprint loc).

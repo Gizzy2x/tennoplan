@@ -1,28 +1,28 @@
 /**
- * FeaturedSpotlight — the museum centerpiece block.
+ * FeaturedSpotlight — the landing's anchored composition.
  *
- * Three panels on wide canvases:
- *   • Art        — large image of the spotlight item
- *   • Meta       — name + classification + description + CTA
- *   • Recently   — the RecentlyAdded sub-block as a third column
+ * v3 rebuild (.impeccable.md §3a — Anchored Composition):
  *
- * On medium/narrow canvases the Recently column drops below and then
- * everything stacks. Container queries drive the collapse so the block
- * adapts to its parent's width, not the viewport.
+ * The old layout was the textbook §3 violation — `[art panel] | [meta
+ * panel]` side-by-side, each its own boxed island. Replaced with an
+ * anchored composition where:
  *
- * Spotlight item selection — data-driven, zero maintenance:
- *   1. Query Dexie for all items that have `introduced.date` populated.
- *   2. Group by update name; pick the group whose newest date is latest.
- *   3. Within that update, keep only "presentable" categories
- *      (Warframe → Weapon → Arcane → Companion → Sentinel).
- *   4. Rotate through those items weekly (same deterministic UTC-week
- *      math as the old pool, just applied to a dynamic array).
- *   5. Fall back to the hand-curated spotlightPool when introduced data
+ *   • The artwork is a STRUCTURAL ANCHOR, not boxed content. It
+ *     bleeds from the left edge and reaches into the composition.
+ *   • A shared radial gradient (jade, soft) sits behind the artwork,
+ *     dissolving the boundary between "image" and "data."
+ *   • The right side carries an Editorial Rail (§3b) of meta — small
+ *     caps labels above values, no chrome, separated only by
+ *     typographic rhythm.
+ *   • The composition has NO box around art, NO box around meta, NO
+ *     border splitting the two. Information radiates from the anchor.
+ *
+ * Spotlight item selection (unchanged from v2):
+ *   1. Query Dexie for items with `introduced.date` populated.
+ *   2. Group by update; pick the newest update's presentable items.
+ *   3. Rotate weekly via deterministic UTC-week math.
+ *   4. Fall back to hand-curated SPOTLIGHT_POOL when introduced data
  *      isn't available (fresh install, codex not yet synced).
- *
- * This means Featured automatically highlights the latest DE update's
- * content as soon as the 6-hourly CI codex rebuild runs. No file edits
- * needed when a new update ships.
  */
 
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -34,7 +34,6 @@ import {
   currentSpotlightIndex,
   type SpotlightPoolEntry,
 } from '../spotlightPool';
-import { RecentlyAdded } from './RecentlyAdded';
 import styles from './FeaturedSpotlight.module.css';
 
 // Categories worth featuring, in descending preference order.
@@ -42,56 +41,46 @@ const PRESENTABLE: ItemCategory[] = ['Warframe', 'Weapon', 'Arcane', 'Companion'
 
 interface FeaturedSpotlightProps {
   onSelectEntry: (entry: TennoplanItem) => void;
-  /** Used by the RecentlyAdded "N more" overflow link. */
-  onShowMore?:   () => void;
 }
 
-export function FeaturedSpotlight({ onSelectEntry, onShowMore }: FeaturedSpotlightProps) {
-  const resolved = useLiveQuery(
-    async () => resolveSpotlight(),
-    [],
-  );
+export function FeaturedSpotlight({ onSelectEntry }: FeaturedSpotlightProps) {
+  const resolved = useLiveQuery(async () => resolveSpotlight(), []);
 
   return (
     <section className={styles.root} aria-labelledby="codex-spotlight-label">
-      <div className={styles.header}>
-        <h2 id="codex-spotlight-label" className={styles.label}>
-          <span className={styles.labelDot} aria-hidden="true" />
+      {/* Top rail: FEATURED label + update tag.
+          Sits over the composition's negative space (no boxed header). */}
+      <header className={styles.topRail}>
+        <h2 id="codex-spotlight-label" className={`typo-section-label ${styles.label}`}>
+          <span className={styles.labelGlyph} aria-hidden="true">▢</span>
           Featured
         </h2>
         {resolved?.updateName && (
-          <span className={styles.weekTag}>{resolved.updateName}</span>
+          <span className={styles.updateTag}>{resolved.updateName}</span>
         )}
-      </div>
+      </header>
 
-      <div className={styles.grid}>
-        {resolved === undefined && (
-          <div className={styles.loading}>Loading featured entry…</div>
-        )}
-        {resolved === null && (
-          <div className={styles.unavailable}>
-            Spotlight unavailable — codex is still syncing. Browse the Collections below to get started.
-          </div>
-        )}
-        {resolved && (
-          <SpotlightContent
-            entry={resolved.item}
-            onSelectEntry={onSelectEntry}
-            onShowMore={onShowMore}
-          />
-        )}
-      </div>
+      {resolved === undefined && (
+        <p className={styles.loading}>Loading featured entry…</p>
+      )}
+      {resolved === null && (
+        <p className={styles.unavailable}>
+          Spotlight unavailable — codex is still syncing. Browse the Collections below to get started.
+        </p>
+      )}
+      {resolved && (
+        <AnchoredComposition entry={resolved.item} onSelectEntry={onSelectEntry} />
+      )}
     </section>
   );
 }
 
-interface SpotlightContentProps {
+interface AnchoredCompositionProps {
   entry:         TennoplanItem;
   onSelectEntry: (entry: TennoplanItem) => void;
-  onShowMore?:   () => void;
 }
 
-function SpotlightContent({ entry, onSelectEntry, onShowMore }: SpotlightContentProps) {
+function AnchoredComposition({ entry, onSelectEntry }: AnchoredCompositionProps) {
   const description = (entry.description ?? '')
     .replace(/<[A-Z0-9_]+>/g, '')
     .replace(/\\n/g, ' ')
@@ -99,67 +88,86 @@ function SpotlightContent({ entry, onSelectEntry, onShowMore }: SpotlightContent
     .trim();
 
   const initial = entry.name.slice(0, 1).toUpperCase();
+  const masteryRow = entry.masteryRank != null && entry.masteryRank > 0
+    ? `Rank ${entry.masteryRank}`
+    : '—';
+  const introducedRow = entry.introduced?.name ?? '—';
+  const statusRow     = entry.vaulted ? 'Vaulted' : 'Available';
 
   return (
-    <>
+    <div className={styles.composition}>
+      {/* Artwork — anchored bottom-left, bleeds from the edge.
+          NO panel chrome. NO border. NO background card. Just the
+          asset and a soft radial gradient behind it that paints the
+          composition's color story. */}
       <button
         type="button"
-        className={`${styles.panel} ${styles.art}`}
+        className={styles.anchor}
         onClick={() => onSelectEntry(entry)}
         aria-label={`Open ${entry.name}`}
       >
         {entry.iconUrl
-          ? <img src={entry.iconUrl} alt="" className={styles.artImage} draggable={false} />
-          : <span className={styles.artFallback} aria-hidden="true">{initial}</span>}
+          ? <img src={entry.iconUrl} alt="" className={styles.anchorImage} draggable={false} />
+          : <span className={styles.anchorFallback} aria-hidden="true">{initial}</span>}
       </button>
 
-      <div className={styles.panel}>
+      {/* Meta column — radiates from the right of the anchor.
+          Editorial Rail typography (small caps, generous letter-spacing).
+          No card around it; the spacing IS the structure. */}
+      <div className={styles.meta}>
         <h3 className={styles.name}>{entry.name}</h3>
-        <div className={styles.subtitle}>
+        <p className={styles.kind}>
           <span>{entry.category}</span>
-          {entry.masteryRank != null && entry.masteryRank > 0 && (
-            <>
-              <span className={styles.subtitleDot}>·</span>
-              <span>MR {entry.masteryRank}</span>
-            </>
-          )}
-          {entry.vaulted && (
-            <>
-              <span className={styles.subtitleDot}>·</span>
-              <span className={styles.vaultedBadge}>Vaulted</span>
-            </>
-          )}
-          {entry.introduced?.name && (
-            <>
-              <span className={styles.subtitleDot}>·</span>
-              <span>{entry.introduced.name}</span>
-            </>
-          )}
-        </div>
-        <hr className={styles.rule} aria-hidden="true" />
+        </p>
+
+        {/* Editorial Rail — §3b. Four-row spec sheet, ornament-bulleted. */}
+        <dl className={styles.rail} aria-label={`${entry.name} key facts`}>
+          <RailRow label="Introduced" value={introducedRow} />
+          <RailRow label="Mastery"    value={masteryRow} />
+          <RailRow label="Type"       value={entry.category} />
+          <RailRow label="Status"     value={statusRow} accent={entry.vaulted ? 'vaulted' : 'available'} />
+        </dl>
+
         {description.length > 0 && (
           <p className={styles.description}>{description}</p>
         )}
-        <div className={styles.action}>
-          <button
-            type="button"
-            className={styles.actionBtn}
-            onClick={() => onSelectEntry(entry)}
-          >
-            Open in Codex
-            <ArrowRight size={14} strokeWidth={2.25} />
-          </button>
-        </div>
-      </div>
 
-      <div className={`${styles.panel} ${styles.recent}`}>
-        <RecentlyAdded onSelectEntry={onSelectEntry} onShowMore={onShowMore} />
+        <button
+          type="button"
+          className={styles.cta}
+          onClick={() => onSelectEntry(entry)}
+        >
+          <span className={styles.ctaGlyph} aria-hidden="true">▢</span>
+          Open in Codex
+          <ArrowRight size={14} strokeWidth={2.25} />
+        </button>
       </div>
-    </>
+    </div>
   );
 }
 
-// ─── Resolution ───────────────────────────────────────────────────────────────
+interface RailRowProps {
+  label:  string;
+  value:  string;
+  accent?: 'vaulted' | 'available';
+}
+
+function RailRow({ label, value, accent }: RailRowProps) {
+  return (
+    <div className={styles.railRow}>
+      <span className={styles.railBullet} aria-hidden="true">▢</span>
+      <dt className={styles.railLabel}>{label}</dt>
+      <dd
+        className={styles.railValue}
+        data-accent={accent}
+      >
+        {value}
+      </dd>
+    </div>
+  );
+}
+
+// ─── Resolution (unchanged from v2) ──────────────────────────────────────────
 
 interface SpotlightResult {
   item:        TennoplanItem;

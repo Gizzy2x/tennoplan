@@ -23,71 +23,67 @@
  * "what is that thing?" without leaving the codex.
  */
 
+import { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { db } from '@/adapters/storage/db';
 import type { TennoplanItem } from '@/core/domain/tennoplanApi';
 import type { CodexEntry } from '../../types';
+import { getConsumersOf, type ResolvedConsumer } from './consumerIndex';
 import styles from './ConsumersBlock.module.css';
+
+/**
+ * Default visible cards before collapse — kicks in for popular resources
+ * (Orokin Cell, Plastids, …) which can have 40–60+ consumers. Mirrors
+ * DropsBlock's threshold so the codex's expander affordance is uniform.
+ */
+const COLLAPSE_THRESHOLD = 12;
 
 interface ConsumersBlockProps {
   entry:          CodexEntry;
   onSelectEntry?: (entry: TennoplanItem) => void;
 }
 
-interface ResolvedConsumer {
-  item:  TennoplanItem;
-  count: number;
-}
-
-/** Categories worth surfacing as "consumers" — pure ingredients ($→$)
- *  don't add value, but crafted items do. */
-const SURFACEABLE_CATEGORIES = new Set<TennoplanItem['category']>([
-  'Warframe',
-  'Weapon',
-  'Companion',
-  'Sentinel',
-  'Blueprint',
-  'Equipment',
-  'Resource',     // some Resources are intermediate parts (e.g. "Ash Chassis")
-  'Key',
-  'Arcane',
-]);
-
 export function ConsumersBlock({ entry, onSelectEntry }: ConsumersBlockProps) {
   const targetName = entry.name;
+  const [expanded, setExpanded] = useState(false);
+
+  // Track the codex sync timestamp via useLiveQuery so the inverse
+  // index in consumerIndex.ts knows when to rebuild after a fresh CI
+  // codex blob lands. -1 default = "no sync yet known" which still
+  // works since the index keys off any non-null syncedAt value.
+  const syncedAt = useLiveQuery(
+    () => db.syncMetadata.get('codex').then((m) => m?.lastSync ?? 0),
+    [],
+    0,
+  );
 
   const consumers = useLiveQuery(
     async () => {
-      const all = await db.tennoplanItems.toArray();
-      const out: ResolvedConsumer[] = [];
-      for (const item of all) {
-        if (!SURFACEABLE_CATEGORIES.has(item.category)) continue;
-        if (!item.buildRequirements?.length) continue;
-        // Same-item guard — don't list "Orokin Cell" as a consumer of itself
-        // when synthesized component rows refer to themselves via name.
-        if (item.uniqueName === entry.uniqueName) continue;
-
-        const req = item.buildRequirements.find(
-          (r) => r.item === targetName && r.count > 0,
-        );
-        if (req) out.push({ item, count: req.count });
-      }
+      const all = await getConsumersOf(targetName, syncedAt);
+      // Same-item guard — don't list "Orokin Cell" as a consumer of itself
+      // when synthesized component rows refer to themselves via name.
+      const filtered = all.filter((c) => c.item.uniqueName !== entry.uniqueName);
       // Sort: bigger consumers first (visually anchors the grid), then alpha.
-      out.sort((a, b) => {
+      return [...filtered].sort((a, b) => {
         if (b.count !== a.count) return b.count - a.count;
         return a.item.name.localeCompare(b.item.name);
       });
-      return out;
     },
-    [targetName, entry.uniqueName],
+    [targetName, entry.uniqueName, syncedAt],
   );
 
   if (!consumers || consumers.length === 0) return null;
 
+  const overflow = Math.max(0, consumers.length - COLLAPSE_THRESHOLD);
+  const visible  = expanded || overflow === 0
+    ? consumers
+    : consumers.slice(0, COLLAPSE_THRESHOLD);
+
   return (
     <section className={styles.root} aria-labelledby="codex-consumers-label">
       <div className={styles.header}>
-        <h2 id="codex-consumers-label" className={styles.label}>
+        <h2 id="codex-consumers-label" className="typo-section-label">
           Used in
         </h2>
         <span className={styles.headerCount}>
@@ -96,7 +92,7 @@ export function ConsumersBlock({ entry, onSelectEntry }: ConsumersBlockProps) {
       </div>
 
       <div className={styles.grid}>
-        {consumers.map((c) => (
+        {visible.map((c) => (
           <ConsumerCard
             key={c.item.uniqueName}
             consumer={c}
@@ -105,6 +101,21 @@ export function ConsumersBlock({ entry, onSelectEntry }: ConsumersBlockProps) {
           />
         ))}
       </div>
+
+      {overflow > 0 && (
+        <div className={styles.toggleRow}>
+          <button
+            type="button"
+            className={styles.toggle}
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+          >
+            {expanded
+              ? <>Show top {COLLAPSE_THRESHOLD} only <ChevronUp size={13} strokeWidth={2.25} /></>
+              : <>Show all {consumers.length} consumers <ChevronDown size={13} strokeWidth={2.25} /></>}
+          </button>
+        </div>
+      )}
     </section>
   );
 }

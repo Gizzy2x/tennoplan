@@ -8,10 +8,10 @@
  *   times. No matter how tall the content grows, or whether the page is in a
  *   scrollable container, the image never moves or scales unexpectedly.
  *
- * SIDEBAR ADAPTATION
- *   The background starts at left: var(--sidebar-w, 280px). To support a
- *   collapsible sidebar in the future, simply update --sidebar-w on :root
- *   (see index.css). This component needs zero changes.
+ * SIDEBAR ADAPTATION (legacy — sidebar removed 2026-06-01)
+ *   The background defaults to left: 0 (no sidebar; chrome is the top bar).
+ *   The var(--sidebar-w, 0) is kept so if a sidebar reappears, setting
+ *   --sidebar-w on :root is the only change needed.
  *
  * BACKGROUND REGISTRY
  *   The URL comes from worldAssets.ts — the single source of truth for all
@@ -41,7 +41,7 @@ export function WorldBackground({ url, fallbackColor = '#131313' }: WorldBackgro
       style={{
         position:      'fixed',
         top:           0,
-        left:          'var(--sidebar-w, 280px)',
+        left:          'var(--sidebar-w, 0)',
         right:         0,
         bottom:        0,
         zIndex:        0,

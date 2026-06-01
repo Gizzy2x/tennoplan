@@ -1,0 +1,23 @@
+/* ================================================================
+   NameBackdrop — large low-opacity SVG watermark behind summary
+   portraits. Sits at z-index 0 so the portrait + identity stack
+   above it. Inset matches the surrounding panel's --space-md so
+   the watermark hugs the same edges as the rest of the card.
+   ================================================================ */
+
+.root {
+  position:       absolute;
+  inset:          var(--space-md);
+  width:          calc(100% - 2 * var(--space-md));
+  height:         auto;
+  pointer-events: none;
+  z-index:        0;
+}
+
+.text {
+  font-family:    var(--font-serif);
+  font-weight:    700;
+  font-size:      24px;   /* nominal — SVG scales via viewBox + textLength */
+  letter-spacing: -0.01em;
+  fill:           color-mix(in srgb, var(--color-accent-gold) 18%, transparent);
+}

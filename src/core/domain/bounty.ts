@@ -20,12 +20,16 @@ export type BountyRewardRarity = 'Rare' | 'Uncommon' | 'Common' | 'Unknown';
 
 export interface EnrichedBountyReward {
   itemName: string;
+  /** Canonical codex identity, threaded from the source item for deterministic deep-linking. */
+  uniqueName?: string;
   /** Drop chance as a percentage (0–100). Copied verbatim from DropReward.chance. */
   chance: number;
   /** Original rarity string from the API (preserved for tooltips). */
   rawRarity: string;
   /** Collapsed rarity tier for UI grouping. */
   tier: BountyRewardRarity;
+  /** Bounty stage group, e.g. "Stage 1" / "Final Stage" — drives the per-stage view. */
+  stage?: string;
 }
 
 export interface EnrichedBountyRotation {

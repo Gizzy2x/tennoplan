@@ -29,7 +29,7 @@ export function GeneralInformationBlock({ entry }: GeneralInformationBlockProps)
 
   return (
     <section className={styles.root} aria-labelledby="codex-general-info-label">
-      <h2 id="codex-general-info-label" className={styles.label}>General Information</h2>
+      <h2 id="codex-general-info-label" className="typo-section-label">General Information</h2>
       <dl className={styles.list}>
         {rows.map((row) => (
           <div key={row.label} className={styles.row}>

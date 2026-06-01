@@ -69,7 +69,7 @@ export function AugmentContextBlock({
       className={styles.root}
       aria-labelledby="codex-augment-context-label"
     >
-      <h2 id="codex-augment-context-label" className={styles.label}>
+      <h2 id="codex-augment-context-label" className="typo-section-label">
         Warframe Augment
       </h2>
 

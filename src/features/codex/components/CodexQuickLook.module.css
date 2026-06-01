@@ -1,0 +1,173 @@
+/* ============================================================================
+   CodexQuickLook — universal item preview ("smart window")
+   Tokens only. Rendered inside the shared <Sheet> primitive.
+   ============================================================================ */
+
+.status {
+  padding: var(--space-lg) var(--space-md);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ── Hero: icon + identity ──────────────────────────────────────────────── */
+
+.hero {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+.icon {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--color-bg-primary) 60%, transparent);
+}
+.iconFallback {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--color-border-default) 60%, transparent);
+}
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+.cat {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+.rarity {
+  align-self: flex-start;
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  background: color-mix(in oklab, var(--color-text-muted) 12%, transparent);
+}
+.rarity[data-rarity="rare"]      { color: var(--color-accent-gold); background: var(--color-accent-gold-10); }
+.rarity[data-rarity="legendary"] { color: var(--color-accent-gold); background: var(--color-accent-gold-15); }
+.rarity[data-rarity="uncommon"]  { color: var(--color-accent-jade); background: var(--color-accent-jade-10); }
+
+/* ── Description ─────────────────────────────────────────────────────────── */
+
+.desc {
+  margin: 0;
+  max-width: 64ch;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Key facts ──────────────────────────────────────────────────────────── */
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  gap: var(--space-sm);
+}
+.fact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-sm);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--color-bg-primary) 40%, transparent);
+}
+.factVal {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+}
+.factVal[data-tint="health"] { color: var(--color-stat-health); }
+.factVal[data-tint="shield"] { color: var(--color-stat-shield); }
+.factVal[data-tint="energy"] { color: var(--color-stat-energy); }
+.factLabel {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ── Best farm ──────────────────────────────────────────────────────────── */
+
+.farm {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: var(--space-sm);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border-default);
+}
+.farmLabel {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--color-accent-gold-55, rgba(219, 176, 88, 0.55));
+}
+.farmWhere {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.farmChance {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-gold);
+}
+
+/* ── Footer CTA ─────────────────────────────────────────────────────────── */
+
+.openFull {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--color-bg-primary);
+  background: var(--color-accent-jade);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 160ms ease-out, transform 160ms ease-out;
+}
+.openFull:hover { background: color-mix(in oklab, var(--color-accent-jade) 85%, #fff); transform: translateY(-1px); }
+.openFull:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .openFull:hover { transform: none; }
+}

@@ -1,64 +1,115 @@
-import { Search, Settings, ListChecks } from "lucide-react";
-import { NAV_ITEMS, useNavigationStore } from "@/store/navigation";
-import { DataSourceBadge } from "./DataSourceBadge";
-import { SystemPulse } from "./SystemPulse";
-import { SIDEBAR_W } from "./Sidebar";
+/**
+ * Header — Tennoplan top bar.
+ *
+ * Single 44px horizontal bar that holds EVERY piece of app chrome —
+ * no separate sidebar. Layout:
+ *
+ *   [≡]  [T]  [Pendulum · Reliquaries · Codex · …]   [search]  [pulse · WS]  [⚙]
+ *  ^narrow ^logo  ^inline nav (wide only)              ^wide      ^always       ^always
+ *
+ * Container queries on the header itself drive the collapse so the
+ * bar adapts to its OWN width rather than viewport width. That matters
+ * in installed-PWA mode where the header is narrower than the page due
+ * to window controls overlay.
+ *
+ *   • @container (max-width: 1200px) — inline nav hides, hamburger appears
+ *   • @container (max-width:  880px) — Dailies button collapses to icon-only
+ *
+ * The header measures its own height into `--header-h` via
+ * useElementHeightVar so pages can offset against the live value
+ * (no more hardcoded 64px assumption).
+ */
+
+import { useCallback, useState } from 'react';
+import { Menu as MenuIcon, ListChecks } from 'lucide-react';
+import { NAV_ITEMS, useNavigationStore } from '@/store/navigation';
+import { useElementHeightVar } from '@/hooks/useElementHeightVar';
+import { PressTip } from '@/components/common/PressTip';
+import { DataPulse } from './DataPulse';
+import { HamburgerMenu } from './HamburgerMenu';
+import styles from './Header.module.css';
 
 export function Header() {
-  const { activeTab, setActiveTab } = useNavigationStore();
-  const activeItem = NAV_ITEMS.find((item) => item.id === activeTab);
-  const isDailies  = activeTab === "dailies-weeklies";
-  const isSettings = activeTab === "settings";
+  const activeTab    = useNavigationStore((s) => s.activeTab);
+  const setActiveTab = useNavigationStore((s) => s.setActiveTab);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Header measures itself and writes its height to --header-h so
+  // pages don't have to assume a fixed value.
+  const headerRef = useElementHeightVar<HTMLElement>('--header-h');
+
+  const toggleMenu = useCallback(() => setMenuOpen((v) => !v), []);
+  const closeMenu  = useCallback(() => setMenuOpen(false), []);
+
+  const isDailies = activeTab === 'dailies-weeklies';
 
   return (
-    <header
-      className="app-header"
-      style={{
-        marginLeft: SIDEBAR_W,
-        width: `calc(100% - ${SIDEBAR_W}px)`,
-      }}
-    >
-      {/* ── Identity: active page (dominant left element) ───────────── */}
-      <div className="header-identity">
-        <span className="header-identity-prefix">TENNOPLAN</span>
-        <span className="header-identity-sep" aria-hidden>/</span>
-        <h1 className="header-identity-title">
-          {activeItem?.label ?? "HOME"}
-        </h1>
-      </div>
-
-      {/* ── Actions ─────────────────────────────────────────────────── */}
-      <div className="header-actions">
-        {/* Persistent Dailies & Weeklies quick-access */}
+    <>
+      <header ref={headerRef} className={styles.root}>
+        {/* Hamburger — narrow widths only (hidden by @container) */}
         <button
-          onClick={() => setActiveTab("dailies-weeklies")}
-          className="header-quickbtn"
-          data-active={isDailies}
+          type="button"
+          className={styles.hamburger}
+          onClick={toggleMenu}
+          aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
+          aria-expanded={menuOpen}
         >
-          <ListChecks className="size-3.5" strokeWidth={1.5} />
-          <span>Dailies &amp; Weeklies</span>
+          <MenuIcon size={18} strokeWidth={1.75} />
         </button>
 
-        <SystemPulse onLabelClick={() => setActiveTab('settings')} />
-        <DataSourceBadge />
+        {/* Brand mark */}
+        <button
+          type="button"
+          className={styles.brand}
+          onClick={() => setActiveTab('celestial-pendulum')}
+          aria-label="Tennoplan home"
+        >
+          <span className={styles.brandMark}>T</span>
+          <span className={styles.brandDot} aria-hidden />
+        </button>
 
-        {/* Search */}
-        <div className="header-search">
-          <Search className="size-4" strokeWidth={1.5} />
-          <input type="text" placeholder="SEARCH..." />
+        {/* Inline nav — wide widths only (hidden by @container) */}
+        <nav className={styles.inlineNav} aria-label="Primary">
+          {NAV_ITEMS.map((item) => {
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={styles.navLink}
+                data-active={isActive}
+                onClick={() => setActiveTab(item.id)}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {item.short}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Right-side actions */}
+        <div className={styles.actions}>
+          {/* Dailies & Weeklies quick-access — kept because it's a killer feature.
+              PressTip surfaces the full feature name on hover/long-press; the
+              visible label compresses to "Dailies" to fit the bar. */}
+          <PressTip content="Dailies & Weeklies" placement="bottom">
+            <button
+              type="button"
+              className={styles.quickBtn}
+              data-active={isDailies}
+              onClick={() => setActiveTab('dailies-weeklies')}
+              aria-label="Dailies & Weeklies"
+            >
+              <ListChecks size={14} strokeWidth={1.6} />
+              <span className={styles.quickBtnLabel}>Dailies</span>
+            </button>
+          </PressTip>
+
+          <DataPulse onOpenDetails={() => setActiveTab('settings')} />
         </div>
+      </header>
 
-        {/* Settings — the only persistent secondary action */}
-        <button
-          onClick={() => setActiveTab("settings")}
-          title="Settings"
-          aria-label="Settings"
-          className="header-icon-btn"
-          data-active={isSettings}
-        >
-          <Settings className="size-5" strokeWidth={1.5} />
-        </button>
-      </div>
-    </header>
+      <HamburgerMenu open={menuOpen} onClose={closeMenu} />
+    </>
   );
 }

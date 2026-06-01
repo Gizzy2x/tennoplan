@@ -52,6 +52,16 @@ function isMockModeEnabled(): boolean {
 /** 14 days — the plan's stale threshold. Beyond this, the banner surfaces. */
 const STALE_AFTER_MS = 14 * 24 * 60 * 60 * 1000;
 
+/**
+ * Bump this whenever `normaliseDropPayload` changes in a way that affects the
+ * stored rows. A mismatch forces a full re-fetch + re-parse on the next sync,
+ * bypassing the ETag/304 fast-path so users don't keep stale rows from an old
+ * parser. (v2: fixed bounty reward parsing — itemName field, bare A/B/C
+ * rotation keys, deimos/zariman section names.
+ *  v3: preserve per-stage `stage` on bounty rewards for the wiki-style view.)
+ */
+const PARSER_VERSION = 3;
+
 /** Drop payload is ~10 MB; keep timeout generous. */
 const REQUEST_TIMEOUT_MS = 30_000;
 
@@ -249,6 +259,7 @@ export const DropDataService = {
               id: 'dropLocations',
               lastUpdated: now,
               rowCount: dropRows.length,
+              parserVersion: PARSER_VERSION,
               lastErrorMessage: undefined,
             });
           },
@@ -276,8 +287,15 @@ export const DropDataService = {
 
     emit(onProgress, 'Connecting to drop-data source…', 5);
 
-    // Conditional GET: pass along the previous ETag so the server can 304 us.
-    const prevEtag = await readEtag('dropLocations');
+    // Conditional GET: pass the previous ETag so the server can 304 us — BUT
+    // only when the stored rows came from the current parser. If the parser
+    // changed, skip the ETag so we force a 200 + full re-parse.
+    const prevState = await db.dataSyncState.get('dropLocations');
+    const parserChanged = prevState?.parserVersion !== PARSER_VERSION;
+    const prevEtag = parserChanged ? undefined : prevState?.etag;
+    if (parserChanged && prevState) {
+      log.info(`Parser version changed (${prevState.parserVersion ?? 'none'} → ${PARSER_VERSION}) — forcing full re-parse.`);
+    }
 
     let res: Response;
     try {
@@ -312,6 +330,7 @@ export const DropDataService = {
         lastUpdated: now,
         etag: newEtag ?? prevEtag,
         rowCount: await db.dropLocations.count(),
+        parserVersion: PARSER_VERSION,
         lastErrorMessage: undefined,
       });
       await db.dataSyncState.put({
@@ -385,6 +404,7 @@ export const DropDataService = {
             lastUpdated: now,
             etag: newEtag,
             rowCount: dropRows.length,
+            parserVersion: PARSER_VERSION,
             lastErrorMessage: undefined,
           });
         },

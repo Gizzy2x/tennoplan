@@ -1,6 +1,11 @@
 /* ================================================================
-   ContinueBrowsing — horizontal strip of last 5 inspected entries.
-   Hidden when empty; no placeholder copy.
+   ContinueBrowsing — horizontal strip of last inspected entries.
+
+   Hidden when empty; no placeholder copy. The horizontal card layout
+   intentionally differs from RecentlyAdded's vertical thumbnail
+   tiles so the two sections are visually distinct even when their
+   content overlaps (a recent entry the user just clicked appears in
+   both).
    ================================================================ */
 
 .root {
@@ -9,15 +14,40 @@
   gap:            var(--space-md);
 }
 
+/* ── Header rail (matches RecentlyAdded / Collections) ───────── */
+
+.header {
+  display:        flex;
+  align-items:    baseline;
+  justify-content: space-between;
+  gap:            var(--space-md);
+}
+
+/* Chrome + color override on top of .typo-section-label (per CLAUDE.md). */
 .label {
-  font-family:    var(--font-sans);
-  font-size:      0.7rem;
-  font-weight:    700;
-  letter-spacing: 0.22em;
+  display:     inline-flex;
+  align-items: baseline;
+  gap:         var(--space-sm);
+  color:       var(--color-text-primary);
+}
+
+.labelGlyph {
+  font-family: var(--font-pixel-square);
+  font-size:   var(--density-pixel);
+  color:       var(--color-accent-jade);
+  line-height: 1;
+}
+
+.headerMeta {
+  font-family:    var(--font-mono);
+  font-size:      var(--density-caption);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color:          var(--color-text-muted);
-  margin:         0;
 }
+
+/* ── Strip ────────────────────────────────────────────────────── */
 
 .strip {
   display:    flex;
@@ -29,39 +59,42 @@
   display:        flex;
   align-items:    center;
   gap:            var(--space-sm);
-  min-width:      220px;
-  max-width:      280px;
+  min-width:      200px;
+  max-width:      260px;
   flex:           0 0 auto;
-  padding:        10px 14px 10px 10px;
+  padding:        var(--space-sm) var(--space-md) var(--space-sm) var(--space-sm);
   background:     var(--color-bg-secondary);
   border:         1px solid var(--color-border-default);
-  border-radius:  6px;
+  border-radius:  4px;
   cursor:         pointer;
   text-align:     left;
   font-family:    var(--font-sans);
   color:          var(--color-text-primary);
-  transition:     transform 0.18s ease-out, border-color 0.18s ease-out;
+  transition:     transform 180ms ease-out, border-color 180ms ease-out, background 180ms ease-out;
 }
 
 .card:hover {
   transform:    translateY(-1px);
-  border-color: rgba(88, 232, 138,0.45);
+  border-color: color-mix(in srgb, var(--color-accent-jade) 45%, transparent);
+  background:   color-mix(in srgb, var(--color-bg-secondary) 88%, var(--color-accent-jade) 3%);
 }
 
 .card:focus-visible {
-  outline:        2px solid var(--color-accent-teal);
+  outline:        2px solid var(--color-accent-jade);
   outline-offset: 2px;
 }
 
 .thumb {
   flex-shrink:     0;
-  width:           38px;
-  height:          38px;
+  width:           36px;
+  height:          36px;
   display:         flex;
   align-items:     center;
   justify-content: center;
-  background:      rgba(255, 255, 255, 0.03);
-  border-radius:   4px;
+  background:
+    radial-gradient(circle at center, rgba(88, 232, 138, 0.04) 0%, transparent 70%),
+    rgba(0, 0, 0, 0.18);
+  border-radius:   3px;
   overflow:        hidden;
 }
 
@@ -69,12 +102,13 @@
   width:      100%;
   height:     100%;
   object-fit: contain;
+  filter:     drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
 }
 
 .thumbPlaceholder {
   font-family: var(--font-serif);
   color:       var(--color-text-muted);
-  font-size:   1rem;
+  font-size:   var(--density-body);
 }
 
 .meta {
@@ -86,18 +120,20 @@
 }
 
 .name {
-  font-size:    0.85rem;
-  font-weight:  600;
-  color:        var(--color-text-primary);
-  white-space:  nowrap;
-  overflow:     hidden;
+  font-family:   var(--font-sans);
+  font-size:     var(--density-body);
+  font-weight:   500;
+  color:         var(--color-text-primary);
+  white-space:   nowrap;
+  overflow:      hidden;
   text-overflow: ellipsis;
 }
 
 .category {
-  font-size:      0.6rem;
+  font-family:    var(--font-sans);
+  font-size:      var(--density-pixel);
   font-weight:    600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color:          var(--color-text-muted);
 }

@@ -150,11 +150,30 @@ function toCycle(raw: any, extra: Partial<CycleInfo>): CycleInfo {
 function toDuviri(raw: any): DuviriCycleInfo {
   const cycle = toCycle(raw, {});
   const mood = typeof raw?.state === 'string' && isDuviriMood(raw.state) ? raw.state : undefined;
+  const circuit = toCircuit(raw?.choices);
   return {
     ...cycle,
     ...(mood ? { mood } : {}),
     ...(typeof raw?.moodTimeLeft === 'number' ? { moodTimeLeft: raw.moodTimeLeft } : {}),
+    ...(circuit ? { circuit } : {}),
   };
+}
+
+/**
+ * Parse the upstream Duviri `choices` array
+ *   [{ category: 'normal', choices: [...] }, { category: 'hard', choices: [...] }]
+ * into our { normal, hard } shape. Returns undefined when neither list is present.
+ */
+function toCircuit(raw: any): DuviriCycleInfo['circuit'] {
+  if (!Array.isArray(raw)) return undefined;
+  const pick = (category: string): string[] => {
+    const entry = raw.find((c: any) => String(c?.category).toLowerCase() === category);
+    return Array.isArray(entry?.choices) ? entry.choices.map((s: any) => String(s)) : [];
+  };
+  const normal = pick('normal');
+  const hard   = pick('hard');
+  if (normal.length === 0 && hard.length === 0) return undefined;
+  return { normal, hard };
 }
 
 function isDuviriMood(s: string): s is DuviriCycleInfo['mood'] & string {
@@ -318,6 +337,7 @@ function toNewsItem(raw: any): NewsItem | null {
 
 const SYNDICATE_ALIASES: Record<string, string> = {
   'ostron':          'Ostron',
+  'ostrons':         'Ostron',          // upstream sends the plural — was being dropped
   'solaris united':  'Solaris United',
   'entrati':         'Entrati',
   'the holdfasts':   'The Holdfasts',

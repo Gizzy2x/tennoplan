@@ -24,16 +24,6 @@
   gap:             var(--space-sm);
 }
 
-.label {
-  font-family:    var(--font-sans);
-  font-size:      0.7rem;
-  font-weight:    700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color:          var(--color-text-muted);
-  margin:         0;
-}
-
 .headerCount {
   font-family:          var(--font-sans);
   font-size:            0.65rem;
@@ -155,4 +145,45 @@ button.card:focus-visible {
   letter-spacing: 0.04em;
   border-radius:  10px;
   box-shadow:     0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Collapse expander ───────────────────────────────────────────
+   Mirrors DropsBlock / PatchHistoryBlock's toggle pattern so the
+   codex's "show more" affordance reads uniformly across blocks.
+   Kicks in for popular resources where the consumer count exceeds
+   COLLAPSE_THRESHOLD (12) — Orokin Cell etc.
+   ─────────────────────────────────────────────────────────────── */
+
+.toggleRow {
+  display:         flex;
+  justify-content: center;
+  padding-top:     var(--space-sm);
+}
+
+.toggle {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            8px;
+  padding:        7px 16px;
+  background:     transparent;
+  border:         1px solid var(--color-border-default);
+  border-radius:  4px;
+  cursor:         pointer;
+  font-family:    var(--font-sans);
+  font-size:      0.7rem;
+  font-weight:    600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  transition:     border-color 0.18s ease-out, color 0.18s ease-out;
+}
+
+.toggle:hover {
+  border-color: color-mix(in srgb, var(--color-accent-jade) 50%, transparent);
+  color:        var(--color-accent-jade);
+}
+
+.toggle:focus-visible {
+  outline:        2px solid var(--color-accent-jade);
+  outline-offset: 2px;
 }

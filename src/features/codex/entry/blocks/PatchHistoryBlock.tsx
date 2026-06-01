@@ -46,7 +46,7 @@ export function PatchHistoryBlock({ entry }: PatchHistoryBlockProps) {
 
   return (
     <section className={styles.root} aria-labelledby="codex-patches-label">
-      <h2 id="codex-patches-label" className={styles.label}>Patch History</h2>
+      <h2 id="codex-patches-label" className="typo-section-label">Patch History</h2>
 
       <ol className={styles.list}>
         {visible.map((p, i) => (

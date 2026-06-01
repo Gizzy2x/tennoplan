@@ -1,0 +1,155 @@
+/* ================================================================
+   Sheet — center modal on desktop, bottom drawer on phone.
+   ================================================================ */
+
+.scrim {
+  position: fixed;
+  inset:    0;
+  z-index:  80;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* ── Centering layer (desktop) / bottom anchor (phone) ──────────
+   motion/react takes over the panel's `transform` property for its
+   scale/opacity/y animation, which means we CAN'T also use
+   transform on the panel for centering — motion would clobber it
+   and the panel would sit with its top-left corner at viewport
+   center. This wrapper does the centering via flex layout instead,
+   so the panel's transform stays exclusively motion's. */
+.center {
+  position:        fixed;
+  inset:           0;
+  z-index:         81;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  /* Let scrim clicks pass through to the scrim beneath; the panel
+     re-enables its own pointer events. */
+  pointer-events:  none;
+  padding:         var(--space-lg);
+}
+
+.panel {
+  /* Width set by data-size below; max() vs viewport keeps it from
+     overflowing on a narrow desktop window. */
+  width:           min(var(--sheet-w, 560px), 100%);
+  max-height:      min(720px, calc(100vh - 64px));
+  display:         flex;
+  flex-direction:  column;
+  background:      var(--color-bg-secondary);
+  border:          1px solid color-mix(in srgb, var(--color-accent-gold) 25%, var(--color-border-default));
+  border-radius:   6px;
+  box-shadow:      0 24px 64px rgba(0, 0, 0, 0.6);
+  overflow:        hidden;
+  outline:         none;
+  pointer-events:  auto;
+  transform-origin: center;
+}
+
+.panel[data-size='sm'] { --sheet-w: 420px; }
+.panel[data-size='md'] { --sheet-w: 560px; }
+.panel[data-size='lg'] { --sheet-w: 760px; }
+
+/* Drag handle — hidden on desktop, visible on phone. */
+.handle {
+  display: none;
+}
+
+.header {
+  display:        flex;
+  align-items:    center;
+  justify-content: space-between;
+  gap:            var(--space-md);
+  padding:        var(--space-md) var(--space-lg);
+  border-bottom:  1px solid var(--color-border-default);
+}
+
+.title {
+  font-family:    var(--font-serif);
+  font-size:      1rem;
+  font-weight:    700;
+  letter-spacing: 0.04em;
+  color:          var(--color-accent-gold);
+}
+
+.closeBtn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  width:           28px;
+  height:          28px;
+  padding:         0;
+  background:      transparent;
+  border:          1px solid var(--color-border-default);
+  border-radius:   3px;
+  color:           var(--color-text-muted);
+  cursor:          pointer;
+  transition:      color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+
+.closeBtn:hover {
+  color:        var(--color-accent-gold);
+  border-color: color-mix(in srgb, var(--color-accent-gold) 50%, transparent);
+  background:   color-mix(in srgb, var(--color-accent-gold) 6%, transparent);
+}
+
+.body {
+  flex:        1;
+  overflow:    auto;
+  padding:     var(--space-md) var(--space-lg);
+  font-family: var(--font-sans);
+  font-size:   0.875rem;
+  color:       var(--color-text-primary);
+}
+
+.footer {
+  display:        flex;
+  align-items:    center;
+  justify-content: flex-end;
+  gap:            var(--space-sm);
+  padding:        var(--space-sm) var(--space-lg);
+  border-top:     1px solid var(--color-border-default);
+  background:     color-mix(in srgb, var(--color-bg-primary) 40%, transparent);
+}
+
+/* ── Phone (≤540px): bottom drawer ───────────────────────────── */
+
+@media (max-width: 540px) {
+  /* Bottom anchor: flex parent aligns to the bottom edge, stretches
+     children full-width. Padding zeros out so the sheet hugs the
+     viewport edges. */
+  .center {
+    align-items:     flex-end;
+    justify-content: stretch;
+    padding:         0;
+  }
+
+  .panel {
+    width:          100%;
+    max-width:      none;
+    max-height:     calc(100vh - 64px);
+    border-radius:  10px 10px 0 0;
+    border-left:    none;
+    border-right:   none;
+    border-bottom:  none;
+    /* Safe-area inset for notched phones — keep the bottom of the
+       sheet clear of the system gesture indicator. */
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .handle {
+    display:         block;
+    align-self:      center;
+    width:           36px;
+    height:          4px;
+    margin:          8px 0 4px;
+    border-radius:   2px;
+    background:      color-mix(in srgb, var(--color-text-muted) 60%, transparent);
+  }
+
+  .header {
+    padding-top: var(--space-sm);
+  }
+}

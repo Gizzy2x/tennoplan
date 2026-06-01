@@ -22,6 +22,7 @@
 
 import { getIconUrl } from '@/lib/icons/IconResolver';
 import type { CodexEntry } from '../../types';
+import { NameBackdrop } from './NameBackdrop';
 import styles from './CompanionSummaryCard.module.css';
 
 interface CompanionSummaryCardProps {
@@ -114,28 +115,6 @@ function Portrait({ entry }: { entry: CodexEntry }) {
   );
 }
 
-function NameBackdrop({ name }: { name: string }) {
-  const baseName = name.replace(/\s*Prime\s*$/i, '').trim();
-  return (
-    <svg
-      className={styles.nameBackdrop}
-      viewBox="0 0 100 26"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <text
-        x="50"
-        y="20"
-        textAnchor="middle"
-        textLength="98"
-        lengthAdjust="spacingAndGlyphs"
-        className={styles.nameBackdropText}
-      >
-        {baseName.toUpperCase()}
-      </text>
-    </svg>
-  );
-}
 
 /**
  * Identity row — shows the companion's specific type (Kubrow / Kavat /

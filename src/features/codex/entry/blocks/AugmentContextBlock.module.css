@@ -17,16 +17,6 @@
   border-radius:  8px;
 }
 
-.label {
-  font-family:    var(--font-sans);
-  font-size:      0.7rem;
-  font-weight:    700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color:          var(--color-text-muted);
-  margin:         0;
-}
-
 /* Default (non-interactive) variant — flat panel, no hover. */
 .card {
   display:         flex;

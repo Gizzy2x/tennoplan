@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Activity } from 'lucide-react';
 import { useHeartbeatStore } from '@/store/heartbeat';
 import { WorldstateSync } from '@/services/WorldstateSync';
+import { PressTip } from '@/components/common/PressTip';
 
 export const SYNC_COOLDOWN_MS = 60_000;
 
@@ -69,14 +70,15 @@ export function SystemPulse({
           <Activity size={13} strokeWidth={2} />
         </button>
         {onLabelClick ? (
-          <button
-            className="header-pulse-label header-pulse-label--link"
-            data-syncing={isSyncing}
-            onClick={onLabelClick}
-            title="Open sync details"
-          >
-            {isSyncing ? 'Syncing…' : `Last sync ${ageLabel}`}
-          </button>
+          <PressTip content="Open sync details" placement="bottom">
+            <button
+              className="header-pulse-label header-pulse-label--link"
+              data-syncing={isSyncing}
+              onClick={onLabelClick}
+            >
+              {isSyncing ? 'Syncing…' : `Last sync ${ageLabel}`}
+            </button>
+          </PressTip>
         ) : (
           <span className="header-pulse-label" data-syncing={isSyncing}>
             {isSyncing ? 'Syncing…' : `Last sync ${ageLabel}`}

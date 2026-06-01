@@ -28,6 +28,8 @@
 import clsx from 'clsx';
 import type { CodexEntry } from '../../types';
 import { TENNOICON_MAP } from '@/lib/tennoicons/tennoIconMap';
+import { PressTip } from '@/components/common/PressTip';
+import { NameBackdrop } from './NameBackdrop';
 import styles from './WeaponSummaryCard.module.css';
 
 interface WeaponSummaryCardProps {
@@ -129,32 +131,6 @@ function Portrait({ entry }: { entry: CodexEntry }) {
   );
 }
 
-/**
- * Watermark behind the weapon icon — same atmosphere as the warframe rail.
- * "Prime" is stripped because the gold radial glow already announces it.
- */
-function NameBackdrop({ name }: { name: string }) {
-  const baseName = name.replace(/\s*Prime\s*$/i, '').trim();
-  return (
-    <svg
-      className={styles.nameBackdrop}
-      viewBox="0 0 100 26"
-      preserveAspectRatio="none"
-      aria-hidden="true"
-    >
-      <text
-        x="50"
-        y="20"
-        textAnchor="middle"
-        textLength="98"
-        lengthAdjust="spacingAndGlyphs"
-        className={styles.nameBackdropText}
-      >
-        {baseName.toUpperCase()}
-      </text>
-    </svg>
-  );
-}
 
 /**
  * Identity row — weapon type (Rifle/Polearm/etc.) as the small subtitle
@@ -296,12 +272,12 @@ function RivenRow({ disposition }: { disposition: number }) {
   const dots = rivenDots(disposition);
   return (
     <div className={styles.statRow}>
-      <dt
-        className={styles.statLabel}
-        title="Riven disposition: 1–5 dots driven by omegaAttenuation (0.50–1.55). Higher = stronger Riven rolls."
+      <PressTip
+        content="Riven disposition: 1–5 dots driven by omegaAttenuation (0.50–1.55). Higher = stronger Riven rolls."
+        placement="top"
       >
-        Riven Disposition
-      </dt>
+        <dt className={styles.statLabel}>Riven Disposition</dt>
+      </PressTip>
       <dd className={styles.statValue}>
         <span className={styles.dotStrip} aria-label={`${dots} of 5`}>
           {[1, 2, 3, 4, 5].map((n) => (

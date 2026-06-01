@@ -18,9 +18,13 @@ import type {
 // ─── Raw payload shapes (narrowly typed, defensive) ──────────────────────────
 
 interface RawDropEntry {
+  /** Mission/relic/enemy tables use `item`; bounty tables use `itemName`. */
   item?: string;
+  itemName?: string;
   chance?: number;
   rarity?: string;
+  /** Bounty stage label (bounty tables only). */
+  stage?: string;
 }
 
 interface RawMissionNode {
@@ -77,8 +81,9 @@ export interface RawDropPayload {
   keyRewards?: RawNamed[];
   cetusBountyRewards?: RawBounty[];
   solarisBountyRewards?: RawBounty[];
-  deimosRewardTable?: RawBounty[];
-  zarimanBountyRewards?: RawBounty[];
+  // Upstream key names — Deimos/Zariman differ from the Cetus/Solaris pattern.
+  deimosRewards?: RawBounty[];
+  zarimanRewards?: RawBounty[];
 }
 
 // ─── Internal helpers ────────────────────────────────────────────────────────
@@ -87,18 +92,21 @@ function normaliseRewards(raw: RawDropEntry[] | undefined): DropReward[] {
   if (!raw) return [];
   const out: DropReward[] = [];
   for (const d of raw) {
-    if (!d.item) continue;
+    const name = d.itemName ?? d.item;
+    if (!name) continue;
     out.push({
-      itemName: d.item.trim(),
+      itemName: name.trim(),
       chance: typeof d.chance === 'number' ? d.chance : 0,
       rarity: d.rarity ?? 'Unknown',
+      ...(d.stage ? { stage: d.stage } : {}),
     });
   }
   return out;
 }
 
 function parseRotationTier(key: string): RotationTier | undefined {
-  const m = /rotation\s+([ABC])/i.exec(key);
+  // Accepts both legacy "Rotation A" and the current bare "A" rotation keys.
+  const m = /^(?:rotation\s+)?([ABC])$/i.exec(key.trim());
   if (!m || !m[1]) return undefined;
   return m[1].toUpperCase() as RotationTier;
 }
@@ -235,8 +243,8 @@ export function normaliseDropPayload(
   const bountyBuckets: Array<[BountyLocation, RawBounty[] | undefined]> = [
     ['Cetus',   raw.cetusBountyRewards],
     ['Solaris', raw.solarisBountyRewards],
-    ['Deimos',  raw.deimosRewardTable],
-    ['Zariman', raw.zarimanBountyRewards],
+    ['Deimos',  raw.deimosRewards],
+    ['Zariman', raw.zarimanRewards],
   ];
 
   for (const [bountyLocation, entries] of bountyBuckets) {

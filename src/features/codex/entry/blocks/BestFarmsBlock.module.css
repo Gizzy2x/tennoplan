@@ -18,16 +18,6 @@
   border-radius:  8px;
 }
 
-.label {
-  font-family:    var(--font-sans);
-  font-size:      0.7rem;
-  font-weight:    700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color:          var(--color-text-muted);
-  margin:         0;
-}
-
 .list {
   display:        flex;
   flex-direction: column;
@@ -173,25 +163,33 @@
   margin-top: 4px;
 }
 
-/* Efficiency bar runs the full row width at the bottom */
+/* Efficiency bar runs the full row width at the bottom. Bumped from
+   2px → 4px so the fill reads as a visible signal rather than a
+   sub-pixel sliver — at the old height the bar essentially
+   disappeared on most monitors. */
 .efficiency {
   position:        absolute;
-  bottom:          3px;
+  bottom:          4px;
   left:            12px;
   right:           12px;
-  height:          2px;
-  background:      rgba(255, 255, 255, 0.04);
-  border-radius:   1px;
+  height:          4px;
+  background:      rgba(255, 255, 255, 0.05);
+  border-radius:   2px;
   overflow:        hidden;
 }
 
+/* Animates via transform: scaleX() rather than `transition: width` so
+   the row doesn't trigger layout on every frame. The fill starts at
+   100% width and scales horizontally from the left edge — visually
+   identical to the old width animation, mechanically much cheaper. */
 .efficiencyFill {
   position:        absolute;
   inset:           0;
-  right:           auto;
   background:      var(--color-accent-gold);
-  transform-origin: left;
-  transition:      width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: left center;
+  transform:       scaleX(0);
+  transition:      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change:     transform;
 }
 
 .notes {

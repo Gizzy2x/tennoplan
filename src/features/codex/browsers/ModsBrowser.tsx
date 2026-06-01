@@ -8,6 +8,7 @@
  */
 
 import { useState, useMemo, useRef, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { ModCardV3 } from '../components/ModCardV3';
 import {
   useAllMods,
@@ -95,6 +96,16 @@ export function ModsBrowser({ onSelectMod, onCountChange }: ModsBrowserProps) {
           autoComplete="off"
           spellCheck={false}
         />
+        {query.length > 0 && (
+          <button
+            type="button"
+            className="codex-browse-search-clear"
+            onClick={() => setQuery('')}
+            aria-label="Clear search"
+          >
+            <X size={14} strokeWidth={2.25} />
+          </button>
+        )}
       </div>
 
       <div className="codex-browse-filter-row">
