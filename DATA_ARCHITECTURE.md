@@ -2,59 +2,68 @@
 
 A complete map of how data flows from external sources → Cloudflare backend → Tennoplan frontend → local storage.
 
+*Last verified against the codebase: 2026-06-03.*
+
 ---
 
 ## Overview
 
-Tennoplan uses a **multi-layer, offline-first** data strategy:
+Tennoplan uses a **multi-layer, offline-first** data strategy built on one core idea:
+
+> **Static data holds the *nouns* (the item codex). Live data holds the *verbs* and the *clock* (world cycles, fissures, bounty rotation). The two are joined by a stable `uniqueName` key — always resolved against the static codex, never by display name.**
+
+Static data is heavy and changes rarely, so it is built **once in CI** and cached locally in IndexedDB. Live data is light and changes constantly, so it is polled from a Cloudflare Worker every minute on the client. The UI renders instantly from local cache; only the small, fast-changing slice needs the network.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        External Data Sources                         │
 ├─────────────────────────────────────────────────────────────────────┤
-│  • warframestat.us/pc/                (community, pre-parsed)        │
-│  • api.warframe.com/cdn/worldState.php (official DE raw worldstate)  │
-│  • drops.warframestat.us/data/all.json (WFCD drop data)              │
-│  • raw GitHub (WFCD/warframe-drop-data fallback)                     │
-│  • items-map.json (build-time, baked into app)                       │
+│  Live worldstate:                                                    │
+│   • api.warframe.com/cdn/worldState.php  (official DE, raw)          │
+│   • content.warframe.com/.../worldState.php (official mirror)        │
+│   • api.warframestat.us/pc/              (community, pre-parsed)      │
+│                                                                       │
+│  Static codex (WFCD):                                                │
+│   • api.warframestat.us/{mods,warframes,weapons}?only=…              │
+│   • raw.githubusercontent.com/WFCD/warframe-items  (fallback + the   │
+│     primary for sentinels/pets/relics/resources/gear/arcanes/misc)   │
+│   • drops.warframestat.us/data/all.json  (drop tables)               │
+│   • wiki.warframe.com Lua module         (warframe passive prose)    │
 └─────────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────────┐
-│                    Cloudflare Edge (Backend)                         │
+│              Build & Edge layer (two separate paths)                 │
 ├─────────────────────────────────────────────────────────────────────┤
-│  • Worker (KV proxy + caching)                                       │
-│    - Cron: every 1 minute                                            │
-│    - Tries warframestat.us → falls back to api.warframe.com          │
-│    - Runs warframe-worldstate-parser on fallback                     │
-│    - Stores in KV with 5-min TTL                                     │
-│    - Returns X-Data-Source header (warframestat | official)          │
+│  GitHub Actions — Codex build (every 6h)                            │
+│   • Runs cloudflare-worker/scripts/build-codex.ts                   │
+│   • fetch → parse → normalize → build → enrich → token-scan         │
+│   • PUTs the blob to KV: codex:current / codex:previous / :metadata │
 │                                                                       │
-│  • KV Namespace storage:                                             │
-│    - data      (worldstate JSON, up to 5 min old)                    │
-│    - etag      (SHA-1 hash for conditional GET)                      │
-│    - source    ('warframestat' | 'official')                         │
+│  Cloudflare Worker "app" — runtime API (cron */5)                   │
+│   • Cron updates worldstate: official → mirror → warframestat →     │
+│     cycle-math projection; writes worldstate:current/previous/meta  │
+│   • Serves GET /v1/worldstate, GET /v1/codex, GET /v1/health        │
+│   • /v1/codex just streams the pre-built blob (no parsing at edge)  │
 └─────────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────────┐
 │                  Tennoplan Frontend (React + Vite)                   │
 ├─────────────────────────────────────────────────────────────────────┤
-│  • SyncService.ts   (worldstate polling engine)                      │
-│  • DropDataService.ts (static data download-once model)              │
-│  • Zustand stores (heartbeat, navigation, sync state)                │
+│  • WorldstateSync.ts   (live worldstate polling engine, V2)         │
+│  • useWorldstate.ts    (shared useLiveQuery subscriber)             │
+│  • StaticDataService.ts(codex fetch → tennoplanItems)               │
+│  • DropDataService.ts  (download-once drop tables, manual)          │
+│  • Zustand stores (heartbeat, navigation, density)                  │
 └─────────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────────┐
-│                     Client Local Storage (Dexie)                     │
+│                     Client Local Storage (Dexie v8)                  │
 ├─────────────────────────────────────────────────────────────────────┤
-│  • Dexie v5 (IndexedDB)                                              │
-│    - items            (full catalogue, pre-resolved icon URLs)       │
-│    - dropLocations    (normalized drop data)                         │
-│    - cache            (worldstate snapshot + other ephemeral data)   │
-│    - dataSyncState    (sync metadata: timestamp, etag, error log)    │
-│    - (+ 3 other tables for assets, progression, item states)         │
-│                                                                       │
-│  • localStorage (LS_SNAPSHOT_KEY)                                    │
-│    - Cold-start seed for Dexie (loses freshness on clear)            │
+│  • worldstate      (ParsedWorldstate snapshot: current | previous)  │
+│  • syncMetadata    (per-dataset sync state: worldstate | codex)     │
+│  • tennoplanItems  (codex catalogue, ~8k items)                     │
+│  • items / dropLocations / dataSyncState (legacy drop-data path)    │
+│  • cache           (ephemeral, TTL-indexed) + others (see schema)   │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -62,382 +71,179 @@ Tennoplan uses a **multi-layer, offline-first** data strategy:
 
 ## Data Flows by Category
 
-### 1. **Worldstate Data** (Live Events: Fissures, Invasions, Alerts)
+### 1. Live Worldstate (cycles, fissures, invasions, alerts, bounties)
 
-**Source:** warframestat.us or api.warframe.com (via Cloudflare Worker)  
-**Type:** Dynamic, updated every 1–2 minutes  
-**Client Freshness:** 60-second poll (when tab is visible)  
-**Storage:** Dexie `cache` table + localStorage snapshot
+**Client engine:** `src/services/WorldstateSync.ts` (singleton) + `src/hooks/useWorldstate.ts` (shared subscriber) + `src/adapters/storage/worldstateStore.ts` (Dexie I/O).
+**Source:** the Tennoplan Cloudflare Worker only — `${VITE_WORLDSTATE_WORKER_URL}/v1/worldstate`. There is **no direct warframestat.us fallback in the browser**; all upstream fallback logic lives in the Worker.
+**Client freshness:** 60-second poll while the tab is visible.
+**Storage:** Dexie `worldstate` table (snapshot) + `syncMetadata` table (sync state).
 
-#### Flow:
+#### Worker side (cron `*/5 * * * *`, every 5 min)
 
-1. **Worker (Cloudflare)**
-   - Cron trigger: every 1 minute
-   - Fetch `https://api.warframestat.us/pc/` (primary)
-   - On failure → `https://api.warframe.com/cdn/worldState.php` + parse with `warframe-worldstate-parser`
-   - SHA-1 hash payload → store in KV if changed
-   - Return HTTP 200 + `X-Data-Source` header
+1. Fetch the official DE endpoint `api.warframe.com/cdn/worldState.php`.
+2. On failure → the official mirror `content.warframe.com/.../worldState.php`.
+3. On failure → community `api.warframestat.us/pc/` (flaky: intermittently returns an empty 200).
+4. Last resort → **cycle-math projection** (compute cycle states from known periods so timers keep running through a total upstream outage).
+5. Official/mirror payloads are run through `warframe-worldstate-parser` and normalized to the `ParsedWorldstate` shape (Unix-ms timestamps).
+6. Result is written to KV (`worldstate:current`, `worldstate:previous`, `worldstate:metadata`) with a **24-hour TTL** — long TTL so the last-good snapshot survives outages rather than evaporating and 503-ing the app.
+7. Responses carry an `X-Data-Source` header indicating which tier served the data.
 
-2. **Client (SyncService.ts)**
-   - `SyncService.init()` → immediate sync + 60 s poll loop
-   - Conditional GET: send stored ETag
-   - Server returns:
-     - **304 Not Modified** → serve cached data (save 2 MB parse)
-     - **200 OK** → new payload, cache in Dexie + localStorage
-   - Update `useHeartbeatStore` with sync status (`live` | `cached` | `offline`)
+#### Client side (`WorldstateSync`)
 
-3. **UI Access**
-   ```ts
-   // Read from Dexie cache
-   const ws = await getWsCache('worldstate_master');
-   // Extract specific event lists: fissures, invasions, alerts, etc.
-   ```
+- `WorldstateSync.init()` (called once in `AppShell`) → immediate sync, then a 60 s poll loop.
+- Conditional GET: sends `If-None-Match` with the stored ETag.
+  - **304 Not Modified** → keep cached snapshot, mark heartbeat `live`.
+  - **200 OK** → write new `ParsedWorldstate` to `db.worldstate`, update `db.syncMetadata`.
+- Tab hidden → poll paused; tab re-focused → immediate resync + restart loop.
+- `requestPassiveSync()` — a 60 s-cooldown nudge safe to call from render loops, fired when a tracked event expires (a fissure hits 00:00, a cycle flips) so the UI doesn't wait for the next poll tick.
+- `useWorldstate()` is the single read surface: a `useLiveQuery` over `worldstate` + `syncMetadata`, returning `{ data, lastSync, ageMs, isStale, source, quality, errorCount, forceRefetch, requestPassiveSync }`. Feature hooks (`useWorldCycles`, `useSyndicateMissions`, `useDuviriCircuit`, …) subscribe to it and add only their per-feature derivation.
 
-#### Config Variables:
-- `VITE_WORLDSTATE_WORKER_URL` — Cloudflare Worker URL (optional; falls back to warframestat.us direct)
-- `VITE_USE_MOCK_DATA=true` — Load mock worldstate for dev/testing
+#### Config
 
-#### Edge Cases:
-- **Cold start:** If Dexie is empty, check localStorage for last snapshot
-- **Network down:** Serve stale Dexie data; UI shows "cached" badge
-- **All endpoints fail:** UI shows "offline" badge; existing cache persists
+- `VITE_WORLDSTATE_WORKER_URL` — **required**. If unset, `WorldstateSync.init()` logs an error and no-ops (every tab renders empty).
+- `VITE_USE_MOCK_DATA=true` — load mock worldstate from fixtures for dev/testing.
 
 ---
 
-### 2. **Drop Data** (Items, Drop Locations)
+### 2. Static Codex (the canonical item catalogue)
 
-**Source:** drops.warframestat.us + items-map.json (baked at build time)  
-**Type:** Semi-static (updates weekly when WFCD releases new data)  
-**User Freshness:** Manual refresh only (no auto-sync on launch)  
-**Storage:** Dexie `items` + `dropLocations` + `dataSyncState` tables
+The Codex is the canonical detail view for every item, mod, resource, and reward; every other surface is a window into it. It is built from a single pre-computed blob.
 
-#### Flow:
+**Why the build runs in CI, not the Worker:** parsing several MB across ~11 WFCD endpoints exceeds the Cloudflare Workers free-plan budget of **10 ms CPU per invocation**. GitHub Actions has no such limit, so the heavy work happens there and the Worker only ever serves the finished blob.
 
-1. **Build Time**
-   - `src/lib/icons/items-map.json` (pre-resolved item list with image names)
-   - Compiled into bundle; never re-fetched
+#### Build (GitHub Actions — `.github/workflows/build-codex.yml`, cron `12 */6 * * *`, every 6h)
 
-2. **Client (DropDataService.ts)**
-   - **Manual trigger only:**
-     - User clicks "Refresh" in Settings
-     - OR app detects drop data never synced (silent background fetch on init)
-   
-   - `DropDataService.fetchAndSync({ onProgress })`
-     - Fetch `https://drops.warframestat.us/data/all.json`
-     - Fallback: `https://raw.githubusercontent.com/WFCD/warframe-drop-data/master/data/all.json`
-     - Conditional GET (ETag support; server returns 304 if unchanged)
-     - Exponential backoff retry (3 attempts, 1 s backoff × attempt #)
-     - Parse + normalize payload → `DropLocation[]`
-     - Build items catalogue from baked `items-map.json` → resolve all icon URLs
-     - Transactional Dexie write (all-or-nothing)
-   
-   - On failure: preserve existing Dexie rows; don't overwrite with empty result
+Runs `cloudflare-worker/scripts/build-codex.ts`, whose pipeline (`cloudflare-worker/src/codex/*`) is:
 
-3. **Staleness Check**
-   - `DropDataService.checkForStaleData()`
-     - Lightweight Dexie read (no network)
-     - Return `{ isStale, daysOld, message }`
-     - Threshold: 14 days old = show banner
-   
-   - Runs on app init; UI displays stale banner if true
+```
+fetcher → parser → normalizer → builder → enricher → tokenScanner
+```
 
-4. **Clear Data**
-   - `DropDataService.clearAllData()` (Settings button)
-   - Wipe `items` + `dropLocations` + `dataSyncState`
-   - Icons show placeholders until next successful refresh
+- **fetcher** — pulls ~9 item categories (mods, warframes, weapons, sentinels, pets, relics, resources, gear, arcanes, misc) plus drop tables. Primary source is `api.warframestat.us` with `?only=` field-filtering to keep payloads small; `raw.githubusercontent.com/WFCD/warframe-items` is the fallback (and the *primary* for the categories the API doesn't expose). Runs 4 fetches concurrently (Workers cap at 6 subrequests).
+- **parser / normalizer** — coerce each source shape into the internal `TennoplanItem` model.
+- **builder** — assemble the catalogue keyed by `uniqueName`.
+- **enricher** — fold in drops (inverted from location-keyed to per-item), warframe passive prose from the Wiki Lua module, etc.
+- **tokenScanner** — resolve leftover `|TOKEN|` placeholders.
 
-#### Config Variables:
-- `VITE_USE_MOCK_DATA=true` — Load mock drop data instead of fetching
+The resulting blob is PUT to KV: `codex:current`, `codex:previous`, `codex:metadata` via the Cloudflare API. Manual rebuilds: GitHub → Actions → "Build & Publish Codex" → Run workflow.
 
-#### UI Integration:
-- **Celestial Pendulum** queries `db.dropLocations` for bounties by location/tier
-- **Ascension Registry** filters `db.items` by category
-- All components read pre-resolved `item.iconUrl` (never compute CDN path)
+#### Serve (Worker)
+
+`GET /v1/codex` (`cloudflare-worker/src/api/handlers/codex.ts`) streams the pre-built blob straight from KV. No parsing at the edge.
+
+#### Client (`src/services/StaticDataService.ts`)
+
+Fetches `/v1/codex`, stores rows in Dexie `tennoplanItems` (PK `uniqueName`, indexed on `category` / `masteryRank` / `vaulted`), and exposes `findItems()` / lookup helpers used by the Codex pages and quick-look. Sync state is tracked in `syncMetadata` under `id: 'codex'`.
 
 ---
 
-### 3. **User Inventory** (EE.log Parser)
+### 3. Drop Data (legacy download-once path)
 
-**Source:** Local EE.log file (future Tauri/Rust work)  
-**Type:** User-generated, ephemeral  
-**Storage:** Dexie `cache` table  
-**TTL:** 24 hours
+**Service:** `src/adapters/api/DropDataService.ts`.
+**Source:** `drops.warframestat.us/data/all.json`, fallback `raw.githubusercontent.com/WFCD/warframe-drop-data`.
+**Model:** download-once. Data only enters Dexie when the user clicks "Refresh" (or accepts the stale banner on launch) and only leaves on "Clear Data".
+**Storage:** Dexie `items` + `dropLocations` + `dataSyncState`.
 
-#### Current Status:
-- **Not yet implemented.** Parser is a future Tauri + Rust project.
-- `SyncService.updateUserInventory(items)` is the planned gateway.
+> Note: this predates the codex pipeline and still feeds the legacy `items` / `dropLocations` tables. It coexists with `tennoplanItems` during the ongoing migration of UI consumers onto the codex. Drop *tables* are also folded into the codex blob by the CI enricher.
 
-#### Planned Flow (when Tauri + Rust parser ships):
-```ts
-// 1. Tauri reads EE.log file
-const log = await readFile(eeLogPath);
+#### Flow
 
-// 2. Rust parser extracts inventory items
-const items = rustParseEELog(log);
+1. `fetchAndSync({ onProgress })` — fetch with ETag conditional GET; exponential backoff (3 attempts: 1 s, 2 s, 3 s); fall back to the GitHub raw mirror.
+2. `normaliseDropPayload()` → `DropLocation[]`; load baked `items-map.json` → `StoredItem[]` with **pre-resolved icon URLs**.
+3. Transactional Dexie write (items + dropLocations + dataSyncState, all-or-nothing). On failure, existing rows are preserved — never overwritten with an empty result.
+4. `checkForStaleData()` — lightweight timestamp read; banner appears past **14 days** old.
+5. `clearAllData()` — Settings button; wipes the three tables.
 
-// 3. Client persists to Dexie
-await SyncService.updateUserInventory(items);
-
-// 4. UI reads from cache
-const myItems = await db.cache.get('user_inventory');
-```
+`VITE_USE_MOCK_DATA=true` loads `MOCK_DROP_LOCATIONS` + `MOCK_ITEMS` from `src/lib/mockdata/fixtures.ts` instead of fetching.
 
 ---
 
-## Dexie Schema (v5)
+### 4. User Inventory (EE.log parser) — *not yet implemented*
 
-Located: `src/adapters/storage/db.ts`
-
-### Core Tables
-
-| Table | Primary Key | Purpose | Lifecycle |
-|-------|-------------|---------|-----------|
-| `items` | `uniqueName` (string) | Full item catalogue with pre-resolved icon URLs | Persists until user clicks "Clear Data" |
-| `dropLocations` | `locationKey` (string) | Normalized drop locations (bounties, void fissures, etc.) | Persists until user clicks "Clear Data" |
-| `cache` | `key` (string) | Ephemeral data: worldstate snapshot, user inventory | Auto-expires via `expiresAt` index |
-| `dataSyncState` | `id` ('items' \| 'dropLocations') | Sync metadata: last update time, ETag, error log | Persists; updated on each sync attempt |
-| `settings` | `key` (string) | User preferences (future expansion) | Persists |
-| `userMarks` | `++id` (auto) | User-created marks/notes | User-managed |
-
-### Less-Used Tables (Asset Sync Engine, Ascension Registry)
-
-| Table | Purpose |
-|-------|---------|
-| `assetMeta` | Per-asset metadata for the Asset Sync Engine |
-| `syncErrors` | Error log for failed/404 asset downloads |
-| `progression` | Ascension Registry — one row per masterable item |
-| `itemStates` | User-owned flags (sparse: only touched items) |
+Planned Tauri + Rust work: read the local `EE.log`, extract owned items, and persist to Dexie so progression surfaces (Ascension Registry) can reflect ownership. No code path exists yet.
 
 ---
 
-## Retry & Fallback Logic
+## Dexie Schema (v8)
 
-### DropDataService
-```
-Fetch drops.warframestat.us/data/all.json (with ETag)
-├─ Success (200) → parse, normalize, write to Dexie
-├─ 304 Not Modified → refresh timestamp only, keep existing rows
-├─ Timeout/error → retry with exponential backoff
-│  ├─ Attempt 1: wait 1 s
-│  ├─ Attempt 2: wait 2 s
-│  └─ Attempt 3: wait 3 s
-└─ All retries failed → try GitHub fallback
-   ├─ Success → use GitHub data
-   └─ Failure → preserve existing Dexie rows; show error to user
-```
+Located: `src/adapters/storage/db.ts`. Migrations are additive — each version repeats prior store definitions so tables carry forward without data loss.
 
-### SyncService (Worldstate)
-```
-Fetch VITE_WORLDSTATE_WORKER_URL || warframestat.us/pc/
-├─ Success (200) → parse, cache in Dexie + localStorage
-├─ 304 Not Modified → serve cached data
-├─ Timeout/error → try fallback (if configured)
-│  └─ warframestat.us/pc/ direct
-└─ All endpoints failed → serve stale Dexie data (or empty if no cache)
-   └─ UI shows "offline" badge
-```
+| Table | Primary key | Purpose |
+|-------|-------------|---------|
+| `worldstate` | `key` (`current` \| `previous`) | Full `ParsedWorldstate` snapshot from `/v1/worldstate` |
+| `syncMetadata` | `id` (`worldstate` \| `codex`) | Per-dataset sync state: lastSync, etag, version, source, quality, errorCount |
+| `tennoplanItems` | `uniqueName` | Codex catalogue (~8k items); indexed `category`, `masteryRank`, `vaulted` |
+| `items` | `uniqueName` | **Legacy** drop-data catalogue with pre-resolved `iconUrl` (DropDataService) |
+| `dropLocations` | `locationKey` | Normalized drop locations; compound indexes for Celestial Pendulum facets |
+| `dataSyncState` | `id` (`items` \| `dropLocations`) | Legacy drop-data sync metadata |
+| `cache` | `key` | Ephemeral data, `expiresAt`-indexed (per-feature cache rows, ETag/source tags) |
+| `assetMeta` | `uniqueName` | Asset Sync Engine metadata (LRU eviction fields) |
+| `syncErrors` | `++id` | Failed/404 asset-download log |
+| `progression` | `++id` | Ascension Registry — one row per masterable item |
+| `itemStates` | `uniqueName` | Sparse user-owned flags (only touched items) |
+| `userMarks` | `++id` | User-created marks/notes |
+| `settings` | `key` | User preferences |
+| `eventLog` | `++id` | Cross-cutting app event log (~500-entry rolling buffer; Settings → Event Log) |
 
-### Cloudflare Worker
-```
-Scheduled (cron every 1 min):
-Fetch warframestat.us/pc/
-├─ Success (200) → parse, SHA-1 hash, compare with stored ETag
-│  ├─ Changed → write new payload + ETag + source to KV
-│  └─ Unchanged → update source tag only (primary may have recovered)
-├─ Timeout/error → try official api.warframe.com
-│  ├─ Success → parse with warframe-worldstate-parser → store in KV
-│  └─ Failure → log error; retry next minute
-```
+---
+
+## Sync State, Heartbeat & Data Quality
+
+`WorldstateSync` writes a `SyncMetadata` row and drives `useHeartbeatStore`, whose status reflects data freshness:
+
+| Status | Meaning |
+|--------|---------|
+| **live** | Fresh data confirmed (200 or 304), within the staleness threshold |
+| **stale** | Snapshot older than 30 min — likely served via the Worker's cycle-math projection |
+| **cached** | Network failed; serving last-good Dexie snapshot |
+| **offline** | Network failed *and* no local snapshot exists |
+
+The 30-minute stale threshold mirrors the Worker's `fallbackStalenessWarningMinutes`. The Worker also grades each response via `X-Data-Source`, which the client maps to a coarse quality: official/warframestat/enriched → `high`, cached → `medium`, fallback (projection) → `low`.
 
 ---
 
 ## ETag & Conditional GET
 
-**Purpose:** Avoid re-parsing 2 MB JSON when data hasn't changed.
+Avoids re-downloading/re-parsing large payloads when nothing changed.
 
-### Implementation:
-1. Client sends `If-None-Match: <etag>` header
-2. Server compares with stored ETag:
-   - **Match** → return HTTP 304 (client caches hit ~1/2 syncs)
-   - **Mismatch** → return HTTP 200 + new ETag
-3. Client updates stored ETag only on 200 responses
+1. Client sends `If-None-Match: <etag>`.
+2. Server compares against the stored ETag → **304** (reuse cache) or **200** + new ETag.
+3. Client updates its stored ETag only on a 200.
 
-### Locations:
-- **Worldstate:** stored in Dexie `cache` table (key: `worldstate_etag`)
-- **Drop data:** stored in Dexie `dataSyncState` table (id: `dropLocations`)
-- **KV (Worker):** stored as `etag` key in Cloudflare KV
+ETag storage: worldstate in `db.syncMetadata.etag`; legacy drop data in `db.dataSyncState`; Worker copies in KV metadata.
 
 ---
 
-## Mock Mode (Development)
+## KV Write Budget (Cloudflare Free plan)
 
-**Environment Variable:** `VITE_USE_MOCK_DATA=true`
+Free Workers = **1,000 KV writes/day, account-wide.** Current usage:
 
-When enabled:
-- **SyncService** → returns `generateMockWorldstate()`
-- **DropDataService** → loads `MOCK_DROP_LOCATIONS` + `MOCK_ITEMS` from fixtures
-- No network calls; instant predictable data for testing
+- Worldstate cron `*/5` → ~576 writes/day.
+- Codex CI every 6h → ~12 writes/day.
 
-Fixtures: `src/lib/mockdata/fixtures.ts`
-
----
-
-## Polling & Visibility Awareness
-
-**SyncService polling engine (`SyncService.init()`)**
-
-- **Initial sync:** runs immediately on app load
-- **Poll interval:** 60 seconds while tab is visible
-- **Tab hidden:** pause interval (saves CPU/bandwidth)
-- **Tab re-focused:** immediate resync, restart 60 s loop
-- **Visibility listener:** `document.addEventListener('visibilitychange', ...)`
-
----
-
-## Error Handling & User Feedback
-
-### Heartbeat Store (`useHeartbeatStore`)
-
-Tracks sync status across the app:
-
-```ts
-export interface HeartbeatState {
-  lastSync: {
-    status: 'live' | 'cached' | 'offline';
-    timestamp: number;
-  };
-}
-```
-
-**Status meanings:**
-- **live:** Fresh data from network (200 or 304 confirmed)
-- **cached:** Network failed; serving stale Dexie data
-- **offline:** Network failed AND no local cache exists
-
-UI reads this to show:
-- 🟢 Green badge: live
-- 🟡 Yellow badge: cached (with age)
-- 🔴 Red badge: offline
-
-### Stale Data Banners
-
-**DropDataService:**
-- Shows banner if drop data > 14 days old
-- Non-blocking; user can dismiss
-- Manual "Refresh" button in Settings always works
-
-**SyncService:**
-- Shows "offline" badge only if network completely down
-- No banner; graceful degradation
-
----
-
-## Performance Optimization
-
-### 1. Pre-Resolved Icon URLs
-- `items-map.json` → `getIconUrl()` → `item.iconUrl` stored in Dexie
-- UI never computes CDN paths per-render
-- Icons never disappear (even if cache is cleared between syncs)
-
-### 2. Transactional Writes
-- All-or-nothing Dexie updates (items + dropLocations + sync state)
-- No partial writes on network failure
-- Guarantees Dexie is always in a valid state
-
-### 3. 304 Not Modified Caching
-- ~50% of syncs hit 304 (save 2 MB parse + storage write)
-- ETag support in all fetch paths
-
-### 4. LocalStorage Cold-Start Seed
-- On cold start (Dexie empty), check localStorage
-- Restore last known worldstate instantly (avoid black screen)
-- LS loses freshness when users clear browser cache (acceptable)
-
-### 5. Passive Sync Rate-Limiting
-- `requestPassiveSync()` → throttled to 60 s cooldown
-- Triggered by fissure/invasion/alert expiration (00:00:00)
-- Prevents network spam if multiple events expire at once
-
----
-
-## Testing & Debugging
-
-### Environment Variables:
-```
-VITE_USE_MOCK_DATA=true          # Load fixtures instead of live API
-VITE_WORLDSTATE_WORKER_URL=...   # Cloudflare Worker URL (optional)
-```
-
-### Logger Scopes:
-```ts
-logger.scope('SyncService')        // Worldstate polling
-logger.scope('DropDataService')    // Static data sync
-logger.scope('DropDataService')    // Progress updates during fetch
-```
-
-### Dexie Console Debugging:
-```ts
-// Read all items
-db.items.toArray().then(console.log);
-
-// Check sync state
-db.dataSyncState.get('dropLocations').then(console.log);
-
-// Count rows
-db.dropLocations.count().then(console.log);
-
-// Clear everything (use with caution!)
-db.delete().then(() => location.reload());
-```
-
-### Network Inspection:
-- **DevTools → Network:** watch fetch calls to Worker / warframestat.us
-- **X-Data-Source header:** shows which upstream served the data
-- **X-Tennoplan-Source header:** shows if response came from KV or origin
-
----
-
-## Future Work
-
-1. **EE.log Parser** (Tauri + Rust)
-   - Read local EE.log file
-   - Extract user inventory
-   - Persist via `SyncService.updateUserInventory()`
-
-2. **Bounty Rotation Tiers** (warframe-drop-data integration)
-   - Hook up tier names in Celestial Pendulum
-   - Show which fissure tier is active
-
-3. **Ascension Registry** (when Dailies & Weeklies is solid)
-   - Consume `progression` table data
-   - Build mastery tracker UI
-
-4. **Items API Expansion**
-   - Currently pulls from baked items-map.json
-   - Future: fetch fresh @wfcd/items JSON on demand
-   - Interface stays the same (StoredItem[] shape doesn't change)
+Total ≈ 590/day, leaving headroom for manual ops. Don't tighten the worldstate cron without re-checking this budget.
 
 ---
 
 ## Reference: API Contract Summary
 
-| Endpoint | Method | Response | Headers | Purpose |
-|----------|--------|----------|---------|---------|
-| `https://api.warframestat.us/pc/` | GET | Worldstate JSON (warframestat.us shape) | `ETag`, `Cache-Control` | Live events |
-| `https://api.warframe.com/cdn/worldState.php` | GET | Raw DE worldstate JSON | none | Fallback (needs parser) |
-| `https://drops.warframestat.us/data/all.json` | GET | Drop data (WFCD shape) | `ETag` | Static item locations |
-| `https://raw.githubusercontent.com/WFCD/warframe-drop-data/...` | GET | Drop data (raw repo) | none | Fallback |
-| `VITE_WORLDSTATE_WORKER_URL` (Cloudflare) | GET | Worldstate JSON (cached) | `ETag`, `X-Data-Source` | Proxy + cache |
+| Endpoint | Method | Response | Purpose |
+|----------|--------|----------|---------|
+| `${WORKER}/v1/worldstate` | GET | `ParsedWorldstate` (Unix-ms) | Live events; `X-Data-Source` header, ETag |
+| `${WORKER}/v1/codex` | GET | Pre-built codex blob | Static catalogue (served from KV) |
+| `${WORKER}/v1/health` | GET | Health JSON | Liveness / source check |
+| `api.warframe.com/cdn/worldState.php` (+ content.warframe.com mirror) | GET | Raw DE worldstate | Worker primary (needs parser) |
+| `api.warframestat.us/pc/` | GET | Pre-parsed worldstate | Worker tertiary fallback |
+| `drops.warframestat.us/data/all.json` | GET | WFCD drop tables | Codex enrichment + legacy drop sync |
+| `raw.githubusercontent.com/WFCD/warframe-items` | GET | Per-category item JSON | Codex source/fallback |
 
 ---
 
-## Summary
+## Summary — the whole flow in plain English
 
-**The single flow in plain English:**
-
-1. Cloudflare Worker cron runs every 1 min, fetches worldstate from warframestat.us (or official API as fallback), stores in KV.
-2. Tennoplan client polls that Worker every 60 s (when visible), using ETags to skip re-parsing if nothing changed.
-3. When the user clicks "Refresh" in Settings, the app fetches drop data manually from drops.warframestat.us, parses, normalizes, and stores in Dexie.
-4. Both pieces are cached locally in Dexie with sync metadata (timestamp, ETag, error log).
-5. UI reads from local cache; network failures gracefully degrade to stale data or offline mode.
-6. Future: EE.log parser (Tauri + Rust) will extract user inventory and persist it the same way.
+1. **Static (CI, every 6h):** GitHub Actions builds the codex blob from WFCD sources and PUTs it to Cloudflare KV. The Worker just serves it at `/v1/codex`. The client caches it once into `tennoplanItems` and treats the Codex as the canonical detail view.
+2. **Live (Worker cron, every 5 min):** the Worker refreshes worldstate from the official DE API (with mirror, community, and cycle-math fallbacks) into KV.
+3. **Client (every 60 s):** `WorldstateSync` polls `/v1/worldstate` with ETags, writes the `ParsedWorldstate` snapshot to Dexie, and updates the heartbeat. `useWorldstate` fans it out to every feature hook.
+4. **Join key:** everything is wired together by `uniqueName`, resolved against the static codex — never by display name.
+5. **Offline:** the UI always reads from local Dexie cache; network failures degrade gracefully to `cached`/`stale`/`offline` rather than blanking the app.
+6. **Future:** a Tauri + Rust `EE.log` parser will add user inventory, persisted the same way.

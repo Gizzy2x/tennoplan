@@ -29,6 +29,20 @@ src-tauri/target/
 # Developer-only reference assets (do not ship)
 Reference-for-Tennoplan/
 
+# AI assistant config + vendored skill packs (local tooling, not the app)
+.claude/
+.agents/
+.continue/
+skills/
+skills-lock.json
+CLAUDE.md
+snapshot.sh
+
+# Internal design / session notes (these live in the local Obsidian vault)
+Notes/
+Research/
+.impeccable.legacy.md
+
 # Installers and archive dumps accidentally dropped in /src or /public
 *.exe
 *.zip
