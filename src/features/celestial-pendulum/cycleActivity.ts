@@ -12,6 +12,7 @@
 
 import type { CycleId } from '@/core/domain/cycles';
 import { getPlanetArt, getPlanetCrop } from '@/lib/planets/planetArt';
+import { getWorldBg } from './worldAssets';
 import { PRESTIGE_LEVEL } from '@/tokens/worldThemes';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -76,6 +77,22 @@ export function getWorldMeta(id: CycleId): WorldMeta {
   const m = WORLD_META[id] ?? { label: id.toUpperCase(), region: '', planet: null };
   // Crop hints live in planetArt.ts so the orrery and codex thumbs never diverge.
   const crop = getPlanetCrop(m.planet);
+
+  // Duviri has no planet render (it's a paradox realm, not a world). Rather than
+  // fall back to a translucent gradient blob, reuse its cinematic art as the
+  // circular thumb — consistent with how the other worlds show planet art (it
+  // feeds both the rail ring AND the detail hero, which read `meta.art`).
+  if (id === 'duviri') {
+    return {
+      id,
+      label:       m.label,
+      region:      m.region,
+      art:         getWorldBg('duviri', 'joy'),
+      artPosition: 'center',
+      artScale:    1.08,
+    };
+  }
+
   return {
     id,
     label:       m.label,

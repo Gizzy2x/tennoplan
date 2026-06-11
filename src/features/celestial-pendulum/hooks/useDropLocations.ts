@@ -7,34 +7,18 @@
  * worldstate job rewardPool (which warframestat leaves empty) and NOT the codex
  * (which carries no open-world bounty data).
  *
- * Each reward also gets its codex `uniqueName` resolved here (the normalizer is
- * a pure core service and can't import the items adapter), so reward tiles
- * deep-link to the exact codex entry. Quantity-prefixed labels ("100X Oxium",
- * "1,500 Credits Cache") are stripped before resolution; pure currency rewards
- * resolve to nothing and render as accurate non-linkable tiles.
+ * Each reward gets its codex `uniqueName` resolved here via the codex-backed
+ * DropResolver (the same deterministic rule cascade proven in CI), so reward
+ * tiles deep-link to the exact codex entry. This covers patterned labels the
+ * old items-map lookup missed: relics ("Meso X1 Relic"), blueprints, prime
+ * part components, quantity prefixes, and synthetic currencies (Endo / Credits
+ * / Kuva resolve to their /Tennoplan/* entries instead of dead tiles).
  */
 
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db }           from '@/adapters/storage/db';
-import { findByName }   from '@/adapters/items/itemsAdapter';
+import { db }              from '@/adapters/storage/db';
+import { getDropResolver } from '@/adapters/items/dropResolverAdapter';
 import type { BountyLocation, DropLocation } from '@/core/domain/drops';
-
-/**
- * Resolve a reward label to a codex uniqueName. Tries the raw name first, then
- * strips a leading quantity token ("100X ", "15X ", "3X 1,500 ", "50 ") and
- * retries. Returns undefined for non-item rewards (credits, endo, caches).
- */
-function resolveRewardUniqueName(itemName: string): string | undefined {
-  const direct = findByName(itemName);
-  if (direct) return direct.uniqueName;
-
-  const stripped = itemName.replace(/^(?:\d[\d,]*\s*[xX]?\s+)+/, '').trim();
-  if (stripped && stripped !== itemName) {
-    const f = findByName(stripped);
-    if (f) return f.uniqueName;
-  }
-  return undefined;
-}
 
 export function useBountyDropLocations(
   bountyLocation: BountyLocation | null | undefined,
@@ -43,17 +27,22 @@ export function useBountyDropLocations(
     async () => {
       if (!bountyLocation) return [] as DropLocation[];
 
-      const locs = await db.dropLocations
-        .where('[type+bountyLocation]')
-        .equals(['Bounty', bountyLocation])
-        .toArray();
+      // Read codex (via the resolver) + bounty rows together so the query is
+      // reactive to BOTH a drop-data sync and a codex sync.
+      const [resolver, locs] = await Promise.all([
+        getDropResolver(),
+        db.dropLocations
+          .where('[type+bountyLocation]')
+          .equals(['Bounty', bountyLocation])
+          .toArray(),
+      ]);
 
       // Attach codex identity to each reward for deterministic deep-linking.
       return locs.map((loc) => ({
         ...loc,
         rewards: loc.rewards.map((r) => ({
           ...r,
-          uniqueName: r.uniqueName ?? resolveRewardUniqueName(r.itemName),
+          uniqueName: r.uniqueName ?? resolver.resolve(r.itemName)?.uniqueName,
         })),
       }));
     },

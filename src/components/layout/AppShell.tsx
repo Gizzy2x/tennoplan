@@ -7,6 +7,7 @@ import { setHotkeyScope } from "@/hooks/useHotkeys";
 import { useNavigationStore, type NavTab } from "@/store/navigation";
 import { WorldstateSync } from "@/services/WorldstateSync";
 import { StaticDataService } from "@/services/StaticDataService";
+import { DropDataService } from "@/adapters/api/DropDataService";
 
 import { DailiesWeekliesPage } from "@/features/dailies-weeklies/DailiesWeekliesPage";
 import { CelestialPendulumPage } from "@/features/celestial-pendulum/CelestialPendulumPage";
@@ -81,8 +82,14 @@ export function AppShell() {
     // StaticDataService.init() is fire-and-forget: it checks the local
     // codex's freshness and triggers a background refresh if stale. No
     // cleanup needed (it doesn't own any timers).
+    //
+    // DropDataService.init() does the same for the bounty/relic drop tables
+    // (download-once, staleness-gated) so bounties populate WITHOUT the user
+    // hitting a manual "Load bounty data" button. Identity (uniqueName) is
+    // resolved at read-time against the codex via the dropResolver.
     WorldstateSync.init();
     void StaticDataService.init();
+    void DropDataService.init();
 
     return () => {
       WorldstateSync.destroy();

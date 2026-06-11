@@ -48,7 +48,10 @@ export const CycleRing = memo(function CycleRing({
         height={size}
         viewBox={`0 0 ${size} ${size}`}
         aria-hidden="true"
-        style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}
+        // overflow:visible lets the `pulse` drop-shadow bleed past the viewport
+        // as a soft circular halo. Without it the SVG clips the glow to its own
+        // 46px box → the halo shows a hard rectangular edge.
+        style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)', overflow: 'visible' }}
       >
         {/* Track */}
         <circle

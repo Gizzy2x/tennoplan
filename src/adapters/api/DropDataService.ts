@@ -58,9 +58,10 @@ const STALE_AFTER_MS = 14 * 24 * 60 * 60 * 1000;
  * bypassing the ETag/304 fast-path so users don't keep stale rows from an old
  * parser. (v2: fixed bounty reward parsing — itemName field, bare A/B/C
  * rotation keys, deimos/zariman section names.
- *  v3: preserve per-stage `stage` on bounty rewards for the wiki-style view.)
+ *  v3: preserve per-stage `stage` on bounty rewards for the wiki-style view.
+ *  v4: parse entratiLabRewards (Sanctum) + hexRewards (1999) bounty tables.)
  */
-const PARSER_VERSION = 3;
+const PARSER_VERSION = 4;
 
 /** Drop payload is ~10 MB; keep timeout generous. */
 const REQUEST_TIMEOUT_MS = 30_000;
@@ -206,14 +207,54 @@ async function readSyncState(id: DataSyncId): Promise<number | null> {
   return row?.lastUpdated ?? null;
 }
 
-async function readEtag(id: DataSyncId): Promise<string | undefined> {
-  const row = await db.dataSyncState.get(id);
-  return row?.etag;
-}
+// ─── Boot-time auto-sync dedup ────────────────────────────────────────────────
+
+/** De-dupes concurrent init() calls so a re-render storm can't fan out into
+ *  multiple ~10 MB fetches. */
+let initPromise: Promise<void> | null = null;
 
 // ─── Public API ──────────────────────────────────────────────────────────────
 
 export const DropDataService = {
+  /**
+   * Boot-time auto-sync (no manual button required). Mirrors
+   * StaticDataService.init(): silently downloads drop data in the background
+   * when it's missing, stale (>14d), or built by an older parser. Failures are
+   * swallowed — the empty-state / Settings manual refresh remains as a fallback,
+   * and existing cached rows are never clobbered.
+   *
+   * Fire-and-forget from AppShell. Safe to call repeatedly (de-duped).
+   */
+  async init(): Promise<void> {
+    if (initPromise) return initPromise;
+    initPromise = (async () => {
+      try {
+        if (isMockModeEnabled()) {
+          if ((await db.dropLocations.count()) === 0) await DropDataService.fetchAndSync();
+          return;
+        }
+
+        const state       = await db.dataSyncState.get('dropLocations');
+        const rowCount     = await db.dropLocations.count();
+        const lastUpdated  = state?.lastUpdated ?? 0;
+        const ageMs        = lastUpdated ? Date.now() - lastUpdated : Infinity;
+        const parserChanged = state?.parserVersion !== PARSER_VERSION;
+        const shouldSync = rowCount === 0 || lastUpdated === 0 || ageMs > STALE_AFTER_MS || parserChanged;
+
+        if (!shouldSync) {
+          log.info(`Drop data fresh (${rowCount} rows) — skipping auto-sync.`);
+          return;
+        }
+
+        log.info(`Drop data auto-sync (rows=${rowCount}, parserChanged=${parserChanged}, stale=${ageMs > STALE_AFTER_MS}) — fetching in background…`);
+        await DropDataService.fetchAndSync();
+      } catch (e) {
+        log.warn('Background drop-data auto-sync failed — manual refresh still available.', e);
+      }
+    })();
+    return initPromise;
+  },
+
   /**
    * Manually fetch + store drop data and rebuild the items catalogue.
    *

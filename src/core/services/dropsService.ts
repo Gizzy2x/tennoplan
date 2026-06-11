@@ -81,9 +81,12 @@ export interface RawDropPayload {
   keyRewards?: RawNamed[];
   cetusBountyRewards?: RawBounty[];
   solarisBountyRewards?: RawBounty[];
-  // Upstream key names — Deimos/Zariman differ from the Cetus/Solaris pattern.
+  // Upstream key names — Deimos/Zariman/Sanctum/1999 differ from the
+  // Cetus/Solaris pattern. Sanctum + 1999 are static (single pool, no rotation).
   deimosRewards?: RawBounty[];
   zarimanRewards?: RawBounty[];
+  entratiLabRewards?: RawBounty[];   // Sanctum Anatomica (Albrecht's Laboratories)
+  hexRewards?: RawBounty[];          // Höllvania / 1999
 }
 
 // ─── Internal helpers ────────────────────────────────────────────────────────
@@ -241,10 +244,12 @@ export function normaliseDropPayload(
 
   // 8. Bounties (4 locations × N levels × up to 3 rotations)  --------------
   const bountyBuckets: Array<[BountyLocation, RawBounty[] | undefined]> = [
-    ['Cetus',   raw.cetusBountyRewards],
-    ['Solaris', raw.solarisBountyRewards],
-    ['Deimos',  raw.deimosRewards],
-    ['Zariman', raw.zarimanRewards],
+    ['Cetus',     raw.cetusBountyRewards],
+    ['Solaris',   raw.solarisBountyRewards],
+    ['Deimos',    raw.deimosRewards],
+    ['Zariman',   raw.zarimanRewards],
+    ['Sanctum',   raw.entratiLabRewards],
+    ['Hollvania', raw.hexRewards],
   ];
 
   for (const [bountyLocation, entries] of bountyBuckets) {

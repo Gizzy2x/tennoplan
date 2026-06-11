@@ -76,7 +76,7 @@ function CircuitSection({ title, subtitle, items, onPreview }: {
   return (
     <div className={styles.circuitSection}>
       <div className={styles.circuitHead}>
-        <span className={styles.circuitTitle}>{title}</span>
+        <span className="typo-section-label">{title}</span>
         <span className={styles.circuitSub}>{subtitle}</span>
       </div>
       <div className={styles.circuitGrid}>
@@ -110,7 +110,7 @@ export const CircuitPanel = memo(function CircuitPanel({ circuit, accent }: Circ
   return (
     <div className={styles.circuit} style={{ ['--accent' as string]: accent } as React.CSSProperties}>
       <div className={styles.bountyHead}>
-        <span className={styles.bountyTitle}>THE CIRCUIT</span>
+        <span className="typo-section-label">THE CIRCUIT</span>
         <span className={styles.bountyRep}>Weekly rotation</span>
       </div>
       <CircuitSection title="NORMAL" subtitle="Warframes" items={circuit.normal} onPreview={openQuickLook} />

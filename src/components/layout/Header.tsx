@@ -26,13 +26,16 @@ import { NAV_ITEMS, useNavigationStore } from '@/store/navigation';
 import { useElementHeightVar } from '@/hooks/useElementHeightVar';
 import { PressTip } from '@/components/common/PressTip';
 import { DataPulse } from './DataPulse';
+import { DailiesPanel } from './DailiesPanel';
 import { HamburgerMenu } from './HamburgerMenu';
+import { HeaderWorldPills } from '@/features/celestial-pendulum/components/HeaderWorldPills';
 import styles from './Header.module.css';
 
 export function Header() {
   const activeTab    = useNavigationStore((s) => s.activeTab);
   const setActiveTab = useNavigationStore((s) => s.setActiveTab);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dailiesOpen, setDailiesOpen] = useState(false);
 
   // Header measures itself and writes its height to --header-h so
   // pages don't have to assume a fixed value.
@@ -40,8 +43,6 @@ export function Header() {
 
   const toggleMenu = useCallback(() => setMenuOpen((v) => !v), []);
   const closeMenu  = useCallback(() => setMenuOpen(false), []);
-
-  const isDailies = activeTab === 'dailies-weeklies';
 
   return (
     <>
@@ -89,6 +90,11 @@ export function Header() {
 
         {/* Right-side actions */}
         <div className={styles.actions}>
+          {/* App-wide live cycle pills + Baro — the persistent "what's the time?"
+              glance. Compact rings here; full state on hover; collapses as the
+              bar narrows (its own @container queries). */}
+          <HeaderWorldPills />
+
           {/* Dailies & Weeklies quick-access — kept because it's a killer feature.
               PressTip surfaces the full feature name on hover/long-press; the
               visible label compresses to "Dailies" to fit the bar. */}
@@ -96,9 +102,11 @@ export function Header() {
             <button
               type="button"
               className={styles.quickBtn}
-              data-active={isDailies}
-              onClick={() => setActiveTab('dailies-weeklies')}
+              data-active={dailiesOpen}
+              data-dailies-trigger
+              onClick={() => setDailiesOpen((v) => !v)}
               aria-label="Dailies & Weeklies"
+              aria-expanded={dailiesOpen}
             >
               <ListChecks size={14} strokeWidth={1.6} />
               <span className={styles.quickBtnLabel}>Dailies</span>
@@ -110,6 +118,7 @@ export function Header() {
       </header>
 
       <HamburgerMenu open={menuOpen} onClose={closeMenu} />
+      <DailiesPanel open={dailiesOpen} onClose={() => setDailiesOpen(false)} />
     </>
   );
 }

@@ -1,0 +1,220 @@
+/* ================================================================
+   DailiesPanel — app-wide Dailies & Weeklies tracker popover.
+   Anchored top-right, under the header's "Dailies" quick button.
+   Tokens-only. Mutalist Glow.
+   ================================================================ */
+
+.panel {
+  position:         fixed;
+  top:              calc(var(--header-h, 44px) + 6px);
+  right:            var(--space-md);
+  z-index:          50;
+
+  width:            min(560px, 92vw);
+  max-height:       calc(100vh - var(--header-h, 44px) - var(--space-lg, 24px));
+  overflow-y:       auto;
+
+  padding:          var(--space-md, 16px);
+
+  background:       color-mix(in oklab, var(--color-bg-secondary) 94%, transparent);
+  backdrop-filter:  blur(10px);
+  border:           1px solid var(--color-border-default);
+  border-radius:    var(--radius-card, 12px);
+  box-shadow:       0 12px 32px -8px color-mix(in oklab, #000 70%, transparent);
+
+  animation:        dailiesIn 180ms ease-out;
+  transform-origin: top right;
+}
+
+@keyframes dailiesIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel { animation: none; }
+}
+
+/* ── Header row ───────────────────────────────────────────────── */
+
+.head {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             var(--space-sm, 12px);
+}
+
+.title {
+  margin:        0;
+  font-family:   var(--font-serif);
+  font-size:     1.0625rem;
+  font-weight:   600;
+  line-height:   1.2;
+  color:         var(--color-text-primary);
+}
+
+.closeBtn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  flex-shrink:     0;
+  width:           28px;
+  height:          28px;
+  padding:         0;
+  background:      transparent;
+  border:          1px solid var(--color-border-default);
+  border-radius:   var(--radius-sm, 6px);
+  color:           var(--color-text-muted);
+  cursor:          pointer;
+  transition:      color 160ms ease-out, border-color 160ms ease-out,
+                   background 160ms ease-out;
+}
+
+.closeBtn:hover {
+  color:        var(--color-text-primary);
+  border-color: color-mix(in oklab, var(--color-accent-jade) 50%, transparent);
+  background:   color-mix(in oklab, var(--color-accent-jade) 8%, transparent);
+}
+
+.subtitle {
+  margin:      6px 0 0;
+  font-family: var(--font-sans);
+  font-size:   0.75rem;
+  line-height: 1.4;
+  color:       var(--color-text-muted);
+}
+
+/* ── Reset chips + counter ────────────────────────────────────── */
+
+.resets {
+  display:     flex;
+  align-items: center;
+  flex-wrap:   wrap;
+  gap:         8px;
+  margin:      var(--space-sm, 12px) 0;
+}
+
+.resetChip {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             5px;
+  height:          24px;
+  padding:         0 10px;
+  background:      color-mix(in oklab, var(--color-accent-jade) 6%, transparent);
+  border:          1px solid color-mix(in oklab, var(--color-accent-jade) 28%, transparent);
+  border-radius:   12px;
+  color:           var(--color-text-muted);
+  font-family:     var(--font-sans);
+  font-size:       0.6875rem;
+  font-weight:     600;
+  letter-spacing:  0.04em;
+  white-space:     nowrap;
+}
+
+.resetChip svg { color: var(--color-accent-jade); }
+
+.counter {
+  margin-left:    auto;
+  font-family:    var(--font-mono, var(--font-sans));
+  font-size:      0.6875rem;
+  font-weight:    700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color:          var(--color-accent-gold);
+  white-space:    nowrap;
+}
+
+/* ── Two-column body ──────────────────────────────────────────── */
+
+.cols {
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   var(--space-md, 16px);
+}
+
+@media (max-width: 460px) {
+  .cols { grid-template-columns: 1fr; }
+}
+
+.colHead {
+  margin-bottom: 8px;
+}
+
+.list {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+  margin:         0;
+  padding:        0;
+  list-style:     none;
+}
+
+/* ── Tickable row ─────────────────────────────────────────────── */
+
+.row {
+  display:       flex;
+  align-items:   center;
+  gap:           8px;
+  width:         100%;
+  padding:       7px 8px;
+  background:    transparent;
+  border:        1px solid transparent;
+  border-radius: var(--radius-sm, 6px);
+  color:         var(--color-text-primary);
+  font-family:   var(--font-sans);
+  font-size:     0.8125rem;
+  text-align:    left;
+  cursor:        pointer;
+  transition:    background 150ms ease-out, border-color 150ms ease-out,
+                 color 150ms ease-out;
+}
+
+.row:hover {
+  background:    color-mix(in oklab, var(--color-accent-jade) 6%, transparent);
+  border-color: color-mix(in oklab, var(--color-border-default) 70%, transparent);
+}
+
+.row[data-done] {
+  color: var(--color-text-muted);
+}
+
+.row[data-done] .rowLabel {
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in oklab, var(--color-text-muted) 60%, transparent);
+}
+
+.check {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  flex-shrink:     0;
+  width:           16px;
+  height:          16px;
+  border:          1px solid color-mix(in oklab, var(--color-text-muted) 60%, transparent);
+  border-radius:   4px;
+  color:           #0a0d0a;
+  transition:      background 150ms ease-out, border-color 150ms ease-out;
+}
+
+.row[data-done] .check {
+  background:   var(--color-accent-jade);
+  border-color: var(--color-accent-jade);
+}
+
+.rowLabel {
+  flex:          1 1 auto;
+  min-width:     0;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+}
+
+.rowMeta {
+  flex-shrink:    0;
+  margin-left:    auto;
+  font-size:      0.625rem;
+  font-weight:    600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}

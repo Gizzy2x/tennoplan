@@ -1,38 +1,46 @@
 /**
- * CelestialPendulumPage — the Orrery.
- *
- * Live world-cycle timers, rebuilt (impeccable v3) as a single dense surface:
+ * CelestialPendulumPage — the hub shell.
  *
  *   PageHero
- *   Orrery grid   — every tracked world as a planet-anchored cycle card:
- *                   draining ring (time made visible) + state + activity + clock
- *   World detail  — anchored hero for the selected world (planet bleed, big
- *                   countdown, activity intel, key-resource editorial rail)
- *   Bounty board  — compact reward browser for the selected world
- *   Footer        — reward-data freshness
+ *   ┌ Top tab bar: Overview · Worlds · Activities · Nightwave ·
+ *   │              Vendors & Syndicates · Events ┐
+ *   └────────────────────────────────────────────┘
+ *   <active tab>
  *
- * The previous six stacked panels (master header, dial rail, tactical radar,
- * bounty board, intel panel, footer) collapsed into two zones. All styling
- * lives in CelestialPendulum.module.css — no global index.css footprint.
+ * WORLDS: horizontal place chips (the old left rail, flattened) → a place
+ * dossier (live hero + a lazy "Next 6 hours" glance + Bounties / Forecast /
+ * Fishing / Circuit facets). Activities / Nightwave / Vendors & Syndicates /
+ * Events are live where worldstate provides it, honest "curated — coming" stubs
+ * where it doesn't. Overview is interim ("what's good now" board) until built last.
+ * App-wide live cycle pills + Baro + the Dailies panel live in the global header.
+ *
+ * Plan + rationale: Celestial-Pendulum-Blueprint.md. All styling lives in
+ * CelestialPendulum.module.css (tokens only).
  */
 
 import { useState, useCallback, useMemo } from 'react';
 import { PageHero }            from '@/components/ui/PageHero';
-import { WORLD_THEMES }        from '@/tokens/worldThemes';
+import { PRESTIGE_LEVEL }      from '@/tokens/worldThemes';
 import type { CycleId, CycleState, CycleStatus } from '@/core/domain/cycles';
 import { useWorldCycles }      from './hooks/useWorldCycles';
-import { useSyndicateMissions } from './hooks/useSyndicateMissions';
 import { useDropsLastSynced }  from './hooks/useDropsLastSynced';
-import { useEnrichedBounties } from './hooks/useEnrichedBounties';
-import { WorldBackground }     from './components/WorldBackground';
-import { WorldCycleCard }      from './components/WorldCycleCard';
+import { useAllGiverBounties } from './hooks/useAllGiverBounties';
 import { WorldActivityDetail } from './components/WorldActivityDetail';
+import { StaticPlaceHero }     from './components/StaticPlaceHero';
+import { RightNowHero, type HeroActive, type HeroUpcoming } from './components/RightNowHero';
 import { BountyBoard }         from './components/BountyBoard';
 import { CircuitPanel }        from './components/CircuitPanel';
+import { ActivitiesTab }       from './components/ActivitiesTab';
+import { NightwaveTab }         from './components/NightwaveTab';
+import { VendorsSyndicatesTab } from './components/VendorsSyndicatesTab';
+import { EventsTab }            from './components/EventsTab';
+import { NextHoursButton }     from './components/NextHoursButton';
+import { OverviewPanel }       from './components/OverviewPanel';
+import { CelestialWireframe }  from './wireframe/CelestialWireframe';
 import { useDuviriCircuit }    from './hooks/useDuviriCircuit';
+import { buildPlaces }         from './placesModel';
 import {
   ORRERY_ORDER,
-  CYCLE_TO_SYNDICATE,
   getWorldMeta,
   getActivity,
   getKeyResources,
@@ -40,93 +48,102 @@ import {
 import { getWorldBg }          from './worldAssets';
 import styles                  from './CelestialPendulum.module.css';
 
-const ACCENT_FALLBACK = 'var(--color-accent-jade)';
+// Two-colour discipline (matches the Codex): jade = interactive / live / default,
+// gold = the meaningful highlight (prime windows).
+const JADE = 'var(--color-accent-jade)';
+const GOLD = 'var(--color-accent-gold)';
+
+// ── Hub tabs ──────────────────────────────────────────────────────────────────
+type HubTab = 'overview' | 'worlds' | 'activities' | 'nightwave' | 'market' | 'events';
+const HUB_TABS: { key: HubTab; label: string }[] = [
+  { key: 'overview',   label: 'Overview' },
+  { key: 'worlds',     label: 'Worlds' },
+  { key: 'activities', label: 'Activities' },
+  { key: 'nightwave',  label: 'Nightwave' },
+  { key: 'market',     label: 'Vendors & Syndicates' },
+  { key: 'events',     label: 'Events' },
+];
+
+function ComingSoon({ label, note }: { label: string; note?: string }) {
+  return (
+    <div className={styles.comingSoon}>
+      <span className={styles.comingSoonLabel}>{label}</span>
+      <span className={styles.comingSoonNote}>{note ?? 'Coming soon.'}</span>
+      <span className={styles.comingSoonHint}>Planned · Celestial hub re-build</span>
+    </div>
+  );
+}
 
 export function CelestialPendulumPage() {
-  const [selectedId, setSelectedId] = useState<CycleId>('cetus');
-  const [isSyncing,  setIsSyncing]  = useState(false);
-  const [isLoadingData, setIsLoadingData] = useState(false);
+  const [hubTab, setHubTab] = useState<HubTab>('worlds');
+  const [selectedKey, setSelectedKey] = useState<string>('cetus');
+  const [showWireframe, setShowWireframe] = useState(false);
 
-  const { statuses, urgency, hasEverLoaded, isError, forceRefetch: refetchCycles, isDataOutOfSync } =
-    useWorldCycles();
-  const { missions, forceRefetch: refetchMissions } = useSyndicateMissions();
+  const { statuses, urgency, hasEverLoaded, isError, isDataOutOfSync } = useWorldCycles();
   const { ageLabel: dropsAgeLabel } = useDropsLastSynced();
 
-  // Keyed lookup
   const byId = useMemo(
     () => Object.fromEntries(statuses.map((s) => [s.cycle.id, s])) as Partial<Record<CycleId, CycleStatus>>,
     [statuses],
   );
+  const worlds = useMemo(() => ORRERY_ORDER.filter((id) => byId[id]), [byId]);
 
-  // Worlds to render: curated order, only those with live data
-  const worlds = useMemo(
-    () => ORRERY_ORDER.filter((id) => byId[id]),
-    [byId],
-  );
-
-  const selectedStatus = byId[selectedId] ?? (worlds[0] ? byId[worlds[0]] : null) ?? null;
-  const activeId        = selectedStatus?.cycle.id ?? selectedId;
-  const cycleState      = (selectedStatus?.cycle.state ?? 'day') as CycleState;
-  const accent          = WORLD_THEMES[activeId]?.accent ?? ACCENT_FALLBACK;
-  const bgUrl           = getWorldBg(activeId, cycleState);
-
-  const meta      = getWorldMeta(activeId);
-  const activity  = getActivity(activeId, cycleState);
-  const resources = getKeyResources(activeId, cycleState);
-
-  // Bounties for the selected world
-  const syndicateName   = CYCLE_TO_SYNDICATE[activeId];
-  const supportsBounties = Boolean(syndicateName);
-  const selectedMission = syndicateName
-    ? (missions.find((m) => m.syndicate === syndicateName) ?? null)
-    : null;
-  const { bounties } = useEnrichedBounties(selectedMission, activeId, cycleState);
   const duviriCircuit = useDuviriCircuit();
-
-  // Bounty reward tables come from the drop-data sync (db.dropLocations). If a
-  // world has active job tiers but no reward rows, the tables haven't been
-  // synced — surface a clear prompt rather than empty reward grids.
-  const hasRewardData = useMemo(
-    () => bounties.some((b) => b.rotations.length > 0 || (b.fallbackPool?.length ?? 0) > 0),
-    [bounties],
+  const giverBounties = useAllGiverBounties();
+  const places = useMemo(
+    () => buildPlaces(worlds, byId, urgency, giverBounties),
+    [worlds, byId, urgency, giverBounties],
   );
-  const bountiesToShow = hasRewardData ? bounties : [];
 
-  const emptyReason = useMemo(() => {
-    if (!supportsBounties) {
-      return activeId === 'duviri'
-        ? 'No rotating bounties here — rewards come from The Circuit and Duviri runs.'
-        : 'No open-world bounty board for this world.';
-    }
-    if (!selectedMission) return 'Live bounty data hasn’t loaded yet — tap Refresh.';
-    if (!hasRewardData)   return 'Bounty reward tables aren’t loaded — open Settings and refresh Drop Data to populate them.';
-    return 'No active bounties in this rotation right now.';
-  }, [supportsBounties, selectedMission, activeId, hasRewardData]);
+  const selectedPlace = useMemo(
+    () => places.find((p) => p.key === selectedKey) ?? places[0] ?? null,
+    [places, selectedKey],
+  );
 
-  // One-click load of the WFCD bounty/drop tables (~10 MB, download-once) for
-  // the bounty board's empty state — saves a trip to Settings.
-  const handleLoadBountyData = useCallback(async () => {
-    if (isLoadingData) return;
-    setIsLoadingData(true);
-    try {
-      const { DropDataService } = await import('@/adapters/api/DropDataService');
-      await DropDataService.fetchAndSync();
-    } catch {
-      /* live query stays empty; the user can retry */
-    } finally {
-      setIsLoadingData(false);
+  // "Right now" — active prime windows + the next opening (drives Overview interim).
+  const hero = useMemo(() => {
+    const active: HeroActive[] = [];
+    const upcoming: HeroUpcoming[] = [];
+    for (const id of worlds) {
+      const status = byId[id];
+      if (!status) continue;
+      const act = getActivity(id, status.cycle.state);
+      const m   = getWorldMeta(id);
+      if (act.isPrime) {
+        const fraction = Math.max(0, Math.min(1, 1 - status.progress));
+        active.push({ id, world: m.label, region: m.region, label: act.label, blurb: act.blurb, msRemaining: status.msRemaining, fraction, accent: GOLD });
+        continue;
+      }
+      const nextKey = urgency[id]?.nextStateKey;
+      if (nextKey && (PRESTIGE_LEVEL[nextKey] ?? 'none') === 'P0') {
+        const nextState = nextKey.split('-')[1] ?? '';
+        upcoming.push({ id, world: m.label, label: getActivity(id, nextState).label, msRemaining: status.msRemaining, accent: JADE });
+      }
     }
-  }, [isLoadingData]);
+    active.sort((a, b) => a.msRemaining - b.msRemaining);
+    upcoming.sort((a, b) => a.msRemaining - b.msRemaining);
+    return { active, upcoming };
+  }, [worlds, byId, urgency]);
 
-  const handleRefresh = useCallback(async () => {
-    if (isSyncing) return;
-    setIsSyncing(true);
-    try {
-      await Promise.all([refetchCycles(), refetchMissions()]);
-    } finally {
-      setIsSyncing(false);
-    }
-  }, [isSyncing, refetchCycles, refetchMissions]);
+  // Select a place AND jump to the Worlds tab (used by Overview links).
+  const goToPlace = useCallback((key: string) => { setSelectedKey(key); setHubTab('worlds'); }, []);
+
+  const emptyReason =
+    'No bounties to show here right now. Live jobs and reward tables refresh automatically in the background.';
+
+  // ── Dev-only wireframe of the re-planned hub ─────────────────────────────
+  if (import.meta.env.DEV && showWireframe) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.content}>
+          <button type="button" onClick={() => setShowWireframe(false)} className={styles.devChip}>
+            ← Exit wireframe (back to live page)
+          </button>
+          <CelestialWireframe />
+        </div>
+      </div>
+    );
+  }
 
   // ── Loading ─────────────────────────────────────────────────────────────
   if (!hasEverLoaded && !isError) {
@@ -138,63 +155,132 @@ export function CelestialPendulumPage() {
     );
   }
 
-  const refreshBtn = (
-    <button onClick={() => void handleRefresh()} disabled={isSyncing} className={styles.refresh}>
-      {isSyncing ? 'Syncing…' : '↻ Refresh'}
-    </button>
-  );
+  // ── Selected-place derived view ──────────────────────────────────────────
+  const cycleId      = selectedPlace?.cycleId;
+  const cycleState   = (selectedPlace?.status?.cycle.state ?? 'day') as CycleState;
+  const detailAccent = selectedPlace?.activity?.isPrime ? GOLD : JADE;
 
   return (
-    <div className={styles.page} data-world={activeId}>
-      <WorldBackground url={bgUrl} />
-
+    <div className={styles.page} data-world={cycleId ?? selectedPlace?.giverId ?? 'none'}>
       <div className={styles.content}>
-        <PageHero prefix="CELESTIAL" title="PENDULUM" right={refreshBtn} />
+        <PageHero prefix="CELESTIAL" title="PENDULUM" />
 
-        {/* ── Orrery: all worlds at a glance ──────────────────────────── */}
-        <div className={styles.orrery} role="group" aria-label="World cycles">
-          {worlds.map((id) => {
-            const status = byId[id]!;
-            const state  = status.cycle.state;
-            return (
-              <WorldCycleCard
-                key={id}
-                id={id}
-                meta={getWorldMeta(id)}
-                status={status}
-                urgency={urgency[id]}
-                activity={getActivity(id, state)}
-                accent={WORLD_THEMES[id]?.accent ?? ACCENT_FALLBACK}
-                selected={id === activeId}
-                onSelect={setSelectedId}
-              />
-            );
-          })}
-        </div>
-
-        {/* ── Selected world detail ───────────────────────────────────── */}
-        {selectedStatus && (
-          <WorldActivityDetail
-            meta={meta}
-            status={selectedStatus}
-            urgency={urgency[activeId]}
-            activity={activity}
-            accent={accent}
-            resources={resources}
-            staleData={isDataOutOfSync}
-          />
+        {import.meta.env.DEV && (
+          <button type="button" onClick={() => setShowWireframe(true)} className={styles.devChip} data-gold>
+            ◔ View re-plan wireframe (dev)
+          </button>
         )}
 
-        {/* ── Bounties (or Duviri's Circuit rotation) ─────────────────── */}
-        {activeId === 'duviri'
-          ? <CircuitPanel circuit={duviriCircuit} accent={accent} />
-          : <BountyBoard
-              bounties={bountiesToShow}
-              accent={accent}
-              emptyReason={emptyReason}
-              onLoadData={supportsBounties && !hasRewardData ? handleLoadBountyData : undefined}
-              isLoadingData={isLoadingData}
-            />}
+        {/* ── Hub top tabs ─────────────────────────────────────────────── */}
+        <nav className={styles.hubTabs} role="tablist" aria-label="Celestial sections">
+          {HUB_TABS.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={t.key === hubTab}
+              className={styles.hubTab}
+              data-active={t.key === hubTab || undefined}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => setHubTab(t.key)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className={styles.tabPanel} key={hubTab} role="tabpanel">
+          {/* ── Overview (interim: what's good now + all-worlds board) ──── */}
+          {hubTab === 'overview' && (
+            <>
+              <RightNowHero active={hero.active} upcoming={hero.upcoming} onSelect={(id) => goToPlace(id)} />
+              <OverviewPanel places={places} onSelect={goToPlace} />
+            </>
+          )}
+
+          {/* ── Worlds (the first real tab) ─────────────────────────────── */}
+          {hubTab === 'worlds' && (
+            <>
+              <div className={styles.placeChips} role="tablist" aria-label="Places">
+                {places.map((p) => {
+                  const isPrime = p.activity?.isPrime ?? false;
+                  const sel = p.key === selectedPlace?.key;
+                  return (
+                    <button
+                      key={p.key}
+                      type="button"
+                      role="tab"
+                      aria-selected={sel}
+                      className={styles.placeChip}
+                      data-active={sel || undefined}
+                      data-prime={isPrime || undefined}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => setSelectedKey(p.key)}
+                    >
+                      <span className={styles.placeChipDot} />
+                      {p.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {selectedPlace?.status && selectedPlace.meta && selectedPlace.activity && cycleId ? (
+                <WorldActivityDetail
+                  meta={selectedPlace.meta}
+                  status={selectedPlace.status}
+                  urgency={selectedPlace.urgency}
+                  activity={selectedPlace.activity}
+                  accent={detailAccent}
+                  resources={getKeyResources(cycleId, cycleState)}
+                  staleData={isDataOutOfSync}
+                  artUrl={getWorldBg(cycleId, cycleState)}
+                />
+              ) : selectedPlace ? (
+                <StaticPlaceHero
+                  label={selectedPlace.label}
+                  region={selectedPlace.region}
+                  npc={selectedPlace.npc}
+                  blurb={selectedPlace.blurb}
+                />
+              ) : null}
+
+              {/* Timer: open the per-world "next hours" view on demand (popover) —
+                  it no longer sits inline eating space. */}
+              {selectedPlace?.status && cycleId && (
+                <NextHoursButton cycle={selectedPlace.status.cycle} accent={detailAccent} />
+              )}
+
+              {/* No tabs — the place's facets STACK: bounties, then fishing below
+                  (plus the Circuit for Duviri, which has no open-world giver). */}
+              {(selectedPlace?.giver || selectedPlace?.giverId) && (
+                <BountyBoard giver={selectedPlace?.giver ?? null} emptyReason={emptyReason} />
+              )}
+
+              {cycleId === 'duviri' && (
+                <CircuitPanel circuit={duviriCircuit} accent={detailAccent} />
+              )}
+
+              {cycleId && (
+                <ComingSoon
+                  label="Fishing"
+                  note="Fish for this place, each tagged with its cycle (day/night · warm/cold). Listing + tags land next — the fish dataset is being mapped in."
+                />
+              )}
+            </>
+          )}
+
+          {/* ── Activities (live rotating missions) ─────────────────────── */}
+          {hubTab === 'activities' && <ActivitiesTab />}
+
+          {/* ── Nightwave (battle-pass style) ───────────────────────────── */}
+          {hubTab === 'nightwave' && <NightwaveTab />}
+
+          {/* ── Vendors & Syndicates (merged DIM-style index) ───────────── */}
+          {hubTab === 'market' && <VendorsSyndicatesTab />}
+
+          {/* ── Events (operations: active-event view + recurring index) ── */}
+          {hubTab === 'events' && <EventsTab />}
+        </div>
 
         {/* ── Footer ──────────────────────────────────────────────────── */}
         <div className={styles.footer}>

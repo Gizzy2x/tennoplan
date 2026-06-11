@@ -222,14 +222,28 @@
    its actual height to this var via useElementHeightVar; the 44px
    default below is just a fallback used before mount. The legacy
    --sidebar-w is intentionally absent — chrome is now a single top
-   bar. WorldBackground's `left: var(--sidebar-w, 0)`
-   resolves to 0; future sidebar reintroduction = set the var here.
+   bar; future sidebar reintroduction = set the var here.
    ================================================================ */
 
 :root {
   --header-h:  44px;
   --card-size-scale: 1.25;  /* Card dimensions only: 1 = 170px width, 1.2 = 204px, 1.5 = 255px, etc. */
   --card-text-scale: 1;  /* Text sizes only: 1 = default, 1.2 = 20% larger, etc. */
+
+  /* Icon size tokens (dossier §8.6, DIM's --item-size mechanism) —
+     ItemIcon's presets read these instead of hardcoded px, so a
+     collection can re-densify ALL its icons by overriding one token
+     on its wrapper (e.g. `.rewardGrid { --icon-size-md: 40px; }`). */
+  --icon-size-xs: 24px;
+  --icon-size-sm: 32px;
+  --icon-size-md: 48px;
+  --icon-size-lg: 64px;
+  --icon-size-xl: 96px;
+
+  /* ItemTile (the uniform item holder) icon size — its tile box is already
+     fluid (width:100% of the grid cell); this token sizes the icon inside.
+     Override per collection to re-densify every tile at once. */
+  --item-tile-icon: 64px;
 
   /* ================================================================
      Design System Tokens — Dark Teal Theme
@@ -240,6 +254,15 @@
      ================================================================ */
 
   /* Colors — Mutalist Glow theme (2026-05-29)
+
+     THEME CONTRACT (dossier §8.5): this :root block is the SEMANTIC token
+     tier and doubles as the default theme. useUiSettingsStore mirrors it
+     with data-theme="mutalist-glow" on <html> (same mechanism as
+     data-density). A future theme = one `[data-theme="<name>"]` block
+     redefining ONLY these semantic tokens — components must reference
+     semantic tokens (never raw hex, never a primitive directly), so an
+     attribute flip re-skins the whole app with zero component changes.
+
      Brand pivot from bone (#e7e1d3) → deep green-black + bioluminescent
      jade. Pushes the surface decisively away from the Lotus-cyan genre
      default and leans into the "infested dangerous" Warframe aesthetic
@@ -829,12 +852,6 @@ a:focus-visible {
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.7), inset 0 0 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Celestial Pendulum — background crossfade when switching worlds */
-@keyframes cpBgFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
 /* Active Terminal — "power on" scan effect when a bounty tier is selected */
 @keyframes terminalPowerOn {
   0%   { opacity: 0;   filter: brightness(2.5) blur(3px); transform: scaleY(0.96); }
@@ -919,7 +936,9 @@ a:focus-visible {
 
 .page-hero-heading {
   font-family: var(--font-serif);
-  font-size: 2.4rem;
+  /* Fluid display scale, matched to the Codex landing title so every page
+     header shares one type rhythm (impeccable: fluid clamp() on headings). */
+  font-size: clamp(2rem, 3.2vw, 2.5rem);
   line-height: 1;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -928,13 +947,17 @@ a:focus-visible {
 
 .page-hero-prefix {
   font-weight: 300;
-  color: rgba(229, 226, 225, 0.55);
+  color: var(--color-text-muted);
   margin-right: 0.32em;
 }
 
+/* Title is cream (text-primary), not gold — hierarchy comes from weight (700
+   vs the 300 prefix) and lightness, not from spending the gold accent on the
+   headline. Gold stays a 10–15% accent reserved for values / prime states.
+   No text-shadow glow (impeccable: no glowing accents on dark backgrounds). */
 .page-hero-title {
   font-weight: 700;
-  color: var(--color-accent-gold);
+  color: var(--color-text-primary);
 }
 
 .page-hero-subtitle {
@@ -1109,6 +1132,13 @@ a:focus-visible {
   background: rgba(28, 27, 27, 0.6);
   border: 1px solid rgba(219, 176, 88, 0.15);
   border-radius: 4px;
+
+  /* Every panel is a container-query context (dossier §8.4): card internals
+     respond to the PANEL's width, not the viewport's, so the same component
+     renders dense in a narrow rail and roomy in a wide pane.
+     Usage: @container panel (max-width: 360px) { ... } */
+  container-name: panel;
+  container-type: inline-size;
 }
 
 .panel-highlight {

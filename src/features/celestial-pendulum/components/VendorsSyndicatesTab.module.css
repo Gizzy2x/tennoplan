@@ -1,0 +1,380 @@
+/*
+   VendorsSyndicatesTab.module.css — own module for the Vendors & Syndicates tab.
+   Tokens only: --color-*, --space-*, --font-*, --radius-*. Never hardcode hex.
+
+   Mutalist Glow: jade = default/interactive, gold = highlight/cost emphasis only.
+   No glassmorphism, no gradient text, no side-stripe borders.
+*/
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* ── Category nav (chips) ─────────────────────────────────────────────────── */
+.catNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.catChip {
+  appearance: none;
+  border: 1px solid var(--color-border-default);
+  background: color-mix(in oklab, var(--color-bg-secondary) 60%, transparent);
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 180ms ease-out, border-color 180ms ease-out, background 180ms ease-out;
+}
+
+.catChip:hover {
+  color: var(--color-text-primary);
+  border-color: color-mix(in oklab, var(--color-accent-jade) 40%, var(--color-border-default));
+}
+
+.catChip[data-active] {
+  color: var(--color-accent-jade);
+  border-color: color-mix(in oklab, var(--color-accent-jade) 60%, transparent);
+  background: color-mix(in oklab, var(--color-accent-jade) 12%, transparent);
+}
+
+/* ── Two-column shell: entity list + detail page ──────────────────────────── */
+.shell {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.entityList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.entityItem {
+  appearance: none;
+  text-align: left;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+
+.entityItem:hover {
+  color: var(--color-text-primary);
+  background: color-mix(in oklab, var(--color-bg-secondary) 50%, transparent);
+}
+
+.entityItem[data-active] {
+  color: var(--color-text-primary);
+  border-color: color-mix(in oklab, var(--color-accent-jade) 45%, transparent);
+  background: color-mix(in oklab, var(--color-accent-jade) 10%, transparent);
+}
+
+/* ── Detail page (right column) ───────────────────────────────────────────── */
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-width: 0;
+  animation: fadeIn 240ms ease-out;
+}
+
+.detailHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.detailTitle {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.detailKind {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Live countdown chip (Baro). */
+.liveChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  color: var(--color-accent-jade);
+  font-variant-numeric: tabular-nums;
+}
+
+.liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent-jade);
+}
+
+.transitChip {
+  color: var(--color-accent-gold);
+}
+.transitChip .liveDot { background: var(--color-accent-gold); }
+
+/* ── Card surface ─────────────────────────────────────────────────────────── */
+.card {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: color-mix(in oklab, var(--color-bg-secondary) 70%, transparent);
+  padding: var(--space-md);
+}
+
+.cardNote {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--color-text-muted) 85%, transparent);
+  margin: 0;
+}
+
+.muted {
+  color: color-mix(in oklab, var(--color-text-muted) 75%, transparent);
+}
+
+/* ── Sub-section tabs (Syndicates) ────────────────────────────────────────── */
+.subTabs {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.subTab {
+  appearance: none;
+  border: 1px solid var(--color-border-default);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  letter-spacing: 0.03em;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+
+.subTab:hover { color: var(--color-text-primary); }
+
+.subTab[data-active] {
+  color: var(--color-accent-jade);
+  border-color: color-mix(in oklab, var(--color-accent-jade) 55%, transparent);
+  background: color-mix(in oklab, var(--color-accent-jade) 10%, transparent);
+}
+
+/* ── Standing meter (stubbed) ─────────────────────────────────────────────── */
+.standing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.standingTrack {
+  height: 6px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--color-bg-primary) 80%, transparent);
+  border: 1px solid var(--color-border-default);
+  overflow: hidden;
+}
+
+.standingFill {
+  height: 100%;
+  width: 0%;
+  background: color-mix(in oklab, var(--color-accent-jade) 35%, transparent);
+}
+
+/* ── DIM-style tiles grid ─────────────────────────────────────────────────── */
+.tilesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: var(--space-sm);
+}
+
+.tile {
+  position: relative;
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  text-align: left;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: color-mix(in oklab, var(--color-bg-secondary) 60%, transparent);
+  padding: var(--space-sm);
+  cursor: pointer;
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  transition: border-color 160ms ease-out, background 160ms ease-out;
+}
+
+.tile:hover {
+  border-color: color-mix(in oklab, var(--color-accent-jade) 50%, transparent);
+  background: color-mix(in oklab, var(--color-accent-jade) 8%, transparent);
+}
+
+.tile[data-active] {
+  border-color: color-mix(in oklab, var(--color-accent-jade) 65%, transparent);
+}
+
+/* Neutral image placeholder box — no real icons this pass. */
+.tileThumb {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--color-bg-primary) 70%, transparent) 0%,
+      color-mix(in oklab, var(--color-bg-secondary) 70%, transparent) 100%
+    );
+  border: 1px solid color-mix(in oklab, var(--color-border-default) 70%, transparent);
+}
+
+.tileName {
+  font-size: 0.78rem;
+  line-height: 1.3;
+  color: var(--color-text-primary);
+  word-break: break-word;
+}
+
+.tileCost {
+  font-size: 0.74rem;
+  color: var(--color-accent-gold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Decorative rotation A/B/C corner tag. */
+.tileRot {
+  position: absolute;
+  top: var(--space-xs);
+  right: var(--space-xs);
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  background: color-mix(in oklab, var(--color-bg-primary) 75%, transparent);
+  border: 1px solid color-mix(in oklab, var(--color-border-default) 70%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Detail flyout ────────────────────────────────────────────────────────── */
+.flyout {
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card);
+  background: color-mix(in oklab, var(--color-bg-secondary) 80%, transparent);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  animation: fadeIn 200ms ease-out;
+}
+
+.flyoutHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.flyoutClose {
+  appearance: none;
+  border: 1px solid var(--color-border-default);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 160ms ease-out, border-color 160ms ease-out;
+}
+
+.flyoutClose:hover {
+  color: var(--color-text-primary);
+  border-color: color-mix(in oklab, var(--color-accent-jade) 40%, var(--color-border-default));
+}
+
+/* Cost row (live Baro purchasables). */
+.costRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  border-top: 1px solid color-mix(in oklab, var(--color-border-default) 60%, transparent);
+}
+
+.costLabel { font-size: 0.82rem; color: var(--color-text-muted); }
+
+.costValue {
+  font-size: 0.86rem;
+  color: var(--color-accent-gold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Maintenance / honest note ────────────────────────────────────────────── */
+.maintenance {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid color-mix(in oklab, var(--color-border-default) 70%, transparent);
+  border-radius: var(--radius-card);
+  background: color-mix(in oklab, var(--color-bg-secondary) 45%, transparent);
+}
+
+.maintenanceText {
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--color-text-muted) 80%, transparent);
+  margin: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail,
+  .flyout {
+    animation: none;
+  }
+}
+
+/* ── Narrow: stack entity list above the detail ───────────────────────────── */
+@media (max-width: 720px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+  .entityList {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}

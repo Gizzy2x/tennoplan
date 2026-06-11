@@ -24,34 +24,55 @@ const fail = (msg: string, data?: unknown) => logger.error('worldstate-updater',
 
 export async function runWorldstateUpdate(env: Env): Promise<void> {
   const started = Date.now();
+  let communityErr = '';
+  let officialErr  = '';
+  let mirrorErr    = '';
 
-  // ── Try OFFICIAL ──
-  try {
-    const ws = await tryOfficial();
-    await commit(env, ws, 'official');
-    log('updated from official', { ms: Date.now() - started });
-    return;
-  } catch (e) {
-    warn('official source failed', { error: errMsg(e) });
-  }
-
-  // ── Fallback: COMMUNITY ──
+  // ── 1. COMMUNITY (warframestat) — the only source reachable from Cloudflare.
+  //    DE 403-blocks Cloudflare egress IPs on both official hosts (verified
+  //    2026-06-02), so we lead with community and keep official as a fallback
+  //    for the day DE unblocks (or we front it with a proxy). ──
   try {
     const ws = await tryCommunity();
     await commit(env, ws, 'warframestat');
     log('updated from community', { ms: Date.now() - started });
     return;
   } catch (e) {
-    fail('both sources failed — leaving KV intact', { error: errMsg(e) });
+    communityErr = errMsg(e);
+    warn('community source failed', { error: communityErr });
   }
 
-  // ── Both failed: bump errorCount in metadata, leave current/previous alone ──
+  // ── 2. OFFICIAL (api.warframe.com) — currently 403 from Cloudflare egress ──
+  try {
+    const ws = await tryOfficial(config.worldstate.officialUrl);
+    await commit(env, ws, 'official');
+    log('updated from official', { ms: Date.now() - started });
+    return;
+  } catch (e) {
+    officialErr = errMsg(e);
+    warn('official source failed', { error: officialErr });
+  }
+
+  // ── 3. OFFICIAL MIRROR (content.warframe.com) — different host, same blob ──
+  try {
+    const ws = await tryOfficial(config.worldstate.officialMirrorUrl);
+    await commit(env, ws, 'official');
+    log('updated from official mirror', { ms: Date.now() - started });
+    return;
+  } catch (e) {
+    mirrorErr = errMsg(e);
+    fail('all sources failed — leaving KV intact', { communityErr, officialErr, mirrorErr });
+  }
+
+  // ── All failed: bump errorCount, leave current/previous alone (the 24h TTL
+  //    keeps the last-good snapshot serving). Record per-source errors so
+  //    /v1/health shows exactly what broke. ──
   const existing = await getWorldstateMeta(env);
   if (existing) {
     const updated: SyncMetadata = {
       ...existing,
       errorCount: existing.errorCount + 1,
-      lastError:  'Both upstream sources failed',
+      lastError:  `official: ${officialErr || '—'} | mirror: ${mirrorErr || '—'} | community: ${communityErr || '—'}`.slice(0, 300),
     };
     await kvPutJson(env, config.kv.worldstate.metadata, updated);
   }
@@ -59,8 +80,8 @@ export async function runWorldstateUpdate(env: Env): Promise<void> {
 
 // ─── Source attempts ──────────────────────────────────────────────────────────
 
-async function tryOfficial(): Promise<ParsedWorldstate> {
-  const res = await fetchWithRetry(config.worldstate.officialUrl, {
+async function tryOfficial(url: string): Promise<ParsedWorldstate> {
+  const res = await fetchWithRetry(url, {
     timeoutMs: config.worldstate.fetchTimeoutMs,
     retries:   1,
   });

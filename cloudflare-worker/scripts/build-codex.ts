@@ -25,6 +25,7 @@ import { fileURLToPath } from 'node:url';
 import { fetchAllCodexSources } from '../src/codex/fetcher';
 import { parseCodex }           from '../src/codex/parser';
 import { buildCodex }           from '../src/codex/builder';
+import { syntheticBuiltItems }  from '../src/codex/syntheticItems';
 import { enrichCodex }          from '../src/codex/enricher';
 import { normalizeCodex }       from '../src/codex/normalizer';
 import { validateCodex }        from '../src/codex/validator';
@@ -56,6 +57,11 @@ async function main(): Promise<void> {
 
   // ── 3. BUILD ──
   const built = buildCodex(parsed);
+
+  // Inject synthetic codex entries for currencies WFCD doesn't model as items
+  // (Endo, Credits, Kuva …) so live surfaces can deep-link to them. They flow
+  // through enrich/normalize/validate as ordinary `component`-source rows.
+  built.items.push(...syntheticBuiltItems());
 
   // ── 4. ENRICH ──
   const enriched = enrichCodex(built, parsed);

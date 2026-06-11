@@ -231,6 +231,12 @@ export function modEntryToItem(mod: ModEntry): TennoplanItem {
     introduced:   mod.introduced,
     transmutable: mod.transmutable,
     releaseDate:  mod.releaseDate,
+    // Metadata stamped by the codex pipeline — synthesised here for the
+    // build-time fallback path (no live codex row yet).
+    dataVersion:  'mod-fallback',
+    lastUpdated:  Date.now(),
+    source:       'enriched',
+    quality:      'high',
   } as TennoplanItem;
 }
 

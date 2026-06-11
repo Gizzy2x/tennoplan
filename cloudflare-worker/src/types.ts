@@ -269,7 +269,8 @@ export interface SyndicateMissionInfo {
 }
 
 export interface SyndicateJob {
-  /** Display label of the bounty type, e.g. "Bounty Lv5-15". */
+  /** The bounty's narrative name, e.g. "Capture Their Leader",
+   *  "Isolation Vault Chamber A", "For the Unum (Narmer)". */
   type:           string;
   /** [min, max] enemy level for this tier. */
   enemyLevels:    [number, number];
@@ -277,6 +278,28 @@ export interface SyndicateJob {
   standingStages: number[];
   /** Possible reward strings per stage; absent when the upstream parser fails. */
   rewardPool?:    string[];
+  /** Mastery Rank required to accept this tier (0 = none). Drives the MR lock. */
+  minMR?:         number;
+  /** True for Deimos Isolation Vault bounties. */
+  isVault?:       boolean;
+  /** True for time-limited bounties (e.g. Narmer). */
+  timeBound?:     boolean;
+  /** The CURRENT reward rotation (the "Table" the board is on right now), parsed
+   *  from the upstream uniqueName (…Tier{X}Table{A|B|C}Rewards). Bounties rotate
+   *  the whole board onto one table per refresh, so only this rotation's items
+   *  drop until the board changes. Absent when the table can't be parsed. */
+  rotation?:      'A' | 'B' | 'C';
+  /** The LIVE drop table for this bounty's current rotation — the actual items +
+   *  real chances DE is awarding right now (from upstream rewardPoolDrops). */
+  rewardPoolDrops?: BountyDrop[];
+}
+
+/** One live bounty reward — item name, rarity, and real drop chance (%). */
+export interface BountyDrop {
+  item:   string;
+  rarity: string;
+  chance: number;
+  count?: number;
 }
 
 // ─── Sanctuary (Cephalon Simaris) ──────────────────────────────────────────────

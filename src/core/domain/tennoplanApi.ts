@@ -291,6 +291,24 @@ export interface SyndicateJob {
   enemyLevels:    [number, number];
   standingStages: number[];
   rewardPool?:    string[];
+  /** Mastery Rank required (0/absent = none). */
+  minMR?:         number;
+  /** Deimos Isolation Vault bounty. */
+  isVault?:       boolean;
+  /** Time-limited (e.g. Narmer). */
+  timeBound?:     boolean;
+  /** The CURRENT live reward rotation (the "Table" the board sits on now). */
+  rotation?:      'A' | 'B' | 'C';
+  /** Live drops for the current rotation (warframestat only — real chances). */
+  rewardPoolDrops?: BountyDrop[];
+}
+
+/** One live bounty drop (current rotation). `chance` is a percent (0–100). */
+export interface BountyDrop {
+  item:   string;
+  rarity: string;
+  chance: number;
+  count?: number;
 }
 
 export interface SimarisInfo {

@@ -13,7 +13,7 @@
 
 import type { ComponentType } from 'react';
 import type { ItemCategory } from '@/core/domain/tennoplanApi';
-import type { CodexEntry } from '../types';
+import type { CodexEntry } from '../../types';
 import { WarframeSummaryCard } from './WarframeSummaryCard';
 import { WeaponSummaryCard } from './WeaponSummaryCard';
 import { CompanionSummaryCard } from './CompanionSummaryCard';

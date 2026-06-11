@@ -55,7 +55,11 @@ const ENDPOINT    = WORKER_BASE ? `${WORKER_BASE}/v1/worldstate` : null;
 // ─── Tunables ─────────────────────────────────────────────────────────────────
 
 const REQUEST_TIMEOUT_MS       = 10_000;
-const POLL_INTERVAL_MS         = 60_000;
+
+/** Aligned to the Worker's every-5-min worldstate cron — KV only changes when
+ *  the cron writes, so polling faster than 5 min is pure wasted 304s. Freshness
+ *  on tab focus is covered by the visibilitychange passive sync below. */
+const POLL_INTERVAL_MS         = 5 * 60_000;
 const PASSIVE_SYNC_COOLDOWN_MS = 60_000;
 
 /** Match the Worker's FALLBACK_STALENESS_WARNING (default 30 min) — past

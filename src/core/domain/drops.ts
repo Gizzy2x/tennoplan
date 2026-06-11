@@ -18,7 +18,13 @@ export type DropLocationType =
   | 'Sortie Reward'
   | 'Key Reward';
 
-export type BountyLocation = 'Cetus' | 'Solaris' | 'Deimos' | 'Zariman';
+export type BountyLocation =
+  | 'Cetus'
+  | 'Solaris'
+  | 'Deimos'
+  | 'Zariman'
+  | 'Sanctum'     // Sanctum Anatomica / Albrecht's Laboratories (Fibonacci)
+  | 'Hollvania';  // Höllvania / 1999 (The Hex)
 
 export type RotationTier = 'A' | 'B' | 'C';
 
