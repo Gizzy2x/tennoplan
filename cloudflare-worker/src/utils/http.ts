@@ -15,7 +15,11 @@ export async function fetchWithRetry(url: string, opts: FetchOptions = {}): Prom
   const { timeoutMs = 10_000, retries = 2, etag, ...init } = opts;
 
   const headers: Record<string, string> = {
-    'User-Agent': 'Tennoplan/2.0 Worker',
+    // Browser-like UA: warframestat.us fingerprints User-Agents and returns an
+    // empty 200 body (or 403) to non-browser agents like "Tennoplan/2.0 Worker".
+    // A realistic UA keeps the community worldstate source (and any other
+    // warframestat fetch) working.
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
     'Accept':     'application/json',
     ...(init.headers as Record<string, string> ?? {}),
   };

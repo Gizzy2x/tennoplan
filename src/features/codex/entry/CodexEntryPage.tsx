@@ -14,9 +14,9 @@
  * so adding a new optional field to TennoplanItem doesn't require shell
  * changes and missing data doesn't leave empty boxes.
  *
- * Mods are rendered through ModDetailModal at the CodexPage level
- * rather than this shell, but the ModStats block dispatch is preserved
- * here so future per-page mod views (e.g. linked from search) work.
+ * Mods render here too, as a full detail page (ModCard block), so they flow
+ * through the same breadcrumb / back navigation as every other entry. The
+ * old ModDetailModal overlay is retired.
  */
 
 import { useState } from 'react';
@@ -34,11 +34,16 @@ import { PassiveBlock } from './blocks/PassiveBlock';
 import { GeneralInformationBlock } from './blocks/GeneralInformationBlock';
 import { WikiFooterBlock } from './blocks/WikiFooterBlock';
 import { ModStatsBlock } from './blocks/ModStatsBlock';
+import { ModDetailBlock } from './blocks/ModDetailBlock';
 import { BestFarmsBlock } from './blocks/BestFarmsBlock';
 import { PatchHistoryBlock } from './blocks/PatchHistoryBlock';
 import { BuildBlock } from './blocks/BuildBlock';
 import { DropsBlock } from './blocks/DropsBlock';
 import { ComponentsBlock } from './blocks/ComponentsBlock';
+import { AugmentContextBlock } from './blocks/AugmentContextBlock';
+import { PlanetaryOriginsBlock } from './blocks/PlanetaryOriginsBlock';
+import { ConsumersBlock } from './blocks/ConsumersBlock';
+import { RelatedEntriesBlock } from './blocks/RelatedEntriesBlock';
 
 interface CodexEntryPageProps {
   entry: CodexEntry;
@@ -94,12 +99,25 @@ function BlockSlot({ blockKey, entry, onSelectEntry }: BlockSlotProps) {
     case 'Passive':        return <PassiveBlock entry={entry} />;
     case 'GeneralInformation': return <GeneralInformationBlock entry={entry} />;
     case 'WikiFooter':     return <WikiFooterBlock entry={entry} />;
+    case 'ModCard':        return <ModDetailBlock entry={entry} />;
     case 'ModStats':       return <ModStatsBlockSlot entry={entry} />;
+    case 'ArcaneStats':    return <ArcaneStatsBlockSlot entry={entry} />;
+    case 'AugmentContext':
+      return (
+        <AugmentContextBlock
+          isAugment={entry.isAugment === true}
+          compatName={entry.compatName}
+          onSelectWarframe={onSelectEntry}
+        />
+      );
+    case 'PlanetaryOrigins': return <PlanetaryOriginsBlock entry={entry} />;
+    case 'Consumers':        return <ConsumersBlock entry={entry} onSelectEntry={onSelectEntry} />;
     case 'BestFarms':      return <BestFarmsBlock entry={entry} />;
     case 'PatchHistory':   return <PatchHistoryBlock entry={entry} />;
     case 'Build':          return <BuildBlock entry={entry} />;
     case 'Drops':          return <DropsBlock entry={entry} />;
     case 'Components':     return <ComponentsBlock entry={entry} onSelectEntry={onSelectEntry} />;
+    case 'Related':        return <RelatedEntriesBlock entry={entry} onSelectEntry={onSelectEntry} />;
     default:
       return (
         <div className="codex-entry-placeholder">
@@ -127,6 +145,31 @@ function ModStatsBlockSlot({ entry }: { entry: CodexEntry }) {
       baseDrain={entry.baseDrain ?? 0}
       rank={rank}
       onRankChange={setRank}
+    />
+  );
+}
+
+/**
+ * Sibling of ModStatsBlockSlot for arcane entries. Arcanes ship the same
+ * `levelStats` shape (per-rank stat-line arrays) as mods, so we reuse
+ * ModStatsBlock as the rendering primitive — only difference is no drain
+ * (arcanes don't cost mod capacity) and the slider's aria-label reads
+ * "Arcane rank" so screen-reader users hear the right noun.
+ */
+function ArcaneStatsBlockSlot({ entry }: { entry: CodexEntry }) {
+  const levelStats = entry.levelStats ?? [];
+  const maxRank = Math.max(0, levelStats.length - 1);
+  const [rank, setRank] = useState(maxRank);
+
+  if (levelStats.length === 0) return null;
+
+  return (
+    <ModStatsBlock
+      levelStats={levelStats}
+      baseDrain={0}
+      rank={rank}
+      onRankChange={setRank}
+      rankAriaLabel="Arcane rank"
     />
   );
 }

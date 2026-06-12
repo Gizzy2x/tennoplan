@@ -1,0 +1,72 @@
+/* ItemMention — inline codex reference styled as a wiki link.
+ *
+ * Dotted underline at rest signals linkability without visual noise.
+ * Hover: underline goes solid + subtle tinted glow behind the text.
+ * Two accent variants: jade (default) and gold (Rare / Legendary).
+ */
+
+.mention {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 0 2px;
+  font-weight: 500;
+  line-height: inherit;
+  /* Dotted underline — signals linkability without shouting. */
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  transition:
+    color            150ms ease-out,
+    text-decoration  150ms ease-out,
+    background       150ms ease-out;
+  /* Prevent the mention from wrapping away from its icon mid-word. */
+  white-space: nowrap;
+  user-select: none;
+}
+
+.mention:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* ── Jade (default — standard rarity) ─────────────────────────── */
+
+.jade {
+  color: var(--color-accent-jade);
+  text-decoration-color: color-mix(in srgb, var(--color-accent-jade) 45%, transparent);
+}
+
+.jade:hover {
+  text-decoration-style: solid;
+  text-decoration-color: var(--color-accent-jade);
+  background: color-mix(in srgb, var(--color-accent-jade) 9%, transparent);
+}
+
+/* ── Gold (Rare / Legendary) ──────────────────────────────────── */
+
+.gold {
+  color: var(--color-accent-gold);
+  text-decoration-color: color-mix(in srgb, var(--color-accent-gold) 45%, transparent);
+}
+
+.gold:hover {
+  text-decoration-style: solid;
+  text-decoration-color: var(--color-accent-gold);
+  background: color-mix(in srgb, var(--color-accent-gold) 9%, transparent);
+}
+
+/* ── Inline icon ──────────────────────────────────────────────── */
+
+.icon {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 2px;
+  /* Optical centering — icon baseline sits slightly above text midline. */
+  position: relative;
+  top: -1px;
+}

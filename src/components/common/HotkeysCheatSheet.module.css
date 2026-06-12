@@ -1,0 +1,169 @@
+/* ================================================================
+   HotkeysCheatSheet — floating panel that lists every registered
+   hotkey. Triggered by `?`, dismissed by Escape or scrim click.
+   ================================================================ */
+
+.scrim {
+  position: fixed;
+  inset:    0;
+  z-index:  90;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* Centering layer — motion takes over the panel's transform for
+   scale/opacity/y animation, so we CAN'T also use transform on the
+   panel for centering. Flex layout on a fixed wrapper handles it. */
+.center {
+  position:        fixed;
+  inset:           0;
+  z-index:         91;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  pointer-events:  none;
+  padding:         var(--space-lg);
+}
+
+.panel {
+  width:           min(560px, 100%);
+  max-height:      min(640px, calc(100vh - 64px));
+  display:         flex;
+  flex-direction:  column;
+  background:      var(--color-bg-secondary);
+  border:          1px solid color-mix(in srgb, var(--color-accent-gold) 25%, var(--color-border-default));
+  border-radius:   6px;
+  box-shadow:      0 24px 64px rgba(0, 0, 0, 0.6);
+  overflow:        hidden;
+  pointer-events:  auto;
+  transform-origin: center;
+}
+
+.header {
+  display:        flex;
+  align-items:    center;
+  justify-content: space-between;
+  gap:            var(--space-md);
+  padding:        var(--space-md) var(--space-lg);
+  border-bottom:  1px solid var(--color-border-default);
+}
+
+.title {
+  font-family:    var(--font-serif);
+  font-size:      1.05rem;
+  font-weight:    700;
+  letter-spacing: 0.04em;
+  color:          var(--color-accent-gold);
+  margin:         0;
+}
+
+.closeBtn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  width:           28px;
+  height:          28px;
+  padding:         0;
+  background:      transparent;
+  border:          1px solid var(--color-border-default);
+  border-radius:   3px;
+  color:           var(--color-text-muted);
+  cursor:          pointer;
+  transition:      color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+
+.closeBtn:hover {
+  color:        var(--color-accent-gold);
+  border-color: color-mix(in srgb, var(--color-accent-gold) 50%, transparent);
+  background:   color-mix(in srgb, var(--color-accent-gold) 6%, transparent);
+}
+
+.body {
+  flex:       1;
+  overflow:   auto;
+  padding:    var(--space-md) var(--space-lg);
+  display:    flex;
+  flex-direction: column;
+  gap:        var(--space-lg);
+}
+
+.group {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+}
+
+.groupTitle {
+  font-family:    var(--font-sans);
+  font-size:      0.6875rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  margin:         0;
+}
+
+.list {
+  display:        flex;
+  flex-direction: column;
+  gap:            6px;
+  margin:         0;
+}
+
+.row {
+  display:               grid;
+  grid-template-columns: 120px 1fr;
+  align-items:           center;
+  gap:                   var(--space-md);
+  padding:               6px 0;
+}
+
+.combo {
+  display:     inline-flex;
+  align-items: center;
+  gap:         4px;
+  margin:      0;
+}
+
+.kbd {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  min-width:       22px;
+  height:          22px;
+  padding:         0 6px;
+  font-family:     var(--font-mono);
+  font-size:       0.6875rem;
+  font-weight:     500;
+  line-height:     1;
+  color:           var(--color-text-primary);
+  background:      var(--color-bg-primary);
+  border:          1px solid var(--color-border-default);
+  border-radius:   3px;
+}
+
+.desc {
+  font-family: var(--font-sans);
+  font-size:   0.8125rem;
+  color:       var(--color-text-primary);
+  margin:      0;
+}
+
+.empty {
+  font-family: var(--font-sans);
+  font-size:   0.8125rem;
+  font-style:  italic;
+  color:       var(--color-text-muted);
+  margin:      0;
+}
+
+.footer {
+  display:        flex;
+  align-items:    center;
+  gap:            6px;
+  padding:        var(--space-sm) var(--space-lg);
+  border-top:     1px solid var(--color-border-default);
+  font-family:    var(--font-sans);
+  font-size:      0.6875rem;
+  color:          var(--color-text-muted);
+  background:     color-mix(in srgb, var(--color-bg-primary) 40%, transparent);
+}

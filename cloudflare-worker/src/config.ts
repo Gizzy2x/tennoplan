@@ -13,11 +13,22 @@ export const config = {
   },
 
   worldstate: {
-    // Primary: warframestat.us community-parsed shape
+    // Community-parsed shape (already-parsed JSON, no lib needed). Flaky:
+    // warframestat intermittently returns an empty 200 body.
     primaryUrl:     'https://api.warframestat.us/pc/',
-    // Official DE endpoint — raw worldstate JSON fed to warframe-worldstate-parser
-    officialUrl:    'https://api.warframe.com/cdn/worldState.php',
-    kvTtlSeconds:   300,
+    // Official DE endpoints — raw worldstate JSON fed to warframe-worldstate-parser.
+    // Two mirrors: if one host is unreachable from Cloudflare's egress, try the
+    // other before falling back to the flaky community source. Both return the
+    // same ~130KB blob.
+    officialUrl:       'https://api.warframe.com/cdn/worldState.php',
+    officialMirrorUrl: 'https://content.warframe.com/dynamic/worldState.php',
+    // 24h. The cron refreshes every minute on success, so served data is
+    // normally <1min old; this TTL governs how long the LAST-GOOD snapshot
+    // survives an upstream outage. At the old 300s (5min), any blip >5min
+    // evaporated the cache → "no cached worldstate" → 503 → blank app. A long
+    // TTL lets the worker serve stale + cycle-math-projected data through
+    // outages (timers drift, but the app stays alive) instead of dying.
+    kvTtlSeconds:   86_400,
     fetchTimeoutMs: 10_000,
   },
 

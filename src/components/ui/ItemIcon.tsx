@@ -20,10 +20,16 @@ import { type CSSProperties } from 'react';
 import { cn } from '@/lib/utils';
 import { getIconUrl, getIconUrlByItem } from '@/lib/icons/IconResolver';
 import { findByUniqueName } from '@/adapters/items/itemsAdapter';
-import { useIconBlobUrl } from '@/lib/icons/iconBlobCache';
+import { getCodexIconUrl } from '@/adapters/items/dropResolverAdapter';
+import { SYNTHETIC_ICON_URLS } from '@/lib/icons/syntheticIcons';
+import { useIconBlobUrl, PLACEHOLDER } from '@/lib/icons/iconBlobCache';
 import type { WarframeItem } from '@/core/domain/items';
 
-// ─── Size presets (px) ───────────────────────────────────────────────────────
+// ─── Size presets ────────────────────────────────────────────────────────────
+// Presets render as `var(--icon-size-<preset>, <px>px)` so a wrapper can
+// re-densify every icon inside it by overriding one token (index.css :root
+// holds the defaults). The px values double as the <img> width/height
+// attributes (pre-CSS layout hint) and the var() fallback.
 
 const SIZE_MAP = {
   xs: 24,
@@ -65,12 +71,21 @@ function resolveCdnUrl(
   props: Pick<ItemIconProps, 'item' | 'imageName' | 'uniqueName'>,
 ): string {
   if ('item' in props && props.item) {
+    const syn = SYNTHETIC_ICON_URLS[props.item.uniqueName];
+    if (syn) return syn;
+    // Codex carries icons for component parts items-map lacks (e.g. Gara Chassis).
+    const codex = getCodexIconUrl(props.item.uniqueName);
+    if (codex) return codex;
     return props.item.imageName ? getIconUrlByItem(props.item) : '/lotus-placeholder.svg';
   }
   if ('imageName' in props && props.imageName) {
     return props.imageName.trim() ? getIconUrl(props.imageName) : '/lotus-placeholder.svg';
   }
   if ('uniqueName' in props && props.uniqueName) {
+    const syn = SYNTHETIC_ICON_URLS[props.uniqueName];
+    if (syn) return syn;
+    const codex = getCodexIconUrl(props.uniqueName);
+    if (codex) return codex;
     const entry = findByUniqueName(props.uniqueName);
     return entry?.imageName ? getIconUrl(entry.imageName) : '/lotus-placeholder.svg';
   }
@@ -90,15 +105,26 @@ export function ItemIcon({
   style: styleProp,
 }: ItemIconProps & { item?: WarframeItem; imageName?: string; uniqueName?: string }) {
   const px = typeof size === 'number' ? size : SIZE_MAP[size as SizePreset] ?? 48;
+  const cssSize: string | number =
+    typeof size === 'string' && size in SIZE_MAP
+      ? `var(--icon-size-${size}, ${px}px)`
+      : px;
 
   const cdnUrl = resolveCdnUrl(
     { item, imageName, uniqueName } as Parameters<typeof resolveCdnUrl>[0],
   );
 
-  // Resolves: in-memory cache → Cache API → CDN fetch → placeholder
-  const src = useIconBlobUrl(cdnUrl);
+  // Only REMOTE (CDN) URLs go through the blob cache — in Tauri that path uses
+  // Rust reqwest (CORS-free), which can't fetch bundled/local asset URLs. Local
+  // assets (synthetic currency icons, the placeholder) render directly in the
+  // webview <img>, exactly as the codex quick-look does.
+  const isRemote = /^https?:\/\//i.test(cdnUrl);
 
-  const isPlaceholder = src === '/lotus-placeholder.svg';
+  // Hook must run unconditionally — feed it the placeholder for local assets.
+  const blobUrl = useIconBlobUrl(isRemote ? cdnUrl : PLACEHOLDER);
+  const src = isRemote ? blobUrl : cdnUrl;
+
+  const isPlaceholder = src === PLACEHOLDER;
 
   return (
     <img
@@ -109,8 +135,14 @@ export function ItemIcon({
       decoding="async"
       className={cn('object-contain shrink-0', className)}
       style={{
-        width:  px,
-        height: px,
+        width:  cssSize,
+        height: cssSize,
+        // In a flex parent, `min-width: auto` could floor a replaced element
+        // at an intrinsic minimum and beat a smaller token/100% clamp — pin
+        // to 0 so the CSS size is authoritative (shrink-0 still prevents
+        // unintended flex compression).
+        minWidth:  0,
+        minHeight: 0,
         filter: tint && !isPlaceholder ? GOLD_TINT_FILTER : undefined,
         ...styleProp,
       }}

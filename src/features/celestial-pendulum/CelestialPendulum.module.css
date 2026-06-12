@@ -1,0 +1,1506 @@
+/* ============================================================================
+   Celestial Pendulum — the Orrery
+   Scoped module (impeccable v3). No global index.css footprint.
+   Tokens only: --color-*, --space-*, --font-*, --radius-*.
+   `--accent` is injected per-component from WORLD_THEMES.
+   ============================================================================ */
+
+.page {
+  position: relative;
+  color: var(--color-text-primary);
+}
+
+/* Ambient bioluminescent light — the Mutalist Glow theme made atmospheric.
+   Two anchored sources (impeccable §3a) instead of one flat corner wash:
+     • ::before — primary jade aura behind the title + "Worth doing now" lead
+       (the featured zone, echoing the Codex's contained-in-light splash).
+     • ::after  — a deeper jade/gold ember lower-left, lighting the live planet
+       hero so the focal content sits IN the light, not floating in the void.
+   They BREATHE out of phase (17s vs 24s) — opacity only, so the perceived
+   centre of light drifts organically. Token-driven, behind .content.
+
+   position: FIXED (not absolute) so the light bleeds to the real window edges
+   and reads as off-screen atmosphere — anchoring to .page clipped it to the
+   padded content box, leaving a hard rectangle on the top/left edges. Starts
+   just under the header so it never paints over the top bar; AppShell <main>
+   has no transform, so fixed resolves to the viewport. */
+.page::before {
+  content: '';
+  position: fixed;
+  inset: var(--header-h, 44px) 0 0 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    50% 46% at 13% 12%,
+    color-mix(in srgb, var(--color-accent-jade) 13%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent-jade) 5%, transparent) 36%,
+    transparent 68%
+  );
+  animation: celestialTideA 17s ease-in-out infinite alternate;
+}
+.page::after {
+  content: '';
+  position: fixed;
+  inset: var(--header-h, 44px) 0 0 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      38% 44% at 29% 50%,
+      color-mix(in srgb, var(--color-accent-jade) 8%, transparent) 0%,
+      transparent 56%
+    ),
+    radial-gradient(
+      26% 32% at 26% 47%,
+      color-mix(in srgb, var(--color-accent-gold) 6%, transparent) 0%,
+      transparent 50%
+    );
+  animation: celestialTideB 24s ease-in-out infinite alternate;
+}
+
+@keyframes celestialTideA {
+  from { opacity: 0.78; }
+  to   { opacity: 1; }
+}
+@keyframes celestialTideB {
+  from { opacity: 0.6; }
+  to   { opacity: 0.95; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page::before { animation: none; opacity: 0.92; }
+  .page::after  { animation: none; opacity: 0.8; }
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Refresh button ───────────────────────────────────────────────────────── */
+
+.refresh {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  padding: 6px 12px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--color-bg-secondary) 70%, transparent);
+  cursor: pointer;
+  transition: color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+.refresh:hover:not(:disabled) {
+  color: var(--color-accent-jade);
+  border-color: var(--color-accent-jade-25);
+  background: var(--color-accent-jade-10);
+}
+.refresh:disabled { opacity: 0.55; cursor: progress; }
+.refresh:focus-visible {
+  outline: 2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+/* ── Loading ──────────────────────────────────────────────────────────────── */
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  min-height: 60vh;
+}
+.loadingDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent-jade);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.loadingText {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ============================================================================
+   Selected-world detail (anchored composition)
+   ============================================================================ */
+
+.detail {
+  --accent: var(--color-accent-jade);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md) var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  /* Compact live strip — no card frame. The world-cycle pills now live in the
+     global header, so this is a low band that breathes, not a tall hero. */
+}
+
+/* ── Anchored state art (impeccable §3a) ─────────────────────────────────────
+   The cinematic world/state image bleeds from the right and dissolves into the
+   base on the left — kept low and subtle so it reads as texture under the
+   strip, not a banner. The page supplies the ambient glow. */
+.detailArt {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 72% center;
+  filter: brightness(0.42) saturate(0.8);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.1) 46%, rgba(0, 0, 0, 0.7) 96%);
+          mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.1) 46%, rgba(0, 0, 0, 0.7) 96%);
+  pointer-events: none;
+  animation: detailArtIn 450ms ease-out both;
+}
+.detailArtScrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* Translucent (not opaque) on the left so the page's ambient glow bleeds
+     THROUGH the hero — the composition sits IN the light, seamless with the
+     page, instead of on an opaque dark slab. Still enough darkening for the
+     intel text to stay legible over the art. */
+  background:
+    linear-gradient(to right,
+      color-mix(in oklab, var(--color-bg-primary) 58%, transparent) 0%,
+      color-mix(in oklab, var(--color-bg-primary) 38%, transparent) 42%,
+      transparent 78%),
+    linear-gradient(to top,
+      color-mix(in oklab, var(--color-bg-primary) 44%, transparent) 0%,
+      transparent 62%),
+    linear-gradient(to top,
+      color-mix(in oklab, var(--accent) 14%, transparent) 0%,
+      transparent 52%);
+}
+/* Lift the composition's content above the anchored art. */
+.detailLive,
+.detailAnchor,
+.detailIntel,
+.detailRail { position: relative; z-index: 1; }
+
+@keyframes detailArtIn { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .detailArt { animation: none; } }
+
+/* The live band: ring + intel on one compact row. */
+.detailLive {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 0;
+  flex: 1 1 360px;
+}
+
+.detailAnchor { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.detailPlanet {
+  width: 62px;
+  height: 62px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.detailPlanetFallback {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--accent), color-mix(in oklab, var(--accent) 18%, #000) 78%);
+  opacity: 0.85;
+}
+
+.detailIntel {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.detailIdentity { display: flex; align-items: baseline; gap: var(--space-sm); }
+/* .detailWorld carries .typo-section-label in the TSX; nothing to add here. */
+.detailRegion {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  color: color-mix(in oklab, var(--color-text-muted) 70%, transparent);
+}
+
+/* State + clock + next, laid out inline on one band. */
+.detailStateRow {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+.detailState {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.05;
+  text-transform: capitalize;
+}
+.detailActivityRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+.detailPrime {
+  font-family: var(--font-sans);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--color-accent-gold);
+  padding: 1px 6px;
+  border: 1px solid var(--color-accent-gold-30);
+  border-radius: 999px;
+  background: var(--color-accent-gold-10);
+}
+.detailActivity {
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+.detailClock {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+.detailClockUnit {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
+  color: var(--color-text-muted);
+}
+.detailStale {
+  font-family: var(--font-sans);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #d99a4e;
+  padding: 1px 6px;
+  border: 1px solid rgba(217, 154, 78, 0.4);
+  border-radius: 999px;
+  cursor: help;
+}
+.detailNext {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+}
+.detailNextLabel {
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: color-mix(in oklab, var(--color-text-muted) 75%, transparent);
+}
+.detailNextState {
+  text-transform: capitalize;
+  color: var(--color-text-primary);
+}
+.detailNextDur {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+/* Key resources — compact collapsible disclosure, not a tall editorial rail. */
+.detailRail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  flex: 0 1 auto;
+  align-self: stretch;
+  justify-content: center;
+  padding-left: var(--space-lg);
+  border-left: 1px solid var(--color-border-default);
+}
+.detailResToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  transition: opacity 150ms ease-out;
+}
+.detailResToggle:hover { opacity: 0.78; }
+.detailResCaret {
+  font-size: 0.66rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+}
+.railList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--space-sm);
+  max-width: 28rem;
+}
+.railItem {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 2px 8px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-bg-secondary) 60%, transparent);
+}
+.railName {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+.railSource {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  color: color-mix(in oklab, var(--color-text-muted) 80%, transparent);
+}
+
+/* ============================================================================
+   Bounty board
+   ============================================================================ */
+
+.bounty {
+  --accent: var(--color-accent-jade);
+  margin-top: var(--space-xl);
+}
+
+.bountyHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+/* NOTE on section labels — consolidation (impeccable):
+   Every eyebrow / section label on this page uses the global
+   `.typo-section-label` treatment (0.7rem / 700 / 0.22em / uppercase / muted).
+   The page applies it directly in the TSX. Compact nav eyebrows (rail/place)
+   share ONE smaller module class, `.compactLabel`, defined further down — they
+   are intentionally denser but still muted/700/uppercase. No routine label is
+   gold; gold stays for the ◆ PRIME WINDOW badge + emphasized values only. */
+.bountyRep {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-gold);
+}
+
+.tierStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+.tier {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 150ms ease-out, border-color 150ms ease-out, background 150ms ease-out;
+}
+.tier:hover { color: var(--color-text-primary); border-color: color-mix(in oklab, var(--accent) 40%, var(--color-border-default)); }
+.tier[data-active] {
+  color: var(--color-text-primary);
+  border-color: color-mix(in oklab, var(--accent) 65%, transparent);
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+}
+.tier:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+.tierLabel { letter-spacing: 0.03em; }
+.tierSp {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-stat-health);
+}
+
+/* Bounty mode chip — colour-codes Steel Path / Narmer / Vault / … so players
+   can tell run types apart at a glance. */
+.tierBadge {
+  font-size: 0.54rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: var(--radius-sm);
+  border: 1px solid currentColor;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+/* Single restrained colour — gold (emphasis). The TEXT label differentiates the
+   mode (STEEL PATH / NARMER / VAULT…); no rainbow per kind, so the chip stays
+   Codex-consistent and recolours correctly when themes swap the brand tokens. */
+.tierBadge[data-kind] { color: var(--color-accent-gold); }
+
+.bountyNameRow {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.bountyName {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  color: var(--color-text-primary);
+}
+.bountyNameLvl {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.bountyWhy {
+  margin: 0 0 var(--space-md);
+  max-width: 70ch;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.rotStrip { display: flex; gap: var(--space-xs); margin-bottom: var(--space-md); }
+.rot {
+  padding: 4px 10px;
+  font-family: var(--font-sans);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border-default);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  transition: color 150ms ease-out, border-color 150ms ease-out, background 150ms ease-out;
+}
+.rot[data-active] {
+  color: var(--color-text-primary);
+  border-color: color-mix(in oklab, var(--accent) 60%, transparent);
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+}
+.rot:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+
+/* DIM-dense reward grid */
+.rewardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: var(--space-xs);
+}
+.reward {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px 8px;
+  text-align: left;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--color-bg-secondary) 70%, transparent);
+  cursor: default;
+  transition: border-color 150ms ease-out, background 150ms ease-out;
+}
+.reward[data-link] { cursor: pointer; }
+.reward:hover { border-color: var(--rarity, var(--color-border-default)); background: color-mix(in oklab, var(--color-bg-secondary) 95%, transparent); }
+/* Wiki-link affordance — a faint arrow on linkable (in-codex) rewards. */
+.reward[data-link]::after {
+  content: '↗';
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  font-size: 0.6rem;
+  line-height: 1;
+  color: var(--rarity, var(--color-text-muted));
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+.reward[data-link]:hover::after,
+.reward[data-link]:focus-visible::after { opacity: 0.85; }
+.reward:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+.reward[data-rarity="rare"]     { --rarity: var(--color-accent-gold); }
+.reward[data-rarity="uncommon"] { --rarity: var(--color-accent-jade); }
+.reward[data-rarity="common"]   { --rarity: var(--color-text-muted); }
+.reward[data-rarity="unknown"]  { --rarity: var(--color-text-muted); }
+
+/* Stage sections — one per bounty stage, wiki-style. */
+.stageSection {
+  margin-top: var(--space-md);
+}
+/* Layout only — typography/colour come from .typo-section-label (muted, not gold). */
+.stageLabel {
+  margin-bottom: var(--space-xs);
+}
+
+/* Inline "Load bounty data" action in the empty state. */
+.loadBtn {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--color-bg-primary);
+  background: var(--color-accent-jade);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: background 160ms ease-out, transform 160ms ease-out;
+}
+.loadBtn:hover:not(:disabled) { background: color-mix(in oklab, var(--color-accent-jade) 85%, #fff); transform: translateY(-1px); }
+.loadBtn:disabled { opacity: 0.6; cursor: progress; }
+.loadBtn:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+
+.rewardIcon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; }
+.iconFallback {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--color-border-default) 60%, transparent);
+}
+.rewardCol {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.rewardName {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--color-text-primary);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Rotation badges — one per rotation the item appears in, colored A/B/C. */
+.rewardBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+.rotBadge {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.rotBadge[data-tier="A"] {
+  color: var(--color-accent-gold);
+  background: var(--color-accent-gold-10);
+  border-color: var(--color-accent-gold-20, rgba(219,176,88,0.2));
+}
+.rotBadge[data-tier="B"] {
+  color: var(--color-accent-jade);
+  background: var(--color-accent-jade-10);
+  border-color: var(--color-accent-jade-20, rgba(88,232,138,0.2));
+}
+.rotBadge[data-tier="C"] {
+  color: var(--color-stat-energy);
+  background: color-mix(in oklab, var(--color-stat-energy) 12%, transparent);
+  border-color: color-mix(in oklab, var(--color-stat-energy) 28%, transparent);
+}
+.rotBadge[data-tier="flat"] {
+  color: var(--color-text-muted);
+  background: color-mix(in oklab, var(--color-text-muted) 12%, transparent);
+}
+.rewardChance {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--rarity, var(--color-text-muted));
+}
+.rewardGridEmpty {
+  grid-column: 1 / -1;
+  padding: var(--space-md);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* Bounty empty state */
+.bountyEmpty {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+  border: 1px dashed var(--color-border-default);
+  border-radius: var(--radius-card);
+}
+.bountyEmptyGlyph { font-size: 1rem; color: var(--color-text-muted); }
+.bountyEmptyText {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* ============================================================================
+   Circuit panel (Duviri) — same tile pattern as bounty rewards
+   ============================================================================ */
+
+.circuit {
+  --accent: var(--color-accent-jade);
+  margin-top: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+.circuitSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+.circuitHead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+.circuitSub {
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  color: var(--color-text-muted);
+}
+.circuitGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: var(--space-xs);
+}
+.circuitTile {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 6px 8px;
+  text-align: left;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--color-bg-secondary) 70%, transparent);
+  cursor: default;
+  transition: border-color 150ms ease-out, background 150ms ease-out;
+}
+.circuitTile[data-link] { cursor: pointer; }
+.circuitTile:hover { background: color-mix(in oklab, var(--color-bg-secondary) 95%, transparent); }
+.circuitTile[data-link]:hover { border-color: color-mix(in oklab, var(--accent) 55%, var(--color-border-default)); }
+.circuitTile:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+.circuitTile[data-link]::after {
+  content: '↗';
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  font-size: 0.6rem;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 150ms ease-out;
+}
+.circuitTile[data-link]:hover::after,
+.circuitTile[data-link]:focus-visible::after { opacity: 0.85; }
+
+/* ============================================================================
+   Forecast — the cycle planner / timetable
+   The hero owns "now"; this owns "when next + the days ahead". Same depth
+   language as the worth-doing cards for a featured lead, then a dense, dated
+   schedule. Prime windows read in gold; times are tabular for column scanning.
+   ============================================================================ */
+
+.forecast {
+  --accent: var(--color-accent-jade);
+  margin-top: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.forecastHead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+.forecastNote {
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  color: var(--color-text-muted);
+}
+.forecastHorizon {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 4px;
+}
+.forecastHzBtn {
+  font-family: var(--font-sans);
+  font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: 3px 10px;
+  border: 1px solid var(--color-border-default);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  transition: color 150ms ease-out, border-color 150ms ease-out, background 150ms ease-out;
+}
+.forecastHzBtn:hover { color: var(--color-text-primary); border-color: color-mix(in oklab, var(--accent) 40%, var(--color-border-default)); }
+.forecastHzBtn[data-active] {
+  color: var(--color-text-primary);
+  border-color: color-mix(in oklab, var(--accent) 58%, transparent);
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+}
+.forecastHzBtn:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+
+/* Featured lead — the next flip. Same depth recipe as .rightNowCard. */
+.forecastLead {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid color-mix(in oklab, var(--accent) 32%, var(--color-border-default));
+  border-radius: var(--radius-card);
+  background:
+    radial-gradient(130% 130% at 100% 0%, color-mix(in oklab, var(--accent) 14%, transparent) 0%, transparent 54%),
+    color-mix(in oklab, var(--accent) 5%, var(--color-bg-secondary));
+}
+.forecastLead::before {
+  content: '';
+  position: absolute; inset: 0 0 auto 0; height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--accent) 55%, transparent) 26%, color-mix(in oklab, var(--accent) 55%, transparent) 74%, transparent);
+  opacity: 0.6;
+}
+.forecastLeadKicker {
+  grid-column: 1 / -1;
+  font-family: var(--font-sans);
+  font-size: 0.58rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent);
+}
+.forecastLeadMain { display: flex; align-items: baseline; gap: var(--space-sm); min-width: 0; }
+.forecastLeadState {
+  font-family: var(--font-serif);
+  font-size: 1.3rem; font-weight: 600; line-height: 1.05;
+  text-transform: capitalize;
+  color: var(--color-text-primary);
+}
+.forecastLeadAct {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.forecastLeadWhenRow {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 1px;
+  text-align: right;
+}
+.forecastLeadWhen {
+  font-family: var(--font-mono);
+  font-size: 0.88rem; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.forecastLeadIn {
+  font-family: var(--font-sans);
+  font-size: 0.64rem; letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Schedule — windows grouped by day. */
+.forecastTable { display: flex; flex-direction: column; gap: var(--space-md); }
+.forecastDay { display: flex; flex-direction: column; gap: 3px; }
+.forecastDayLabel {
+  font-family: var(--font-sans);
+  font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-text-muted) 80%, transparent);
+  padding: 0 8px;
+}
+.forecastRows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.forecastRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  transition: background 140ms ease-out;
+}
+.forecastRow:hover { background: color-mix(in oklab, var(--color-bg-secondary) 65%, transparent); }
+.forecastTime {
+  min-width: 3.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem; font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+}
+.forecastDot {
+  flex-shrink: 0;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: color-mix(in oklab, var(--accent) 65%, transparent);
+}
+.forecastRow[data-prime] .forecastDot {
+  background: var(--color-accent-gold);
+  box-shadow: 0 0 7px color-mix(in oklab, var(--color-accent-gold) 70%, transparent);
+}
+.forecastState {
+  font-family: var(--font-sans);
+  font-size: 0.78rem; font-weight: 600;
+  text-transform: capitalize;
+  color: var(--color-text-primary);
+}
+.forecastRow[data-prime] .forecastState { color: var(--color-accent-gold); }
+.forecastAct {
+  margin-left: auto;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 50%;
+  text-align: right;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border-default);
+}
+.footerDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-accent-jade);
+  opacity: 0.7;
+}
+.footerLabel {
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+/* ── Animations ───────────────────────────────────────────────────────────── */
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; transform: scale(0.85); }
+  50%      { opacity: 1;   transform: scale(1); }
+}
+@keyframes cardPulse {
+  0%, 100% { border-color: color-mix(in oklab, var(--accent) 35%, var(--color-border-default)); }
+  50%      { border-color: color-mix(in oklab, var(--accent) 80%, transparent); }
+}
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.97); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card[data-preheat],
+  .loadingDot { animation: none; }
+  .popup, .popupBackdrop { animation: none; }
+  .card:hover { transform: none; }
+}
+
+/* ── Responsive: stack the detail on narrow containers ────────────────────── */
+
+@media (max-width: 860px) {
+  .detailRail {
+    flex-basis: 100%;
+    align-self: auto;
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--color-border-default);
+    padding-top: var(--space-md);
+  }
+}
+
+/* ── Right-Now hero — the actionable lead ──────────────────────────────── */
+@keyframes rightNowPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+.rightNow { margin: 0 0 var(--space-xl); }
+
+.rightNowHead { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-sm); }
+.rightNowPulse {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--color-accent-jade);
+  box-shadow: 0 0 8px var(--color-accent-jade);
+  animation: rightNowPulse 2s ease-in-out infinite;
+}
+/* .rightNowLabel / .rightNowUpLabel carry .typo-section-label in the TSX. */
+
+.rightNowGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+/* Active prime windows — the page's most valuable real estate, so these get
+   depth instead of a flat fill: a corner-anchored accent glow (light source
+   top-right), a lit top hairline, and a draining bar. Composition, not a slab. */
+.rightNowCard {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex; flex-direction: column; gap: var(--space-xs);
+  text-align: left;
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid color-mix(in oklab, var(--accent) 36%, var(--color-border-default));
+  border-radius: var(--radius-card);
+  background:
+    radial-gradient(135% 130% at 100% 0%,
+      color-mix(in oklab, var(--accent) 16%, transparent) 0%,
+      transparent 52%),
+    color-mix(in oklab, var(--accent) 6%, var(--color-bg-secondary));
+  cursor: pointer;
+  transition: border-color 200ms ease-out, transform 160ms ease-out, box-shadow 200ms ease-out;
+}
+/* Lit top edge — a hairline of accent light that dissolves at both ends, so the
+   card reads as catching light rather than being outlined. */
+.rightNowCard::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--accent) 62%, transparent) 26%,
+    color-mix(in oklab, var(--accent) 62%, transparent) 74%,
+    transparent
+  );
+  opacity: 0.7;
+}
+.rightNowCard:hover {
+  border-color: color-mix(in oklab, var(--accent) 62%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -14px color-mix(in oklab, var(--accent) 45%, transparent);
+}
+.rightNowCard:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+.rightNowKicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-sans);
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent);
+}
+.rightNowKickerDot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: rightNowPulse 2.4s ease-in-out infinite;
+}
+.rightNowTitle {
+  font-family: var(--font-serif); font-size: 1.15rem; line-height: 1.1;
+  color: var(--color-text-primary);
+}
+.rightNowMeta {
+  font-family: var(--font-sans);
+  font-size: 0.64rem; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.rightNowClock {
+  margin-top: var(--space-xs);
+  font-family: var(--font-mono);
+  font-size: 1.25rem; font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+.rightNowClock em { font-style: normal; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--color-text-muted); }
+
+/* Draining bar — the window's remaining share. scaleX is set inline from the
+   live fraction and eases each tick, so the bar visibly empties as time runs. */
+.rightNowBar {
+  position: relative;
+  height: 3px;
+  margin-top: var(--space-sm);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--accent) 14%, transparent);
+  overflow: hidden;
+}
+.rightNowBarFill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in oklab, var(--accent) 55%, transparent), var(--accent));
+  box-shadow: 0 0 8px color-mix(in oklab, var(--accent) 55%, transparent);
+  transition: transform 950ms linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rightNowBarFill { transition: none; }
+  .rightNowKickerDot { animation: none; }
+}
+
+.rightNowUpcoming { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-md); }
+.rightNowUpItem {
+  display: inline-flex; align-items: baseline; gap: 6px;
+  padding: 5px 10px; border: 1px solid var(--color-border-default);
+  border-radius: 999px; background: transparent; cursor: pointer;
+  transition: border-color 150ms ease-out;
+}
+.rightNowUpItem:hover { border-color: color-mix(in oklab, var(--accent) 60%, var(--color-border-default)); }
+.rightNowUpItem:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+.rightNowUpName  { font-size: 0.75rem; color: var(--color-text-primary); }
+.rightNowUpWorld { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-text-muted); }
+.rightNowUpIn    { font-size: 0.7rem; font-variant-numeric: tabular-nums; color: var(--accent); }
+
+/* ============================================================================
+   Observatory — master/detail shell
+   The orrery becomes the persistent left rail (master); the detail pane (right)
+   shows the selected place's cycle hero + its bounty board together, so cycles
+   and bounties read as one surface.
+   ============================================================================ */
+
+.observatory {
+  display: grid;
+  grid-template-columns: minmax(228px, 264px) 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+  margin-top: var(--space-xl);
+}
+
+/* ── Places rail (master) — orrery reborn as live navigation ──────────────── */
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: sticky;
+  top: var(--space-md);
+}
+
+/* Composition over containment: planet-in-ring anchors each place; unselected
+   places carry almost no chrome. Selected = jade hero; prime = quiet gold hint
+   (full border, never a side-stripe). */
+.place {
+  --accent: var(--color-accent-jade);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px 10px;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: var(--radius-card);
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 180ms ease-out, background 180ms ease-out;
+}
+.place:hover {
+  background: color-mix(in oklab, var(--accent) 7%, transparent);
+  border-color: color-mix(in oklab, var(--accent) 28%, transparent);
+}
+.place[data-prime]:not([data-selected]) {
+  border-color: color-mix(in oklab, var(--color-accent-gold) 32%, transparent);
+}
+.place[data-selected] {
+  border-color: color-mix(in oklab, var(--accent) 60%, transparent);
+  background: color-mix(in oklab, var(--accent) 11%, var(--color-bg-secondary));
+}
+.place[data-preheat] { animation: cardPulse 2.2s ease-in-out infinite; }
+.place:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+
+.placeAnchor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+}
+.placePlanet { width: 38px; height: 38px; object-fit: cover; border-radius: 50%; }
+.placePlanetFallback {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--accent), color-mix(in oklab, var(--accent) 20%, #000) 78%);
+  opacity: 0.85;
+}
+.placeGlyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--color-accent-jade) 24%, var(--color-border-default));
+  color: color-mix(in oklab, var(--color-accent-jade) 70%, var(--color-text-muted));
+  font-size: 0.95rem;
+}
+
+.placeBody { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.placeTopRow { display: flex; align-items: center; gap: 6px; }
+/* Compact nav eyebrow — the ONE denser label treatment shared by the rail.
+   Same family/weight/case/colour as .typo-section-label, only tighter (smaller
+   size + tracking) because it lives inside a dense nav item. Muted, never gold. */
+.compactLabel {
+  font-family: var(--font-sans);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+.placePip { font-size: 0.55rem; line-height: 1; color: var(--color-accent-gold); }
+.placeState {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.1;
+  text-transform: capitalize;
+}
+.placeClock {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+.placeNpc {
+  font-family: var(--font-serif);
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--color-text-primary);
+}
+.placeSub {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+/* ── Detail pane (detail) ─────────────────────────────────────────────────── */
+.placePane { min-width: 0; }
+
+/* The bounty board sits flush under the hero/header inside the pane. */
+.placePane .bounty { margin-top: var(--space-lg); }
+
+/* ── Dossier sub-tabs ─────────────────────────────────────────────────────────
+   The place's facets (Bounties / Forecast / Circuit). The hero above is the
+   always-on "Live" view, so these stay quiet — an underline indicator, jade
+   when active — until the user reaches for a deeper facet. */
+.dossierTabs {
+  display: flex;
+  gap: 2px;
+  margin-top: var(--space-lg);
+  border-bottom: 1px solid var(--color-border-default);
+}
+.dossierTab {
+  position: relative;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: 9px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 150ms ease-out;
+}
+.dossierTab:hover { color: var(--color-text-primary); }
+.dossierTab[data-active] { color: var(--color-text-primary); }
+.dossierTab[data-active]::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-accent-jade);
+}
+.dossierTab:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+
+/* Tab body — provides the gap from the strip; panels render flush (their own
+   top margins are zeroed so spacing stays consistent across facets). */
+.dossierBody { margin-top: var(--space-md); }
+.dossierBody > :is(.bounty, .forecast, .circuit) { margin-top: 0; }
+
+/* ── Overview ("All worlds") — the default landing ────────────────────────────
+   The rail's home entry sits above the places with breathing room; selecting it
+   shows the global board + aggregated next-prime list instead of a place dossier. */
+.overviewNav { margin-bottom: var(--space-sm); }
+
+.overview {
+  --accent: var(--color-accent-jade);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+.overviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
+  gap: var(--space-sm);
+}
+.overviewCard {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid color-mix(in oklab, var(--accent) 22%, var(--color-border-default));
+  border-radius: var(--radius-card);
+  background:
+    radial-gradient(130% 130% at 100% 0%, color-mix(in oklab, var(--accent) 12%, transparent) 0%, transparent 56%),
+    color-mix(in oklab, var(--accent) 4%, var(--color-bg-secondary));
+  cursor: pointer;
+  transition: border-color 180ms ease-out, transform 160ms ease-out, box-shadow 200ms ease-out;
+}
+.overviewCard::before {
+  content: '';
+  position: absolute; inset: 0 0 auto 0; height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--accent) 55%, transparent) 28%, color-mix(in oklab, var(--accent) 55%, transparent) 72%, transparent);
+  opacity: 0.6;
+}
+.overviewCard:hover {
+  border-color: color-mix(in oklab, var(--accent) 52%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px -16px color-mix(in oklab, var(--accent) 40%, transparent);
+}
+.overviewCard:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+.overviewPlanet { width: 36px; height: 36px; object-fit: cover; border-radius: 50%; }
+.overviewCardBody { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.overviewCardTop { display: flex; align-items: center; gap: 6px; }
+.overviewState {
+  font-family: var(--font-serif);
+  font-size: 0.95rem; font-weight: 600; line-height: 1.1;
+  text-transform: capitalize;
+}
+.overviewClock {
+  font-family: var(--font-mono);
+  font-size: 0.78rem; font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+.overviewNext {
+  font-family: var(--font-sans);
+  font-size: 0.6rem; letter-spacing: 0.02em;
+  color: color-mix(in oklab, var(--color-text-muted) 85%, transparent);
+}
+
+/* Next prime windows — aggregated across every world. */
+.overviewPrimesLabel { margin-top: var(--space-sm); }
+.overviewPrimes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.overviewPrimeRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 7px 8px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 140ms ease-out;
+}
+.overviewPrimeRow:hover { background: color-mix(in oklab, var(--color-bg-secondary) 65%, transparent); }
+.overviewPrimeRow:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+.overviewPrimeDot {
+  flex-shrink: 0;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--color-accent-gold);
+  box-shadow: 0 0 7px color-mix(in oklab, var(--color-accent-gold) 70%, transparent);
+}
+.overviewPrimeAct {
+  font-family: var(--font-sans);
+  font-size: 0.8rem; font-weight: 600;
+  color: var(--color-accent-gold);
+  white-space: nowrap;
+}
+.overviewPrimeWorld {
+  font-family: var(--font-sans);
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.overviewPrimeWhen {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.78rem; font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+.overviewPrimeIn {
+  font-family: var(--font-sans);
+  font-size: 0.64rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  min-width: 4.6rem;
+  text-align: right;
+}
+
+/* ============================================================================
+   Hub shell — top tab bar (replaces the left rail), place chips, stubs
+   ============================================================================ */
+
+.hubTabs {
+  display: flex;
+  gap: 2px;
+  margin: var(--space-md) 0 var(--space-lg);
+  border-bottom: 1px solid var(--color-border-default);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.hubTab {
+  position: relative;
+  flex: 0 0 auto;
+  padding: 11px 18px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 150ms ease-out;
+}
+.hubTab:hover { color: var(--color-text-primary); }
+.hubTab[data-active] { color: var(--color-text-primary); }
+.hubTab[data-active]::after {
+  content: '';
+  position: absolute;
+  left: 14px; right: 14px; bottom: -1px;
+  height: 2px; border-radius: 2px;
+  background: var(--color-accent-jade);
+}
+.hubTab:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+
+/* Tab-panel entrance — one quiet fade+rise per switch (keyed remount). */
+.tabPanel { animation: hubPanelIn 300ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes hubPanelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .tabPanel { animation: none; } }
+
+/* Place chips — the old left rail, flattened to a horizontal selector. */
+.placeChips { display: flex; gap: var(--space-xs); flex-wrap: wrap; margin-bottom: var(--space-lg); }
+.placeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-default);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+.placeChip:hover { color: var(--color-text-primary); border-color: color-mix(in oklab, var(--color-accent-jade) 35%, var(--color-border-default)); }
+.placeChip[data-active] {
+  color: var(--color-text-primary);
+  border-color: color-mix(in oklab, var(--color-accent-jade) 60%, transparent);
+  background: color-mix(in oklab, var(--color-accent-jade) 12%, transparent);
+}
+.placeChip[data-prime] { border-color: color-mix(in oklab, var(--color-accent-gold) 45%, transparent); }
+.placeChip:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+.placeChipDot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-accent-jade); flex-shrink: 0; }
+.placeChip[data-prime] .placeChipDot { background: var(--color-accent-gold); box-shadow: 0 0 8px color-mix(in oklab, var(--color-accent-gold) 60%, transparent); }
+
+/* Coming-soon stub (unbuilt tabs / facets). */
+.comingSoon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+  border: 1px dashed var(--color-border-default);
+  border-radius: var(--radius-card);
+}
+.comingSoonLabel { font-family: var(--font-serif); font-size: 1.4rem; color: var(--color-text-primary); }
+.comingSoonNote { font-family: var(--font-sans); font-size: 0.82rem; font-weight: 300; line-height: 1.55; color: var(--color-text-muted); max-width: 60ch; }
+.comingSoonHint { font-family: var(--font-sans); font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: color-mix(in oklab, var(--color-accent-gold) 70%, var(--color-text-muted)); }
+
+/* Dev chips (wireframe toggle). */
+.devChip {
+  margin: 4px 0 12px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid var(--color-border-default);
+  border-radius: 999px;
+}
+.devChip[data-gold] {
+  color: var(--color-accent-gold);
+  border-style: dashed;
+  border-color: color-mix(in oklab, var(--color-accent-gold) 45%, transparent);
+}
+
+/* Responsive: stack rail above the pane; rail becomes a horizontal scroller. */
+@media (max-width: 900px) {
+  .observatory { grid-template-columns: 1fr; gap: var(--space-md); }
+  .rail {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: var(--space-xs);
+    padding-bottom: var(--space-xs);
+    scrollbar-width: thin;
+  }
+  .place { flex: 0 0 auto; min-width: 172px; }
+}

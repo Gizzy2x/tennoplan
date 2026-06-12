@@ -36,7 +36,7 @@ export function PassiveBlock({ entry }: PassiveBlockProps) {
 
   return (
     <section className={styles.root} aria-labelledby="codex-passive-label">
-      <h2 id="codex-passive-label" className={styles.label}>Passive</h2>
+      <h2 id="codex-passive-label" className={`typo-section-label ${styles.label}`}>Passive</h2>
       <p className={styles.body}>{renderSegments(segments)}</p>
     </section>
   );

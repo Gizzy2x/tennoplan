@@ -7,7 +7,8 @@
     "deploy": "wrangler deploy --config wrangler.toml",
     "cf-typegen": "wrangler types",
     "build-codex": "tsx scripts/build-codex.ts",
-    "upload-codex": "tsx scripts/upload-codex.ts"
+    "upload-codex": "tsx scripts/upload-codex.ts",
+    "analyze-drops": "tsx scripts/analyze-drop-resolution.ts"
   },
   "dependencies": {
     "reflect-metadata": "^0.2.2",

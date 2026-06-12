@@ -30,6 +30,7 @@ import type {
   EnrichedBountyReward,
   EnrichedBountyRotation,
   BountyRewardRarity,
+  BountyKind,
 } from '@/core/domain/bounty';
 
 // ─── Level-range parsing ─────────────────────────────────────────────────────
@@ -73,10 +74,12 @@ function normaliseRarity(rarity: string, chance: number): BountyRewardRarity {
 
 function toEnrichedReward(r: DropReward): EnrichedBountyReward {
   return {
-    itemName: r.itemName,
-    chance:   r.chance,
-    rawRarity: r.rarity,
-    tier:     normaliseRarity(r.rarity, r.chance),
+    itemName:   r.itemName,
+    uniqueName: r.uniqueName,
+    chance:     r.chance,
+    rawRarity:  r.rarity,
+    tier:       normaliseRarity(r.rarity, r.chance),
+    ...(r.stage ? { stage: r.stage } : {}),
   };
 }
 
@@ -100,6 +103,109 @@ function buildTierLabel(jobType: string, range: [number, number] | null): string
     .toUpperCase();
 }
 
+/**
+ * Classify a bounty's mode from the live worldstate job. Signals verified
+ * against api.warframestat.us/pc/syndicateMissions (2026-06-02):
+ *   • `type` is the NARRATIVE NAME ("Capture Their Leader"), not a kind.
+ *   • Narmer     → "(Narmer)" in the name (levels 50-70).
+ *   • Vault      → "Isolation Vault Chamber X" name (upstream also sets isVault).
+ *   • Steel Path → enemyLevels [100,100] (the level-100 tier; NO keyword).
+ * Defensive: an unrecognised job is 'standard' (no chip), never a wrong label.
+ * (Previous bug: a blanket lo>=50→Narmer rule mislabelled the level-100 Steel
+ * Path tiers as Narmer.)
+ */
+function classifyKind(jobType: string, levels: [number, number]): { kind: BountyKind; badge: string | null } {
+  const t = jobType.toLowerCase();
+  if (/isolation\s*vault|vault\s*chamber/.test(t)) return { kind: 'vault',  badge: 'VAULT' };
+  if (/arcana/.test(t))                            return { kind: 'arcana', badge: 'ARCANA' };
+  if (/\bnarmer\b/.test(t))                        return { kind: 'narmer', badge: 'NARMER' };
+  if (/profit[\s-]*taker|exploiter|heist/.test(t)) return { kind: 'heist',  badge: 'HEIST' };
+  if (/ghoul|plague|thermia/.test(t))              return { kind: 'event',  badge: 'EVENT' };
+  if (levels[0] >= 100 && levels[1] >= 100)        return { kind: 'steel-path', badge: 'STEEL PATH' };
+  return { kind: 'standard', badge: null };
+}
+
+/** Cleaned narrative name for display — strips the "(Narmer)" mode suffix. */
+function cleanBountyName(jobType: string): string {
+  const name = jobType.replace(/\s*\((narmer|steel\s*path)\)\s*/i, '').trim();
+  return name || jobType;
+}
+
+// ─── Static givers (Sanctum / 1999) ──────────────────────────────────────────
+
+/**
+ * Build EnrichedBounty[] for a STATIC giver (Sanctum Anatomica, Höllvania/1999)
+ * directly from its drop tables. These givers have no live worldstate job and
+ * their rewards don't rotate — each `bountyLevel` row IS a tier. We group the
+ * giver's DropLocation rows by level and build one bounty per tier, reusing the
+ * same rotation/reward shaping as the live path.
+ */
+export function buildStaticBounties(
+  locations: DropLocation[],
+  bountyLocation: BountyLocation,
+  label: string,
+): EnrichedBounty[] {
+  const byLevel = new Map<string, DropLocation[]>();
+  for (const loc of locations) {
+    if (loc.type !== 'Bounty' || loc.bountyLocation !== bountyLocation || !loc.bountyLevel) continue;
+    const arr = byLevel.get(loc.bountyLevel) ?? [];
+    arr.push(loc);
+    byLevel.set(loc.bountyLevel, arr);
+  }
+
+  const ROTATION_ORDER: Array<RotationTier | 'flat'> = ['A', 'B', 'C', 'flat'];
+  const out: EnrichedBounty[] = [];
+
+  for (const [bountyLevel, rows] of byLevel) {
+    const range = parseLevelRange(bountyLevel);
+
+    const bucket = new Map<RotationTier | 'flat', EnrichedBountyReward[]>();
+    for (const loc of rows) {
+      const key: RotationTier | 'flat' = loc.rotationTier ?? 'flat';
+      const arr = bucket.get(key) ?? [];
+      for (const r of loc.rewards) arr.push(toEnrichedReward(r));
+      bucket.set(key, arr);
+    }
+
+    const rotations: EnrichedBountyRotation[] = [];
+    for (const key of ROTATION_ORDER) {
+      const rewards = bucket.get(key);
+      if (!rewards || rewards.length === 0) continue;
+      rewards.sort((a, b) => (b.chance !== a.chance ? b.chance - a.chance : a.itemName.localeCompare(b.itemName)));
+      rotations.push({
+        tier:  key === 'flat' ? null : key,
+        label: key === 'flat' ? 'POOL' : `ROTATION ${key}`,
+        rewards,
+      });
+    }
+    if (rotations.length === 0) continue;
+
+    const enemyLevels: [number, number] = range ?? [0, 0];
+    const { kind, badge } = classifyKind(bountyLevel, enemyLevels);
+
+    out.push({
+      jobType:       bountyLevel,
+      name:          range ? `${label} ${range[0]}–${range[1]}` : label,
+      tierLabel:     range ? `LEVEL ${range[0]} - ${range[1]}` : bountyLevel.toUpperCase(),
+      bountyLocation,
+      levelRange:    range,
+      enemyLevels,
+      standingTotal: 0,
+      isSteelPath:   kind === 'steel-path',
+      kind,
+      kindBadge:     badge,
+      rotations,
+      liveRotation:  null,   // static givers have no live rotation
+      stageCount:    null,
+      fallbackPool:  null,
+      cycleNote:     null,
+    });
+  }
+
+  out.sort((a, b) => a.enemyLevels[0] - b.enemyLevels[0]);
+  return out;
+}
+
 export function enrichBounty({
   job,
   bountyLocation,
@@ -113,8 +219,10 @@ export function enrichBounty({
     job.enemyLevels[0] !== 0 || job.enemyLevels[1] !== 0
       ? job.enemyLevels
       : parseLevelRange(job.type);
-  const isSteelPath   = /steel/i.test(job.type);
   const standingTotal = job.standingStages.reduce((a, b) => a + b, 0);
+  const { kind, badge: kindBadge } = classifyKind(job.type, job.enemyLevels);
+  const isSteelPath = kind === 'steel-path';
+  const name = cleanBountyName(job.type);
 
   // 1. Filter locations: right world + same level range
   const matches: DropLocation[] = [];
@@ -166,13 +274,18 @@ export function enrichBounty({
 
   return {
     jobType:       job.type,
+    name,
     tierLabel:     buildTierLabel(job.type, levelRange),
     bountyLocation,
     levelRange,
     enemyLevels:   job.enemyLevels,
     standingTotal,
     isSteelPath,
+    kind,
+    kindBadge,
     rotations,
+    liveRotation:  job.rotation ?? null,
+    stageCount:    job.standingStages.length || null,
     fallbackPool,
     cycleNote,
   };

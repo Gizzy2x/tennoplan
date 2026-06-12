@@ -1,0 +1,52 @@
+/* ================================================================
+   PressTip — portaled tooltip. Position is set inline via JS; the
+   styling here is just chrome (background, border, arrow, type).
+   ================================================================ */
+
+.tip {
+  position:        fixed;
+  z-index:         95;
+  max-width:       280px;
+  padding:         6px 10px;
+  background:      var(--color-bg-secondary);
+  border:          1px solid color-mix(in srgb, var(--color-accent-gold) 35%, var(--color-border-default));
+  border-radius:   3px;
+  box-shadow:      0 8px 24px rgba(0, 0, 0, 0.55);
+  font-family:     var(--font-sans);
+  font-size:       0.75rem;
+  line-height:     1.4;
+  color:           var(--color-text-primary);
+  pointer-events:  none;
+  user-select:     none;
+  /* Avoid the layout-shift flash before useLayoutEffect computes
+     position: render off-screen until pos is known (inline style
+     sets top/left/opacity in PressTip.tsx). */
+  opacity:         0;
+  transition:      opacity 120ms ease-out;
+}
+
+/* Arrow — a 6px square rotated 45°, anchored to the side facing the
+   trigger. The tip itself is 1px-bordered; the arrow inherits the
+   border on its two outward edges. */
+.tip::after {
+  content:    '';
+  position:   absolute;
+  width:      8px;
+  height:     8px;
+  background: var(--color-bg-secondary);
+  border:     1px solid color-mix(in srgb, var(--color-accent-gold) 35%, var(--color-border-default));
+  transform:  rotate(45deg);
+  left:       calc(50% - 4px);
+}
+
+.tip[data-placement='top']::after {
+  bottom:        -5px;
+  border-top:    none;
+  border-left:   none;
+}
+
+.tip[data-placement='bottom']::after {
+  top:           -5px;
+  border-bottom: none;
+  border-right:  none;
+}

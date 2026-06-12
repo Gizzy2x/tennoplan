@@ -1,0 +1,282 @@
+/**
+ * ActivitiesTab.module.css — live rotating missions board.
+ *
+ * Tokens only. Jade = live/interactive/default; gold = emphasis, used
+ * sparingly (boss / reward highlight). No glassmorphism, no gradient text,
+ * no side-stripe accent borders.
+ */
+
+/* ── Board ─────────────────────────────────────────────────────────────── */
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-4, 16px);
+  align-items: start;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .board > * {
+    animation: activities-fade 220ms ease-out both;
+  }
+}
+
+@keyframes activities-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Sections that carry more content read better spanning the full row. */
+.spanWide {
+  grid-column: 1 / -1;
+}
+
+/* ── Card ──────────────────────────────────────────────────────────────── */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+  padding: var(--space-4, 16px);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-card, 12px);
+}
+
+.cardHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3, 12px);
+  flex-wrap: wrap;
+}
+
+.cardTitleRow {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2, 8px);
+  flex-wrap: wrap;
+}
+
+.count {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+/* "ends in X" pill — jade, quiet. */
+.endsIn {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-jade);
+  white-space: nowrap;
+}
+
+.empty {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* ── Generic rows ──────────────────────────────────────────────────────── */
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.row + .row {
+  padding-top: var(--space-3, 12px);
+  border-top: 1px solid color-mix(in oklab, var(--color-border-default) 70%, transparent);
+}
+
+.node {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.meta {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.reward {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-accent-gold);
+}
+
+.rowFoot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2, 8px);
+  margin-top: 2px;
+}
+
+/* ── Invasions ─────────────────────────────────────────────────────────── */
+
+.invasion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+}
+
+.invasion + .invasion {
+  padding-top: var(--space-3, 12px);
+  border-top: 1px solid color-mix(in oklab, var(--color-border-default) 70%, transparent);
+}
+
+.invasionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2, 8px);
+}
+
+.factions {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2, 8px);
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+}
+
+.faction {
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.vs {
+  color: color-mix(in oklab, var(--color-text-muted) 70%, transparent);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.pct {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+}
+
+.invasionRewards {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.8rem;
+}
+
+.invasionRewardSide {
+  display: flex;
+  gap: var(--space-2, 8px);
+  align-items: baseline;
+}
+
+.sideTag {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  min-width: 5.5ch;
+}
+
+/* Progress bar — jade fill. */
+.bar {
+  position: relative;
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-border-default) 80%, transparent);
+  overflow: hidden;
+}
+
+.barFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background: var(--color-accent-jade);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .barFill {
+    transition: width 400ms ease-out;
+  }
+}
+
+/* ── Mission list (sortie / archon) ────────────────────────────────────── */
+
+.missionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 8px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mission {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.missionMain {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2, 8px);
+  flex-wrap: wrap;
+}
+
+.missionNode {
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.missionType {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.modifier {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  color: color-mix(in oklab, var(--color-accent-jade) 80%, var(--color-text-muted));
+}
+
+.rewardPool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--space-2, 8px);
+  padding-top: var(--space-2, 8px);
+  border-top: 1px solid color-mix(in oklab, var(--color-border-default) 70%, transparent);
+}
+
+.rewardChip {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--color-accent-gold);
+}
+
+.boss {
+  font-family: var(--font-serif);
+  font-size: 0.92rem;
+  color: var(--color-text-primary);
+}

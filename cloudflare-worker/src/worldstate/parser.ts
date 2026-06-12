@@ -45,6 +45,10 @@ export async function parseFromOfficial(rawText: string): Promise<ParsedWorldsta
   // Round-trip through JSON to flatten Date instances → ISO strings,
   // so normalize() can treat both source paths identically.
   const flat = JSON.parse(JSON.stringify(ws));
+  // The parser drops the bounty reward-table path; recover the current rotation
+  // from the raw DE Jobs[].rewards so the official path still knows which table
+  // the board is on. Best-effort — never let it break the parse.
+  try { injectOfficialRotations(flat, JSON.parse(rawText)); } catch { /* ignore */ }
   return normalize(flat);
 }
 
@@ -150,11 +154,30 @@ function toCycle(raw: any, extra: Partial<CycleInfo>): CycleInfo {
 function toDuviri(raw: any): DuviriCycleInfo {
   const cycle = toCycle(raw, {});
   const mood = typeof raw?.state === 'string' && isDuviriMood(raw.state) ? raw.state : undefined;
+  const circuit = toCircuit(raw?.choices);
   return {
     ...cycle,
     ...(mood ? { mood } : {}),
     ...(typeof raw?.moodTimeLeft === 'number' ? { moodTimeLeft: raw.moodTimeLeft } : {}),
+    ...(circuit ? { circuit } : {}),
   };
+}
+
+/**
+ * Parse the upstream Duviri `choices` array
+ *   [{ category: 'normal', choices: [...] }, { category: 'hard', choices: [...] }]
+ * into our { normal, hard } shape. Returns undefined when neither list is present.
+ */
+function toCircuit(raw: any): DuviriCycleInfo['circuit'] {
+  if (!Array.isArray(raw)) return undefined;
+  const pick = (category: string): string[] => {
+    const entry = raw.find((c: any) => String(c?.category).toLowerCase() === category);
+    return Array.isArray(entry?.choices) ? entry.choices.map((s: any) => String(s)) : [];
+  };
+  const normal = pick('normal');
+  const hard   = pick('hard');
+  if (normal.length === 0 && hard.length === 0) return undefined;
+  return { normal, hard };
 }
 
 function isDuviriMood(s: string): s is DuviriCycleInfo['mood'] & string {
@@ -318,12 +341,61 @@ function toNewsItem(raw: any): NewsItem | null {
 
 const SYNDICATE_ALIASES: Record<string, string> = {
   'ostron':          'Ostron',
+  'ostrons':         'Ostron',          // upstream sends the plural — was being dropped
   'solaris united':  'Solaris United',
   'entrati':         'Entrati',
   'the holdfasts':   'The Holdfasts',
   'holdfasts':       'The Holdfasts',
+  'cavia':           'Cavia',           // Sanctum Anatomica (Fibonacci)
+  'the hex':         'The Hex',         // Höllvania / 1999
+  'hex':             'The Hex',
 };
 const WANTED_SYNDICATES = new Set(Object.values(SYNDICATE_ALIASES));
+
+/** DE SyndicateMissions `Tag` → our canonical syndicate name. */
+const TAG_TO_CANON: Record<string, string> = {
+  cetussyndicate:      'Ostron',
+  entratisyndicate:    'Entrati',
+  entratilabsyndicate: 'Cavia',
+  solarissyndicate:    'Solaris United',
+  zarimansyndicate:    'The Holdfasts',
+  hexsyndicate:        'The Hex',
+};
+
+/**
+ * Recover the current bounty ROTATION on the official path. warframe-worldstate-
+ * parser drops the reward-table reference, but the raw DE `Jobs[].rewards` still
+ * holds it (…Tier{X}Table{A|B|C}Rewards). The whole board sits on ONE table per
+ * refresh, so we read it per syndicate from the raw blob and stamp it onto the
+ * parsed jobs' `uniqueName`, where toSyndicateMission's Table regex reads it.
+ * (Per-item chances are warframestat-only — not recoverable here.)
+ */
+function injectOfficialRotations(flat: any, raw: any): void {
+  const rawSM  = raw?.SyndicateMissions;
+  const flatSM = flat?.syndicateMissions;
+  if (!Array.isArray(rawSM) || !Array.isArray(flatSM)) return;
+
+  const tableByCanon = new Map<string, string>();
+  for (const m of rawSM) {
+    const canon = TAG_TO_CANON[String(m?.Tag ?? '').toLowerCase()];
+    if (!canon || tableByCanon.has(canon) || !Array.isArray(m?.Jobs)) continue;
+    for (const rj of m.Jobs) {
+      if (typeof rj?.rewards === 'string' && /Table[ABC]/i.test(rj.rewards)) {
+        tableByCanon.set(canon, rj.rewards);
+        break;
+      }
+    }
+  }
+
+  for (const fm of flatSM) {
+    const canon = SYNDICATE_ALIASES[String(fm?.syndicate ?? '').toLowerCase()] ?? String(fm?.syndicate ?? '');
+    const table = tableByCanon.get(canon);
+    if (!table || !Array.isArray(fm?.jobs)) continue;
+    for (const fj of fm.jobs) {
+      if (fj && !fj.uniqueName) fj.uniqueName = table;
+    }
+  }
+}
 
 /** Reject diagnostic strings the upstream parser leaks into rewardPool when
  *  it can't match a bounty. Real reward labels are short and title-cased. */
@@ -352,6 +424,25 @@ function toSyndicateMission(raw: any): SyndicateMissionInfo | null {
       ? [Number(j.enemyLevels[0]) || 0, Number(j.enemyLevels[1]) || 0] as [number, number]
       : [0, 0] as [number, number];
     const rewardPool = sanitizeRewardPool(j?.rewardPool);
+
+    // The CURRENT rotation — the "Table" the board is on now, encoded in the
+    // upstream uniqueName (…Tier{X}Table{A|B|C}Rewards / Narmer…Table{X}…).
+    const tableMatch = /Table([ABC])/i.exec(String(j?.uniqueName ?? ''));
+    const rotation = tableMatch ? (tableMatch[1].toUpperCase() as 'A' | 'B' | 'C') : undefined;
+
+    // The LIVE drop table — actual items + real chances awarded right now.
+    const drops = Array.isArray(j?.rewardPoolDrops)
+      ? j.rewardPoolDrops
+          .filter((d: any) => d && typeof d.item === 'string' && Number.isFinite(d.chance))
+          .slice(0, 60)
+          .map((d: any) => ({
+            item:   String(d.item),
+            rarity: String(d.rarity ?? 'Unknown'),
+            chance: Number(d.chance),
+            ...(Number.isFinite(d.count) && d.count > 1 ? { count: Number(d.count) } : {}),
+          }))
+      : undefined;
+
     return {
       type:           String(j?.type ?? 'Unknown'),
       enemyLevels:    lvls,
@@ -359,6 +450,11 @@ function toSyndicateMission(raw: any): SyndicateMissionInfo | null {
         ? j.standingStages.map((n: any) => Number(n) || 0)
         : [],
       ...(rewardPool ? { rewardPool } : {}),
+      ...(Number.isFinite(j?.minMR) && j.minMR > 0 ? { minMR: Number(j.minMR) } : {}),
+      ...(j?.isVault   ? { isVault:   true } : {}),
+      ...(j?.timeBound ? { timeBound: true } : {}),
+      ...(rotation ? { rotation } : {}),
+      ...(drops && drops.length ? { rewardPoolDrops: drops } : {}),
     };
   });
 

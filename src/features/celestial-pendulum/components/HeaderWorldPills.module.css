@@ -1,0 +1,83 @@
+/* Header world pills — app-wide, compact-by-default, reveal-on-hover.
+   Lives inside the header's inline-size container, so @container queries below
+   collapse it gracefully as the bar narrows. */
+
+.pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px 2px 2px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: background 150ms ease-out, border-color 150ms ease-out;
+}
+.pill:hover { background: color-mix(in oklab, var(--color-accent-jade) 9%, transparent); }
+.pill[data-prime] { border-color: color-mix(in oklab, var(--color-accent-gold) 32%, transparent); }
+.pill:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+
+.planet { width: 15px; height: 15px; border-radius: 50%; object-fit: cover; }
+.dot { width: 14px; height: 14px; border-radius: 50%; }
+
+.time {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+.pill[data-prime] .time { color: var(--color-accent-gold); }
+
+/* Baro chip */
+.baro {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--color-accent-gold) 26%, transparent);
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-accent-gold);
+}
+.baro:hover { background: color-mix(in oklab, var(--color-accent-gold) 10%, transparent); }
+.baro:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+.baro[data-here] {
+  background: color-mix(in oklab, var(--color-accent-gold) 13%, transparent);
+  animation: baroPulse 2.2s ease-in-out infinite;
+}
+.baroGlyph { font-size: 0.58rem; line-height: 1; }
+.baroLabel {
+  font-family: var(--font-sans);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+@keyframes baroPulse {
+  0%, 100% { box-shadow: 0 0 0 transparent; }
+  50%      { box-shadow: 0 0 11px color-mix(in oklab, var(--color-accent-gold) 42%, transparent); }
+}
+
+/* ── Adapt: collapse as the header narrows (its container drives this) ────────
+   Below 1280 the inline nav is still competing for the bar, so the pills go
+   rings-only (time on hover) to never squeeze nav items. Full labels return on
+   wider bars; the whole cluster drops out under 820 where the bar is tightest. */
+@container (max-width: 1280px) {
+  .time { display: none; }
+  .baroLabel { display: none; }
+  .baro { padding: 3px 7px; }
+}
+@container (max-width: 820px) {
+  .pills { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .baro[data-here] { animation: none; }
+}

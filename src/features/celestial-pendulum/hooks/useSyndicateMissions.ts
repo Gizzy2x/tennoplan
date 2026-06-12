@@ -38,6 +38,11 @@ function apiToJob(raw: ApiSyndicateJob): SyndicateJob {
     enemyLevels:    raw.enemyLevels,
     standingStages: raw.standingStages,
     rewardPool:     raw.rewardPool,
+    ...(raw.minMR    !== undefined ? { minMR:    raw.minMR }    : {}),
+    ...(raw.isVault   ? { isVault:   true } : {}),
+    ...(raw.timeBound ? { timeBound: true } : {}),
+    ...(raw.rotation  ? { rotation:  raw.rotation } : {}),
+    ...(raw.rewardPoolDrops?.length ? { rewardPoolDrops: raw.rewardPoolDrops } : {}),
   };
 }
 

@@ -50,6 +50,9 @@ import type {
   DataSource,
   DataQuality,
 } from '@/core/domain/tennoplanApi';
+import { SYNTHETIC_ITEMS } from '@/core/domain/syntheticItems';
+import { SYNTHETIC_ICON_URLS } from '@/lib/icons/syntheticIcons';
+import { primeCodexIndex } from '@/adapters/items/dropResolverAdapter';
 
 const log = logger.scope('StaticDataService');
 
@@ -104,8 +107,14 @@ const REQUEST_TIMEOUT_MS = 60_000;
  *           lack these fields → GeneralInformationBlock would render empty
  *           until the next natural refresh; the bump force-wipes so the
  *           block lights up immediately (2026-05-30).
+ *   • '7' — adds weapon summary fields: rivenDisposition + accuracy + melee
+ *           numerics on ItemStats; weaponTrigger + weaponNoise + damageTypes
+ *           at top-level on TennoplanItem. Worker's ?only= filter widened
+ *           to pass these through from WFCD /weapons. Pre-bump caches lack
+ *           them → WeaponSummaryCard renders an incomplete card until the
+ *           next natural refresh; force-flush instead (2026-05-31).
  */
-const CODEX_SCHEMA_VERSION = '6';
+const CODEX_SCHEMA_VERSION = '7';
 const SCHEMA_VERSION_KEY    = 'tennoplan:codex-schema-version';
 
 // ─── Public types ─────────────────────────────────────────────────────────────
@@ -265,6 +274,43 @@ async function performNetworkSync(force: boolean): Promise<SyncOutcome> {
   return { status: 'updated', items: body.data, metadata: meta };
 }
 
+// ─── Synthetic codex entries ──────────────────────────────────────────────────
+
+/**
+ * Upsert the app-owned synthetic items (Endo / Credits / Kuva / …) into the
+ * codex table with local icons. Idempotent bulkPut — cheap (a handful of rows).
+ *
+ * Run AFTER any writeCodex (which clears + bulkAdds the WFCD rows) so these
+ * survive a fresh sync, and on every init() so they exist even when the codex
+ * short-circuits at 304 or the worker isn't configured. This is why the
+ * currency tiles resolve to real, icon-bearing entries without a CI republish.
+ */
+async function ensureSyntheticItems(): Promise<void> {
+  const now = Date.now();
+  const rows: TennoplanItem[] = SYNTHETIC_ITEMS.map((s) => ({
+    uniqueName:    s.uniqueName,
+    name:          s.name,
+    category:      s.category,
+    iconUrl:       SYNTHETIC_ICON_URLS[s.uniqueName] ?? '',
+    dropLocations: [],
+    description:   s.description,
+    tradeable:     false,
+    marketable:    false,
+    dataVersion:   'synthetic',
+    lastUpdated:   now,
+    source:        'enriched',
+    quality:       'high',
+  }));
+  try {
+    await db.tennoplanItems.bulkPut(rows);
+    // Warm the sync codex icon index so ItemIcon can resolve codex-only icons
+    // (component parts, synthetics) app-wide on first render.
+    await primeCodexIndex();
+  } catch (e) {
+    log.warn('Failed to upsert synthetic codex items', errMsg(e));
+  }
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export const StaticDataService = {
@@ -279,6 +325,8 @@ export const StaticDataService = {
   async init(): Promise<void> {
     if (!ENDPOINT) {
       log.warn('VITE_WORLDSTATE_WORKER_URL not configured — codex sync disabled');
+      // Still make the synthetic currency entries available offline.
+      await ensureSyntheticItems();
       return;
     }
 
@@ -297,6 +345,7 @@ export const StaticDataService = {
 
     if (!shouldSync) {
       log.info(`Codex fresh (${status.itemCount} items, ${status.ageMinutes}m old) — skipping init sync.`);
+      await ensureSyntheticItems();
       return;
     }
 
@@ -306,6 +355,8 @@ export const StaticDataService = {
     } catch (e) {
       log.warn('Auto codex refresh failed — staleness banner will surface', errMsg(e));
     }
+    // Re-assert synthetics after a sync (writeCodex clears the table).
+    await ensureSyntheticItems();
   },
 
   /**
@@ -354,6 +405,9 @@ export const StaticDataService = {
       await bumpCodexError(`Dexie write failed: ${msg}`);
       throw new Error(`Failed to persist codex: ${msg}`);
     }
+
+    // writeCodex cleared + re-added the WFCD rows; re-assert synthetics.
+    await ensureSyntheticItems();
 
     onProgress({ status: `Synced ${outcome.items.length} items`, percent: 100 });
     log.success(`Codex synced — ${outcome.items.length} items, source=${outcome.metadata.source}, version=${outcome.metadata.version}`);

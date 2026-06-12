@@ -117,8 +117,9 @@ export function useWorldstate(opts: UseWorldstateOptions = {}): UseWorldstateRes
 
   // Force refresh is intentionally not memoised — the closure captures no
   // hook-local state and WorldstateSync.sync is module-singleton.
+  // force bypasses the pulse-head gate: a manual refresh always pulls a body.
   const forceRefetch = async () => {
-    await WorldstateSync.sync();
+    await WorldstateSync.sync({ force: true });
   };
   const requestPassiveSync = () => {
     WorldstateSync.requestPassiveSync();

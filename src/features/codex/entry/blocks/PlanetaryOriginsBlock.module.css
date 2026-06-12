@@ -1,0 +1,360 @@
+/* ================================================================
+   PlanetaryOriginsBlock — cinematic planet treatment.
+
+   Hero is a layered composition:
+     • z=0   Planet PNG, full-bleed, slow ambient breathe (scale loop)
+     • z=1   Radial vignette darkening edges → keeps the orb readable
+     • z=2   Bottom-up dark gradient → carries the text overlay
+     • z=3   Orb (resource icon) with halo + ring
+     • z=4   Text overlay (primary label, planet name, stats row)
+
+   Reduced-motion users get a static version (no breathe, no halo pulse).
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-md);
+  padding:        0;
+  background:     transparent;
+  border:         none;
+}
+
+/* Overrides the canonical .typo-section-label zero margin with a small
+   left inset — the planetary hero card has no internal padding so the
+   label needs a hand-set inset to align with the card's text overlay. */
+.label {
+  margin: 0 0 0 var(--space-xs);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   PRIMARY HERO
+   ────────────────────────────────────────────────────────────────── */
+
+.hero {
+  position:       relative;
+  width:          100%;
+  /* Aspect-ratio keeps the hero cinematic across container widths.
+     21:9 reads as "panoramic landscape" which matches planet art. */
+  aspect-ratio:   21 / 9;
+  min-height:     280px;
+  border-radius:  14px;
+  overflow:       hidden;
+  isolation:      isolate;   /* contain blend modes to this element */
+  background:     #060906;   /* fallback before planet PNG resolves */
+  border:         1px solid var(--color-border-default);
+  box-shadow:
+    0 14px 40px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(88, 232, 138, 0.06) inset;
+}
+
+/* Layer 1 — planet PNG. cover-fits + slow ambient breathe loop so the
+   page reads as living without distracting from the foreground. */
+.heroPlanet {
+  position:           absolute;
+  inset:              -4%;   /* slight bleed so the breathe scale never reveals edges */
+  background-size:    cover;
+  background-position: center center;
+  background-repeat:  no-repeat;
+  z-index:            0;
+  animation:          planet-breathe 9s ease-in-out infinite alternate;
+  transform-origin:   center;
+  filter:             saturate(1.05) contrast(1.02);
+}
+
+@keyframes planet-breathe {
+  0%   { transform: scale(1.00) translate3d(0, 0, 0); }
+  100% { transform: scale(1.04) translate3d(0, -1%, 0); }
+}
+
+/* Layer 2 — radial vignette: darkens corners, keeps centre legible. */
+.heroVignette {
+  position:    absolute;
+  inset:       0;
+  z-index:     1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 90% 70% at 50% 50%,
+      rgba(8, 10, 8, 0)    0%,
+      rgba(8, 10, 8, 0.45) 60%,
+      rgba(8, 10, 8, 0.80) 100%
+    );
+}
+
+/* Layer 3 — bottom-up dark gradient for the text overlay. */
+.heroGradient {
+  position:    absolute;
+  inset:       0;
+  z-index:     2;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to top,
+      rgba(8, 10, 8, 0.85) 0%,
+      rgba(8, 10, 8, 0.55) 28%,
+      rgba(8, 10, 8, 0.0)  55%
+    );
+}
+
+/* ── Resource icon orb (centred) ─────────────────────────────── */
+.heroOrb {
+  position:        absolute;
+  top:             46%;       /* slight upward bias — feels balanced with bottom-left text */
+  left:            50%;
+  transform:       translate(-50%, -50%);
+  z-index:         3;
+  width:           min(38%, 180px);
+  aspect-ratio:    1;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+}
+
+/* Soft outer halo — gold mist around the orb. */
+.heroOrbHalo {
+  position:        absolute;
+  inset:           -45%;
+  z-index:         0;
+  background:      radial-gradient(
+                     circle at center,
+                     rgba(219, 176, 88, 0.32) 0%,
+                     rgba(219, 176, 88, 0.10) 35%,
+                     rgba(219, 176, 88, 0)    65%
+                   );
+  pointer-events:  none;
+  animation:       halo-pulse 4.5s ease-in-out infinite alternate;
+  filter:          blur(2px);
+}
+
+@keyframes halo-pulse {
+  0%   { opacity: 0.85; transform: scale(0.96); }
+  100% { opacity: 1.00; transform: scale(1.04); }
+}
+
+/* Inner gold ring — defines the orb's edge. */
+.heroOrbRing {
+  position:       absolute;
+  inset:          0;
+  z-index:        1;
+  border-radius:  50%;
+  background:     rgba(8, 10, 8, 0.55);
+  border:         1.5px solid rgba(219, 176, 88, 0.85);
+  box-shadow:
+    0 0 24px rgba(219, 176, 88, 0.35),
+    inset 0 0 28px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.heroOrbIcon {
+  position:    relative;
+  z-index:     2;
+  width:       65%;
+  height:      65%;
+  object-fit:  contain;
+  filter:      drop-shadow(0 4px 10px rgba(0, 0, 0, 0.65));
+}
+
+.heroOrbFallback {
+  position:    relative;
+  z-index:     2;
+  font-family: var(--font-serif);
+  font-size:   3rem;
+  font-weight: 700;
+  color:       var(--color-accent-gold);
+}
+
+/* ── Text overlay (bottom-left) ──────────────────────────────── */
+.heroMeta {
+  position:       absolute;
+  left:           var(--space-lg);
+  bottom:         var(--space-lg);
+  z-index:        4;
+  display:        flex;
+  flex-direction: column;
+  gap:            6px;
+  max-width:      60%;
+}
+
+.heroPrimaryLabel {
+  font-family:    var(--font-sans);
+  font-size:      0.6rem;
+  font-weight:    700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color:          var(--color-accent-gold);
+  /* Tiny gold pulse to lead the eye to the headline */
+  opacity:        0.92;
+}
+
+.heroPlanetName {
+  font-family:    var(--font-serif);
+  font-size:      clamp(1.6rem, 3.5vw, 2.6rem);
+  font-weight:    700;
+  color:          var(--color-text-primary);
+  letter-spacing: -0.01em;
+  line-height:    1;
+  text-shadow:    0 2px 12px rgba(0, 0, 0, 0.75);
+}
+
+.heroStatsRow {
+  display:     flex;
+  align-items: center;
+  gap:         var(--space-md);
+  margin-top:  6px;
+  flex-wrap:   wrap;
+}
+
+.heroStat {
+  display:        flex;
+  flex-direction: column;
+  gap:            1px;
+}
+
+.heroStatValue {
+  font-family:          var(--font-sans);
+  font-size:            0.95rem;
+  font-weight:          700;
+  color:                var(--color-accent-gold);
+  letter-spacing:       0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height:          1.1;
+}
+
+.heroStatLabel {
+  font-family:    var(--font-sans);
+  font-size:      0.55rem;
+  font-weight:    600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+}
+
+.steelPathPill {
+  display:        inline-flex;
+  align-items:    center;
+  padding:        3px 9px;
+  background:     color-mix(in srgb, var(--color-accent-teal) 12%, transparent);
+  border:         1px solid color-mix(in srgb, var(--color-accent-teal) 60%, transparent);
+  border-radius:  12px;
+  font-family:    var(--font-sans);
+  font-size:      0.55rem;
+  font-weight:    700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color:          var(--color-accent-teal);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   SECONDARY STRIP
+   ────────────────────────────────────────────────────────────────── */
+
+.alsoOnRow {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+}
+
+.alsoOnLabel {
+  font-family:    var(--font-sans);
+  font-size:      0.6rem;
+  font-weight:    700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  padding-left:   var(--space-xs);
+}
+
+.secondaryStrip {
+  display:    flex;
+  flex-wrap:  wrap;
+  gap:        var(--space-sm);
+}
+
+.secondaryChip {
+  display:         flex;
+  align-items:     center;
+  gap:             var(--space-sm);
+  padding:         6px 10px 6px 6px;
+  background:      var(--color-bg-secondary);
+  border:          1px solid var(--color-border-default);
+  border-radius:   999px;
+  transition:      border-color 150ms ease-out, transform 150ms ease-out;
+  min-width:       0;
+}
+
+.secondaryChip:hover {
+  border-color: rgba(219, 176, 88, 0.55);
+  transform:    translateY(-1px);
+}
+
+/* Circular thumb — planet PNG cropped into a circle with a subtle
+   inner shadow so it reads as an orb, not a sticker. */
+.secondaryThumb {
+  position:           relative;
+  width:              36px;
+  height:             36px;
+  border-radius:      50%;
+  background-size:    cover;
+  background-position: center;
+  flex-shrink:        0;
+  box-shadow:
+    0 0 0 1px rgba(219, 176, 88, 0.25),
+    inset 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.secondarySteelDot {
+  position:       absolute;
+  top:            -2px;
+  right:          -2px;
+  width:          10px;
+  height:         10px;
+  border-radius:  50%;
+  background:     var(--color-accent-teal);
+  box-shadow:     0 0 6px var(--color-accent-teal), 0 0 0 2px var(--color-bg-secondary);
+}
+
+.secondaryCopy {
+  display:        flex;
+  flex-direction: column;
+  gap:            1px;
+  min-width:      0;
+}
+
+.secondaryName {
+  font-family:    var(--font-sans);
+  font-size:      0.78rem;
+  font-weight:    600;
+  color:          var(--color-text-primary);
+  letter-spacing: 0.02em;
+  line-height:    1.1;
+  white-space:    nowrap;
+}
+
+.secondaryChance {
+  font-family:          var(--font-sans);
+  font-size:            0.65rem;
+  font-weight:          700;
+  color:                var(--color-accent-gold);
+  letter-spacing:       0.04em;
+  font-variant-numeric: tabular-nums;
+  line-height:          1;
+}
+
+.secondaryChanceLow {
+  color: var(--color-text-muted);
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   REDUCED MOTION
+   ────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .heroPlanet,
+  .heroOrbHalo {
+    animation: none;
+  }
+  .heroPlanet {
+    transform: scale(1.02);   /* keep the slight zoom so edges stay covered */
+  }
+}

@@ -1,24 +1,78 @@
 /* ================================================================
-   LandingSearch — global codex search affordance.
-   The engine isn't built yet (Phase B), but the visual promise IS
-   the experience. Submitting reveals the coming-next hint inline.
+   LandingSearch — codex search affordance.
+
+   Inline input on wide canvases. At narrow container widths
+   (≤540px), the input collapses to a magnifying-glass button; click
+   expands it. Pattern: no animation, just display: none toggle
+   between the icon button and the full input.
    ================================================================ */
+
+.wrap {
+  display:        flex;
+  align-items:    center;
+  justify-content: flex-end;
+  width:          100%;
+}
+
+.toggleBtn {
+  /* Hidden by default (wide widths); shown at narrow widths via the
+     @container query at the bottom of this file when the wrap is
+     NOT in expanded state. */
+  display:         none;
+  align-items:     center;
+  justify-content: center;
+  width:           32px;
+  height:          32px;
+  padding:         0;
+  background:      var(--color-bg-secondary);
+  border:          1px solid var(--color-border-default);
+  border-radius:   4px;
+  color:           var(--color-text-muted);
+  cursor:          pointer;
+  transition:      color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+
+.toggleBtn:hover {
+  color:        var(--color-accent-gold);
+  border-color: color-mix(in srgb, var(--color-accent-gold) 45%, transparent);
+  background:   color-mix(in srgb, var(--color-accent-gold) 6%, transparent);
+}
+
+.form {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-xs);
+  width:          100%;
+  min-width:      0;
+}
 
 .root {
   position:      relative;
   display:       flex;
   align-items:   center;
+  gap:           var(--space-sm);
   width:         100%;
   background:    var(--color-bg-secondary);
   border:        1px solid var(--color-border-default);
-  border-radius: 8px;
-  padding:       2px 14px 2px 12px;
-  transition:    border-color 0.18s ease-out, background 0.18s ease-out;
+  border-radius: 4px;
+  padding:       4px var(--space-sm) 4px var(--space-md);
+  transition:    border-color 180ms ease-out, background 180ms ease-out;
 }
 
 .root:focus-within {
-  border-color: rgba(88, 232, 138,0.55);
-  background:   color-mix(in srgb, var(--color-bg-secondary) 85%, var(--color-accent-teal) 3%);
+  border-color: color-mix(in srgb, var(--color-accent-jade) 55%, transparent);
+  background:   color-mix(in srgb, var(--color-bg-secondary) 90%, var(--color-accent-jade) 3%);
+}
+
+/* Pixel-Square glyph prefix — first ornament on this surface.
+   Geist Pixel is ornament-only per §5; this is the iconographic
+   anchor that pairs with the lucide search mark beside it. */
+.glyph {
+  font-family: var(--font-pixel-square);
+  font-size:   var(--density-pixel);
+  color:       var(--color-accent-gold);
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .icon {
@@ -26,59 +80,76 @@
   display:     flex;
   align-items: center;
   color:       var(--color-text-muted);
-  margin-right: 10px;
+}
+
+.root:focus-within .icon {
+  color: var(--color-accent-jade);
 }
 
 .input {
-  flex:          1;
-  min-width:     0;
-  background:    transparent;
-  border:        none;
-  outline:       none;
-  padding:       12px 0;
-  font-family:   var(--font-sans);
-  font-size:     0.95rem;
-  color:         var(--color-text-primary);
+  flex:         1;
+  min-width:    0;
+  background:   transparent;
+  border:       none;
+  outline:      none;
+  padding:      6px 0;
+  font-family:  var(--font-sans);
+  font-size:    var(--density-body);
+  font-weight:  400;
+  color:        var(--color-text-primary);
 }
 
 .input::placeholder {
   color: var(--color-text-muted);
+  font-weight: 300;
 }
 
-.affordance {
+/* Kbd hint — paints the `/` shortcut so the affordance is discoverable.
+   Sits flush right; fades when the user is typing. */
+.kbd {
   flex-shrink:    0;
-  display:        flex;
+  display:        inline-flex;
   align-items:    center;
-  gap:            6px;
-  margin-left:    12px;
-  padding:        4px 8px;
-  border:         1px solid var(--color-border-default);
-  border-radius:  4px;
+  justify-content: center;
+  min-width:      20px;
+  height:         20px;
+  padding:        0 5px;
+  font-family:    var(--font-mono);
+  font-size:      var(--density-pixel);
+  font-weight:    500;
   color:          var(--color-text-muted);
-  font-family:    var(--font-sans);
-  font-size:      0.65rem;
-  font-weight:    600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  background:     rgba(0, 0, 0, 0.2);
+  background:     var(--color-bg-primary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  3px;
+  line-height:    1;
+  transition:     opacity 180ms ease-out;
+}
+
+.root:focus-within .kbd {
+  opacity: 0;
 }
 
 .hint {
-  margin:        8px 4px 0;
-  font-family:   var(--font-sans);
-  font-size:     0.78rem;
-  color:         var(--color-text-muted);
-  line-height:   1.4;
+  margin:      0 4px;
+  font-family: var(--font-sans);
+  font-size:   var(--density-caption);
+  color:       var(--color-text-muted);
+  line-height: 1.4;
 }
 
 .hintAccent {
-  color:       var(--color-accent-teal);
+  color:       var(--color-accent-jade);
   font-weight: 600;
 }
 
-/* Hide the affordance pill on narrow viewports — input takes priority */
-@container codex-landing (max-width: 560px) {
-  .affordance {
+/* ── Narrow canvas: collapse to magnifying glass ──────────────
+   When the wrap is NOT expanded (no focus, empty input), the form
+   hides and the toggle button appears. Click → expand. */
+@container codex-landing (max-width: 540px) {
+  .wrap:not([data-expanded='true']) .form {
     display: none;
+  }
+  .wrap:not([data-expanded='true']) .toggleBtn {
+    display: inline-flex;
   }
 }

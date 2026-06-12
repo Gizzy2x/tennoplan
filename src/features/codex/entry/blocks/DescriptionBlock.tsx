@@ -24,7 +24,7 @@ export function DescriptionBlock({ entry }: DescriptionBlockProps) {
 
   return (
     <section className={styles.root} aria-labelledby="codex-description-label">
-      <h2 id="codex-description-label" className={styles.label}>Description</h2>
+      <h2 id="codex-description-label" className="typo-section-label">Description</h2>
       <p className={styles.body}>{text}</p>
     </section>
   );

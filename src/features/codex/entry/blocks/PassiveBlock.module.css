@@ -7,10 +7,6 @@
      3. A subtly accent-shifted border so the panel edge reinforces
         the tint.
 
-   --color-accent-teal currently renders bioluminescent jade (#58e88a)
-   under the Mutalist Glow theme (2026-05-29). Token will be renamed to
-   --color-accent-jade in a cleanup pass once the direction is locked.
-
    Deliberately no border-left stripe — .impeccable.md BAN 1 forbids
    side-stripe accents >1px regardless of color or token name. The
    distinction is carried by tint + label, which scans just as fast
@@ -22,19 +18,16 @@
   flex-direction: column;
   gap:            6px;
   padding:        12px 16px;
-  background:     color-mix(in srgb, var(--color-bg-secondary) 93%, var(--color-accent-teal) 7%);
-  border:         1px solid color-mix(in srgb, var(--color-border-default) 65%, var(--color-accent-teal) 35%);
+  background:     color-mix(in srgb, var(--color-bg-secondary) 93%, var(--color-accent-jade) 7%);
+  border:         1px solid color-mix(in srgb, var(--color-border-default) 65%, var(--color-accent-jade) 35%);
   border-radius:  6px;
 }
 
+/* Overrides the canonical .typo-section-label muted color with jade —
+   the passive block uses the same accent that tints its panel so the
+   label and surface speak the same color language. */
 .label {
-  font-family:    var(--font-sans);
-  font-size:      0.7rem;
-  font-weight:    700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color:          var(--color-accent-teal);
-  margin:         0;
+  color: var(--color-accent-jade);
 }
 
 .body {
@@ -58,10 +51,10 @@
 .placeholder {
   font-style:  normal;
   font-weight: 700;
-  color:       var(--color-accent-teal);
+  color:       var(--color-accent-jade);
   /* Subtle dotted underline cue, matching the formula-tooltip styling
      elsewhere in the codex — communicates "this is a variable" without
      a heavy box or background tint. */
-  text-decoration:       underline dotted color-mix(in srgb, var(--color-accent-teal) 50%, transparent);
+  text-decoration:       underline dotted color-mix(in srgb, var(--color-accent-jade) 50%, transparent);
   text-underline-offset: 2px;
 }

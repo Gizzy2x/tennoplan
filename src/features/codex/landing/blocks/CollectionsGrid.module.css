@@ -1,8 +1,14 @@
 /* ================================================================
-   CollectionsGrid — 7 category tiles.
-   Auto-fit grid: one row on wide canvases, wraps on narrower.
-   Gold-accented counts are the only "loud" detail — everything
-   else stays calm.
+   CollectionsGrid — 7 category tiles, compact horizontal layout.
+
+   v3 fix for the §10.8 dead-space anti-pattern: previously 220×160
+   tiles with 22px icons (≈10% icon : tile ratio). Now horizontally
+   anchored tiles where the 26px icon is the visual left rail and
+   name+count fill the remaining width — honest ratio, no dead
+   bottom-right quadrant.
+
+   The 7 tiles fit on a single row at 1080p (~144px each in a 1024px
+   inner column). Wraps on narrower canvases via container queries.
    ================================================================ */
 
 .root {
@@ -11,120 +17,158 @@
   gap:            var(--space-md);
 }
 
-.label {
-  font-family:    var(--font-sans);
-  font-size:      0.7rem;
-  font-weight:    700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color:          var(--color-text-muted);
-  margin:         0;
+/* ── Header ───────────────────────────────────────────────────── */
+
+.header {
+  display:        flex;
+  align-items:    baseline;
+  justify-content: space-between;
+  gap:            var(--space-md);
 }
+
+/* Chrome + color override on top of .typo-section-label (per CLAUDE.md). */
+.label {
+  display:     inline-flex;
+  align-items: baseline;
+  gap:         var(--space-sm);
+  color:       var(--color-text-primary);
+}
+
+.labelGlyph {
+  font-family: var(--font-pixel-square);
+  font-size:   var(--density-pixel);
+  color:       var(--color-accent-gold);
+  line-height: 1;
+}
+
+/* ── Grid ─────────────────────────────────────────────────────── */
 
 .grid {
   display:               grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  /* Bounded max — tiles never balloon past 180px so all 7 fit in
+     one row at desktop widths (1280px+ inner column) without
+     stretching to viewport edge. Wraps gracefully on narrower
+     canvases. */
+  grid-template-columns: repeat(auto-fill, minmax(140px, 180px));
   gap:                   var(--space-sm);
 }
 
+/* ── Tile ─────────────────────────────────────────────────────── */
+
 .tile {
-  position:       relative;
-  display:        flex;
-  flex-direction: column;
-  align-items:    flex-start;
-  gap:            var(--space-sm);
-  min-height:     130px;
-  padding:        var(--space-md) var(--space-md) var(--space-sm);
-  background:     var(--color-bg-secondary);
-  border:         1px solid var(--color-border-default);
-  border-radius:  8px;
-  cursor:         pointer;
-  text-align:     left;
-  font-family:    var(--font-sans);
-  color:          var(--color-text-primary);
-  transition:     transform 0.18s ease-out,
-                  border-color 0.18s ease-out,
-                  background 0.18s ease-out;
-  overflow:       hidden;
+  position:        relative;
+  display:         grid;
+  grid-template-columns: auto 1fr;
+  align-items:     center;
+  gap:             var(--space-sm);
+  /* Generous vertical padding for height presence; tighter horizontal
+     padding so "Companions"/"Resources" don't truncate at 180px width
+     while keeping all 7 in a single row at desktop. */
+  padding:         var(--space-lg) var(--space-md);
+  background:      var(--color-bg-secondary);
+  border:          1px solid color-mix(in srgb, var(--color-accent-gold) 18%, var(--color-border-default));
+  border-radius:   4px;
+  cursor:          pointer;
+  text-align:      left;
+  font-family:     var(--font-sans);
+  color:           var(--color-text-primary);
+  overflow:        hidden;
+  transition:      transform 180ms ease-out,
+                   border-color 180ms ease-out,
+                   background 180ms ease-out;
 }
 
 .tile:hover:not(:disabled) {
   transform:    translateY(-2px);
-  border-color: rgba(88, 232, 138,0.45);
-  background:   color-mix(in srgb, var(--color-bg-secondary) 84%, var(--color-accent-teal) 4%);
+  border-color: color-mix(in srgb, var(--color-accent-gold) 55%, transparent);
+  background:   color-mix(in srgb, var(--color-bg-secondary) 84%, var(--color-accent-gold) 5%);
 }
 
 .tile:focus-visible {
-  outline:        2px solid var(--color-accent-teal);
+  outline:        2px solid var(--color-accent-gold);
   outline-offset: 2px;
 }
 
-.tile:disabled {
-  cursor:    default;
-  opacity:   0.62;
+.tile:disabled,
+.tile--soon {
+  cursor:  default;
+  opacity: 0.55;
 }
 
+/* Icon — left anchor. 26px in a ~96px-tall tile reads as a real
+   structural element, not decoration tucked in a corner. */
 .icon {
-  display:       flex;
-  align-items:   center;
-  color:         var(--color-text-muted);
-  transition:    color 0.18s ease-out;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  width:           32px;
+  height:          32px;
+  border-radius:   50%;
+  background:      color-mix(in srgb, var(--color-accent-gold) 8%, transparent);
+  color:           var(--color-accent-gold);
+  transition:      color 180ms ease-out, background 180ms ease-out, transform 180ms ease-out;
 }
 
 .tile:hover:not(:disabled) .icon {
-  color: var(--color-accent-teal);
+  background: color-mix(in srgb, var(--color-accent-gold) 16%, transparent);
+  color:      var(--color-accent-gold);
+  transform:  scale(1.04);
+}
+
+/* Body — name above count, both left-anchored against the icon. */
+.body {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+  min-width:      0;
 }
 
 .name {
-  font-family:    var(--font-sans);
-  font-size:      0.7rem;
+  font-family:    var(--font-serif);
+  font-size:      var(--density-h3);
   font-weight:    700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color:          var(--color-text-muted);
+  letter-spacing: 0.02em;
+  color:          var(--color-accent-gold);
+  line-height:    1.1;
   margin:         0;
+  /* Truncate "Companions" gracefully on the tightest tile widths */
+  white-space:    nowrap;
+  overflow:       hidden;
+  text-overflow:  ellipsis;
 }
 
 .count {
-  font-family: var(--font-serif);
-  font-size:   1.85rem;
-  font-weight: 700;
-  color:       var(--color-accent-gold);
-  line-height: 1;
-  letter-spacing: 0.01em;
-  margin:      0;
+  font-family:           var(--font-mono);
+  font-size:             var(--density-caption);
+  font-weight:           500;
+  font-variant-numeric:  tabular-nums;
+  letter-spacing:        0.06em;
+  color:                 var(--color-text-muted);
+  line-height:           1.2;
+  margin:                0;
 }
 
 .count--empty {
-  color: var(--color-text-muted);
+  font-style: italic;
 }
 
+/* Status mark — Geist Pixel ornament in the top-right corner.
+   Square for Ready, Triangle for Coming Soon (§7 mixed geometry). */
 .status {
-  position:       absolute;
-  bottom:         var(--space-sm);
-  right:          var(--space-md);
-  display:        inline-flex;
-  align-items:    center;
-  gap:            6px;
-  font-family:    var(--font-sans);
-  font-size:      0.6rem;
-  font-weight:    600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  position:    absolute;
+  top:         6px;
+  right:       6px;
+  font-family: var(--font-pixel-square);
+  font-size:   var(--density-pixel);
+  line-height: 1;
 }
 
 .status--ready {
-  color: var(--color-accent-teal);
+  font-family: var(--font-pixel-square);
+  color:       var(--color-accent-jade);
 }
 
-.status--coming {
-  color: var(--color-text-muted);
-}
-
-.statusDot {
-  width:         6px;
-  height:        6px;
-  border-radius: 50%;
-  background:    currentColor;
-  opacity:       0.85;
+.status--soon {
+  font-family: var(--font-pixel-triangle);
+  color:       var(--color-text-muted);
 }

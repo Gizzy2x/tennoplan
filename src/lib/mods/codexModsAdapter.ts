@@ -201,6 +201,45 @@ export function projectMod(item: TennoplanItem): ModEntry {
   return entry;
 }
 
+/**
+ * Inverse of projectMod — rebuild a minimal TennoplanItem from a ModEntry.
+ * Used only when a mod is opened from the browser but the live codex row
+ * isn't in Dexie yet (build-time fallback path): the detail page still needs
+ * a TennoplanItem, and every field the mod blocks read is present on ModEntry.
+ */
+export function modEntryToItem(mod: ModEntry): TennoplanItem {
+  return {
+    uniqueName:   mod.uniqueName,
+    name:         mod.name,
+    category:     'Mod',
+    type:         mod.type,
+    iconUrl:      mod.iconUrl ?? '',
+    imageName:    mod.imageName ?? undefined,
+    rarity:       mod.rarity,
+    description:  mod.description,
+    baseDrain:    mod.drain,
+    polarity:     mod.polarity ?? undefined,
+    levelStats:   mod.levelStats,
+    compatName:   mod.compatName,
+    tradeable:    mod.tradeable,
+    isSet:        mod.isSet,
+    isAugment:    mod.isAugment,
+    isExilus:     mod.isExilus,
+    dropLocations: [],
+    wikiUrl:      mod.wikiUrl,
+    patchHistory: mod.patchHistory,
+    introduced:   mod.introduced,
+    transmutable: mod.transmutable,
+    releaseDate:  mod.releaseDate,
+    // Metadata stamped by the codex pipeline — synthesised here for the
+    // build-time fallback path (no live codex row yet).
+    dataVersion:  'mod-fallback',
+    lastUpdated:  Date.now(),
+    source:       'enriched',
+    quality:      'high',
+  } as TennoplanItem;
+}
+
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
 /**

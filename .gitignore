@@ -53,3 +53,6 @@ Research/
 !.dev.vars.example
 .env*
 !.env.example
+
+# TypeScript incremental build state
+*.tsbuildinfo

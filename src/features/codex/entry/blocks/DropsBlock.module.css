@@ -15,16 +15,6 @@
   border-radius:  8px;
 }
 
-.label {
-  font-family:    var(--font-sans);
-  font-size:      0.7rem;
-  font-weight:    700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color:          var(--color-text-muted);
-  margin:         0;
-}
-
 /* ── Source group section ─────────────────────────────────────── */
 
 .group {
@@ -76,9 +66,12 @@
 
 .row {
   display:        grid;
-  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  /* Columns: planet thumb → location → rotation → tag → chance.
+     Planet slot is fixed 24px so the column anchors even when the
+     thumb is absent (non-planet sources keep the layout aligned). */
+  grid-template-columns: 24px minmax(0, 1fr) auto auto auto;
   gap:            14px;
-  align-items:    baseline;
+  align-items:    center;
   padding:        8px 10px;
   border-radius:  6px;
   transition:     background 0.18s ease-out;
@@ -86,6 +79,44 @@
 
 .row:hover {
   background: color-mix(in srgb, var(--color-bg-primary) 55%, transparent);
+}
+
+.row:hover .planetThumb {
+  transform:   scale(1.08);
+  box-shadow:
+    0 0 0 1px rgba(219, 176, 88, 0.5),
+    inset 0 0 6px rgba(0, 0, 0, 0.55),
+    0 0 8px rgba(219, 176, 88, 0.22);
+}
+
+/* ── Planet thumb ───────────────────────────────────────────────
+   Reuses the visual language from BestFarmsBlock and the secondary
+   strip in PlanetaryOriginsBlock so all three blocks read as a set:
+   circular cover-fit planet PNG, gold-tinted outer ring, inset shadow
+   for orb depth. Smaller here (24px) than BestFarms' 36px because
+   DropsBlock rows are dense and a bigger thumb would shout.
+   ─────────────────────────────────────────────────────────────── */
+.planetSlot {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  width:           24px;
+  height:          24px;
+}
+
+.planetThumb {
+  display:              block;
+  width:                24px;
+  height:               24px;
+  border-radius:        50%;
+  background-size:      cover;
+  background-position:  center;
+  background-repeat:    no-repeat;
+  box-shadow:
+    0 0 0 1px rgba(219, 176, 88, 0.25),
+    inset 0 0 6px rgba(0, 0, 0, 0.5);
+  filter: saturate(1.06);
+  transition: transform 150ms ease-out, box-shadow 150ms ease-out;
 }
 
 .location {
@@ -161,18 +192,21 @@
   color:        var(--color-accent-teal);
 }
 
-/* Narrow: rotation column drops below location */
+/* Narrow: rotation column drops below location. Planet thumb stays
+   in column 1 so it anchors the row even when the meta wraps. The
+   rotation + tag start at column 2 (after the thumb) so they align
+   with the location title above. */
 @container codex-landing (max-width: 640px) {
   .row {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: 24px minmax(0, 1fr) auto;
   }
   .rotation {
-    grid-column: 1 / -1;
+    grid-column: 2 / -1;
     min-width:   0;
     padding-top: 2px;
   }
   .tag {
-    grid-column: 1;
+    grid-column: 2;
     justify-self: start;
   }
 }

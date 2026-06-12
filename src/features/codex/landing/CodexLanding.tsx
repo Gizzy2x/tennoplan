@@ -2,12 +2,18 @@
  * CodexLanding — the Codex tab's home view.
  *
  * Sections (top to bottom):
- *   1. LandingHero          — title + tagline
- *   2. LandingSearch        — global search promise (engine arrives later)
- *   3. FeaturedSpotlight    — weekly rotating item + RecentlyAdded column
- *   4. CollectionsGrid      — 7 category tiles
+ *   1. LandingHero          — title + tagline + inline search + meta strip
+ *   2. CollectionsGrid      — 7 category tiles (primary nav, lifted up)
+ *   3. FeaturedSpotlight    — anchored composition (.impeccable.md §3a)
+ *   4. RecentlyAdded        — high-density tiles, ModCardV3 for Mods
  *   5. ContinueBrowsing     — persisted history (hidden when empty)
- *   6. Footer               — sync metadata
+ *   6. Footer               — sync metadata + Pixel-glyph bullets
+ *
+ * Collections sits ABOVE the spotlight so the primary navigation
+ * surface is the first thing the user sees after the hero — not
+ * something they have to scroll past Featured + Recently Added to
+ * find. LandingSearch is now rendered inline inside LandingHero;
+ * it doesn't need a full row to convey what it needs.
  *
  * Composition only. Each block owns its own data fetching, layout, and
  * states. The landing routes interactions back up: collection clicks
@@ -15,33 +21,46 @@
  * RecentlyAdded "more" link advances the parent's view state.
  */
 
+import { type RefObject } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/adapters/storage/db';
 import type { TennoplanItem } from '@/core/domain/tennoplanApi';
+import type { ModEntry } from '@/lib/mods/codexModsAdapter';
 import type { CodexHistoryEntry } from '@/store/codexHistory';
 import { LandingHero } from './blocks/LandingHero';
-import { LandingSearch } from './blocks/LandingSearch';
 import { FeaturedSpotlight } from './blocks/FeaturedSpotlight';
+import { RecentlyAdded } from './blocks/RecentlyAdded';
 import { CollectionsGrid, type CodexCollectionKey } from './blocks/CollectionsGrid';
 import { ContinueBrowsing } from './blocks/ContinueBrowsing';
 import styles from './CodexLanding.module.css';
 
 interface CodexLandingProps {
-  /** Open a codex entry — routes to modal (mods) or detail page (others). */
+  /** Open a non-mod codex entry — routes to the full detail page. */
   onSelectEntry:      (entry: TennoplanItem) => void;
+  /**
+   * Open a mod via its projected ModEntry — same modal path the
+   * ModsBrowser uses. RecentlyAdded calls this when a Mod-category
+   * tile (now rendered as ModCardV3) is clicked, so we avoid an
+   * extra Dexie round-trip + projection on the hot path.
+   */
+  onSelectMod:        (mod: ModEntry) => void;
   /** Re-open a history entry — resolver looks up the item from Dexie. */
   onSelectHistory:    (entry: CodexHistoryEntry) => void;
   /** Jump to a category browser (Mods / Warframes for now). */
   onSelectCollection: (key: CodexCollectionKey) => void;
   /** Used by the RecentlyAdded "N more" link — jumps to Mods browser today. */
   onShowMoreRecent?:  () => void;
+  /** Handle on the search input so CodexPage's `/` shortcut can focus it. */
+  searchInputRef?:    RefObject<HTMLInputElement | null>;
 }
 
 export function CodexLanding({
   onSelectEntry,
+  onSelectMod,
   onSelectHistory,
   onSelectCollection,
   onShowMoreRecent,
+  searchInputRef,
 }: CodexLandingProps) {
   const lastSync = useLiveQuery(
     () => db.syncMetadata.get('codex').then((m) => m?.lastSync),
@@ -51,22 +70,26 @@ export function CodexLanding({
   return (
     <div className={styles.root}>
       <div className={styles.section}>
-        <LandingHero />
-      </div>
-
-      <div className={styles.section}>
-        <LandingSearch />
-      </div>
-
-      <div className={styles.section}>
-        <FeaturedSpotlight
-          onSelectEntry={onSelectEntry}
-          onShowMore={onShowMoreRecent}
-        />
+        <LandingHero searchInputRef={searchInputRef} />
       </div>
 
       <div className={styles.section}>
         <CollectionsGrid onSelectCollection={onSelectCollection} />
+      </div>
+
+      {/* FeaturedSpotlight has its own borders + gradient background;
+          it intentionally reads as a "band" running across the landing
+          rather than another section in the gap rhythm. */}
+      <div className={`${styles.section} ${styles.sectionBand}`}>
+        <FeaturedSpotlight onSelectEntry={onSelectEntry} />
+      </div>
+
+      <div className={styles.section}>
+        <RecentlyAdded
+          onSelectEntry={onSelectEntry}
+          onSelectMod={onSelectMod}
+          onShowMore={onShowMoreRecent}
+        />
       </div>
 
       <div className={styles.section}>
@@ -93,14 +116,15 @@ function LandingFooter({ lastSync }: LandingFooterProps) {
 
   return (
     <footer className={styles.footer}>
+      <span className={styles.footerGlyph} aria-hidden="true">▢</span>
       <span>
         Codex synced{' '}
         <span className={stale ? styles.footerStale : undefined}>{relative}</span>
       </span>
-      <span className={styles.footerDot}>·</span>
+      <span className={styles.footerSep} aria-hidden="true">▢</span>
       <span>Calamity + WFCD</span>
-      <span className={styles.footerDot}>·</span>
-      <span>Wiki excerpts when present are CC BY-SA</span>
+      <span className={styles.footerSep} aria-hidden="true">▢</span>
+      <span>Wiki excerpts CC BY-SA</span>
     </footer>
   );
 }

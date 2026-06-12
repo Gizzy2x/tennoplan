@@ -12,6 +12,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { X } from 'lucide-react';
 import { WarframeCard } from '../components/WarframeCard';
 import {
   useAllWarframes,
@@ -91,6 +92,16 @@ export function WarframesBrowser({ onSelect, onCountChange }: WarframesBrowserPr
           autoComplete="off"
           spellCheck={false}
         />
+        {query.length > 0 && (
+          <button
+            type="button"
+            className="codex-browse-search-clear"
+            onClick={() => setQuery('')}
+            aria-label="Clear search"
+          >
+            <X size={14} strokeWidth={2.25} />
+          </button>
+        )}
       </div>
 
       <div className="codex-browse-filter-row">

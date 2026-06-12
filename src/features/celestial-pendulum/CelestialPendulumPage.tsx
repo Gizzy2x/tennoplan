@@ -1,317 +1,292 @@
 /**
- * CelestialPendulumPage — Live World Cycle Timers
+ * CelestialPendulumPage — the hub shell.
  *
- * Layout:
- *   PageHero  (title + refresh button in right slot)
- *   CycleTabBar  (4 worlds, bg images, progress bars)
- *   TimerHeroPanel  (cinematic hero + key resources for current world/state)
- *   2-col grid:
- *     BountyDetailPanel  (all rotations + rewards as ResourceTags)
- *     CycleIntelPanel    (all-worlds summary + farming tips)
- *   Footer  (drop data age)
+ *   PageHero
+ *   ┌ Top tab bar: Overview · Worlds · Activities · Nightwave ·
+ *   │              Vendors & Syndicates · Events ┐
+ *   └────────────────────────────────────────────┘
+ *   <active tab>
  *
- * No hardcoded hex values. No inline design token constants.
- * No redundant section headers — hierarchy comes from structure + spacing.
+ * WORLDS: horizontal place chips (the old left rail, flattened) → a place
+ * dossier (live hero + a lazy "Next 6 hours" glance + Bounties / Forecast /
+ * Fishing / Circuit facets). Activities / Nightwave / Vendors & Syndicates /
+ * Events are live where worldstate provides it, honest "curated — coming" stubs
+ * where it doesn't. Overview is interim ("what's good now" board) until built last.
+ * App-wide live cycle pills + Baro + the Dailies panel live in the global header.
+ *
+ * Plan + rationale: Celestial-Pendulum-Blueprint.md. All styling lives in
+ * CelestialPendulum.module.css (tokens only).
  */
 
-import { useState, useCallback } from 'react';
-import { PageHero }           from '@/components/ui/PageHero';
-import { useWorldCycles }     from './hooks/useWorldCycles';
-import { useSyndicateMissions } from './hooks/useSyndicateMissions';
-import { useDropsLastSynced } from './hooks/useDropsLastSynced';
-import { useEnrichedBounties } from './hooks/useEnrichedBounties';
-import { WorldBackground }    from './components/WorldBackground';
-import { WorldNavigationDials } from './components/WorldNavigationDials';
-import { MasterHeader }       from './components/MasterHeader';
-import { TacticalRadar }      from './components/TacticalRadar';
-import { BountyBoard }        from './components/BountyBoard';
-import { CycleIntelPanel }    from './components/CycleIntelPanel';
-import { formatMsParts }      from '@/core/services/cycleService';
-import { getWorldBg }         from './worldAssets';
-import type { CycleId, CycleStatus } from '@/core/domain/cycles';
-import type { KeyResource }   from './components/TimerHeroPanel';
+import { useState, useCallback, useMemo } from 'react';
+import { PageHero }            from '@/components/ui/PageHero';
+import { PRESTIGE_LEVEL }      from '@/tokens/worldThemes';
+import type { CycleId, CycleState, CycleStatus } from '@/core/domain/cycles';
+import { useWorldCycles }      from './hooks/useWorldCycles';
+import { useDropsLastSynced }  from './hooks/useDropsLastSynced';
+import { useAllGiverBounties } from './hooks/useAllGiverBounties';
+import { WorldActivityDetail } from './components/WorldActivityDetail';
+import { StaticPlaceHero }     from './components/StaticPlaceHero';
+import { RightNowHero, type HeroActive, type HeroUpcoming } from './components/RightNowHero';
+import { BountyBoard }         from './components/BountyBoard';
+import { CircuitPanel }        from './components/CircuitPanel';
+import { ActivitiesTab }       from './components/ActivitiesTab';
+import { NightwaveTab }         from './components/NightwaveTab';
+import { VendorsSyndicatesTab } from './components/VendorsSyndicatesTab';
+import { EventsTab }            from './components/EventsTab';
+import { NextHoursButton }     from './components/NextHoursButton';
+import { OverviewPanel }       from './components/OverviewPanel';
+import { CelestialWireframe }  from './wireframe/CelestialWireframe';
+import { useDuviriCircuit }    from './hooks/useDuviriCircuit';
+import { buildPlaces }         from './placesModel';
+import {
+  ORRERY_ORDER,
+  getWorldMeta,
+  getActivity,
+  getKeyResources,
+}                              from './cycleActivity';
+import { getWorldBg }          from './worldAssets';
+import styles                  from './CelestialPendulum.module.css';
 
-// ─── Static config ────────────────────────────────────────────────────────────
+// Two-colour discipline (matches the Codex): jade = interactive / live / default,
+// gold = the meaningful highlight (prime windows).
+const JADE = 'var(--color-accent-jade)';
+const GOLD = 'var(--color-accent-gold)';
 
-const WORLD_TABS: { id: CycleId; label: string }[] = [
-  { id: 'cetus',   label: 'CETUS'   },
-  { id: 'vallis',  label: 'FORTUNA' },
-  { id: 'cambion', label: 'DEIMOS'  },
-  { id: 'duviri',  label: 'DUVIRI'  },
+// ── Hub tabs ──────────────────────────────────────────────────────────────────
+type HubTab = 'overview' | 'worlds' | 'activities' | 'nightwave' | 'market' | 'events';
+const HUB_TABS: { key: HubTab; label: string }[] = [
+  { key: 'overview',   label: 'Overview' },
+  { key: 'worlds',     label: 'Worlds' },
+  { key: 'activities', label: 'Activities' },
+  { key: 'nightwave',  label: 'Nightwave' },
+  { key: 'market',     label: 'Vendors & Syndicates' },
+  { key: 'events',     label: 'Events' },
 ];
 
-const CYCLE_TO_SYNDICATE: Partial<Record<CycleId, string>> = {
-  cetus:   'Ostron',
-  vallis:  'Solaris United',
-  cambion: 'Entrati',
-  zariman: 'The Holdfasts',
-};
-
-const KEY_RESOURCES: Partial<Record<string, KeyResource[]>> = {
-  'cetus-day': [
-    { name: 'Cetus Wisp',        source: 'Plains (night)' },
-    { name: 'Breath of Eidolon', source: 'Bounties Lv.4+' },
-    { name: 'Iradite',           source: 'Rock formations' },
-    { name: 'Grokdrul',          source: 'Grineer camps' },
-    { name: 'Sentirum',          source: 'Mining (rare)' },
-    { name: 'Nyth',              source: 'Mining (rare)' },
-  ],
-  'cetus-night': [
-    { name: 'Arcane Energize',  source: 'Eidolon hunts' },
-    { name: 'Cetus Wisp',       source: 'Plains (glowing)' },
-    { name: 'Brilliant Eidolon Shard', source: 'Eidolons' },
-    { name: 'Intact Sentient Core',    source: 'Sentients' },
-  ],
-  'vallis-warm': [
-    { name: 'Gyromag Systems',  source: 'Heist bounties' },
-    { name: 'Repeller Systems', source: 'Profit-Taker' },
-    { name: 'Atmo Systems',     source: 'Coolant pools' },
-    { name: 'Thermal Sludge',   source: 'Mining' },
-    { name: 'Mytocardia Spore', source: 'Conservation' },
-  ],
-  'vallis-cold': [
-    { name: 'Toroid',           source: 'Spiders & caves' },
-    { name: 'Repeller Systems', source: 'Profit-Taker' },
-    { name: 'Gyromag Systems',  source: 'Heist bounties' },
-    { name: 'Thermal Sludge',   source: 'Coolant pools' },
-    { name: 'Amarast',          source: 'Mining' },
-  ],
-  'cambion-fass': [
-    { name: 'Scintillant',     source: 'Isolation Vaults' },
-    { name: 'Son Token',       source: 'Conservation' },
-    { name: 'Mother Token',    source: 'Bounties' },
-    { name: 'Father Token',    source: 'Parts trading' },
-    { name: 'Ganglion',        source: 'Infested deposits' },
-  ],
-  'cambion-vome': [
-    { name: 'Vome Residue',    source: 'Vome worm' },
-    { name: 'Pustulite',       source: 'Mining' },
-    { name: 'Son Token',       source: 'Conservation' },
-    { name: 'Mother Token',    source: 'Bounties' },
-    { name: 'Ganglion',        source: 'Infested deposits' },
-  ],
-  'zariman-corpus': [
-    { name: 'Voidplume Quill',     source: 'Bounties Lv.3' },
-    { name: 'Voidplume Down',      source: 'Bounties Lv.2' },
-    { name: 'Holdfast Token',      source: 'Bounties' },
-    { name: 'Incarnon Genesis',    source: 'Bounties rare' },
-  ],
-  'zariman-grineer': [
-    { name: 'Voidplume Quill',     source: 'Bounties Lv.3' },
-    { name: 'Voidplume Down',      source: 'Bounties Lv.2' },
-    { name: 'Holdfast Token',      source: 'Bounties' },
-    { name: 'Incarnon Genesis',    source: 'Bounties rare' },
-  ],
-  'duviri-joy':    [{ name: 'Pathos Clamp', source: 'The Circuit' }],
-  'duviri-anger':  [{ name: 'Pathos Clamp', source: 'The Circuit' }],
-  'duviri-envy':   [{ name: 'Pathos Clamp', source: 'The Circuit' }],
-  'duviri-sorrow': [{ name: 'Pathos Clamp', source: 'The Circuit' }],
-  'duviri-fear':   [{ name: 'Pathos Clamp', source: 'The Circuit' }],
-};
-
-const WORLD_TIPS: Partial<Record<CycleId, string[]>> = {
-  cetus: [
-    'Eidolons roam the Plains at night — hunt Teralyst first, then chain to Gantulyst and Hydrolyst.',
-    'Bounty rotations reset every cycle — check before the current phase ends.',
-    'Cetus Wisps glow and are easier to spot at night near water.',
-  ],
-  vallis: [
-    'Exploiter Orb only spawns during warm cycles — prepare coolant canisters in advance.',
-    'Profit-Taker is available any cycle after completing all Vox Solaris heist bounties.',
-    'Toroids drop at high-density spots near the Spaceport and Temple of Profit.',
-  ],
-  cambion: [
-    'Fass Residue and Vome Residue are cycle-specific — collect both types for standing.',
-    'Scintillant has a low spawn rate inside Isolation Vault rooms — check every chamber.',
-    'Jugulus Rex and Carnis Rex require a specific cycle phase to spawn outdoors.',
-  ],
-  zariman: [
-    'Voidplume Quill is the primary currency for Holdfast rank — prioritize Lv.3 bounties.',
-    'Incarnon Genesis adapters rotate weekly — plan weapon upgrades around the schedule.',
-    'Void Flood missions grant the most Holdfast standing per run.',
-  ],
-  duviri: [
-    'The active Spiral determines which decree types appear — plan builds accordingly.',
-    'Pathos Clamps are the main crafting resource for Duviri intrinsics and weapons.',
-    'The Circuit weekly rotation changes available Warframes and weapons in Drifter mode.',
-  ],
-};
-
-/** Cycle-state to special note for the TimerHero callout */
-const CYCLE_NOTES: Partial<Record<string, string>> = {
-  'cetus-night':  'Eidolon Hunting Window',
-  'vallis-warm':  'Exploiter Orb Available',
-  'cambion-fass': 'Fass Cycle Active',
-  'cambion-vome': 'Vome Cycle Active',
-};
-
-// ─── Format helpers ───────────────────────────────────────────────────────────
-
-function formatTabTime(ms: number): string {
-  const { h, m } = formatMsParts(ms);
-  const hNum = parseInt(h, 10);
-  const mNum = parseInt(m, 10);
-  return hNum > 0 ? `${hNum}h` : `${mNum}m`;
+function ComingSoon({ label, note }: { label: string; note?: string }) {
+  return (
+    <div className={styles.comingSoon}>
+      <span className={styles.comingSoonLabel}>{label}</span>
+      <span className={styles.comingSoonNote}>{note ?? 'Coming soon.'}</span>
+      <span className={styles.comingSoonHint}>Planned · Celestial hub re-build</span>
+    </div>
+  );
 }
-
-function formatHeroTime(ms: number): string {
-  const { h, m } = formatMsParts(ms);
-  const hNum = parseInt(h, 10);
-  const mNum = parseInt(m, 10);
-  return hNum > 0 ? `${hNum}H: ${mNum}M` : `${mNum}M`;
-}
-
-function formatForecastTime(ms: number): string {
-  const { h, m } = formatMsParts(ms);
-  const hNum = parseInt(h, 10);
-  const mNum = parseInt(m, 10);
-  return hNum > 0 ? `${hNum}h ${mNum}m` : `${mNum}m`;
-}
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export function CelestialPendulumPage() {
-  const [selectedId, setSelectedId] = useState<CycleId>('cetus');
-  const [isSyncing,  setIsSyncing]  = useState(false);
+  const [hubTab, setHubTab] = useState<HubTab>('worlds');
+  const [selectedKey, setSelectedKey] = useState<string>('cetus');
+  const [showWireframe, setShowWireframe] = useState(false);
 
-  const { statuses, urgency, hasEverLoaded, isError, forceRefetch: refetchCycles, isDataOutOfSync } = useWorldCycles();
-  const { missions, forceRefetch: refetchMissions } = useSyndicateMissions();
+  const { statuses, urgency, hasEverLoaded, isError, isDataOutOfSync } = useWorldCycles();
   const { ageLabel: dropsAgeLabel } = useDropsLastSynced();
 
-  // Build a keyed record for easy lookup
-  const byId = Object.fromEntries(
-    statuses.map(s => [s.cycle.id, s])
-  ) as Partial<Record<CycleId, CycleStatus>>;
+  const byId = useMemo(
+    () => Object.fromEntries(statuses.map((s) => [s.cycle.id, s])) as Partial<Record<CycleId, CycleStatus>>,
+    [statuses],
+  );
+  const worlds = useMemo(() => ORRERY_ORDER.filter((id) => byId[id]), [byId]);
 
-  const selectedStatus = byId[selectedId] ?? byId['cetus'] ?? null;
-  const cycleState     = (selectedStatus?.cycle.state ?? 'day') as string;
-  const bgUrl          = getWorldBg(selectedId, cycleState);
+  const duviriCircuit = useDuviriCircuit();
+  const giverBounties = useAllGiverBounties();
+  const places = useMemo(
+    () => buildPlaces(worlds, byId, urgency, giverBounties),
+    [worlds, byId, urgency, giverBounties],
+  );
 
-  // Syndicate mission + enriched bounties for selected world
-  const syndicateName   = CYCLE_TO_SYNDICATE[selectedId];
-  const selectedMission = syndicateName
-    ? (missions.find(m => m.syndicate === syndicateName) ?? null)
-    : null;
+  const selectedPlace = useMemo(
+    () => places.find((p) => p.key === selectedKey) ?? places[0] ?? null,
+    [places, selectedKey],
+  );
 
-  const { bounties } = useEnrichedBounties(selectedMission, selectedId, cycleState as Parameters<typeof useEnrichedBounties>[2]);
-
-  // Key resources + tips + cycle note for current world/state
-  const resources  = KEY_RESOURCES[`${selectedId}-${cycleState}`] ?? [];
-  const tips       = WORLD_TIPS[selectedId] ?? [];
-  const cycleNote  = CYCLE_NOTES[`${selectedId}-${cycleState}`] ?? null;
-
-  // Pre-formatted times for tabs
-  const tabTimes = Object.fromEntries(
-    statuses.map(s => [s.cycle.id, formatTabTime(s.msRemaining)])
-  ) as Partial<Record<CycleId, string>>;
-
-  // Pre-formatted forecast times for intel panel
-  const forecastTimes = Object.fromEntries(
-    statuses.map(s => [s.cycle.id, formatForecastTime(s.msRemaining)])
-  ) as Partial<Record<CycleId, string>>;
-
-  const heroTime  = selectedStatus ? formatHeroTime(selectedStatus.msRemaining) : '—';
-
-  const handleRefresh = useCallback(async () => {
-    if (isSyncing) return;
-    setIsSyncing(true);
-    try {
-      await Promise.all([
-        refetchCycles(),
-        refetchMissions(),
-      ]);
-    } finally {
-      setIsSyncing(false);
+  // "Right now" — active prime windows + the next opening (drives Overview interim).
+  const hero = useMemo(() => {
+    const active: HeroActive[] = [];
+    const upcoming: HeroUpcoming[] = [];
+    for (const id of worlds) {
+      const status = byId[id];
+      if (!status) continue;
+      const act = getActivity(id, status.cycle.state);
+      const m   = getWorldMeta(id);
+      if (act.isPrime) {
+        const fraction = Math.max(0, Math.min(1, 1 - status.progress));
+        active.push({ id, world: m.label, region: m.region, label: act.label, blurb: act.blurb, msRemaining: status.msRemaining, fraction, accent: GOLD });
+        continue;
+      }
+      const nextKey = urgency[id]?.nextStateKey;
+      if (nextKey && (PRESTIGE_LEVEL[nextKey] ?? 'none') === 'P0') {
+        const nextState = nextKey.split('-')[1] ?? '';
+        upcoming.push({ id, world: m.label, label: getActivity(id, nextState).label, msRemaining: status.msRemaining, accent: JADE });
+      }
     }
-  }, [isSyncing, refetchCycles, refetchMissions]);
+    active.sort((a, b) => a.msRemaining - b.msRemaining);
+    upcoming.sort((a, b) => a.msRemaining - b.msRemaining);
+    return { active, upcoming };
+  }, [worlds, byId, urgency]);
 
-  // ── Loading state ─────────────────────────────────────────────────────────
-  if (!hasEverLoaded && !isError) {
+  // Select a place AND jump to the Worlds tab (used by Overview links).
+  const goToPlace = useCallback((key: string) => { setSelectedKey(key); setHubTab('worlds'); }, []);
+
+  const emptyReason =
+    'No bounties to show here right now. Live jobs and reward tables refresh automatically in the background.';
+
+  // ── Dev-only wireframe of the re-planned hub ─────────────────────────────
+  if (import.meta.env.DEV && showWireframe) {
     return (
-      <div className="cp-loading">
-        <div className="cp-loading-dot" />
-        <span className="typo-label-xs">Initializing Systems…</span>
+      <div className={styles.page}>
+        <div className={styles.content}>
+          <button type="button" onClick={() => setShowWireframe(false)} className={styles.devChip}>
+            ← Exit wireframe (back to live page)
+          </button>
+          <CelestialWireframe />
+        </div>
       </div>
     );
   }
 
-  // ── Refresh button (injected into PageHero right slot) ────────────────────
-  const refreshBtn = (
-    <button
-      onClick={() => void handleRefresh()}
-      disabled={isSyncing}
-      className="cp-refresh-btn"
-    >
-      {isSyncing ? 'Syncing…' : '↻ Refresh'}
-    </button>
-  );
+  // ── Loading ─────────────────────────────────────────────────────────────
+  if (!hasEverLoaded && !isError) {
+    return (
+      <div className={styles.loading}>
+        <span className={styles.loadingDot} />
+        <span className={styles.loadingText}>Aligning the orrery…</span>
+      </div>
+    );
+  }
 
-  // ── Main layout ───────────────────────────────────────────────────────────
+  // ── Selected-place derived view ──────────────────────────────────────────
+  const cycleId      = selectedPlace?.cycleId;
+  const cycleState   = (selectedPlace?.status?.cycle.state ?? 'day') as CycleState;
+  const detailAccent = selectedPlace?.activity?.isPrime ? GOLD : JADE;
+
   return (
-    <div data-world={selectedId} style={{ position: 'relative', color: 'var(--color-text-primary)' }}>
+    <div className={styles.page} data-world={cycleId ?? selectedPlace?.giverId ?? 'none'}>
+      <div className={styles.content}>
+        <PageHero prefix="CELESTIAL" title="PENDULUM" />
 
-      {/* Cinematic world background */}
-      <WorldBackground url={bgUrl} />
+        {import.meta.env.DEV && (
+          <button type="button" onClick={() => setShowWireframe(true)} className={styles.devChip} data-gold>
+            ◔ View re-plan wireframe (dev)
+          </button>
+        )}
 
-      {/* Content layer */}
-      <div style={{ position: 'relative', zIndex: 1 }}>
+        {/* ── Hub top tabs ─────────────────────────────────────────────── */}
+        <nav className={styles.hubTabs} role="tablist" aria-label="Celestial sections">
+          {HUB_TABS.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              role="tab"
+              aria-selected={t.key === hubTab}
+              className={styles.hubTab}
+              data-active={t.key === hubTab || undefined}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => setHubTab(t.key)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </nav>
 
-        {/* Page header */}
-        <PageHero
-          prefix="CELESTIAL"
-          title="PENDULUM"
-          right={refreshBtn}
-        />
+        <div className={styles.tabPanel} key={hubTab} role="tabpanel">
+          {/* ── Overview (interim: what's good now + all-worlds board) ──── */}
+          {hubTab === 'overview' && (
+            <>
+              <RightNowHero active={hero.active} upcoming={hero.upcoming} onSelect={(id) => goToPlace(id)} />
+              <OverviewPanel places={places} onSelect={goToPlace} />
+            </>
+          )}
 
-        {/* Global radar — sticky pre-heat spotter, world-agnostic */}
-        <MasterHeader
-          statuses={byId}
-          urgency={urgency}
-        />
+          {/* ── Worlds (the first real tab) ─────────────────────────────── */}
+          {hubTab === 'worlds' && (
+            <>
+              <div className={styles.placeChips} role="tablist" aria-label="Places">
+                {places.map((p) => {
+                  const isPrime = p.activity?.isPrime ?? false;
+                  const sel = p.key === selectedPlace?.key;
+                  return (
+                    <button
+                      key={p.key}
+                      type="button"
+                      role="tab"
+                      aria-selected={sel}
+                      className={styles.placeChip}
+                      data-active={sel || undefined}
+                      data-prime={isPrime || undefined}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => setSelectedKey(p.key)}
+                    >
+                      <span className={styles.placeChipDot} />
+                      {p.label}
+                    </button>
+                  );
+                })}
+              </div>
 
-        {/* World navigation dials — swing rail with theme broadcasting */}
-        <WorldNavigationDials
-          tabs={WORLD_TABS}
-          statuses={byId}
-          urgency={urgency}
-          activeId={selectedId}
-          onSelect={setSelectedId}
-          times={tabTimes}
-        />
+              {selectedPlace?.status && selectedPlace.meta && selectedPlace.activity && cycleId ? (
+                <WorldActivityDetail
+                  meta={selectedPlace.meta}
+                  status={selectedPlace.status}
+                  urgency={selectedPlace.urgency}
+                  activity={selectedPlace.activity}
+                  accent={detailAccent}
+                  resources={getKeyResources(cycleId, cycleState)}
+                  staleData={isDataOutOfSync}
+                  artUrl={getWorldBg(cycleId, cycleState)}
+                />
+              ) : selectedPlace ? (
+                <StaticPlaceHero
+                  label={selectedPlace.label}
+                  region={selectedPlace.region}
+                  npc={selectedPlace.npc}
+                  blurb={selectedPlace.blurb}
+                />
+              ) : null}
 
-        {/* Tactical radar — SVG blueprint hero, replaces TimerHeroPanel */}
-        <TacticalRadar
-          worldId={selectedId}
-          cycleState={cycleState}
-          timeRemaining={heroTime}
-          cycleNote={cycleNote}
-          resources={resources}
-          urgency={urgency[selectedId]}
-          isDataOutOfSync={isDataOutOfSync}
-        />
+              {/* Timer: open the per-world "next hours" view on demand (popover) —
+                  it no longer sits inline eating space. */}
+              {selectedPlace?.status && cycleId && (
+                <NextHoursButton cycle={selectedPlace.status.cycle} accent={detailAccent} />
+              )}
 
-        {/* Bottom 2-column: bounties | intel */}
-        <div className="cp-grid">
-          <BountyBoard
-            bounties={bounties}
-            hasMission={selectedMission !== null}
-            cycleProgress={selectedStatus?.progress ?? 0}
-          />
-          <CycleIntelPanel
-            activeId={selectedId}
-            statuses={byId}
-            forecastTimes={forecastTimes}
-            tips={tips}
-            isDataOutOfSync={isDataOutOfSync}
-          />
+              {/* No tabs — the place's facets STACK: bounties, then fishing below
+                  (plus the Circuit for Duviri, which has no open-world giver). */}
+              {(selectedPlace?.giver || selectedPlace?.giverId) && (
+                <BountyBoard giver={selectedPlace?.giver ?? null} emptyReason={emptyReason} />
+              )}
+
+              {cycleId === 'duviri' && (
+                <CircuitPanel circuit={duviriCircuit} accent={detailAccent} />
+              )}
+
+              {cycleId && (
+                <ComingSoon
+                  label="Fishing"
+                  note="Fish for this place, each tagged with its cycle (day/night · warm/cold). Listing + tags land next — the fish dataset is being mapped in."
+                />
+              )}
+            </>
+          )}
+
+          {/* ── Activities (live rotating missions) ─────────────────────── */}
+          {hubTab === 'activities' && <ActivitiesTab />}
+
+          {/* ── Nightwave (battle-pass style) ───────────────────────────── */}
+          {hubTab === 'nightwave' && <NightwaveTab />}
+
+          {/* ── Vendors & Syndicates (merged DIM-style index) ───────────── */}
+          {hubTab === 'market' && <VendorsSyndicatesTab />}
+
+          {/* ── Events (operations: active-event view + recurring index) ── */}
+          {hubTab === 'events' && <EventsTab />}
         </div>
 
-        {/* Footer: reward data freshness */}
-        <div className="cp-footer">
-          <div className="cp-footer-dot" />
-          <span className="cp-footer-label">Reward data updated {dropsAgeLabel}</span>
+        {/* ── Footer ──────────────────────────────────────────────────── */}
+        <div className={styles.footer}>
+          <span className={styles.footerDot} />
+          <span className={styles.footerLabel}>Reward data updated {dropsAgeLabel}</span>
         </div>
-
       </div>
     </div>
   );

@@ -1,0 +1,50 @@
+/* NextHoursButton — a click-to-open popover for the per-world "next hours" view.
+   Keeps the timer OUT of the page flow (it's a tool you open, not a band that
+   eats space). Tokens only. */
+
+.wrap { position: relative; display: inline-block; margin: var(--space-sm) 0 var(--space-md); }
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-default);
+  background: color-mix(in oklab, var(--color-bg-secondary) 60%, transparent);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: color 150ms ease-out, border-color 150ms ease-out, background 150ms ease-out;
+}
+.trigger:hover { color: var(--color-text-primary); border-color: color-mix(in oklab, var(--color-accent-jade) 40%, var(--color-border-default)); }
+.trigger[data-open] {
+  color: var(--color-text-primary);
+  border-color: color-mix(in oklab, var(--color-accent-jade) 60%, transparent);
+  background: color-mix(in oklab, var(--color-accent-jade) 12%, transparent);
+}
+.trigger:focus-visible { outline: 2px solid var(--color-accent-gold); outline-offset: 2px; }
+.triggerDot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--color-accent-jade);
+  box-shadow: 0 0 7px color-mix(in oklab, var(--color-accent-jade) 55%, transparent);
+}
+.chev { font-size: 0.7rem; opacity: 0.7; }
+
+.popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 30;
+  width: min(440px, 86vw);
+  padding: var(--space-md) var(--space-lg) var(--space-md);
+  border: 1px solid color-mix(in oklab, var(--color-accent-jade) 24%, var(--color-border-default));
+  border-radius: var(--radius-card);
+  background: color-mix(in oklab, var(--color-bg-secondary) 94%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 18px 44px -20px rgba(0, 0, 0, 0.7);
+}

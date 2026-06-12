@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 interface PageHeroProps {
   /** Lighter-weight prefix displayed before the bold title word(s) */
   prefix?: string;
-  /** Bold/black weight title word(s) — shown in gold */
+  /** Bold/black weight title word(s) — shown in cream (text-primary) */
   title: string;
   /** Optional tiny all-caps subtitle below the heading */
   subtitle?: string;
@@ -15,7 +15,7 @@ interface PageHeroProps {
 /**
  * Universal cinematic page title header.
  * Every page in Tennoplan starts with this component.
- * Pattern: [LIGHT PREFIX] [BOLD GOLD TITLE] / subtitle / somatic-line divider
+ * Pattern: [LIGHT PREFIX] [BOLD CREAM TITLE] / subtitle / somatic-line divider
  */
 export function PageHero({ prefix, title, subtitle, right, className = '' }: PageHeroProps) {
   return (
@@ -24,7 +24,7 @@ export function PageHero({ prefix, title, subtitle, right, className = '' }: Pag
         <div>
           <h1 className="page-hero-heading">
             {prefix && <span className="page-hero-prefix">{prefix}</span>}
-            <span className="page-hero-title orokin-etched">{title}</span>
+            <span className="page-hero-title">{title}</span>
           </h1>
           {subtitle && <p className="page-hero-subtitle">{subtitle}</p>}
         </div>

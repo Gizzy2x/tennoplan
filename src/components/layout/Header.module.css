@@ -1,0 +1,204 @@
+/* ================================================================
+   Header — single 44px top bar.
+
+   Replaces the prior 64px header + 72px persistent sidebar with one
+   horizontal bar. Container queries on the header drive collapse so
+   the bar adapts to its OWN width (matters for installed-PWA mode
+   where the header is narrower than the viewport because of window
+   controls overlay).
+
+   Collapse points:
+     • container-type: inline-size on the header
+     • @container (max-width: 1200px) → inline nav → hamburger
+     • @container (max-width:  880px) → Dailies icon-only
+     • @container (max-width:  720px) → search hides
+     • -webkit-app-region: drag so the header is the PWA drag handle
+   ================================================================ */
+
+.root {
+  position:        fixed;
+  top:             0;
+  left:            0;
+  right:           0;
+  z-index:         40;
+  height:          44px;
+  padding:         0 var(--space-md) 0 var(--space-sm);
+  display:         flex;
+  flex-direction:  row;
+  align-items:     center;
+  gap:             var(--space-md);
+  background:      rgba(8, 10, 8, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom:   1px solid var(--color-border-default);
+  /* Container-query host: every collapse below is keyed to the
+     header's actual width, not the viewport's. */
+  container-type:  inline-size;
+  /* PWA drag handle. Interactive children opt out via no-drag. */
+  -webkit-app-region: drag;
+}
+
+.root button,
+.root a,
+.root input {
+  -webkit-app-region: no-drag;
+}
+
+/* ── Hamburger — narrow widths only ──────────────────────────── */
+
+.hamburger {
+  display:         none;
+  align-items:     center;
+  justify-content: center;
+  width:           36px;
+  height:          32px;
+  padding:         0;
+  background:      transparent;
+  border:          1px solid transparent;
+  border-radius:   3px;
+  color:           var(--color-text-muted);
+  cursor:          pointer;
+  transition:      color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+
+.hamburger:hover {
+  color:        var(--color-accent-gold);
+  border-color: color-mix(in srgb, var(--color-accent-gold) 35%, transparent);
+  background:   color-mix(in srgb, var(--color-accent-gold) 6%, transparent);
+}
+
+@container (max-width: 1200px) {
+  .hamburger { display: inline-flex; }
+}
+
+/* ── Brand mark ──────────────────────────────────────────────── */
+
+.brand {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             3px;
+  padding:         0 var(--space-sm) 0 var(--space-xs);
+  background:      none;
+  border:          none;
+  cursor:          pointer;
+  flex-shrink:     0;
+}
+
+.brandMark {
+  font-family:    var(--font-serif);
+  font-size:      1.15rem;
+  font-weight:    900;
+  letter-spacing: 0.12em;
+  line-height:    1;
+  color:          var(--color-accent-gold);
+}
+
+.brandDot {
+  width:         3px;
+  height:        3px;
+  border-radius: 50%;
+  background:    var(--color-accent-gold);
+  opacity:       0.7;
+}
+
+/* ── Inline nav — wide widths only ───────────────────────────── */
+
+.inlineNav {
+  display:     flex;
+  align-items: center;
+  flex:        1;
+  min-width:   0;
+  gap:         2px;
+  overflow:    hidden;
+}
+
+@container (max-width: 1200px) {
+  .inlineNav { display: none; }
+}
+
+.navLink {
+  display:        inline-flex;
+  align-items:    center;
+  height:         28px;
+  padding:        0 var(--space-sm);
+  background:     none;
+  border:         none;
+  border-bottom:  2px solid transparent;
+  margin-bottom:  -2px;
+  color:          color-mix(in srgb, var(--color-text-primary) 78%, transparent);
+  font-family:    var(--font-sans);
+  font-size:      0.8125rem;
+  font-weight:    500;
+  letter-spacing: 0.02em;
+  white-space:    nowrap;
+  cursor:         pointer;
+  transition:     color 160ms ease-out, border-color 160ms ease-out;
+}
+
+.navLink:hover {
+  color: var(--color-accent-gold);
+}
+
+.navLink[data-active='true'] {
+  color:         var(--color-accent-gold);
+  border-bottom: 2px solid var(--color-accent-gold);
+}
+
+.navLink:focus-visible {
+  outline:        2px solid var(--color-accent-gold);
+  outline-offset: 2px;
+}
+
+/* ── Right-side actions ──────────────────────────────────────── */
+
+.actions {
+  display:     flex;
+  align-items: center;
+  gap:         var(--space-md);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.quickBtn {
+  display:        inline-flex;
+  align-items:    center;
+  gap:            6px;
+  padding:        5px 10px;
+  background:     transparent;
+  border:         1px solid color-mix(in srgb, var(--color-accent-gold) 22%, transparent);
+  border-radius:  3px;
+  color:          color-mix(in srgb, var(--color-text-primary) 80%, transparent);
+  font-family:    var(--font-sans);
+  font-size:      0.6875rem;
+  font-weight:    600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  cursor:         pointer;
+  white-space:    nowrap;
+  transition:     color 160ms ease-out, border-color 160ms ease-out, background 160ms ease-out;
+}
+
+.quickBtn:hover {
+  color:        var(--color-accent-gold);
+  border-color: color-mix(in srgb, var(--color-accent-gold) 50%, transparent);
+  background:   color-mix(in srgb, var(--color-accent-gold) 6%, transparent);
+}
+
+.quickBtn[data-active='true'] {
+  color:        var(--color-accent-gold);
+  border-color: color-mix(in srgb, var(--color-accent-gold) 60%, transparent);
+  background:   color-mix(in srgb, var(--color-accent-gold) 12%, transparent);
+}
+
+.quickBtnLabel {
+  display: inline;
+}
+
+@container (max-width: 880px) {
+  .quickBtnLabel { display: none; }
+  .quickBtn      { padding: 5px 8px; }
+}
+
+/* Search input + Settings icon removed from header chrome.
+   Search now lives per-page where it's actually meaningful (codex
+   landing has its own). Settings is reachable via the nav. */

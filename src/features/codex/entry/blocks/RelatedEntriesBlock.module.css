@@ -1,0 +1,119 @@
+/* ================================================================
+   RelatedEntriesBlock — "More from this set / category" strip.
+   Sits just before WikiFooterBlock so the entry page peaks on
+   discovery, not on a CC BY-SA disclaimer.
+
+   Same panel chrome as the rest of the entry blocks so it nests
+   cleanly into the existing rhythm. Items render as compact rows
+   with a leading icon + name + meta (update / category).
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+  padding:        var(--space-md);
+  background:     var(--color-bg-secondary);
+  border:         1px solid var(--color-border-default);
+  border-radius:  8px;
+}
+
+.list {
+  display:               grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap:                   var(--space-sm);
+  list-style:            none;
+  padding:               0;
+  margin:                0;
+}
+
+.row {
+  min-width: 0;
+}
+
+.card {
+  display:        flex;
+  align-items:    center;
+  gap:            var(--space-sm);
+  width:          100%;
+  padding:        8px 10px 8px 8px;
+  background:     color-mix(in srgb, var(--color-bg-primary) 55%, transparent);
+  border:         1px solid color-mix(in srgb, var(--color-border-default) 75%, transparent);
+  border-radius:  6px;
+  font:           inherit;
+  color:          inherit;
+  text-align:     left;
+  cursor:         pointer;
+  transition:     transform 0.18s ease-out, border-color 0.18s ease-out, background 0.18s ease-out;
+}
+
+.card:hover:not(:disabled) {
+  transform:    translateY(-1px);
+  border-color: color-mix(in srgb, var(--color-accent-jade) 45%, transparent);
+  background:   color-mix(in srgb, var(--color-bg-primary) 35%, var(--color-accent-jade) 5%);
+}
+
+.card:focus-visible {
+  outline:        2px solid var(--color-accent-jade);
+  outline-offset: 2px;
+}
+
+.card:disabled {
+  cursor:    default;
+  opacity:   0.72;
+}
+
+.cardIcon,
+.cardIconFallback {
+  width:        38px;
+  height:       38px;
+  flex-shrink:  0;
+}
+
+.cardIcon {
+  object-fit: contain;
+  filter:     drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+.cardIconFallback {
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  border-radius:   50%;
+  background:      rgba(255, 255, 255, 0.04);
+  color:           var(--color-text-muted);
+  font-family:     var(--font-serif);
+  font-size:       1rem;
+}
+
+.cardCopy {
+  display:        flex;
+  flex-direction: column;
+  gap:            2px;
+  min-width:      0;
+  flex:           1;
+}
+
+.cardName {
+  font-family:    var(--font-serif);
+  font-size:      0.85rem;
+  font-weight:    700;
+  letter-spacing: 0.01em;
+  color:          var(--color-text-primary);
+  line-height:    1.2;
+  white-space:    nowrap;
+  overflow:       hidden;
+  text-overflow:  ellipsis;
+}
+
+.cardMeta {
+  font-family:    var(--font-sans);
+  font-size:      0.6rem;
+  font-weight:    700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color:          var(--color-text-muted);
+  white-space:    nowrap;
+  overflow:       hidden;
+  text-overflow:  ellipsis;
+}

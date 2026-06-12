@@ -1,242 +1,353 @@
 /* ================================================================
-   FeaturedSpotlight — the museum centerpiece.
-   Three-column layout on wide canvases (art / meta / recently),
-   collapsing gracefully via container queries.
+   FeaturedSpotlight — anchored composition (.impeccable.md §3a).
+
+   No box-next-to-box. The artwork bleeds from the bottom-left edge
+   into a shared radial gradient; meta radiates from the right with
+   Editorial Rail typography (small caps labels, generous letter-
+   spacing, values in serif/mono). Nothing has a card around it.
+
+   The composition lives on a single, gradient-painted background.
+   Borders between "image" and "data" dissolve — that's the whole
+   point of §3.
    ================================================================ */
 
 .root {
-  display:        flex;
-  flex-direction: column;
-  gap:            var(--space-md);
+  position:        relative;
+  /* The whole composition shares one painted background. The radial
+     gradient is anchored to where the artwork sits, so its lit areas
+     bleed into the surrounding space and the artwork doesn't feel
+     "placed on top of a card" — it feels CONTAINED IN the light. */
+  background:
+    radial-gradient(
+      circle at 22% 68%,
+      color-mix(in srgb, var(--color-accent-jade) 12%, transparent) 0%,
+      color-mix(in srgb, var(--color-accent-jade) 5%, transparent) 28%,
+      transparent 62%
+    ),
+    radial-gradient(
+      circle at 22% 68%,
+      color-mix(in srgb, var(--color-accent-gold) 8%, transparent) 0%,
+      transparent 45%
+    ),
+    var(--color-bg-primary);
+  border-top:      1px solid var(--color-border-default);
+  border-bottom:   1px solid var(--color-border-default);
+  padding:         var(--space-xl) var(--space-lg) var(--space-2xl);
+  overflow:        hidden;
+  display:         flex;
+  flex-direction:  column;
+  gap:             var(--space-md);
+  min-height:      420px;
 }
 
-.header {
+/* ── Top rail ─────────────────────────────────────────────────── */
+
+.topRail {
   display:        flex;
   align-items:    baseline;
   justify-content: space-between;
-  gap:            var(--space-sm);
+  gap:            var(--space-md);
+  position:       relative;
+  z-index:        2;
 }
 
+/* Chrome + color override on top of .typo-section-label (per CLAUDE.md). */
 .label {
-  display:        inline-flex;
-  align-items:    center;
-  gap:            10px;
-  font-family:    var(--font-sans);
-  font-size:      0.7rem;
+  display:     inline-flex;
+  align-items: baseline;
+  gap:         var(--space-sm);
+  color:       var(--color-text-primary);
+}
+
+.labelGlyph {
+  font-family: var(--font-pixel-square);
+  font-size:   var(--density-pixel);
+  color:       var(--color-accent-gold);
+  line-height: 1;
+}
+
+.updateTag {
+  font-family:    var(--font-mono);
+  font-size:      var(--density-caption);
+  font-weight:    500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color:          var(--color-accent-gold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Composition body ─────────────────────────────────────────── */
+
+.composition {
+  position: relative;
+  flex:     1;
+  display:  grid;
+  /* Two columns — anchor (artwork) on the left, meta on the right.
+     The grid is structural ONLY; visually there's no boundary because
+     no cell has a background or border. */
+  grid-template-columns: minmax(280px, 1fr) minmax(360px, 1.4fr);
+  gap:                   var(--space-2xl);
+  align-items:           stretch;
+}
+
+/* ── Anchor (artwork) ─────────────────────────────────────────── */
+
+.anchor {
+  position:        relative;
+  display:         flex;
+  align-items:     flex-end;
+  justify-content: center;
+  padding:         0;
+  margin:          0;
+  background:      none;
+  border:          none;
+  cursor:          pointer;
+  min-height:      400px;
+  /* Bleed: let the artwork extend past the left padding so it feels
+     grown-from-the-edge rather than placed on a canvas. */
+  margin-left:     calc(-1 * var(--space-2xl));
+}
+
+.anchorImage {
+  width:      auto;
+  height:     auto;
+  max-width:  100%;
+  /* Bumped from 360 → 440px so the artwork fills its anchor zone
+     instead of floating in dead green space. */
+  max-height: 440px;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 14px 32px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 44px color-mix(in srgb, var(--color-accent-jade) 18%, transparent));
+  transition: filter 220ms ease-out, transform 220ms ease-out;
+}
+
+.anchor:hover .anchorImage {
+  filter:
+    drop-shadow(0 14px 32px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 0 44px color-mix(in srgb, var(--color-accent-jade) 22%, transparent))
+    brightness(1.05);
+  transform: translateY(-2px);
+}
+
+.anchor:focus-visible {
+  outline:        2px solid var(--color-accent-gold);
+  outline-offset: 4px;
+}
+
+.anchorFallback {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  width:           220px;
+  height:          220px;
+  border-radius:   50%;
+  background:      rgba(255, 255, 255, 0.03);
+  font-family:     var(--font-serif);
+  font-size:       4rem;
+  color:           var(--color-text-muted);
+}
+
+/* ── Meta column ──────────────────────────────────────────────── */
+
+.meta {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-md);
+  justify-content: center;
+  max-width:      65ch;
+  position:       relative;
+  z-index:        2;
+}
+
+.name {
+  font-family:    var(--font-serif);
   font-weight:    700;
+  font-size:      clamp(2.2rem, 4vw, 3.2rem);
+  letter-spacing: 0.01em;
+  color:          var(--color-accent-gold);
+  line-height:    0.98;
+  margin:         0;
+  /* Faint gold glow to anchor it as a display element, not a heading
+     in a card. Sits on the painted background, not over neutral grey. */
+  text-shadow:    0 0 28px color-mix(in srgb, var(--color-accent-gold) 28%, transparent);
+}
+
+.kind {
+  display:        flex;
+  align-items:    center;
+  gap:            var(--space-sm);
+  font-family:    var(--font-sans);
+  font-size:      var(--density-caption);
+  font-weight:    600;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color:          var(--color-text-muted);
   margin:         0;
 }
 
-.labelDot {
-  width:         7px;
-  height:        7px;
-  border-radius: 50%;
-  background:    var(--color-accent-gold);
-  box-shadow:    0 0 8px rgba(219, 176, 88, 0.5);
+/* ── Editorial Rail (§3b) ─────────────────────────────────────── */
+
+.rail {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-xs);
+  margin:         var(--space-sm) 0 0;
+  padding:        0;
 }
 
-.weekTag {
+.railRow {
+  display:               grid;
+  grid-template-columns: auto auto 1fr;
+  align-items:           baseline;
+  gap:                   var(--space-sm);
+}
+
+.railBullet {
+  font-family: var(--font-pixel-square);
+  font-size:   var(--density-pixel);
+  color:       color-mix(in srgb, var(--color-accent-gold) 60%, transparent);
+  line-height: 1;
+}
+
+.railLabel {
   font-family:    var(--font-sans);
-  font-size:      0.66rem;
-  letter-spacing: 0.14em;
+  /* Bumped from caption (11px) to label (12px) so the rail reads
+     as structural meta of the centerpiece composition, not micro-print. */
+  font-size:      var(--density-label);
+  font-weight:    600;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color:          var(--color-text-muted);
+  margin:         0;
+  min-width:      120px;
 }
 
-/* ── Layout grid ───────────────────────────────────────────────── */
-
-.grid {
-  display:               grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 0.85fr);
-  gap:                   1px;
-  background:            var(--color-border-default);
-  border:                1px solid var(--color-border-default);
-  border-radius:         10px;
-  overflow:              hidden;
-  min-height:            340px;
-}
-
-.panel {
-  background: var(--color-bg-secondary);
-  padding:    var(--space-md);
-  display:    flex;
-  flex-direction: column;
-}
-
-/* ── Art panel ─────────────────────────────────────────────────── */
-
-.art {
-  position:        relative;
-  align-items:     center;
-  justify-content: center;
-  padding:         var(--space-lg);
-  background:
-    radial-gradient(ellipse at center, rgba(88, 232, 138,0.05) 0%, rgba(10, 17, 23, 0) 70%),
-    var(--color-bg-secondary);
-}
-
-.artImage {
-  max-width:      88%;
-  max-height:     100%;
-  object-fit:     contain;
-  filter:         drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
-  transition:     filter 0.25s ease-out, transform 0.25s ease-out;
-}
-
-.art:hover .artImage {
-  filter:    drop-shadow(0 12px 24px rgba(88, 232, 138,0.18)) brightness(1.05);
-  transform: translateY(-2px);
-}
-
-.artFallback {
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  width:           160px;
-  height:          160px;
-  border-radius:   50%;
-  background:      rgba(255, 255, 255, 0.03);
-  font-family:     var(--font-serif);
-  font-size:       3.5rem;
-  color:           var(--color-text-muted);
-}
-
-/* ── Meta panel ────────────────────────────────────────────────── */
-
-.name {
-  font-family:    var(--font-serif);
-  font-weight:    700;
-  font-size:      clamp(1.7rem, 2.6vw, 2.1rem);
-  letter-spacing: 0.01em;
-  color:          var(--color-accent-gold);
-  line-height:    1.1;
+.railValue {
+  font-family:    var(--font-mono);
+  /* h3 (16px) — values pop above the labels. */
+  font-size:      var(--density-h3);
+  font-weight:    500;
+  font-variant-numeric: tabular-nums;
+  color:          var(--color-text-primary);
   margin:         0;
 }
 
-.subtitle {
-  display:        flex;
-  align-items:    center;
-  gap:            8px;
-  flex-wrap:      wrap;
-  margin-top:     8px;
-  font-family:    var(--font-sans);
-  font-size:      0.72rem;
-  font-weight:    600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color:          var(--color-text-muted);
-}
-
-.subtitleDot { opacity: 0.4; }
-
-.vaultedBadge {
+.railValue[data-accent="vaulted"] {
   color: #b89060;
 }
 
-.rule {
-  width:      48px;
-  height:     2px;
-  background: var(--color-accent-gold);
-  border:     none;
-  margin:     var(--space-md) 0;
-  opacity:    0.7;
+.railValue[data-accent="available"] {
+  color: var(--color-accent-jade);
 }
+
+/* ── Description ──────────────────────────────────────────────── */
 
 .description {
   font-family: var(--font-sans);
-  font-size:   0.92rem;
+  font-size:   var(--density-body);
+  font-weight: 300;
   color:       var(--color-text-primary);
   line-height: 1.55;
-  margin:      0;
-  /* Clamp to keep the panel uniform regardless of item description length */
+  margin:      var(--space-sm) 0 0;
+  max-width:   60ch;
+  /* Three lines max so the composition stays predictable across
+     short and long descriptions. */
   display:           -webkit-box;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow:          hidden;
 }
 
-.action {
-  align-self:     flex-start;
-  margin-top:     auto;
-  padding-top:    var(--space-md);
-}
+/* ── CTA ──────────────────────────────────────────────────────── */
 
-.actionBtn {
+.cta {
+  align-self:     flex-start;
   display:        inline-flex;
   align-items:    center;
-  gap:            8px;
+  gap:            var(--space-sm);
   padding:        10px 18px;
-  background:     var(--color-accent-gold);
-  color:          var(--color-bg-primary);
-  border:         none;
-  border-radius:  4px;
+  margin-top:     var(--space-sm);
+  background:     transparent;
+  color:          var(--color-accent-gold);
+  border:         1px solid var(--color-accent-gold);
+  border-radius:  3px;
   font-family:    var(--font-sans);
-  font-size:      0.7rem;
+  font-size:      var(--density-label);
   font-weight:    700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   cursor:         pointer;
-  transition:     transform 0.18s ease-out, box-shadow 0.18s ease-out, background 0.18s ease-out;
+  transition:     background 180ms ease-out, color 180ms ease-out, transform 180ms ease-out;
 }
 
-.actionBtn:hover {
+.cta:hover {
+  background: var(--color-accent-gold);
+  color:      var(--color-bg-primary);
   transform:  translateY(-1px);
-  box-shadow: 0 6px 14px rgba(219, 176, 88, 0.25);
-  background: color-mix(in srgb, var(--color-accent-gold) 88%, white 12%);
 }
 
-.actionBtn:focus-visible {
-  outline:        2px solid var(--color-accent-teal);
-  outline-offset: 2px;
+.cta:focus-visible {
+  outline:        2px solid var(--color-accent-jade);
+  outline-offset: 3px;
 }
 
-/* ── Recently-added panel (third column) ───────────────────────── */
-
-.recent {
-  /* RecentlyAdded uses its own module — this just hosts it. */
-  padding: var(--space-md);
+.ctaGlyph {
+  font-family: var(--font-pixel-square);
+  font-size:   var(--density-pixel);
+  line-height: 1;
 }
 
-/* ── Loading + empty states ────────────────────────────────────── */
+/* ── Loading + unavailable states ─────────────────────────────── */
 
 .loading,
 .unavailable {
-  grid-column: 1 / -1;
   display:     flex;
   align-items: center;
   justify-content: center;
-  padding:     var(--space-2xl);
+  min-height:  240px;
   color:       var(--color-text-muted);
   font-family: var(--font-sans);
-  font-size:   0.9rem;
+  font-size:   var(--density-body);
   font-style:  italic;
+  margin:      0;
 }
 
-/* ── Container-query responsive collapse ───────────────────────── */
+/* ── Container-query responsive collapse ──────────────────────── */
 
-/* Medium canvas: art + meta side-by-side, recently-added drops below */
-@container codex-landing (max-width: 1100px) {
-  .grid {
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  }
-  .recent {
-    grid-column: 1 / -1;
-    border-top:  1px solid var(--color-border-default);
-  }
-}
-
-/* Narrow canvas: everything stacks */
-@container codex-landing (max-width: 720px) {
-  .grid {
+/* Narrower canvas — stack the anchor above the meta, gradient
+   re-anchored to top so the artwork still feels "lit." */
+@container codex-landing (max-width: 880px) {
+  .composition {
     grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-lg);
   }
-  .art {
-    min-height: 260px;
+
+  .anchor {
+    margin-left: 0;
+    align-items: center;
+    justify-content: center;
+    min-height:   240px;
   }
-  .recent {
-    grid-column: 1 / -1;
+
+  .anchorImage {
+    max-height: 240px;
+  }
+
+  .root {
+    background:
+      radial-gradient(
+        circle at 50% 30%,
+        color-mix(in srgb, var(--color-accent-jade) 10%, transparent) 0%,
+        color-mix(in srgb, var(--color-accent-jade) 4%, transparent) 28%,
+        transparent 62%
+      ),
+      var(--color-bg-primary);
+    padding: var(--space-lg);
+  }
+
+  .name {
+    font-size: clamp(1.8rem, 6vw, 2.4rem);
+    text-align: left;
   }
 }

@@ -25,7 +25,10 @@ import { fileURLToPath } from 'node:url';
 import { fetchAllCodexSources } from '../src/codex/fetcher';
 import { parseCodex }           from '../src/codex/parser';
 import { buildCodex }           from '../src/codex/builder';
+import { syntheticBuiltItems }  from '../src/codex/syntheticItems';
 import { enrichCodex }          from '../src/codex/enricher';
+import { loadPePlus }           from './lib/peplus';
+import { applyPePlusAuthority } from './lib/peplusOverlay';
 import { normalizeCodex }       from '../src/codex/normalizer';
 import { validateCodex }        from '../src/codex/validator';
 import { scanCodexTokens, formatUnknownTokens } from '../src/codex/tokenScanner';
@@ -57,11 +60,31 @@ async function main(): Promise<void> {
   // ── 3. BUILD ──
   const built = buildCodex(parsed);
 
+  // Inject synthetic codex entries for currencies WFCD doesn't model as items
+  // (Endo, Credits, Kuva …) so live surfaces can deep-link to them. They flow
+  // through enrich/normalize/validate as ordinary `component`-source rows.
+  built.items.push(...syntheticBuiltItems());
+
   // ── 4. ENRICH ──
   const enriched = enrichCodex(built, parsed);
 
+  // ── 4b. PUBLIC EXPORT PLUS AUTHORITY (Codex v2 phase A) ──
+  // DE's own export overrides community-transcribed numbers on matched items
+  // and synthesizes minimal entries for patch-day items WFCD hasn't shipped
+  // yet. Layer-optional: package absent → identical WFCD-only build.
+  // CI installs `warframe-public-export-plus@latest` right before this runs.
+  const peplus = loadPePlus();
+  if (peplus) {
+    const overlay = applyPePlusAuthority(enriched.items, peplus);
+    console.error(`[build-codex] PE+ v${overlay.peVersion}: matched ${JSON.stringify(overlay.matched)}, ` +
+      `divergence ${JSON.stringify(overlay.statDivergence)}, synthesized ${overlay.synthesized} ` +
+      `(gap ${JSON.stringify(overlay.peOnly)}), wfcd-only ${JSON.stringify(overlay.wfcdOnly)}`);
+  } else {
+    console.error('[build-codex] PE+ layer absent — WFCD-only build');
+  }
+
   // ── 5. NORMALIZE ──
-  const source: DataSource = 'wfcd';
+  const source: DataSource = peplus ? 'enriched' : 'wfcd';
   const version            = makeVersion(source);
   const generatedAt        = Date.now();
   const normalized         = normalizeCodex(enriched, { version, generatedAt, source });

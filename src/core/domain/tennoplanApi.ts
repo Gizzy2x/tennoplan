@@ -45,6 +45,56 @@ export interface SyncMetadata {
   lastError?:  string;
   /** Codex only — number of items in the current blob. */
   itemCount?:  number;
+
+  // ── Pulse two-stage poll (worldstate only) ──
+  /** Semantic etag of the pulse head this snapshot was fetched under.
+   *  When the polled head still carries this etag, nothing meaningful
+   *  changed and the full-body fetch is skipped. */
+  pulseEtag?:        string;
+  /** Worker's last successful UPSTREAM sync (head.lastSync) — true data
+   *  freshness, independent of how recently this client polled. */
+  upstreamLastSync?: number;
+}
+
+// ─── Pulse head (GET /v1/pulse) ───────────────────────────────────────────────
+// Sub-KB worldstate head. Mirrors cloudflare-worker/src/types.ts — keep in sync.
+
+export type PulseEventKind =
+  | 'fissure-spawned'
+  | 'alert-spawned'
+  | 'invasion-spawned'
+  | 'bounty-rotated'
+  | 'sortie-changed'
+  | 'archon-changed'
+  | 'baro-arrived'
+  | 'baro-departed'
+  | 'nightwave-changed'
+  | 'cycle-anchor-changed';
+
+export interface PulseEvent {
+  kind:   PulseEventKind;
+  id:     string;
+  /** Unix ms when the worker's diff engine detected this event. */
+  at:     number;
+  label?: string;
+}
+
+export interface PulseHead {
+  /** Moves only when something a client can't compute locally changed. */
+  semanticEtag: string;
+  /** Unix ms when semanticEtag last changed. */
+  lastChange:   number;
+  /** Unix ms of the worker's last successful upstream sync. */
+  lastSync:     number;
+  /** Monotonic change counter. */
+  seq:          number;
+  counts: {
+    fissures:  number;
+    alerts:    number;
+    invasions: number;
+  };
+  /** Recent spawn-only events, newest first — future Solar Rail feed. */
+  events: PulseEvent[];
 }
 
 // ─── API envelope ─────────────────────────────────────────────────────────────
@@ -136,6 +186,15 @@ export interface CycleInfo {
 export interface DuviriCycleInfo extends CycleInfo {
   mood?:         'Joy' | 'Anger' | 'Fear' | 'Envy' | 'Sorrow';
   moodTimeLeft?: number;
+  /**
+   * Weekly Circuit rotation (mirrored from the Worker). `normal` = the three
+   * Warframes earnable in the normal Circuit; `hard` = the Steel Path Circuit's
+   * Incarnon weapon list. Upstream display strings (e.g. "Ivara", "AckAndBrunt").
+   */
+  circuit?: {
+    normal: string[];
+    hard:   string[];
+  };
 }
 
 export interface Fissure {
@@ -282,6 +341,24 @@ export interface SyndicateJob {
   enemyLevels:    [number, number];
   standingStages: number[];
   rewardPool?:    string[];
+  /** Mastery Rank required (0/absent = none). */
+  minMR?:         number;
+  /** Deimos Isolation Vault bounty. */
+  isVault?:       boolean;
+  /** Time-limited (e.g. Narmer). */
+  timeBound?:     boolean;
+  /** The CURRENT live reward rotation (the "Table" the board sits on now). */
+  rotation?:      'A' | 'B' | 'C';
+  /** Live drops for the current rotation (warframestat only — real chances). */
+  rewardPoolDrops?: BountyDrop[];
+}
+
+/** One live bounty drop (current rotation). `chance` is a percent (0–100). */
+export interface BountyDrop {
+  item:   string;
+  rarity: string;
+  chance: number;
+  count?: number;
 }
 
 export interface SimarisInfo {
@@ -434,6 +511,20 @@ export interface TennoplanItem {
    *  (otherwise the standard ×3 / ×1.5 multiplier applies in display code). */
   statsRank30?:         ItemStats;
 
+  // ── Weapon-specific (category === 'Weapon') ───────────────
+  /** Trigger type — "Auto" | "Semi-Auto" | "Burst" | "Held" | "Charge" | "Active". */
+  weaponTrigger?: string;
+  /** Audio profile — "Silent" | "Alarming". Drives un-suppressed enemy aggro. */
+  weaponNoise?:   string;
+  /**
+   * Per-damage-type breakdown for a single shot/hit. Keys: 'impact', 'slash',
+   * 'puncture', 'heat', 'cold', 'electricity', 'toxin' and combined elements
+   * ('blast', 'corrosive', 'gas', 'magnetic', 'radiation', 'viral'). Values
+   * are absolute damage; sum should approximate `stats.damage`. Zero/missing
+   * entries are omitted by the parser.
+   */
+  damageTypes?:   Record<string, number>;
+
   // ── Mod-specific (category === 'Mod') ──────────────────────
   /** Per-rank stat lines. levelStats[0] = R0, levelStats[N] = RN. */
   levelStats?:   string[][];
@@ -546,6 +637,19 @@ export interface ItemStats {
   armor?:          number;
   energy?:         number;
   sprintSpeed?:    number;
+  // ── Weapon-specific extensions ──────────────────────────────
+  /** Riven disposition multiplier (0.50–1.55) — drives the 1-5 dot
+   *  display on the in-game modding screen. Source: WFCD omegaAttenuation. */
+  rivenDisposition?:  number;
+  /** Higher = tighter spread (ranged). */
+  accuracy?:          number;
+  // Melee numerics.
+  range?:             number;
+  blockingAngle?:     number;
+  comboDuration?:     number;
+  followThrough?:     number;
+  slamAttack?:        number;
+  slamRadialDamage?:  number;
   [key: string]:   number | undefined;
 }
 

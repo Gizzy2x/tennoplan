@@ -35,7 +35,7 @@ export function PolaritiesBlock({ entry }: PolaritiesBlockProps) {
 
   return (
     <section className={styles.root} aria-labelledby="codex-polarities-label">
-      <h2 id="codex-polarities-label" className={styles.label}>Polarities</h2>
+      <h2 id="codex-polarities-label" className="typo-section-label">Polarities</h2>
       <div className={styles.row}>
         {aura && (
           <PolaritySlot key="aura" polarity={aura} isAura />

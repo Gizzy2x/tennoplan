@@ -26,18 +26,23 @@
 }
 
 .root:hover {
-  border-color: rgba(88, 232, 138,0.45);
+  border-color: color-mix(in srgb, var(--color-accent-gold) 38%, transparent);
   transform:    translateY(-2px);
-  background:   color-mix(in srgb, var(--color-bg-secondary) 80%, var(--color-accent-teal) 4%);
+  background:   color-mix(in srgb, var(--color-bg-secondary) 80%, var(--color-accent-gold) 3%);
 }
 
 .root:focus-visible {
-  outline:        2px solid var(--color-accent-teal);
+  outline:        2px solid var(--color-accent-gold);
   outline-offset: 2px;
 }
 
 /* ── Icon ──────────────────────────────────────────────────────── */
 
+/* The portrait is the card's anchor — drop the radial backdrop tint
+   so it reads as a portrait against the card surface, not a portrait
+   with a halo effect. The earlier jade glow leaned into the same
+   generic-AI dashboard tell the CollectionsGrid was just pulled out
+   of. Now the surface is calm; the portrait carries itself. */
 .iconWrap {
   position:        relative;
   width:           100%;
@@ -45,11 +50,7 @@
   display:         flex;
   align-items:     center;
   justify-content: center;
-  background:      radial-gradient(
-                     ellipse at center,
-                     rgba(88, 232, 138,0.06) 0%,
-                     rgba(10, 17, 23, 0)     70%
-                   );
+  background:      transparent;
   border-radius:   4px;
   overflow:        hidden;
 }
@@ -76,43 +77,37 @@
 
 /* ── Prime ribbon ──────────────────────────────────────────────── */
 
+/* Quieted from solid-gold-pill-with-shadow to an outlined chip —
+   the original was the loudest element on every Prime card and read
+   as a dashboard badge. Outlined gold still signals Prime without
+   shouting over the portrait or competing with the headline below. */
 .primeRibbon {
   position:       absolute;
   top:            6px;
   right:          6px;
   padding:        2px 7px;
-  background:     var(--color-accent-gold);
-  color:          var(--color-bg-primary);
+  background:     color-mix(in srgb, var(--color-bg-primary) 70%, var(--color-accent-gold) 14%);
+  color:          var(--color-accent-gold);
+  border:         1px solid color-mix(in srgb, var(--color-accent-gold) 55%, transparent);
   font-family:    var(--font-sans);
   font-size:      0.55rem;
   font-weight:    700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   border-radius:  10px;
-  box-shadow:     0 1px 3px rgba(0, 0, 0, 0.5);
-}
-
-.vaultedDot {
-  position:       absolute;
-  top:            6px;
-  left:           6px;
-  width:          8px;
-  height:         8px;
-  border-radius:  50%;
-  background:     #959e8a;
-  box-shadow:     0 0 0 2px var(--color-bg-secondary);
 }
 
 /* ── Name + meta row ──────────────────────────────────────────── */
 
 .name {
-  font-family:   var(--font-serif);
-  font-size:     0.95rem;
-  font-weight:   700;
-  color:         var(--color-text-primary);
-  line-height:   1.2;
-  text-align:    center;
-  margin:        0;
+  font-family:    var(--font-serif);
+  font-size:      1.05rem;
+  font-weight:    700;
+  letter-spacing: 0.01em;
+  color:          var(--color-text-primary);
+  line-height:    1.15;
+  text-align:     center;
+  margin:         0;
   /* Clamp to 2 lines so longer Prime names don't break grid alignment. */
   display:            -webkit-box;
   -webkit-line-clamp: 2;

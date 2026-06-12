@@ -1,0 +1,89 @@
+/* ============================================================================
+   ModDetailBlock — mod card + stats + meta, as a page section.
+   Tokens only. ModCardV3 is frozen; this only styles the surrounding layout.
+   ============================================================================ */
+
+.root {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-2xl);
+  margin-bottom: var(--space-xl);
+}
+
+.cardCol {
+  display: flex;
+  justify-content: center;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  min-width: 0;
+}
+
+/* ── Subtitle: type · rarity · compat ───────────────────────────────────── */
+
+.subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+.dot { color: var(--color-border-default); }
+
+.rarity {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.rarity--common    { color: var(--color-text-muted); }
+.rarity--uncommon  { color: var(--color-accent-jade); }
+.rarity--rare      { color: var(--color-accent-gold); }
+.rarity--legendary { color: var(--color-accent-gold); }
+
+/* ── Meta grid ──────────────────────────────────────────────────────────── */
+
+.meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-sm);
+  margin: 0;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border-default);
+}
+.metaRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.metaLabel {
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.metaValue {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+}
+
+/* ── Responsive: stack card above info on narrow containers ─────────────── */
+
+@container (max-width: 720px) {
+  .root { grid-template-columns: 1fr; gap: var(--space-lg); }
+  .cardCol { justify-content: flex-start; }
+}
+@media (max-width: 720px) {
+  .root { grid-template-columns: 1fr; gap: var(--space-lg); }
+  .cardCol { justify-content: flex-start; }
+}

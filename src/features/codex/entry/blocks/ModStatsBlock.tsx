@@ -19,15 +19,18 @@ import styles from './ModStatsBlock.module.css';
 interface ModStatsBlockProps {
   /** Per-rank stat lines. levelStats[0] = R0, levelStats[N] = RN. */
   levelStats:   string[][];
-  /** Mod's base energy drain at R0 (0 for stance/aura mods). */
+  /** Mod's base energy drain at R0 (0 for stance/aura mods AND arcanes). */
   baseDrain:    number;
   /** Currently displayed rank. */
   rank:         number;
   onRankChange: (rank: number) => void;
+  /** Accessible label for the rank slider. Defaults to "Mod rank"; arcane
+   *  consumers pass "Arcane rank" so screen readers say the right word. */
+  rankAriaLabel?: string;
 }
 
 export function ModStatsBlock({
-  levelStats, rank, onRankChange,
+  levelStats, rank, onRankChange, rankAriaLabel = 'Mod rank',
 }: ModStatsBlockProps) {
   const maxRank = Math.max(0, levelStats.length - 1);
   const stats = useMemo(() => levelStats[rank] ?? [], [levelStats, rank]);
@@ -46,7 +49,7 @@ export function ModStatsBlock({
           step={1}
           value={rank}
           onChange={(e) => onRankChange(Number(e.target.value))}
-          aria-label="Mod rank"
+          aria-label={rankAriaLabel}
         />
         {maxRank > 0 && maxRank <= 15 && (
           <div className={styles.ticks}>

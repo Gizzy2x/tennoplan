@@ -10,12 +10,18 @@
  * within each group sorted by chance descending. Showing > 12 rows
  * collapses behind an expander to keep the page calm; the user can
  * always opt into the firehose.
+ *
+ * Each row leads with a small circular planet thumb when the drop can
+ * be planet-anchored (mission / bounty / blueprint locations). Non-
+ * planet sources (sortie / arbitration / relic / mod-by-enemy) leave
+ * the slot empty so the grid stays aligned across rows.
  */
 
 import { useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { CodexEntry } from '../../types';
 import type { TpDropLocation } from '@/core/domain/tennoplanApi';
+import { getPlanetArt, getPlanetCrop, planetFromDropLocation } from '@/lib/planets/planetArt';
 import styles from './DropsBlock.module.css';
 
 const COLLAPSE_THRESHOLD = 12;
@@ -41,7 +47,7 @@ export function DropsBlock({ entry }: DropsBlockProps) {
 
   return (
     <section className={styles.root} aria-labelledby="codex-drops-label">
-      <h2 id="codex-drops-label" className={styles.label}>Drop Locations</h2>
+      <h2 id="codex-drops-label" className="typo-section-label">Drop Locations</h2>
 
       {visibleGroups.map((group) => (
         <div key={group.source} className={styles.group}>
@@ -78,8 +84,20 @@ export function DropsBlock({ entry }: DropsBlockProps) {
 
 function DropRow({ drop }: { drop: TpDropLocation }) {
   const chancePct = (drop.chance * 100).toFixed(2);
+  const planet = planetFromDropLocation(drop);
+  const planetArt = getPlanetArt(planet);
+
   return (
     <li className={styles.row}>
+      <span className={styles.planetSlot} aria-hidden="true">
+        {planetArt && (
+          <span
+            className={styles.planetThumb}
+            style={{ backgroundImage: `url(${planetArt})`, backgroundPosition: getPlanetCrop(planet).position }}
+            title={planet ?? undefined}
+          />
+        )}
+      </span>
       <span className={styles.location}>{drop.location}</span>
       <span className={styles.rotation}>
         {drop.rotation ? `Rot ${drop.rotation}` : ''}
