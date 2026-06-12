@@ -592,6 +592,18 @@ export function parseWfcdWarframes(raw: unknown): Map<string, WfcdWarframe> {
 
 // ─── WFCD Weapons ─────────────────────────────────────────────────────────────
 
+/**
+ * The categories the /weapons primary endpoint actually serves. The GitHub
+ * FALLBACK for weapons is All.json — WFCD's ENTIRE database (skins, sigils,
+ * resources, nodes, everything). Without this allowlist, a warframestat
+ * outage turned the build into 25,573 items with ~15,800 junk "weapons"
+ * (2026-06-12, caught by the size gate). Rows without a matching category
+ * are filtered, on both paths — the primary's rows all carry one of these.
+ */
+const WFCD_WEAPON_CATEGORIES = new Set([
+  'Primary', 'Secondary', 'Melee', 'Arch-Gun', 'Arch-Melee',
+]);
+
 export function parseWfcdWeapons(raw: unknown): Map<string, WfcdWeapon> {
   const out = new Map<string, WfcdWeapon>();
   if (!Array.isArray(raw)) {
@@ -599,7 +611,8 @@ export function parseWfcdWeapons(raw: unknown): Map<string, WfcdWeapon> {
     return out;
   }
 
-  let droppedRows = 0;
+  let droppedRows  = 0;
+  let filteredRows = 0;
 
   for (const r of raw) {
     if (!r || typeof r !== 'object') { droppedRows++; continue; }
@@ -607,6 +620,9 @@ export function parseWfcdWeapons(raw: unknown): Map<string, WfcdWeapon> {
     const uniqueName = typeof row['uniqueName'] === 'string' ? row['uniqueName'] : null;
     const name       = typeof row['name']       === 'string' ? row['name']       : null;
     if (!uniqueName || !name) { droppedRows++; continue; }
+
+    const rowCategory = typeof row['category'] === 'string' ? row['category'] : null;
+    if (!rowCategory || !WFCD_WEAPON_CATEGORIES.has(rowCategory)) { filteredRows++; continue; }
 
     const w: WfcdWeapon = { uniqueName, name };
 
@@ -657,7 +673,9 @@ export function parseWfcdWeapons(raw: unknown): Map<string, WfcdWeapon> {
     if (!out.has(uniqueName)) out.set(uniqueName, w);
   }
 
-  log('parsed wfcd weapons', { total: out.size, droppedRows });
+  log('parsed wfcd weapons', { total: out.size, droppedRows, filteredRows });
+  // filteredRows is huge (~16k) when the All.json fallback fed this parse —
+  // expected during outages. On the primary path it should be ~0.
   if (out.size === 0) warn('wfcd /weapons produced ZERO entries');
 
   return out;
