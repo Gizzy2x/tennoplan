@@ -41,6 +41,11 @@ on:
       - 'cloudflare-worker/src/logger.ts'
       - '.github/workflows/build-codex.yml'
 
+# GitHub forces JS actions onto Node 24 on 2026-06-16; opt in early so any
+# breakage surfaces while we're watching, not on the flag day.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     name: Build codex + upload to KV

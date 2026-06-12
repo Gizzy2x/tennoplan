@@ -96,6 +96,12 @@ export interface SyncMetadata {
   /** Pulse head (worldstate metadata only) — rides this key, no extra KV write. */
   pulse?:      PulseHead;
 
+  /** Codex only — hash of the item CONTENT with volatile fields (lastUpdated,
+   *  dataVersion) stripped. The blob etag moves every build because the
+   *  normalizer stamps timestamps; this hash moves only when data actually
+   *  changed. upload-codex compares it to skip no-op publishes. */
+  contentHash?: string;
+
   // Codex smart-sync state (absent on worldstate metadata)
   syncMode?:            CodexSyncMode;
   retryCount?:          number;   // retries in current streak (resets on success)
