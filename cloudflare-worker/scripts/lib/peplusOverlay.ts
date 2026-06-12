@@ -1,0 +1,340 @@
+// ---------------------------------------------------------------------------
+// Public Export Plus authority overlay — Codex v2 phase A.
+//
+// Runs AFTER enrichCodex, BEFORE normalizeCodex. Two jobs:
+//
+// 1. AUTHORITY OVERRIDE (matched uniqueNames). PE+ is DE's own export, so
+//    for fields both sources carry, PE+ wins — this is what makes the codex
+//    correct in the hours/days after a patch while WFCD lags. Rules:
+//      • NUMERIC stats are overridden (units verified identical: crit/status
+//        are fractions in both; WFCD copies the same Public Export numbers,
+//        so values only diverge when WFCD is stale — exactly when we want
+//        the override).
+//      • ENUM/string fields are FILL-ONLY (normalized to our conventions).
+//        WFCD's casing ("Auto", "vazarin") is what the frontend renders;
+//        we never fight it, only patch holes.
+//      • Mod per-rank levelStats / descriptions stay WFCD — PE+ ships mod
+//        STRUCTURE (polarity, drain, rarity, max rank), not display prose.
+//
+// 2. GAP REPORT + SYNTHESIS (unmatched uniqueNames). Items in PE+ but not in
+//    the build are the patch-day gap — brand-new items WFCD hasn't shipped
+//    yet. We synthesize minimal codex entries for them (name via dict.en,
+//    category via productCategory, stats where present) so new items exist
+//    in Tennoplan on day one; the next WFCD catch-up build enriches them
+//    with icons/drops/components automatically (same uniqueName = same row).
+//
+// The whole stage is a no-op when PE+ wasn't loaded (layer-optional).
+// ---------------------------------------------------------------------------
+
+import type { EnrichedItem } from '../../src/codex/enricher';
+import type { ItemStats, ItemRarity } from '../../src/types';
+import type { PePlusData, PePowersuit, PeWeapon, PeUpgrade } from './peplus';
+import { peName } from './peplus';
+import { logger } from '../../src/logger';
+
+const log = (msg: string, data?: unknown) => logger.info('codex-peplus-overlay', msg, data);
+
+// ─── Report shape ─────────────────────────────────────────────────────────────
+
+export interface OverlayReport {
+  /** PE+ package version the overlay ran against. */
+  peVersion:        string;
+  /** Items matched by uniqueName, per overlaid category. */
+  matched:          Record<string, number>;
+  /** Matched items where at least one numeric stat actually changed —
+   *  the "WFCD was stale here" signal. Expect ~0 normally, spikes post-patch. */
+  statDivergence:   Record<string, number>;
+  /** Enum/string holes filled from PE+. */
+  enumFills:        number;
+  /** PE+ records with no codex row (after junk filters) — the patch-day gap. */
+  peOnly:           Record<string, number>;
+  /** Of those, how many we synthesized into minimal entries. */
+  synthesized:      number;
+  /** Codex rows in overlaid categories with no PE+ record (WFCD-only;
+   *  usually modular/virtual items DE doesn't export individually). */
+  wfcdOnly:         Record<string, number>;
+}
+
+// ─── Entry point ──────────────────────────────────────────────────────────────
+
+export function applyPePlusAuthority(items: EnrichedItem[], pe: PePlusData): OverlayReport {
+  const t0 = Date.now();
+
+  const report: OverlayReport = {
+    peVersion:      pe.version,
+    matched:        {},
+    statDivergence: {},
+    enumFills:      0,
+    peOnly:         {},
+    synthesized:    0,
+    wfcdOnly:       {},
+  };
+
+  const byUniqueName = new Map(items.map((i) => [i.uniqueName, i]));
+
+  // ── 1. Authority override on matched rows ──
+  for (const item of items) {
+    switch (item.category) {
+      case 'Warframe': overlayWarframe(item, pe.warframes.get(item.uniqueName), report); break;
+      case 'Weapon':   overlayWeapon(item, pe.weapons.get(item.uniqueName), report);     break;
+      case 'Mod':      overlayMod(item, pe.mods.get(item.uniqueName), pe, report);       break;
+      default: break;
+    }
+  }
+
+  // ── 2. Gap report + synthesis ──
+  synthesizeMissing(items, byUniqueName, pe, report);
+
+  log('PE+ authority applied', { ms: Date.now() - t0, ...report });
+  return report;
+}
+
+// ─── Per-category overlays ────────────────────────────────────────────────────
+
+function overlayWarframe(item: EnrichedItem, peRec: PePowersuit | undefined, report: OverlayReport): void {
+  if (!peRec) { bump(report.wfcdOnly, 'Warframe'); return; }
+  bump(report.matched, 'Warframe');
+
+  const diverged = overrideStats(item, {
+    health:      peRec.health,
+    shield:      peRec.shield,
+    armor:       peRec.armor,
+    energy:      peRec.power,
+    sprintSpeed: peRec.sprintSpeed,
+  });
+  if (typeof peRec.masteryReq === 'number') item.masteryRank = peRec.masteryReq;
+  if (diverged) bump(report.statDivergence, 'Warframe');
+}
+
+function overlayWeapon(item: EnrichedItem, peRec: PeWeapon | undefined, report: OverlayReport): void {
+  if (!peRec) { bump(report.wfcdOnly, 'Weapon'); return; }
+  bump(report.matched, 'Weapon');
+
+  const diverged = overrideStats(item, {
+    damage:           peRec.totalDamage,
+    critChance:       peRec.criticalChance,
+    critMultiplier:   peRec.criticalMultiplier,
+    statusChance:     peRec.procChance,
+    fireRate:         peRec.fireRate,
+    magazine:         peRec.magazineSize,
+    reload:           peRec.reloadTime,
+    accuracy:         peRec.accuracy,
+    rivenDisposition: peRec.omegaAttenuation,
+  });
+  if (typeof peRec.masteryReq === 'number') item.masteryRank = peRec.masteryReq;
+
+  // Enum fills — WFCD casing is the display convention; only patch holes.
+  if (!item.weaponTrigger && peRec.trigger) { item.weaponTrigger = normalizeTrigger(peRec.trigger); report.enumFills++; }
+  if (!item.weaponNoise && peRec.noise)     { item.weaponNoise   = titleCase(peRec.noise);          report.enumFills++; }
+
+  if (diverged) bump(report.statDivergence, 'Weapon');
+}
+
+function overlayMod(item: EnrichedItem, peRec: PeUpgrade | undefined, pe: PePlusData, report: OverlayReport): void {
+  if (!peRec) { bump(report.wfcdOnly, 'Mod'); return; }
+  bump(report.matched, 'Mod');
+
+  if (typeof peRec.baseDrain === 'number') {
+    if (item.baseDrain !== undefined && item.baseDrain !== peRec.baseDrain) bump(report.statDivergence, 'Mod');
+    item.baseDrain = peRec.baseDrain;
+  }
+
+  // Fill-only: polarity school, rarity, compat label, tradability.
+  if (!item.polarity && peRec.polarity) {
+    const school = AP_TO_SCHOOL[peRec.polarity];
+    if (school) { item.polarity = school; report.enumFills++; }
+  }
+  if (!item.rarity && peRec.rarity) {
+    const rarity = asRarity(peRec.rarity);
+    if (rarity) { item.rarity = rarity; report.enumFills++; }
+  }
+  if (!item.compatName && peRec.compatName) {
+    const compat = peName(pe, peRec.compatName);
+    if (compat) { item.compatName = compat; report.enumFills++; }
+  }
+  if (item.tradeable === undefined && typeof peRec.tradable === 'boolean') {
+    item.tradeable = peRec.tradable;
+    report.enumFills++;
+  }
+}
+
+// ─── Synthesis of PE+-only items (the patch-day gap) ──────────────────────────
+
+/** productCategory → our ItemCategory, for records we synthesize confidently. */
+const WEAPON_CATEGORIES = new Set([
+  'LongGuns', 'Pistols', 'Melee', 'SpaceGuns', 'SpaceMelee',
+  'SentinelWeapons', 'SpecialItems', 'DrifterMelee', 'OperatorAmps',
+]);
+
+function synthesizeMissing(
+  items:        EnrichedItem[],
+  byUniqueName: Map<string, EnrichedItem>,
+  pe:           PePlusData,
+  report:       OverlayReport,
+): void {
+  const push = (item: EnrichedItem, gapKey: string) => {
+    bump(report.peOnly, gapKey);
+    items.push(item);
+    byUniqueName.set(item.uniqueName, item);
+    report.synthesized++;
+  };
+
+  for (const [uniqueName, rec] of pe.warframes) {
+    if (byUniqueName.has(uniqueName) || skipRecord(uniqueName, rec.codexSecret)) continue;
+    const name = peName(pe, rec.name);
+    if (!name) continue;
+    const item = baseSynthetic(uniqueName, name, 'Warframe', peName(pe, rec.description));
+    item.subtype = rec.productCategory;
+    const stats: ItemStats = {};
+    if (rec.health > 0) stats.health = rec.health;
+    if (rec.shield > 0) stats.shield = rec.shield;
+    if (rec.armor  > 0) stats.armor  = rec.armor;
+    if (rec.power  > 0) stats.energy = rec.power;
+    if (typeof rec.sprintSpeed === 'number' && rec.sprintSpeed > 0) stats.sprintSpeed = rec.sprintSpeed;
+    if (Object.keys(stats).length > 0) item.stats = stats;
+    if (typeof rec.masteryReq === 'number') item.masteryRank = rec.masteryReq;
+    push(item, 'Warframe');
+  }
+
+  for (const [uniqueName, rec] of pe.weapons) {
+    if (byUniqueName.has(uniqueName) || skipRecord(uniqueName, rec.codexSecret)) continue;
+    if (!WEAPON_CATEGORIES.has(rec.productCategory)) continue;
+    const name = peName(pe, rec.name);
+    if (!name) continue;
+    const item = baseSynthetic(uniqueName, name, 'Weapon', peName(pe, rec.description));
+    item.subtype = rec.productCategory;
+    const stats: ItemStats = {};
+    if (typeof rec.totalDamage        === 'number' && rec.totalDamage        > 0) stats.damage           = rec.totalDamage;
+    if (typeof rec.criticalChance     === 'number' && rec.criticalChance     > 0) stats.critChance       = rec.criticalChance;
+    if (typeof rec.criticalMultiplier === 'number' && rec.criticalMultiplier > 0) stats.critMultiplier   = rec.criticalMultiplier;
+    if (typeof rec.procChance         === 'number' && rec.procChance         > 0) stats.statusChance     = rec.procChance;
+    if (typeof rec.fireRate           === 'number' && rec.fireRate           > 0) stats.fireRate         = rec.fireRate;
+    if (typeof rec.magazineSize       === 'number' && rec.magazineSize       > 0) stats.magazine         = rec.magazineSize;
+    if (typeof rec.reloadTime         === 'number' && rec.reloadTime         > 0) stats.reload           = rec.reloadTime;
+    if (typeof rec.omegaAttenuation   === 'number' && rec.omegaAttenuation   > 0) stats.rivenDisposition = rec.omegaAttenuation;
+    if (Object.keys(stats).length > 0) item.stats = stats;
+    if (typeof rec.masteryReq === 'number') item.masteryRank   = rec.masteryReq;
+    if (rec.trigger)                        item.weaponTrigger = normalizeTrigger(rec.trigger);
+    if (rec.noise)                          item.weaponNoise   = titleCase(rec.noise);
+    if (typeof rec.tradable === 'boolean')  item.tradeable     = rec.tradable;
+    push(item, 'Weapon');
+  }
+
+  for (const [uniqueName, rec] of pe.mods) {
+    if (byUniqueName.has(uniqueName) || skipRecord(uniqueName, rec.codexSecret)) continue;
+    const name = peName(pe, rec.name);
+    if (!name) continue;
+    const item = baseSynthetic(uniqueName, name, 'Mod', peName(pe, rec.description));
+    if (typeof rec.baseDrain === 'number')  item.baseDrain = rec.baseDrain;
+    if (rec.polarity && AP_TO_SCHOOL[rec.polarity]) item.polarity = AP_TO_SCHOOL[rec.polarity];
+    const rarity = rec.rarity ? asRarity(rec.rarity) : undefined;
+    if (rarity) item.rarity = rarity;
+    const compat = peName(pe, rec.compatName);
+    if (compat) item.compatName = compat;
+    if (typeof rec.tradable === 'boolean') item.tradeable = rec.tradable;
+    push(item, 'Mod');
+  }
+
+  for (const [uniqueName, rec] of pe.arcanes) {
+    if (byUniqueName.has(uniqueName) || skipRecord(uniqueName, rec.codexSecret)) continue;
+    const name = peName(pe, rec.name);
+    if (!name) continue;
+    const item = baseSynthetic(uniqueName, name, 'Arcane', peName(pe, rec.description));
+    const rarity = rec.rarity ? asRarity(rec.rarity) : undefined;
+    if (rarity) item.rarity = rarity;
+    push(item, 'Arcane');
+  }
+}
+
+/** Riven templates and other internal/virtual rows that must never become
+ *  codex entries. codexSecret marks hidden/unreleased content. */
+function skipRecord(uniqueName: string, codexSecret: boolean | undefined): boolean {
+  if (codexSecret) return true;
+  if (uniqueName.includes('/Randomized/')) return true;   // riven mod templates
+  return false;
+}
+
+function baseSynthetic(
+  uniqueName:  string,
+  name:        string,
+  category:    EnrichedItem['category'],
+  description: string | undefined,
+): EnrichedItem {
+  const item: EnrichedItem = {
+    uniqueName,
+    name,
+    category,
+    iconUrl:       '',          // validator accepts; frontend renders placeholder
+    dropLocations: [],          // new items have no drop data yet by definition
+    _qualityHints: ['peplus-only'],
+  };
+  if (description) item.description = description;
+  return item;
+}
+
+// ─── Normalization helpers ────────────────────────────────────────────────────
+
+/**
+ * Override numeric stats in place; returns true when an existing value
+ * MEANINGFULLY changed. Tolerance is relative (0.1%) because WFCD serializes
+ * float32 round-trips (0.25999999) where PE+ writes clean decimals (0.26) —
+ * those are the same number, not a balance change, and counting them made
+ * the divergence signal useless (578/634 weapons "diverged" on noise).
+ */
+function overrideStats(item: EnrichedItem, updates: Partial<ItemStats>): boolean {
+  let diverged = false;
+  let stats = item.stats;
+  for (const [key, value] of Object.entries(updates)) {
+    if (typeof value !== 'number' || value <= 0) continue;   // never zero a stat
+    if (!stats) stats = item.stats = {};
+    const prev = stats[key];
+    if (prev !== undefined && Math.abs(prev - value) > Math.abs(value) * 1e-3) diverged = true;
+    stats[key] = value;
+  }
+  return diverged;
+}
+
+/** DE polarity tags → our lowercase school names (same map WFCD uses). */
+const AP_TO_SCHOOL: Record<string, string> = {
+  AP_ATTACK:    'madurai',
+  AP_DEFENSE:   'vazarin',
+  AP_TACTIC:    'naramon',
+  AP_POWER:     'zenurik',
+  AP_WARD:      'unairu',
+  AP_PRECEPT:   'penjaga',
+  AP_UMBRA:     'umbra',
+  AP_UNIVERSAL: 'universal',
+  AP_ANY:       'universal',
+};
+
+function normalizeTrigger(trigger: string): string {
+  const map: Record<string, string> = {
+    AUTO:        'Auto',
+    SEMI:        'Semi',
+    BURST:       'Burst',
+    HELD:        'Held',
+    CHARGE:      'Charge',
+    ACTIVE:      'Active',
+    DUPLEX:      'Duplex',
+    AUTOBURST:   'Auto Burst',
+  };
+  return map[trigger] ?? titleCase(trigger);
+}
+
+function titleCase(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+}
+
+function asRarity(raw: string): ItemRarity | undefined {
+  switch (raw.toUpperCase()) {
+    case 'COMMON':    return 'Common';
+    case 'UNCOMMON':  return 'Uncommon';
+    case 'RARE':      return 'Rare';
+    case 'LEGENDARY': return 'Legendary';
+    default:          return undefined;
+  }
+}
+
+function bump(record: Record<string, number>, key: string): void {
+  record[key] = (record[key] ?? 0) + 1;
+}

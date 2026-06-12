@@ -47,9 +47,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    # Hard ceiling — local runs complete in <10 seconds; if CI takes more than
-    # this the build is wedged on a fetch and should fail rather than hang.
-    timeout-minutes: 5
+    # Hard ceiling — if CI takes more than this the build is wedged on a
+    # fetch and should fail rather than hang. Headroom covers the ~100MB
+    # PE+ package download on top of the build itself.
+    timeout-minutes: 8
 
     steps:
       - name: Checkout
@@ -65,6 +66,16 @@ jobs:
       - name: Install worker dependencies
         working-directory: cloudflare-worker
         run: npm ci
+
+      # Public Export Plus = DE's own data, republished on npm and bumped on
+      # every game patch. Installed FRESH (@latest, --no-save) each build so
+      # the 6h cadence always picks up post-patch data — the package version
+      # IS the data version. Never vendored, never in the lockfile (~100MB,
+      # and pinning would freeze the data forever). If the registry hiccups,
+      # the build degrades gracefully to WFCD-only (layer-optional loader).
+      - name: Install Public Export Plus (fresh data, not pinned)
+        working-directory: cloudflare-worker
+        run: npm install --no-save warframe-public-export-plus@latest || echo "::warning::PE+ install failed — building WFCD-only"
 
       - name: Build codex blob (Node — no Workers CPU limit)
         working-directory: cloudflare-worker
