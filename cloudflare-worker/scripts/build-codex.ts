@@ -110,7 +110,35 @@ async function main(): Promise<void> {
 
   // ── 7. WRITE TO DISK ──
   const blob = JSON.stringify(validation.items);
+
+  // SIZE GATE — KV rejects values over 27MiB (we saw 413s live). A healthy
+  // filtered build is ~17MB; the blob only balloons when the warframestat
+  // items API is down and the fetcher falls back to UNFILTERED GitHub-raw
+  // payloads (2026-06-12: 31.8MB → 413 → failed publish). A fallback-bloated
+  // build is degraded data anyway — fail it cleanly and keep serving the
+  // last-good blob; the next post-recovery run publishes normally.
+  const MAX_BLOB_BYTES = 24 * 1024 * 1024;
+  if (blob.length > MAX_BLOB_BYTES) {
+    console.error(`[build-codex] FATAL: blob ${blob.length} bytes exceeds ${MAX_BLOB_BYTES} ` +
+      `(KV cap is 27MiB). This almost always means upstream primaries failed and the ` +
+      `unfiltered GitHub fallback bloated the build — check the codex-fetcher warnings above. ` +
+      `Refusing to publish degraded data.`);
+    process.exit(1);
+  }
+
   const etag = await makeEtag(blob);
+
+  // Semantic content hash — the codex twin of the worldstate semantic etag.
+  // The blob etag above moves EVERY build (normalizer stamps lastUpdated =
+  // generatedAt on all 9k items), so it can't tell "new data" from "same
+  // data, new build". Hashing with volatile fields zeroed and a stable sort
+  // gives upload-codex a real change signal: identical data → identical
+  // hash → skip the 17MB KV publish and clients keep 304ing.
+  const semanticItems = validation.items
+    .map((i) => ({ ...i, lastUpdated: 0, dataVersion: '' }))
+    .sort((a, b) => a.uniqueName.localeCompare(b.uniqueName));
+  const contentHash = await makeEtag(JSON.stringify(semanticItems));
+
   const metadata: SyncMetadata = {
     lastSync:   generatedAt,
     etag,
@@ -119,6 +147,7 @@ async function main(): Promise<void> {
     quality:    validation.report.quality,
     errorCount: 0,
     itemCount:  validation.items.length,
+    contentHash,
     syncMode:   'normal',
     retryCount: 0,
     aggressiveSyncsLeft: 0,

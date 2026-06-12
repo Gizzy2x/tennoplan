@@ -82,6 +82,19 @@ async function kvPut(key: string, value: string, ttlSeconds?: number): Promise<v
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
+interface RemoteMeta {
+  lastSync?:    number;
+  etag?:        string;
+  itemCount?:   number;
+  contentHash?: string;
+  [key: string]: unknown;
+}
+
+/** Refuse to publish when the item count collapses vs what's live — a broken
+ *  upstream (empty WFCD category, dead endpoint) must not evict good data.
+ *  Override with FORCE_PUBLISH=1 for intentional shrinks. */
+const COUNT_DROP_FLOOR = 0.95;
+
 async function main(): Promise<void> {
   const t0 = Date.now();
   console.error('[upload-codex] starting');
@@ -90,8 +103,40 @@ async function main(): Promise<void> {
     readFile(CURRENT_FILE,  'utf8'),
     readFile(METADATA_FILE, 'utf8'),
   ]);
+  const metadata = JSON.parse(metadataText) as RemoteMeta;
   console.error(`[upload-codex] read ${blob.length} bytes blob + ${metadataText.length} bytes metadata`);
 
+  // ── Compare against what's live before writing anything ──
+  let remote: RemoteMeta | null = null;
+  const remoteText = await kvGet('codex:metadata');
+  if (remoteText) {
+    try { remote = JSON.parse(remoteText) as RemoteMeta; } catch { remote = null; }
+  }
+
+  // GATE 1 — count-drop guard ("never overwrite good data with bad").
+  const newCount    = metadata.itemCount ?? 0;
+  const remoteCount = remote?.itemCount ?? 0;
+  if (remoteCount > 0 && newCount < remoteCount * COUNT_DROP_FLOOR && process.env.FORCE_PUBLISH !== '1') {
+    console.error(`[upload-codex] REFUSING to publish: item count dropped ${remoteCount} → ${newCount} ` +
+      `(> ${(1 - COUNT_DROP_FLOOR) * 100}% shrink). An upstream source likely broke. ` +
+      `Set FORCE_PUBLISH=1 to override if the shrink is intentional.`);
+    process.exit(1);
+  }
+
+  // GATE 2 — skip-unchanged. The blob etag moves every build (timestamps),
+  // but contentHash only moves when data actually changed. When unchanged we
+  // refresh ONLY metadata.lastSync (1 tiny KV write instead of 3, two of
+  // them 17MB) and keep the remote etag so it still matches the stored blob
+  // — clients keep getting 304s, freshness stays honest.
+  if (remote?.contentHash && remote.contentHash === metadata.contentHash) {
+    const refreshed = { ...remote, lastSync: metadata.lastSync ?? Date.now() };
+    await kvPut('codex:metadata', JSON.stringify(refreshed), undefined);
+    console.error(`[upload-codex] content unchanged (hash ${metadata.contentHash}) — ` +
+      `blob upload skipped, metadata freshness bumped. done in ${Date.now() - t0}ms`);
+    return;
+  }
+
+  // ── Full publish ──
   // 1. Roll the current blob into previous as rollback insurance.
   const existing = await kvGet('codex:current');
   if (existing) {
@@ -100,9 +145,13 @@ async function main(): Promise<void> {
     console.error('[upload-codex] no prior codex:current — skipping previous rotation');
   }
 
-  // 2. Write the new blob + metadata. Metadata has no TTL (sync state is
-  //    long-lived) to match the worker's writeCodex behaviour.
-  await kvPut('codex:current',  blob,         TTL_SECONDS);
+  // 2. Write the new blob + metadata. codex:current carries NO TTL: with
+  //    skip-unchanged publishes, a stable codex can legitimately go days
+  //    without a blob rewrite, and an upstream outage must never let the
+  //    last-good data evaporate ("never overwrite good data with bad" also
+  //    means "never let it expire"). codex:previous keeps a TTL — it's
+  //    rollback insurance, not a serving path. Metadata has no TTL either.
+  await kvPut('codex:current',  blob,         undefined);
   await kvPut('codex:metadata', metadataText, undefined);
 
   console.error(`[upload-codex] done in ${Date.now() - t0}ms`);
