@@ -45,6 +45,56 @@ export interface SyncMetadata {
   lastError?:  string;
   /** Codex only — number of items in the current blob. */
   itemCount?:  number;
+
+  // ── Pulse two-stage poll (worldstate only) ──
+  /** Semantic etag of the pulse head this snapshot was fetched under.
+   *  When the polled head still carries this etag, nothing meaningful
+   *  changed and the full-body fetch is skipped. */
+  pulseEtag?:        string;
+  /** Worker's last successful UPSTREAM sync (head.lastSync) — true data
+   *  freshness, independent of how recently this client polled. */
+  upstreamLastSync?: number;
+}
+
+// ─── Pulse head (GET /v1/pulse) ───────────────────────────────────────────────
+// Sub-KB worldstate head. Mirrors cloudflare-worker/src/types.ts — keep in sync.
+
+export type PulseEventKind =
+  | 'fissure-spawned'
+  | 'alert-spawned'
+  | 'invasion-spawned'
+  | 'bounty-rotated'
+  | 'sortie-changed'
+  | 'archon-changed'
+  | 'baro-arrived'
+  | 'baro-departed'
+  | 'nightwave-changed'
+  | 'cycle-anchor-changed';
+
+export interface PulseEvent {
+  kind:   PulseEventKind;
+  id:     string;
+  /** Unix ms when the worker's diff engine detected this event. */
+  at:     number;
+  label?: string;
+}
+
+export interface PulseHead {
+  /** Moves only when something a client can't compute locally changed. */
+  semanticEtag: string;
+  /** Unix ms when semanticEtag last changed. */
+  lastChange:   number;
+  /** Unix ms of the worker's last successful upstream sync. */
+  lastSync:     number;
+  /** Monotonic change counter. */
+  seq:          number;
+  counts: {
+    fissures:  number;
+    alerts:    number;
+    invasions: number;
+  };
+  /** Recent spawn-only events, newest first — future Solar Rail feed. */
+  events: PulseEvent[];
 }
 
 // ─── API envelope ─────────────────────────────────────────────────────────────

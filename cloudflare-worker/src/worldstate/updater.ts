@@ -14,9 +14,10 @@ import type { Env, ParsedWorldstate, SyncMetadata, DataSource } from '../types';
 import { config } from '../config';
 import { logger } from '../logger';
 import { fetchWithRetry } from '../utils/http';
-import { writeWorldstate, getWorldstateMeta, kvPutJson } from '../storage/kv';
+import { writeWorldstate, getWorldstateCurrent, getWorldstateMeta, kvPutJson } from '../storage/kv';
 import { makeEtag, makeVersion } from '../storage/metadata';
 import { parseFromOfficial, parseFromCommunity } from './parser';
+import { buildPulse } from './pulse';
 
 const log = (msg: string, data?: unknown) => logger.info('worldstate-updater', msg, data);
 const warn = (msg: string, data?: unknown) => logger.warn('worldstate-updater', msg, data);
@@ -99,19 +100,34 @@ async function tryCommunity(): Promise<ParsedWorldstate> {
 // ─── Commit to KV ─────────────────────────────────────────────────────────────
 
 async function commit(env: Env, ws: ParsedWorldstate, source: DataSource): Promise<void> {
+  const now  = Date.now();
   const blob = JSON.stringify(ws);
   const etag = await makeEtag(blob);
 
+  // Pulse diff: previous snapshot + previous head feed the diff engine. The
+  // pre-read prev blob is passed through to writeWorldstate so the
+  // current→previous rotation doesn't re-read KV.
+  const [prevBlob, prevMeta] = await Promise.all([
+    getWorldstateCurrent(env),
+    getWorldstateMeta(env),
+  ]);
+  let prevWs: ParsedWorldstate | null = null;
+  if (prevBlob) {
+    try { prevWs = JSON.parse(prevBlob) as ParsedWorldstate; } catch { prevWs = null; }
+  }
+  const pulse = await buildPulse(prevWs, ws, prevMeta?.pulse ?? null, now);
+
   const meta: SyncMetadata = {
-    lastSync:   Date.now(),
+    lastSync:   now,
     etag,
     version:    makeVersion(source),
     source,
     quality:    'high',
     errorCount: 0,
+    pulse,
   };
 
-  await writeWorldstate(env, blob, meta);
+  await writeWorldstate(env, blob, meta, prevBlob);
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

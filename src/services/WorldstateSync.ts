@@ -11,13 +11,16 @@
  * to avoid a half-broken intermediate state — D.4 retires the legacy
  * code path and flips this to be the default.
  *
- * Behaviour mirrors the legacy service so consumers can swap without
- * surprises:
- *   • 60-second poll, paused while the tab is hidden, immediate resync
- *     on visibility change
- *   • ETag-based conditional GET (sends If-None-Match, handles 304)
- *   • Rate-limited passive sync nudge (60-s cooldown)
- *   • HeartbeatStore status transitions: live | cached | stale | offline
+ * Behaviour:
+ *   • Two-stage poll (Pulse v1): a sub-KB /v1/pulse head every 5 min;
+ *     the full /v1/worldstate body is fetched ONLY when the head's
+ *     semanticEtag moves. Paused while the tab is hidden, immediate
+ *     resync on visibility change.
+ *   • ETag-based conditional GET on the body (If-None-Match / 304)
+ *   • Rate-limited passive sync nudge (60-s cooldown) — cheap now, it
+ *     usually resolves as a head check
+ *   • HeartbeatStore status transitions: live | cached | stale | offline,
+ *     with staleness derived from the WORKER's upstream sync age
  *
  * Storage:
  *   • ParsedWorldstate snapshot → db.worldstate (key='current'|'previous')
@@ -43,14 +46,16 @@ import type {
   SyncMetadata,
   DataSource,
   DataQuality,
+  PulseHead,
 } from '@/core/domain/tennoplanApi';
 
 const log = logger.scope('WorldstateSync');
 
 // ─── Endpoint config ──────────────────────────────────────────────────────────
 
-const WORKER_BASE = (import.meta.env.VITE_WORLDSTATE_WORKER_URL as string | undefined)?.replace(/\/$/, '');
-const ENDPOINT    = WORKER_BASE ? `${WORKER_BASE}/v1/worldstate` : null;
+const WORKER_BASE    = (import.meta.env.VITE_WORLDSTATE_WORKER_URL as string | undefined)?.replace(/\/$/, '');
+const ENDPOINT       = WORKER_BASE ? `${WORKER_BASE}/v1/worldstate` : null;
+const PULSE_ENDPOINT = WORKER_BASE ? `${WORKER_BASE}/v1/pulse` : null;
 
 // ─── Tunables ─────────────────────────────────────────────────────────────────
 
@@ -95,11 +100,30 @@ interface SyncOutcome {
 }
 
 /**
+ * Stage 1 of the two-stage poll: fetch the sub-KB pulse head. Returns null
+ * on ANY failure (endpoint missing, network error, old worker without
+ * /v1/pulse) — the caller then falls back to the full-body fetch, so a
+ * pulse outage can never make the client blind.
+ */
+async function fetchPulseHead(): Promise<PulseHead | null> {
+  if (!PULSE_ENDPOINT) return null;
+  try {
+    const res = await fetchWithTimeout(PULSE_ENDPOINT, null, REQUEST_TIMEOUT_MS);
+    if (!res.ok) return null;
+    const body = (await res.json()) as ApiResponse<PulseHead>;
+    if (!body.success || !body.data?.semanticEtag) return null;
+    return body.data;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Single network call. Returns the outcome without touching Dexie or
  * the heartbeat store — those side effects live in `sync()` so we can
  * keep this function pure and easy to reason about.
  */
-async function performNetworkSync(): Promise<SyncOutcome> {
+async function performNetworkSync(head?: PulseHead | null): Promise<SyncOutcome> {
   if (!ENDPOINT) {
     return { status: 'error', error: 'VITE_WORLDSTATE_WORKER_URL not configured' };
   }
@@ -156,6 +180,9 @@ async function performNetworkSync(): Promise<SyncOutcome> {
     source,
     quality,
     errorCount: 0,
+    // Remember which pulse head this snapshot was fetched under — the next
+    // poll skips the body when the head still carries this etag.
+    ...(head ? { pulseEtag: head.semanticEtag, upstreamLastSync: head.lastSync } : {}),
   };
 
   return { status: 'updated', data: body.data, metadata: meta };
@@ -165,13 +192,46 @@ async function performNetworkSync(): Promise<SyncOutcome> {
 
 export const WorldstateSync = {
   /**
-   * Run one sync cycle. Updates Dexie + the heartbeat store with the true
-   * outcome, returns the latest ParsedWorldstate (from this sync OR from
-   * cache when network fails / 304).
+   * Run one sync cycle — two-stage (Pulse v1).
+   *
+   * Stage 1: poll the sub-KB /v1/pulse head. If its semanticEtag matches
+   * the one our snapshot was fetched under, nothing meaningful changed —
+   * touch metadata, set the heartbeat from the head's upstream sync age,
+   * and return the cached snapshot without downloading the body.
+   *
+   * Stage 2: only when the head moved (or is unavailable, or force=true)
+   * fetch the full /v1/worldstate body.
+   *
+   * `force` bypasses the head gate — manual refresh buttons and the System
+   * Pulse always pull a fresh body.
    */
-  async sync(): Promise<ParsedWorldstate | null> {
+  async sync(opts: { force?: boolean } = {}): Promise<ParsedWorldstate | null> {
     const hb = useHeartbeatStore.getState();
-    const outcome = await performNetworkSync();
+
+    // ── Stage 1: head check ──
+    let head: PulseHead | null = null;
+    if (!opts.force) {
+      head = await fetchPulseHead();
+      if (head) {
+        const stored = await getWorldstateMetadata();
+        if (stored?.pulseEtag && stored.pulseEtag === head.semanticEtag) {
+          const cached = await getWorldstate('current');
+          if (cached) {
+            await touchWorldstateMetadata({ upstreamLastSync: head.lastSync });
+            // Staleness from the WORKER's upstream sync age — if warframestat
+            // dies, head.lastSync freezes and this correctly degrades to
+            // 'stale' even though the head itself keeps answering 200.
+            const status = ageMs(head.lastSync) > STALE_THRESHOLD_MS ? 'stale' : 'live';
+            hb.setSync(status, head.lastSync);
+            log.info(`Pulse head unchanged (seq ${head.seq}) — body fetch skipped.`);
+            return cached;
+          }
+        }
+      }
+    }
+
+    // ── Stage 2: full body ──
+    const outcome = await performNetworkSync(head);
 
     // ── Fresh data ──
     if (outcome.status === 'updated' && outcome.data && outcome.metadata) {

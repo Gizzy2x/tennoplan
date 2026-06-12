@@ -28,8 +28,14 @@ export const getWorldstateCurrent  = (env: Env) => kvGet(env, config.kv.worldsta
 export const getWorldstatePrevious = (env: Env) => kvGet(env, config.kv.worldstate.previous);
 export const getWorldstateMeta     = (env: Env) => kvGetJson<SyncMetadata>(env, config.kv.worldstate.metadata);
 
-export async function writeWorldstate(env: Env, blob: string, meta: SyncMetadata): Promise<void> {
-  const prev = await getWorldstateCurrent(env);
+export async function writeWorldstate(
+  env: Env,
+  blob: string,
+  meta: SyncMetadata,
+  /** Pre-read current blob (updater already fetched it for the pulse diff). */
+  prevBlob?: string | null,
+): Promise<void> {
+  const prev = prevBlob !== undefined ? prevBlob : await getWorldstateCurrent(env);
   await Promise.all([
     kvPut(env, config.kv.worldstate.current, blob, config.worldstate.kvTtlSeconds),
     kvPutJson(env, config.kv.worldstate.metadata, meta),

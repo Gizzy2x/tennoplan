@@ -68,14 +68,17 @@ export async function writeWorldstate(data: ParsedWorldstate, meta: SyncMetadata
 
 /**
  * Touch the worldstate metadata's lastSync without changing the snapshot.
- * Used after a 304 Not Modified response — the data is still authoritative,
- * we just confirmed it's current.
+ * Used after a 304 Not Modified response or a pulse-head match — the data
+ * is still authoritative, we just confirmed it's current. `patch` lets the
+ * pulse path record the worker's upstream sync time alongside the touch.
  */
-export async function touchWorldstateMetadata(): Promise<void> {
+export async function touchWorldstateMetadata(patch?: Partial<SyncMetadata>): Promise<void> {
   const existing = await db.syncMetadata.get('worldstate');
   if (!existing) return;
   await db.syncMetadata.put({
     ...existing,
+    ...patch,
+    id:         'worldstate',
     lastSync:   Date.now(),
     errorCount: 0,
   });

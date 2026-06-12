@@ -5,18 +5,27 @@ import type { WorldCycle, CycleStatus, CycleId, CycleState } from '../domain/cyc
 // ---------------------------------------------------------------------------
 
 /**
- * Approximate state durations in milliseconds.
- * These are used ONLY for offline extrapolation when the stored expiry has
- * already passed. The API expiry timestamp is always authoritative.
+ * Exact state durations in milliseconds — the anchor-math tables (Pulse v1).
+ *
+ * The worldstate anchor (activation/expiry) is authoritative; between syncs,
+ * extrapolateCycle() walks forward through these durations, so a transition
+ * flips locally at the exact millisecond with zero network. Fixed-period
+ * worlds (cetus/vallis/cambion/earth) are mathematically reliable; the
+ * worker's drift guard forces a re-anchor if DE ever shifts a schedule.
+ * Zariman/Duviri have shifted via hotfix before — their durations are
+ * best-effort extrapolation and their anchors stay in the pulse head's
+ * semantic etag so a fresh anchor is fetched whenever upstream moves it.
+ *
+ * Values mirror cloudflare-worker/src/worldstate/fallback.ts — keep in sync.
  */
 export const CYCLE_DURATIONS: Record<CycleId, Readonly<Record<string, number>>> = {
-  cetus:   { day: 100 * 60_000, night:   50 * 60_000 },
-  vallis:  { cold:  9 * 60_000, warm:     6 * 60_000 },
-  cambion: { fass: 100 * 60_000, vome:  100 * 60_000 },
-  zariman: { corpus: 20 * 60_000, grineer: 20 * 60_000 },
-  earth:   { day: 4 * 60 * 60_000, night: 4 * 60 * 60_000 },
-  // Approximate: each Duviri mood lasts ~60 min (authoritative expiry from API)
-  duviri:  { joy: 60 * 60_000, anger: 60 * 60_000, envy: 60 * 60_000, sorrow: 60 * 60_000, fear: 60 * 60_000 },
+  cetus:   { day: 100 * 60_000, night:  50 * 60_000 },      // 100m / 50m
+  vallis:  { warm:     400_000, cold:    1_200_000 },        // 6m40s / 20m
+  cambion: { fass: 100 * 60_000, vome:   50 * 60_000 },      // tied to the Cetus clock
+  zariman: { corpus: 150 * 60_000, grineer: 150 * 60_000 },  // 2.5h / 2.5h
+  earth:   { day: 4 * 60 * 60_000, night: 4 * 60 * 60_000 }, // 4h / 4h
+  // Each Duviri mood lasts 2h (5-mood spiral, 10h full loop).
+  duviri:  { joy: 2 * 60 * 60_000, anger: 2 * 60 * 60_000, envy: 2 * 60 * 60_000, sorrow: 2 * 60 * 60_000, fear: 2 * 60 * 60_000 },
 };
 
 const STATE_ORDER: Record<CycleId, readonly CycleState[]> = {
