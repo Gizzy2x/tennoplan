@@ -11,7 +11,6 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "npm run build && wrangler dev",
-    "generate-items": "node scripts/generate-items-map.mjs",
     "sync:mockdata": "node scripts/sync-mockdata.js",
     "deploy": "npm run build && wrangler deploy"
   },

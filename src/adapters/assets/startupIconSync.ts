@@ -153,8 +153,7 @@ async function _run(fullRedownload: boolean): Promise<void> {
       pct:     0,
       error:   `Preflight failed via ${preflight.backend}: ${preflight.message}. ` +
                `Likely fixes: (1) restart Tauri to load tauri-plugin-http, ` +
-               `(2) regenerate items-map.json (npm run generate-items), ` +
-               `(3) verify network access to cdn.warframestat.us.`,
+               `(2) verify network access to cdn.warframestat.us.`,
       backend: preflight.backend,
     };
     _snapshot = aborted;
@@ -238,21 +237,16 @@ async function _run(fullRedownload: boolean): Promise<void> {
 
   await Promise.allSettled(promises);
 
-  // ── Auto-detect stale items-map.json ───────────────────────────────────────
-  // If more than 5% of fetches 404'd while connectivity itself is fine, the
-  // bundled @wfcd/items version is likely behind the CDN naming scheme.
-  // Surfaces in the Event Log as an actionable warning.
+  // ── Stale-icon rate on the frozen fallback map ──────────────────────────────
+  // This bulk pre-cache runs against the FROZEN fallback-items-map (S1a). As it
+  // ages, some icon URLs 404 — that's expected and no longer actionable (the map
+  // is intentionally not regenerated; the codex carries current icons, fetched
+  // on demand). Logged as info, not an actionable warning.
   const failureRate = toFetch.length > 0 ? failed / toFetch.length : 0;
   if (failureRate > 0.05 && failed > 10) {
-    logger.warn('icons',
-      `Items-map likely stale: ${failed} of ${toFetch.length} icons (${(failureRate * 100).toFixed(1)}%) returned 404`,
-      {
-        failed,
-        attempted: toFetch.length,
-        cached,
-        failureRate,
-        recommendation: 'Run `npm install @wfcd/items@latest && npm run generate-items` to refresh',
-      },
+    logger.info('icons',
+      `Frozen fallback map has ${failed} of ${toFetch.length} stale icon URLs (${(failureRate * 100).toFixed(1)}% 404) — expected as it ages; codex carries current icons`,
+      { failed, attempted: toFetch.length, cached, failureRate },
       'startupIconSync',
     );
   } else if (failed > 0) {

@@ -34,40 +34,28 @@ export async function populateMockData(options: MockDataOptions = {}): Promise<v
   if (verbose) log.info('Populating mock data…');
 
   try {
-    await db.transaction('rw', [db.items, db.dropLocations, db.dataSyncState], async () => {
+    await db.transaction('rw', [db.dropLocations, db.dataSyncState], async () => {
       // Optionally wipe before populate
       if (wipeFirst) {
         if (verbose) log.info('Wiping existing data…');
-        await db.items.clear();
         await db.dropLocations.clear();
         await db.dataSyncState.clear();
       }
 
       // Check if data already exists
-      const existingItems = await db.items.count();
       const existingDrops = await db.dropLocations.count();
 
-      if (existingItems > 0 && existingDrops > 0 && !wipeFirst) {
+      if (existingDrops > 0 && !wipeFirst) {
         if (verbose) log.info('Mock data already populated. Skipping.');
         return;
       }
 
-      // Populate items
-      if (verbose) log.info(`Writing ${MOCK_ITEMS.length} items…`);
-      await db.items.bulkPut(MOCK_ITEMS);
-
-      // Populate drop locations
+      // Populate drop locations (items live in the codex now — not mocked here)
       if (verbose) log.info(`Writing ${MOCK_DROP_LOCATIONS.length} drop locations…`);
       await db.dropLocations.bulkPut(MOCK_DROP_LOCATIONS);
 
       // Write sync state (mark as freshly synced)
       const now = Date.now();
-      await db.dataSyncState.put({
-        id: 'items',
-        lastUpdated: now,
-        rowCount: MOCK_ITEMS.length,
-        lastErrorMessage: undefined,
-      });
       await db.dataSyncState.put({
         id: 'dropLocations',
         lastUpdated: now,
@@ -76,9 +64,7 @@ export async function populateMockData(options: MockDataOptions = {}): Promise<v
       });
 
       if (verbose) {
-        log.success(
-          `Mock data ready: ${MOCK_ITEMS.length} items, ${MOCK_DROP_LOCATIONS.length} drop locations`,
-        );
+        log.success(`Mock data ready: ${MOCK_DROP_LOCATIONS.length} drop locations`);
       }
     });
   } catch (err) {
@@ -95,10 +81,8 @@ export async function clearAllMockData(): Promise<void> {
   log.info('Clearing mock data…');
 
   try {
-    await db.transaction('rw', [db.items, db.dropLocations, db.dataSyncState], async () => {
-      await db.items.clear();
+    await db.transaction('rw', [db.dropLocations, db.dataSyncState], async () => {
       await db.dropLocations.clear();
-      await db.dataSyncState.delete('items');
       await db.dataSyncState.delete('dropLocations');
     });
     log.success('Mock data cleared.');
@@ -132,7 +116,6 @@ export async function injectTestDropLocation(location: typeof MOCK_DROP_LOCATION
  * Get the count of cached items and drops (for debugging).
  */
 export async function getMockDataStats(): Promise<{ itemsCount: number; dropsCount: number }> {
-  const itemsCount = await db.items.count();
   const dropsCount = await db.dropLocations.count();
-  return { itemsCount, dropsCount };
+  return { itemsCount: 0, dropsCount };   // items live in the codex now
 }

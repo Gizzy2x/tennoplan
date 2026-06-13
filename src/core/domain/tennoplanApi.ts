@@ -120,6 +120,40 @@ export enum ErrorCode {
   INVALID_REQUEST    = 'INVALID_REQUEST',
 }
 
+// ─── Codex chunk manifest (Phase B — R2 delta downloads) ───────────────────────
+// Client mirror of the worker's CodexManifest (cloudflare-worker/src/types.ts).
+// Served by GET /v1/codex/manifest. The client diffs each chunk's semantic hash
+// against its stored map and downloads only the categories that changed; the
+// monolithic /v1/codex stays as the fallback.
+
+export interface CodexChunkRef {
+  /** ItemCategory value, e.g. "Mod". */
+  category:   string;
+  /** Semantic hash of the chunk's items (volatile fields stripped). Stable
+   *  build-to-build when the category's data didn't meaningfully change. */
+  hash:       string;
+  itemCount:  number;
+  /** Uncompressed byte length of the chunk's JSON body. */
+  byteSize:   number;
+  /** R2 object key relative to the bucket root, e.g. "chunks/Mod-a1b2c3.json". */
+  key:        string;
+}
+
+export interface CodexManifest {
+  /** Manifest format version. Client falls back to the monolith if this exceeds
+   *  the version it understands. */
+  schemaVersion: number;
+  version:       string;
+  generatedAt:   number;
+  /** Overall semantic content hash — doubles as the manifest ETag. */
+  contentHash:   string;
+  itemCount:     number;
+  chunks:        CodexChunkRef[];
+  /** Forward-compat: when the worker emits this and it exceeds the client's
+   *  version, the client falls back to the monolith. Absent today = no gate. */
+  minimumClientVersion?: string;
+}
+
 // ─── ParsedWorldstate (canonical shape served by /v1/worldstate) ──────────────
 //
 // All timestamps are Unix ms (the Worker normalises ISO strings, Date

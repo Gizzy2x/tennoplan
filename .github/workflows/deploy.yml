@@ -1,15 +1,15 @@
-name: Deploy Worker
+name: Deploy to Cloudflare
 
 # ---------------------------------------------------------------------------
-# Deploys the Worldstate / Codex cron worker to Cloudflare Workers.
+# Production deploys, main only. Two workers:
+#   • Frontend "web"  (root wrangler.jsonc, React SPA assets)  — deploy-frontend
+#   • Backend  "app"  (cloudflare-worker/, /v1 + worldstate cron) — deploy-worker
 #
-# Tennoplan is a Tauri desktop app, not a hosted web frontend — there is no
-# Pages project to deploy. The previous `deploy-frontend` job pointed at a
-# non-existent `tennoplan` Pages project and failed on every run for over a
-# month; it was removed entirely.
-#
-# Codex KV blob is built and uploaded by .github/workflows/build-codex.yml
-# (separate workflow, runs every 6h + on demand).
+# The old Pages job targeted a `tennoplan` Pages project that never existed and
+# failed for over a month; the live frontend is the "web" worker (what
+# `npm run deploy` ships). deploy-frontend now automates that so deploys aren't
+# a manual-only step. The Codex KV blob is built/uploaded by build-codex.yml
+# (separate workflow, every 6h + on demand).
 # ---------------------------------------------------------------------------
 
 on:
@@ -22,6 +22,48 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  # ---------------------------------------------------------------------------
+  # Frontend — build the React SPA and deploy it as the "web" worker
+  # (root wrangler.jsonc → SPA assets). Mirrors local `npm run deploy`
+  # (`npm run build && wrangler deploy`); the vite build emits the redirected
+  # dist/wrangler.json that `wrangler deploy` then publishes.
+  # ---------------------------------------------------------------------------
+  deploy-frontend:
+    name: Deploy Frontend (web worker)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build SPA
+        run: npm run build
+        env:
+          # Production build points the client at the live cron worker.
+          VITE_WORLDSTATE_WORKER_URL: ${{ secrets.VITE_WORLDSTATE_WORKER_URL }}
+
+      - name: Deploy web worker (SPA assets)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+
+  # ---------------------------------------------------------------------------
+  # Backend — the Worldstate / Codex cron worker (cloudflare-worker/). One worker
+  # shared across the app (single KV namespace + cron schedule).
+  # ---------------------------------------------------------------------------
   deploy-worker:
     name: Deploy Worldstate Worker (app)
     runs-on: ubuntu-latest
@@ -50,7 +92,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: cloudflare-worker
           # --config wrangler.toml pins the deploy to THIS worker's config.
-          # Without it, wrangler walks up the directory tree and can pick
-          # up an unrelated config (a stray root-level wrangler.jsonc once
-          # caused the worker to be overwritten with the SPA bundle).
+          # Without it, wrangler walks up the directory tree and can pick up an
+          # unrelated config (a stray root-level wrangler.jsonc once overwrote
+          # the worker with the SPA bundle).
           command: deploy --config wrangler.toml

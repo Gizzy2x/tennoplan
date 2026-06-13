@@ -176,14 +176,6 @@ export function EventLogPanel() {
   const handleExport = useCallback(() => { downloadAsJson(filtered); }, [filtered]);
   const handleClear  = useCallback(() => { void clearEventLog(); }, []);
 
-  const staleWarning = useMemo(
-    () => events.find(
-      (e) => e.category === 'icons'
-          && e.level    === 'warn'
-          && e.message.startsWith('Items-map likely stale'),
-    ),
-    [events],
-  );
 
   // Pulse the count badge briefly when new events arrive. We retrigger
   // the animation by toggling a key, which remounts the badge span.
@@ -218,15 +210,6 @@ export function EventLogPanel() {
       </PanelHeader>
       {!collapsed && (
       <PanelBody>
-        {staleWarning && (
-          <div className={styles.eventBanner}>
-            <strong>Items-map likely stale.</strong>{' '}
-            {staleWarning.message}. Run{' '}
-            <code>npm install @wfcd/items@latest && npm run generate-items</code>{' '}
-            to refresh.
-          </div>
-        )}
-
         {/* Level filters */}
         <div className={styles.chipRow}>
           <Chip active={levelFilter === 'all'} onClick={() => setLevelFilter('all')}>All</Chip>

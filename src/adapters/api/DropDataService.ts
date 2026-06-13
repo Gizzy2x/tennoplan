@@ -13,27 +13,24 @@
  *   │       │                                                         │
  *   │       ├─ Fetch drops.warframestat.us (with retry + progress)    │
  *   │       ├─ normaliseDropPayload() → DropLocation[]                │
- *   │       ├─ Load items-map.json → StoredItem[] (iconUrl resolved)  │
- *   │       └─ Transactional write: items + dropLocations + syncState │
+ *   │       └─ Transactional write: dropLocations + syncState         │
  *   │                                                                 │
  *   │    checkForStaleData()  — lightweight timestamp read            │
  *   │    clearAllData()       — Settings button only                  │
  *   └─────────────────────────────────────────────────────────────────┘
  *
- * Why the rewrite: the previous system polled on init, used a 24 h TTL
- * and produced "(image.png)" placeholders when caches cleared. The new
- * design stores pre-resolved iconUrls so icons never go missing, and
- * never touches the network unless the user explicitly asks.
+ * S1a (2026): the static item catalogue (items-map → db.items) was retired.
+ * The codex (db.tennoplanItems, via codexCatalog) is authoritative for items
+ * now, so this service is DROPS-ONLY — it syncs db.dropLocations from
+ * drops.warframestat.us and never touches the network unless boot-stale or the
+ * user explicitly asks.
  */
 
 import { db } from '@/adapters/storage/db';
 import { logger } from '@/core/utils/logger';
 import { normaliseDropPayload, type RawDropPayload } from '@/core/services/dropsService';
-import { getIconUrl } from '@/lib/icons/IconResolver';
-import type { StoredItem, ItemCategory } from '@/core/domain/items';
 import type { DataSyncId } from '@/core/domain/sync';
-import itemsMap from '@/lib/icons/items-map.json';
-import { MOCK_DROP_LOCATIONS, MOCK_ITEMS } from '@/lib/mockdata/fixtures';
+import { MOCK_DROP_LOCATIONS } from '@/lib/mockdata/fixtures';
 
 const log = logger.scope('DropDataService');
 
@@ -105,16 +102,6 @@ export interface StaleInfo {
   lastUpdated: number | null;
 }
 
-// ─── Internal types for items-map.json ───────────────────────────────────────
-
-interface RawItemEntry {
-  name: string;
-  category: string;
-  imageName: string;
-}
-
-const RAW_ITEMS_MAP = itemsMap as Record<string, RawItemEntry>;
-
 // ─── Fetch helpers ───────────────────────────────────────────────────────────
 
 function emit(onProgress: FetchOptions['onProgress'], status: string, percent: number | null): void {
@@ -172,32 +159,6 @@ async function safeJsonFromResponse(res: Response): Promise<unknown> {
   const text = await res.text();
   if (!text || text.trim().length === 0) throw new Error('Empty response body');
   return JSON.parse(text);
-}
-
-// ─── Items-map → StoredItem[] ────────────────────────────────────────────────
-
-/**
- * Build the full StoredItem catalogue from the build-time items-map.json.
- * Each row gets a pre-resolved `iconUrl` — the UI never computes CDN paths.
- *
- * Future work: if WFCD ships updated items between app builds, this can
- * swap to a network fetch (e.g. @wfcd/items raw JSON on GitHub). The
- * interface and storage shape stay the same.
- */
-function buildItemsFromBakedMap(now: number): StoredItem[] {
-  const out: StoredItem[] = [];
-  for (const [uniqueName, entry] of Object.entries(RAW_ITEMS_MAP)) {
-    if (!entry?.imageName) continue; // Skip rows that would produce "(image.png)"
-    out.push({
-      uniqueName,
-      name: entry.name,
-      category: entry.category as ItemCategory,
-      imageName: entry.imageName,
-      iconUrl: getIconUrl(entry.imageName),
-      lastUpdated: now,
-    });
-  }
-  return out;
 }
 
 // ─── Sync-state helpers ──────────────────────────────────────────────────────
@@ -276,7 +237,6 @@ export const DropDataService = {
       emit(onProgress, '📦 Using mock data (VITE_USE_MOCK_DATA=true)…', 10);
 
       const now = Date.now();
-      const itemRows = MOCK_ITEMS;
       const dropRows = MOCK_DROP_LOCATIONS;
 
       emit(onProgress, 'Writing mock data to local database…', 50);
@@ -284,18 +244,10 @@ export const DropDataService = {
       try {
         await db.transaction(
           'rw',
-          [db.items, db.dropLocations, db.dataSyncState],
+          [db.dropLocations, db.dataSyncState],
           async () => {
-            await db.items.clear();
             await db.dropLocations.clear();
-            await db.items.bulkPut(itemRows);
             await db.dropLocations.bulkPut(dropRows);
-            await db.dataSyncState.put({
-              id: 'items',
-              lastUpdated: now,
-              rowCount: itemRows.length,
-              lastErrorMessage: undefined,
-            });
             await db.dataSyncState.put({
               id: 'dropLocations',
               lastUpdated: now,
@@ -314,12 +266,12 @@ export const DropDataService = {
 
       const durationMs = Date.now() - startedAt;
       log.success(
-        `Mock: Loaded ${itemRows.length} items + ${dropRows.length} drop locations in ${(durationMs / 1000).toFixed(1)} s.`,
+        `Mock: Loaded ${dropRows.length} drop locations in ${(durationMs / 1000).toFixed(1)} s.`,
       );
       emit(onProgress, '✓ Mock data ready.', 100);
 
       return {
-        itemsCount: itemRows.length,
+        itemsCount: 0,
         dropsCount: dropRows.length,
         durationMs,
         fetchedAt: now,
@@ -374,15 +326,9 @@ export const DropDataService = {
         parserVersion: PARSER_VERSION,
         lastErrorMessage: undefined,
       });
-      await db.dataSyncState.put({
-        id: 'items',
-        lastUpdated: now,
-        rowCount: await db.items.count(),
-        lastErrorMessage: undefined,
-      });
       emit(onProgress, 'Complete — no changes.', 100);
       return {
-        itemsCount: await db.items.count(),
+        itemsCount: 0,
         dropsCount: await db.dropLocations.count(),
         durationMs: Date.now() - startedAt,
         fetchedAt: now,
@@ -419,27 +365,15 @@ export const DropDataService = {
       }
     }
 
-    // Rebuild items catalogue (always — cheap; guarantees iconUrl is fresh).
-    emit(onProgress, 'Building items catalogue…', 70);
-    const itemRows = buildItemsFromBakedMap(now);
-
     // Transactional write — all-or-nothing.
     emit(onProgress, 'Writing to local database…', 85);
     try {
       await db.transaction(
         'rw',
-        [db.items, db.dropLocations, db.dataSyncState],
+        [db.dropLocations, db.dataSyncState],
         async () => {
-          await db.items.clear();
           await db.dropLocations.clear();
-          await db.items.bulkPut(itemRows);
           await db.dropLocations.bulkPut(dropRows);
-          await db.dataSyncState.put({
-            id: 'items',
-            lastUpdated: now,
-            rowCount: itemRows.length,
-            lastErrorMessage: undefined,
-          });
           await db.dataSyncState.put({
             id: 'dropLocations',
             lastUpdated: now,
@@ -459,12 +393,12 @@ export const DropDataService = {
 
     const durationMs = Date.now() - startedAt;
     log.success(
-      `Synced ${itemRows.length} items + ${dropRows.length} drop locations in ${(durationMs / 1000).toFixed(1)} s.`,
+      `Synced ${dropRows.length} drop locations in ${(durationMs / 1000).toFixed(1)} s.`,
     );
     emit(onProgress, 'Complete.', 100);
 
     return {
-      itemsCount: itemRows.length,
+      itemsCount: 0,
       dropsCount: dropRows.length,
       durationMs,
       fetchedAt: now,
@@ -502,22 +436,20 @@ export const DropDataService = {
   },
 
   /**
-   * Wipe items + dropLocations + sync state. Call ONLY from the Settings
-   * "Clear Data" button — icons will show placeholders until the next
-   * successful refresh.
+   * Wipe dropLocations + sync state. Call ONLY from the Settings "Clear Data"
+   * button. (Items live in the codex now — managed by StaticDataService, not
+   * cleared here.)
    */
   async clearAllData(): Promise<void> {
     await db.transaction(
       'rw',
-      [db.items, db.dropLocations, db.dataSyncState],
+      [db.dropLocations, db.dataSyncState],
       async () => {
-        await db.items.clear();
         await db.dropLocations.clear();
-        await db.dataSyncState.delete('items');
         await db.dataSyncState.delete('dropLocations');
       },
     );
-    log.info('All static data cleared. Next refresh will repopulate everything.');
+    log.info('Drop data cleared. Next refresh will repopulate it.');
   },
 
   /** Read the ms-timestamp of the last successful dropLocations sync (or null). */

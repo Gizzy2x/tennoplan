@@ -212,6 +212,76 @@ export async function bumpCodexError(message: string): Promise<void> {
   await db.syncMetadata.put(updated);
 }
 
+// ─── Chunk delta (Phase B) ──────────────────────────────────────────────────────
+
+/**
+ * Per-category chunk-hash map, persisted in the generic `settings` table
+ * (same pattern as src/adapters/assets/manifestAdapter.ts) — no Dexie version
+ * bump. Maps ItemCategory → the semantic hash of the chunk the client last
+ * ingested. The delta sync diffs the manifest against this to decide which
+ * categories to re-download.
+ */
+const CODEX_CHUNK_HASHES_KEY = 'codex:chunkHashes';
+
+export async function getCodexChunkHashes(): Promise<Record<string, string>> {
+  const row = await db.settings.get(CODEX_CHUNK_HASHES_KEY);
+  return (row?.value as Record<string, string> | undefined) ?? {};
+}
+
+export async function setCodexChunkHashes(map: Record<string, string>): Promise<void> {
+  await db.settings.put({ key: CODEX_CHUNK_HASHES_KEY, value: map, updatedAt: Date.now() });
+}
+
+/**
+ * Drop the chunk-hash map so the next delta sync treats every category as
+ * changed (full re-download). Called after a monolith fallback sync (the map
+ * can't be trusted once a non-chunk path wrote the rows) and on a
+ * schema-version wipe (so a stale map can't make the delta skip wiped rows).
+ */
+export async function clearCodexChunkHashes(): Promise<void> {
+  await db.settings.delete(CODEX_CHUNK_HASHES_KEY);
+}
+
+/** One changed category's freshly-downloaded chunk. */
+export interface CodexChunkDelta {
+  category: ItemCategory;
+  items:    TennoplanItem[];
+}
+
+/**
+ * Atomic delta application — the chunk twin of writeCodex.
+ *
+ * In a single transaction over tennoplanItems + syncMetadata:
+ *   • each changed category → delete its rows (indexed `category`) then bulkAdd
+ *     the chunk (cleanly handles in-category adds AND removals)
+ *   • each removed category (present locally, gone from the manifest) → delete
+ *   • upsert codex metadata
+ *
+ * If anything throws, Dexie rolls the whole thing back — the previous codex
+ * stays intact. Categories not in `changed`/`removed` are left untouched, which
+ * is the entire point: unchanged chunks are never re-downloaded or rewritten.
+ *
+ * NOTE: synthetic currency rows may live in a changed category and get deleted
+ * here — the caller MUST re-assert them afterwards (ensureSyntheticItems), the
+ * same contract writeCodex relies on.
+ */
+export async function applyCodexChunkDelta(
+  changed: readonly CodexChunkDelta[],
+  removedCategories: readonly ItemCategory[],
+  meta: SyncMetadata,
+): Promise<void> {
+  await db.transaction('rw', [db.tennoplanItems, db.syncMetadata], async () => {
+    for (const { category, items } of changed) {
+      await db.tennoplanItems.where('category').equals(category).delete();
+      if (items.length > 0) await db.tennoplanItems.bulkAdd(items as TennoplanItem[]);
+    }
+    for (const category of removedCategories) {
+      await db.tennoplanItems.where('category').equals(category).delete();
+    }
+    await db.syncMetadata.put({ id: 'codex', ...meta });
+  });
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function clamp(n: number, lo: number, hi: number): number {
