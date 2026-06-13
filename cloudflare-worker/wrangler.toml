@@ -17,6 +17,16 @@ binding = "TENNOPLAN_KV"
 id = "a520a78ecd264bff9b0abf38adff3f8a"
 
 # ---------------------------------------------------------------------------
+# R2 bucket — content-addressed per-category codex chunks (Phase B).
+# Keys: chunks/<category>-<semanticHash>.json (immutable). The manifest in KV
+# (codex:manifest) lists the current chunk set; clients diff it and download
+# only the categories that changed instead of the full ~17MB blob.
+# ---------------------------------------------------------------------------
+[[r2_buckets]]
+binding = "CODEX_BUCKET"
+bucket_name = "tennoplan-codex"
+
+# ---------------------------------------------------------------------------
 # Scheduled triggers
 #   */5 * * * *  — every 5 min → worldstate updater
 #

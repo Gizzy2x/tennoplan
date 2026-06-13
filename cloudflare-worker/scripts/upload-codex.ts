@@ -20,12 +20,19 @@
 import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+
+const execFileAsync = promisify(execFile);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR   = resolve(__dirname, '..', 'dist', 'codex');
 
 const CURRENT_FILE  = resolve(OUT_DIR, 'current.json');
 const METADATA_FILE = resolve(OUT_DIR, 'metadata.json');
+const MANIFEST_FILE = resolve(OUT_DIR, 'manifest.json');
+
+const R2_BUCKET = 'tennoplan-codex';
 
 const TTL_SECONDS = 172_800; // 48h — matches worker's config.codex.kvTtlSeconds
 
@@ -80,6 +87,53 @@ async function kvPut(key: string, value: string, ttlSeconds?: number): Promise<v
   console.error(`[upload-codex] wrote ${key} (${value.length} bytes${ttlSeconds ? `, ttl ${ttlSeconds}s` : ''})`);
 }
 
+// ─── R2 chunk publish (Phase B) ─────────────────────────────────────────────────
+
+/** Put one object into R2 via wrangler. Authenticates off the same
+ *  CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID env the KV calls use — the
+ *  token must additionally carry R2 edit scope. CI-only (Linux runner). */
+async function r2Put(key: string, filePath: string): Promise<void> {
+  await execFileAsync(
+    'npx',
+    ['wrangler', 'r2', 'object', 'put', `${R2_BUCKET}/${key}`,
+      '--file', filePath, '--content-type', 'application/json', '--remote'],
+    { env: process.env, maxBuffer: 32 * 1024 * 1024 },
+  );
+}
+
+interface ManifestShape { chunks: Array<{ key: string }>; }
+
+/** Upload every chunk the new manifest references, then publish the manifest to
+ *  KV (rotating the old one to :previous). Uploads are unconditional — chunk
+ *  bodies are content-addressed and volatile-stripped, so re-PUTting an existing
+ *  key writes identical bytes (idempotent); this is resilient to a partial prior
+ *  deploy where the previous manifest referenced an object that never landed.
+ *
+ *  Ordering matters: the manifest is written ONLY after all chunk PUTs succeed,
+ *  so codex:manifest never points at an object missing from R2. */
+async function publishChunks(): Promise<void> {
+  let manifestText: string;
+  try {
+    manifestText = await readFile(MANIFEST_FILE, 'utf8');
+  } catch {
+    console.error('[upload-codex] no manifest.json — skipping chunk publish (monolith already published)');
+    return;
+  }
+
+  const manifest = JSON.parse(manifestText) as ManifestShape;
+  console.error(`[upload-codex] uploading ${manifest.chunks.length} chunks to R2 bucket ${R2_BUCKET}`);
+  for (const { key } of manifest.chunks) {
+    await r2Put(key, resolve(OUT_DIR, key));
+    console.error(`[upload-codex] R2 put ${key}`);
+  }
+
+  // Manifest is published last — every referenced chunk now exists in R2.
+  const oldManifest = await kvGet('codex:manifest');
+  if (oldManifest) await kvPut('codex:manifest:previous', oldManifest, TTL_SECONDS);
+  await kvPut('codex:manifest', manifestText, undefined);
+  console.error('[upload-codex] published codex:manifest');
+}
+
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
 interface RemoteMeta {
@@ -129,6 +183,9 @@ async function main(): Promise<void> {
   // them 17MB) and keep the remote etag so it still matches the stored blob
   // — clients keep getting 304s, freshness stays honest.
   if (remote?.contentHash && remote.contentHash === metadata.contentHash) {
+    // Content unchanged ⇒ every per-category chunk hash + the manifest's
+    // contentHash are unchanged too, so codex:manifest + the R2 chunks already
+    // in place are still correct — intentionally left untouched here.
     const refreshed = { ...remote, lastSync: metadata.lastSync ?? Date.now() };
     await kvPut('codex:metadata', JSON.stringify(refreshed), undefined);
     console.error(`[upload-codex] content unchanged (hash ${metadata.contentHash}) — ` +
@@ -153,6 +210,11 @@ async function main(): Promise<void> {
   //    rollback insurance, not a serving path. Metadata has no TTL either.
   await kvPut('codex:current',  blob,         undefined);
   await kvPut('codex:metadata', metadataText, undefined);
+
+  // 3. Publish the Phase B per-category chunks to R2 + the manifest to KV.
+  //    Runs after the monolith publish so a chunk-upload failure (e.g. token
+  //    lacks R2 scope) leaves the always-served monolith fresh — graceful.
+  await publishChunks();
 
   console.error(`[upload-codex] done in ${Date.now() - t0}ms`);
 }

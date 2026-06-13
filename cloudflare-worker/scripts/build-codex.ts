@@ -34,7 +34,7 @@ import { validateCodex }        from '../src/codex/validator';
 import { scanCodexTokens, formatUnknownTokens } from '../src/codex/tokenScanner';
 import { loadKnownTokens }      from './lib/loadKnownTokens';
 import { makeEtag, makeVersion } from '../src/storage/metadata';
-import type { SyncMetadata, DataSource } from '../src/types';
+import type { SyncMetadata, DataSource, TennoplanItem, CodexChunkRef, CodexManifest } from '../src/types';
 
 // ─── Paths ────────────────────────────────────────────────────────────────────
 
@@ -42,6 +42,27 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR   = resolve(__dirname, '..', 'dist', 'codex');
 const CURRENT_FILE  = resolve(OUT_DIR, 'current.json');
 const METADATA_FILE = resolve(OUT_DIR, 'metadata.json');
+const MANIFEST_FILE = resolve(OUT_DIR, 'manifest.json');
+const CHUNKS_DIR    = resolve(OUT_DIR, 'chunks');
+
+/** Manifest format version — bump if CodexManifest's shape changes. */
+const MANIFEST_SCHEMA_VERSION = 1;
+
+/** Semantic hash of one item set: strip volatile fields (lastUpdated,
+ *  dataVersion), sort by uniqueName, hash. Same recipe as the overall
+ *  contentHash — an unchanged category yields a stable hash (and R2 key)
+ *  across builds despite the normalizer re-stamping lastUpdated every build. */
+async function semanticChunk(items: TennoplanItem[]): Promise<{ body: string; etag: string }> {
+  const stripped = items
+    .map(({ lastUpdated: _lu, dataVersion: _dv, ...rest }) => rest)
+    .sort((a, b) => a.uniqueName.localeCompare(b.uniqueName));
+  const body = JSON.stringify(stripped);
+  return { body, etag: await makeEtag(body) };
+}
+
+/** makeEtag returns a quoted hex string (`"abc…"`); strip quotes for use in a
+ *  filename-safe, validator-matching ([a-f0-9]+) R2 key. */
+const bareHash = (etag: string): string => etag.replace(/"/g, '');
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
@@ -159,6 +180,44 @@ async function main(): Promise<void> {
 
   console.error(`[build-codex] wrote ${CURRENT_FILE}  (${blob.length} bytes)`);
   console.error(`[build-codex] wrote ${METADATA_FILE} (${metadata.itemCount} items, quality=${metadata.quality})`);
+
+  // ── 8. CHUNKS + MANIFEST (Phase B) ──
+  // Split the blob into one content-addressed chunk per category for delta
+  // downloads. Chunk bodies omit volatile fields so key↔bytes is invariant
+  // (idempotent uploads). The monolith above stays as the fallback path.
+  const byCategory = new Map<string, TennoplanItem[]>();
+  for (const item of validation.items) {
+    const bucket = byCategory.get(item.category);
+    if (bucket) bucket.push(item);
+    else byCategory.set(item.category, [item]);
+  }
+
+  await mkdir(CHUNKS_DIR, { recursive: true });
+  const chunks: CodexChunkRef[] = [];
+  let totalChunkBytes = 0;
+
+  for (const category of [...byCategory.keys()].sort()) {
+    const items = byCategory.get(category)!;
+    const { body, etag } = await semanticChunk(items);
+    const hash    = bareHash(etag);
+    const key     = `chunks/${category}-${hash}.json`;
+    const byteSize = Buffer.byteLength(body, 'utf8');
+    await writeFile(resolve(OUT_DIR, key), body, 'utf8');
+    chunks.push({ category, hash, itemCount: items.length, byteSize, key });
+    totalChunkBytes += byteSize;
+  }
+
+  const manifest: CodexManifest = {
+    schemaVersion: MANIFEST_SCHEMA_VERSION,
+    version,
+    generatedAt,
+    contentHash,           // quoted — same value as metadata.contentHash (ETag)
+    itemCount: validation.items.length,
+    chunks,
+  };
+  await writeFile(MANIFEST_FILE, JSON.stringify(manifest), 'utf8');
+  console.error(`[build-codex] wrote ${MANIFEST_FILE} (${chunks.length} chunks, ${totalChunkBytes} chunk bytes)`);
+
   console.error(`[build-codex] total ${Date.now() - t0}ms`);
 }
 

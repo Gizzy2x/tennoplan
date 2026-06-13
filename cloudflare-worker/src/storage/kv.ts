@@ -48,6 +48,8 @@ export async function writeWorldstate(
 export const getCodexCurrent  = (env: Env) => kvGet(env, config.kv.codex.current);
 export const getCodexPrevious = (env: Env) => kvGet(env, config.kv.codex.previous);
 export const getCodexMeta     = (env: Env) => kvGetJson<SyncMetadata>(env, config.kv.codex.metadata);
+/** Phase B — raw codex chunk manifest JSON (served by /v1/codex/manifest). */
+export const getCodexManifest = (env: Env) => kvGet(env, config.kv.codex.manifest);
 
 export async function writeCodex(env: Env, blob: string, meta: SyncMetadata): Promise<void> {
   const prev = await getCodexCurrent(env);

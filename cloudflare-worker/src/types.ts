@@ -2,6 +2,8 @@
 
 export interface Env {
   TENNOPLAN_KV: KVNamespace;
+  /** R2 bucket holding content-addressed per-category codex chunks (Phase B). */
+  CODEX_BUCKET: R2Bucket;
   LOG_LEVEL?:                  string;
   MAX_STALENESS_MINUTES?:      string;
   FALLBACK_STALENESS_WARNING?: string;
@@ -411,23 +413,29 @@ export interface ArchimedeaModifierInfo {
 // Single source of truth for all Warframe items in Tennoplan.
 // Primary key: uniqueName. Storage: codex:current → TennoplanItem[].
 
-export type ItemCategory =
-  | 'Warframe'
-  | 'Weapon'
-  | 'Companion'
-  | 'Sentinel'
-  | 'Arcane'
-  | 'Mod'
-  | 'Relic'
-  | 'Resource'
-  | 'Blueprint'
-  | 'Sigil'
-  | 'Glyph'
-  | 'Cosmetic'
-  | 'Ingredient'
-  | 'Key'
-  | 'Fish'
-  | 'Equipment';
+/** Runtime list of every item category — the single source for `ItemCategory`.
+ *  Reused by the Phase B codex chunk-key validator so the URL contract stays
+ *  pinned to the real enum, not a loose regex. */
+export const ITEM_CATEGORIES = [
+  'Warframe',
+  'Weapon',
+  'Companion',
+  'Sentinel',
+  'Arcane',
+  'Mod',
+  'Relic',
+  'Resource',
+  'Blueprint',
+  'Sigil',
+  'Glyph',
+  'Cosmetic',
+  'Ingredient',
+  'Key',
+  'Fish',
+  'Equipment',
+] as const;
+
+export type ItemCategory = (typeof ITEM_CATEGORIES)[number];
 
 export type ItemRarity = 'Legendary' | 'Rare' | 'Uncommon' | 'Common';
 
@@ -703,4 +711,40 @@ export interface CodexBundle {
   version:      string;
   generatedAt:  number;
   itemCount:    number;
+}
+
+// ─── Codex chunk manifest (Phase B — R2 delta downloads) ───────────────────────
+// The codex is split into one content-addressed chunk per ItemCategory, stored
+// in R2 (immutable). The manifest lists every chunk's semantic hash so a client
+// can diff against what it holds and download ONLY the categories that changed.
+// Lives in KV at codex:manifest. The monolithic codex:current stays alongside it
+// as the fallback / first-sync path.
+
+/** One per-category chunk reference in the manifest. */
+export interface CodexChunkRef {
+  /** ItemCategory value, e.g. "Mod". */
+  category:   string;
+  /** Semantic hash of the chunk's items (volatile fields stripped). Stable
+   *  build-to-build when the category's data didn't meaningfully change — and
+   *  is the cache-busting component of the R2 key. */
+  hash:       string;
+  itemCount:  number;
+  /** Uncompressed byte length of the chunk's JSON body. */
+  byteSize:   number;
+  /** R2 object key relative to the bucket root, e.g. "chunks/Mod-a1b2c3.json". */
+  key:        string;
+  // Deferred (not Slice 1): `compressedSize?` once we want transferred-vs-logical
+  // telemetry. Additive — no migration cost when added later.
+}
+
+export interface CodexManifest {
+  /** Manifest format version (bump if this shape changes). */
+  schemaVersion: number;
+  /** Build version (shared with codex:metadata.version). */
+  version:       string;
+  generatedAt:   number;
+  /** Overall semantic content hash — same value as codex:metadata.contentHash. */
+  contentHash:   string;
+  itemCount:     number;
+  chunks:        CodexChunkRef[];
 }
