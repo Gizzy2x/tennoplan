@@ -183,13 +183,32 @@ async function main(): Promise<void> {
   // them 17MB) and keep the remote etag so it still matches the stored blob
   // — clients keep getting 304s, freshness stays honest.
   if (remote?.contentHash && remote.contentHash === metadata.contentHash) {
-    // Content unchanged ⇒ every per-category chunk hash + the manifest's
-    // contentHash are unchanged too, so codex:manifest + the R2 chunks already
-    // in place are still correct — intentionally left untouched here.
+    // Content unchanged ⇒ skip the expensive 17MB blob rewrite; just bump
+    // metadata.lastSync (1 tiny KV write) so clients keep 304ing.
     const refreshed = { ...remote, lastSync: metadata.lastSync ?? Date.now() };
     await kvPut('codex:metadata', JSON.stringify(refreshed), undefined);
-    console.error(`[upload-codex] content unchanged (hash ${metadata.contentHash}) — ` +
-      `blob upload skipped, metadata freshness bumped. done in ${Date.now() - t0}ms`);
+
+    // Chunks/manifest normally move in lockstep with the monolith, so they'd be
+    // current too. EXCEPT on bootstrap (Phase B just shipped — no manifest yet)
+    // or drift (a manifest from before chunking, or a half-published run): the
+    // monolith hash can match while chunks are absent/stale. Publish them when
+    // the live manifest's hash doesn't match this build's. publishChunks is
+    // idempotent (content-addressed), so this is safe to run unconditionally
+    // here — the hash check just avoids re-uploading when nothing's missing.
+    let manifestCurrent = false;
+    const liveManifest = await kvGet('codex:manifest');
+    if (liveManifest) {
+      try { manifestCurrent = (JSON.parse(liveManifest) as { contentHash?: string }).contentHash === metadata.contentHash; }
+      catch { /* malformed — treat as not current, republish */ }
+    }
+    if (manifestCurrent) {
+      console.error(`[upload-codex] content unchanged (hash ${metadata.contentHash}) — ` +
+        `blob + chunks already current, freshness bumped. done in ${Date.now() - t0}ms`);
+    } else {
+      console.error('[upload-codex] content unchanged but manifest missing/stale — bootstrapping chunk publish');
+      await publishChunks();
+      console.error(`[upload-codex] done in ${Date.now() - t0}ms`);
+    }
     return;
   }
 
