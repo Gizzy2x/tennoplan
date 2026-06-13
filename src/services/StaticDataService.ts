@@ -39,9 +39,14 @@ import {
   touchCodexMetadata,
   bumpCodexError,
   getCodexMetadata,
+  getCodexChunkHashes,
+  setCodexChunkHashes,
+  clearCodexChunkHashes,
+  applyCodexChunkDelta,
   CODEX_STALE_AFTER_MINUTES,
   type ItemQuery,
   type CodexStatus,
+  type CodexChunkDelta,
 } from '@/adapters/storage/codexStore';
 import type {
   TennoplanItem,
@@ -49,6 +54,8 @@ import type {
   SyncMetadata,
   DataSource,
   DataQuality,
+  CodexManifest,
+  ItemCategory,
 } from '@/core/domain/tennoplanApi';
 import { SYNTHETIC_ITEMS } from '@/core/domain/syntheticItems';
 import { SYNTHETIC_ICON_URLS } from '@/lib/icons/syntheticIcons';
@@ -60,6 +67,24 @@ const log = logger.scope('StaticDataService');
 
 const WORKER_BASE = (import.meta.env.VITE_WORLDSTATE_WORKER_URL as string | undefined)?.replace(/\/$/, '');
 const ENDPOINT    = WORKER_BASE ? `${WORKER_BASE}/v1/codex` : null;
+
+// ─── Phase B — chunk delta endpoints ────────────────────────────────────────────
+
+/** Manifest of per-category content-addressed chunks (Phase B delta downloads). */
+const MANIFEST_ENDPOINT = WORKER_BASE ? `${WORKER_BASE}/v1/codex/manifest` : null;
+
+/** A manifest chunk key is `chunks/<Cat>-<hash>.json`; the route serves the part
+ *  after `chunks/`. */
+const chunkUrl = (key: string): string => `${WORKER_BASE}/v1/codex/chunk/${key.replace(/^chunks\//, '')}`;
+
+/** Highest CodexManifest.schemaVersion this client understands. A manifest above
+ *  this → fall back to the monolith rather than mis-parse a future format. */
+const SUPPORTED_MANIFEST_SCHEMA = 1;
+
+/** This client's codex-protocol version, compared against an emitted
+ *  manifest.minimumClientVersion (forward-compat insurance; unused until the
+ *  worker starts emitting that field). */
+const CODEX_CLIENT_VERSION = '1.0.0';
 
 // ─── Tunables ─────────────────────────────────────────────────────────────────
 
@@ -131,6 +156,15 @@ export interface RefreshResult {
   outcome:    'updated' | 'not-modified' | 'unchanged';
   itemCount:  number;
   durationMs: number;
+  // ── Phase B observability (optional — older callers ignore these) ──
+  /** Which path served this sync. */
+  path?:            'delta' | 'monolith';
+  /** Chunks actually downloaded (delta path). */
+  chunksFetched?:   number;
+  /** Chunks the manifest listed but the client already held (delta path). */
+  chunksSkipped?:   number;
+  /** Bytes downloaded for the fetched chunks (Σ manifest byteSize). */
+  bytesDownloaded?: number;
 }
 
 export interface RefreshOptions {
@@ -169,6 +203,9 @@ async function ensureSchemaVersion(): Promise<void> {
   try {
     await db.tennoplanItems.clear();
     await db.syncMetadata.delete('codex');
+    // Clear the chunk-hash map too — otherwise it would survive the wipe and
+    // make the next delta sync skip categories whose rows are now gone.
+    await clearCodexChunkHashes();
   } catch (e) {
     log.warn('Schema-version wipe failed — will rely on staleness path', errMsg(e));
   }
@@ -274,6 +311,156 @@ async function performNetworkSync(force: boolean): Promise<SyncOutcome> {
   return { status: 'updated', items: body.data, metadata: meta };
 }
 
+// ─── Delta sync (Phase B) ─────────────────────────────────────────────────────
+
+type DeltaSyncResult =
+  | {
+      status:          'delta';
+      changed:         CodexChunkDelta[];
+      removed:         ItemCategory[];
+      meta:            SyncMetadata;
+      newHashes:       Record<string, string>;
+      chunksFetched:   number;
+      chunksSkipped:   number;
+      bytesDownloaded: number;
+    }
+  | { status: 'not-modified' }
+  | { status: 'fallback'; reason: string };
+
+/**
+ * Fetch one immutable chunk. Unlike the monolith fetch, this uses the DEFAULT
+ * HTTP cache: chunks are content-addressed (a key's bytes never change), so the
+ * browser/edge immutable cache is both safe and desirable here.
+ */
+async function fetchChunk(url: string, timeoutMs: number): Promise<TennoplanItem[]> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { signal: controller.signal, headers: { Accept: 'application/json' } });
+    if (!res.ok) throw new Error(`HTTP ${res.status} from ${url}`);
+    const data = (await res.json()) as TennoplanItem[];
+    if (!Array.isArray(data)) throw new Error(`chunk ${url} is not an array`);
+    return data;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/** True when dotted-numeric `min` (e.g. "1.2.0") is newer than `cur`. */
+function isClientTooOld(min: string, cur: string): boolean {
+  const a = min.split('.').map((n) => parseInt(n, 10) || 0);
+  const b = cur.split('.').map((n) => parseInt(n, 10) || 0);
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const x = a[i] ?? 0, y = b[i] ?? 0;
+    if (x !== y) return x > y;
+  }
+  return false;
+}
+
+/**
+ * Manifest-driven delta sync. Returns:
+ *   • 'delta'        — categories to apply (+ the full new hash map to persist)
+ *   • 'not-modified' — nothing changed and local data is intact
+ *   • 'fallback'     — caller should run the monolith path (manifest missing,
+ *                      incompatible, a chunk failed, or local cache was wiped)
+ *
+ * Never writes to Dexie — the caller applies the result atomically.
+ */
+async function performDeltaSync(force: boolean): Promise<DeltaSyncResult> {
+  if (!MANIFEST_ENDPOINT) return { status: 'fallback', reason: 'no worker URL' };
+
+  const stored = await getCodexMetadata();
+  const etag   = force ? null : stored?.etag ?? null;
+
+  let res: Response;
+  try {
+    res = await fetchWithTimeout(MANIFEST_ENDPOINT, etag, REQUEST_TIMEOUT_MS);
+  } catch (e) {
+    return { status: 'fallback', reason: `manifest fetch failed: ${errMsg(e)}` };
+  }
+
+  if (res.status === 304) {
+    // A 304 says "manifest unchanged" — but local rows can be wiped externally
+    // (devtools / extension / quota eviction) while our stored etag survives,
+    // which would skip a needed rebuild. Only trust it if we still hold data.
+    const [status, hashes] = await Promise.all([getCodexStatus(), getCodexChunkHashes()]);
+    if (status.itemCount === 0 || Object.keys(hashes).length === 0) {
+      return { status: 'fallback', reason: '304 over empty/untracked local cache' };
+    }
+    return { status: 'not-modified' };
+  }
+
+  if (!res.ok) return { status: 'fallback', reason: `manifest HTTP ${res.status}` };
+
+  let manifest: CodexManifest;
+  try {
+    manifest = (await res.json()) as CodexManifest;
+  } catch (e) {
+    return { status: 'fallback', reason: `manifest parse failed: ${errMsg(e)}` };
+  }
+
+  // Forward-compat gate — never mis-parse a future manifest format.
+  if (manifest.schemaVersion > SUPPORTED_MANIFEST_SCHEMA) {
+    return { status: 'fallback', reason: `manifest schema ${manifest.schemaVersion} > ${SUPPORTED_MANIFEST_SCHEMA}` };
+  }
+  if (manifest.minimumClientVersion && isClientTooOld(manifest.minimumClientVersion, CODEX_CLIENT_VERSION)) {
+    return { status: 'fallback', reason: `client ${CODEX_CLIENT_VERSION} < required ${manifest.minimumClientVersion}` };
+  }
+  if (!Array.isArray(manifest.chunks) || manifest.chunks.length === 0) {
+    return { status: 'fallback', reason: 'manifest has no chunks' };
+  }
+
+  // Diff manifest vs what we hold.
+  const storedHashes = await getCodexChunkHashes();
+  const manifestCats = new Set(manifest.chunks.map((c) => c.category));
+  const toFetch = manifest.chunks.filter((c) => storedHashes[c.category] !== c.hash);
+  const removed = (Object.keys(storedHashes) as ItemCategory[]).filter((cat) => !manifestCats.has(cat));
+
+  const newHashes: Record<string, string> = {};
+  for (const c of manifest.chunks) newHashes[c.category] = c.hash;
+
+  if (toFetch.length === 0 && removed.length === 0) {
+    return { status: 'not-modified' };
+  }
+
+  // Download the changed chunks in parallel — sequential would stack round-trips
+  // and lag first sync; immutable + one origin makes parallel safe.
+  let payloads: TennoplanItem[][];
+  try {
+    payloads = await Promise.all(toFetch.map((c) => fetchChunk(chunkUrl(c.key), REQUEST_TIMEOUT_MS)));
+  } catch (e) {
+    return { status: 'fallback', reason: `chunk fetch failed: ${errMsg(e)}` };
+  }
+
+  // Chunk bodies have volatile fields stripped (lastUpdated/dataVersion) — re-stamp
+  // so the rows are valid TennoplanItems consistent with the writeCodex path.
+  const changed: CodexChunkDelta[] = toFetch.map((c, i) => ({
+    category: c.category as ItemCategory,
+    items: payloads[i].map((it) => ({ ...it, lastUpdated: manifest.generatedAt, dataVersion: manifest.version })),
+  }));
+
+  const meta: SyncMetadata = {
+    lastSync:   Date.now(),
+    etag:       manifest.contentHash,
+    version:    manifest.version,
+    source:     (stored?.source as DataSource | undefined) ?? 'enriched',
+    quality:    'high',
+    errorCount: 0,
+    itemCount:  manifest.itemCount,
+  };
+
+  return {
+    status: 'delta',
+    changed,
+    removed,
+    meta,
+    newHashes,
+    chunksFetched:   toFetch.length,
+    chunksSkipped:   manifest.chunks.length - toFetch.length,
+    bytesDownloaded: toFetch.reduce((sum, c) => sum + (c.byteSize ?? 0), 0),
+  };
+}
+
 // ─── Synthetic codex entries ──────────────────────────────────────────────────
 
 /**
@@ -367,9 +554,52 @@ export const StaticDataService = {
   async refreshCodex(opts: RefreshOptions = {}): Promise<RefreshResult> {
     const t0 = Date.now();
     const onProgress = opts.onProgress ?? (() => {});
+    const force = opts.force === true;
 
-    onProgress({ status: 'Fetching codex…', percent: 5 });
-    const outcome = await performNetworkSync(opts.force === true);
+    // ── Delta path (Phase B) — fetch the manifest + only the changed chunks ──
+    onProgress({ status: 'Checking codex manifest…', percent: 5 });
+    const delta = await performDeltaSync(force);
+
+    if (delta.status === 'delta') {
+      onProgress({ status: `Downloading ${delta.chunksFetched} updated categories…`, percent: 50 });
+      try {
+        await applyCodexChunkDelta(delta.changed, delta.removed, delta.meta);
+        await setCodexChunkHashes(delta.newHashes);
+      } catch (e) {
+        const msg = errMsg(e);
+        log.error('Codex delta write failed — previous codex preserved', msg);
+        await bumpCodexError(`Delta write failed: ${msg}`);
+        throw new Error(`Failed to apply codex delta: ${msg}`);
+      }
+      // Delta deletes+repopulates categories that may hold synthetics — re-assert.
+      await ensureSyntheticItems();
+      const itemCount = (await getCodexStatus()).itemCount;
+      const kb = Math.round(delta.bytesDownloaded / 1024);
+      onProgress({ status: `Synced ${delta.chunksFetched} categories`, percent: 100 });
+      log.success(`Codex delta — ${delta.chunksFetched} chunks fetched (~${kb} KB), ${delta.chunksSkipped} unchanged. ${itemCount} items.`);
+      return {
+        outcome:         'updated',
+        itemCount,
+        durationMs:      Date.now() - t0,
+        path:            'delta',
+        chunksFetched:   delta.chunksFetched,
+        chunksSkipped:   delta.chunksSkipped,
+        bytesDownloaded: delta.bytesDownloaded,
+      };
+    }
+
+    if (delta.status === 'not-modified') {
+      await touchCodexMetadata();
+      const itemCount = (await getCodexStatus()).itemCount;
+      onProgress({ status: 'Codex unchanged', percent: 100 });
+      log.info(`Codex unchanged (manifest). ${itemCount} items remain.`);
+      return { outcome: 'not-modified', itemCount, durationMs: Date.now() - t0, path: 'delta' };
+    }
+
+    // ── Monolith fallback (manifest unavailable / incompatible / chunk failed) ──
+    log.info(`Codex delta unavailable (${delta.reason}) — falling back to full codex.`);
+    onProgress({ status: 'Fetching full codex…', percent: 10 });
+    const outcome = await performNetworkSync(force);
 
     if (outcome.status === 'error') {
       onProgress({ status: 'Sync failed', percent: null });
@@ -383,11 +613,7 @@ export const StaticDataService = {
       await touchCodexMetadata();
       const itemCount = (await getCodexStatus()).itemCount;
       log.info(`Codex unchanged (304). ${itemCount} items remain.`);
-      return {
-        outcome:    'not-modified',
-        itemCount,
-        durationMs: Date.now() - t0,
-      };
+      return { outcome: 'not-modified', itemCount, durationMs: Date.now() - t0, path: 'monolith' };
     }
 
     // updated — write to Dexie atomically.
@@ -399,6 +625,9 @@ export const StaticDataService = {
     onProgress({ status: 'Writing to local cache…', percent: 70 });
     try {
       await writeCodex(outcome.items, outcome.metadata);
+      // The monolith wrote rows the chunk-hash map can't describe — drop it so
+      // the next delta sync re-establishes truth from a fresh manifest.
+      await clearCodexChunkHashes();
     } catch (e) {
       const msg = errMsg(e);
       log.error('Codex Dexie write failed — previous codex preserved', msg);
@@ -410,12 +639,13 @@ export const StaticDataService = {
     await ensureSyntheticItems();
 
     onProgress({ status: `Synced ${outcome.items.length} items`, percent: 100 });
-    log.success(`Codex synced — ${outcome.items.length} items, source=${outcome.metadata.source}, version=${outcome.metadata.version}`);
+    log.success(`Codex synced (monolith) — ${outcome.items.length} items, source=${outcome.metadata.source}, version=${outcome.metadata.version}`);
 
     return {
       outcome:    'updated',
       itemCount:  outcome.items.length,
       durationMs: Date.now() - t0,
+      path:       'monolith',
     };
   },
 
