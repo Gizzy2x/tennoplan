@@ -1,10 +1,19 @@
 name: Deploy to Cloudflare
 
+# ---------------------------------------------------------------------------
+# Production deploys, main only. Two workers:
+#   • Frontend "web"  (root wrangler.jsonc, React SPA assets)  — deploy-frontend
+#   • Backend  "app"  (cloudflare-worker/, /v1 + worldstate cron) — deploy-worker
+#
+# The previous Pages job targeted a `tennoplan` Pages project that doesn't
+# exist; the live frontend is the "web" worker (what `npm run deploy` ships).
+# This workflow automates that so deploys aren't a manual-only step.
+# ---------------------------------------------------------------------------
+
 on:
   push:
     branches:
       - main
-      - Development
 
 # GitHub forces JS actions onto Node 24 on 2026-06-16; opt in early so any
 # breakage surfaces while we're watching, not on the flag day.
@@ -13,17 +22,16 @@ env:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # Frontend — deploys the React SPA to Cloudflare Pages.
-  #
-  # main        → production deployment  (tennoplan.pages.dev / custom domain)
-  # Development → preview deployment     (auto-generated preview URL)
+  # Frontend — build the React SPA and deploy it as the "web" worker
+  # (root wrangler.jsonc → SPA assets). Mirrors local `npm run deploy`
+  # (`npm run build && wrangler deploy`); the vite build emits the redirected
+  # dist/wrangler.json that `wrangler deploy` then publishes.
   # ---------------------------------------------------------------------------
   deploy-frontend:
-    name: Deploy Frontend (Pages)
+    name: Deploy Frontend (web worker)
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      deployments: write
 
     steps:
       - name: Checkout
@@ -38,31 +46,26 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build SPA
         run: npm run build
         env:
-          # Production builds point at the live cron worker.
-          # Preview builds inherit the same URL so they hit real data.
+          # Production build points the client at the live cron worker.
           VITE_WORLDSTATE_WORKER_URL: ${{ secrets.VITE_WORLDSTATE_WORKER_URL }}
 
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy web worker (SPA assets)
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # Pass the current branch; Pages treats non-main branches as previews.
-          command: pages deploy dist --project-name=tennoplan --branch=${{ github.ref_name }}
+          command: deploy
 
   # ---------------------------------------------------------------------------
-  # Backend — deploys the Worldstate cron worker to Cloudflare Workers.
-  #
-  # Only runs on main. The worker is shared between production and preview
-  # (there is one KV namespace and one cron schedule).
+  # Backend — the Worldstate cron worker (cloudflare-worker/). One worker shared
+  # across the app (single KV namespace + cron schedule).
   # ---------------------------------------------------------------------------
   deploy-worker:
     name: Deploy Worldstate Worker (app)
     runs-on: ubuntu-latest
-    if: github.ref_name == 'main'
     permissions:
       contents: read
 
