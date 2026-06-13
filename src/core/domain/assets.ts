@@ -94,7 +94,8 @@ export interface SyncProgress {
  * These are currency, resource, and UI-critical icons.
  *
  * Filenames match the WFCD CDN convention (lowercase, no path prefix).
- * To add an icon: run `npm run generate-items` and find the imageName in items-map.json.
+ * To add an icon: find the item in the codex (db.tennoplanItems) and use the
+ * filename from its iconUrl.
  */
 export const CORE_IMAGE_NAMES: ReadonlySet<string> = new Set([
   // Currency

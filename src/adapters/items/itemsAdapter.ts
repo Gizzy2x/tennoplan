@@ -1,16 +1,23 @@
 /**
- * Items adapter — wraps the generated items-map.json.
+ * ⚠ FALLBACK ONLY — frozen bootstrap / long-tail data, NO LONGER REGENERATED.
  *
- * The map is produced at build time by `node scripts/generate-items-map.mjs`
- * using @wfcd/items (Node.js-only). The browser imports the resulting static
- * JSON: zero network calls, zero Node.js dependencies, works fully offline.
+ * The codex (`db.tennoplanItems`, resolved via `codexCatalog`) is the
+ * authoritative, current item source. This adapter wraps a FROZEN snapshot
+ * (`fallback-items-map.json`) kept ONLY because it (a) gives instant icons on
+ * first launch before the codex syncs, and (b) covers the cosmetic long tail
+ * (Skins/Glyphs/Sigils/…) the codex doesn't carry. It is intentionally never
+ * refreshed (the old `npm run generate-items` regeneration was retired in S1a).
+ *
+ * Do NOT add new consumers — resolve through `codexCatalog`, which already uses
+ * this as its last-resort fallback. The only intended callers are `codexCatalog`
+ * and the bulk icon pre-cache (`startupIconSync`).
  *
  * All lookups are O(1) by uniqueName or O(n) by name/category (iterated once,
  * results cached in Maps for repeated calls).
  */
 
 import type { ItemCategory, WarframeItem } from '@/core/domain/items';
-import rawMap from '@/lib/icons/items-map.json';
+import rawMap from '@/lib/icons/fallback-items-map.json';
 
 // The generated JSON is keyed by uniqueName — attach it as the key so
 // WarframeItem is fully self-contained.

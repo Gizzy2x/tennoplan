@@ -3,7 +3,6 @@ import type { AssetRecord, SyncError } from "@/core/domain/assets";
 import type { ProgressionRecord } from "@/core/domain/progression";
 import type { ItemState } from "@/core/domain/itemState";
 import type { DropLocation } from "@/core/domain/drops";
-import type { StoredItem } from "@/core/domain/items";
 import type { DataSyncState } from "@/core/domain/sync";
 import type { EventLogEntry } from "@/core/domain/eventLog";
 import type {
@@ -86,12 +85,6 @@ export class TennoplanDB extends Dexie {
   itemStates!: Table<ItemState, string>;
   /** Normalized drop locations from drops.warframestat.us. Wipe + bulkPut on sync. */
   dropLocations!: Table<DropLocation, string>;
-  /**
-   * Full item catalogue with pre-resolved icon URLs. Written by DropDataService
-   * from the build-time items-map.json. Survives cache clears — only wiped
-   * when the user hits "Clear Data" in Settings.
-   */
-  items!: Table<StoredItem, string>;
   /** One row per synced dataset. Replaces the old drops:etag / drops:lastSynced settings keys. */
   dataSyncState!: Table<DataSyncState, string>;
   /**
@@ -308,6 +301,15 @@ export class TennoplanDB extends Dexie {
       syncMetadata: "id",
       tennoplanItems: "uniqueName, category, masteryRank, vaulted",
       eventLog: "++id, timestamp, category, level, [category+level]",
+    });
+
+    // Version 9 — S1a: retire the legacy `items` (StoredItem) table.
+    //
+    // The codex (`tennoplanItems`, resolved via codexCatalog) is authoritative
+    // for items now; the items-map → db.items duplication was removed. Setting
+    // the store to null deletes it on upgrade; all other tables inherit from v8.
+    this.version(9).stores({
+      items: null,
     });
   }
 }
