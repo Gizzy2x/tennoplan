@@ -11,14 +11,14 @@
 
 import { memo, useMemo } from 'react';
 import { ItemIcon } from '@/components/ui/ItemIcon';
-import { findByName } from '@/adapters/items/itemsAdapter';
+import { findByName } from '@/adapters/items/codexCatalog';
 import { useQuickLook } from '@/store/quickLook';
-import type { WarframeItem } from '@/core/domain/items';
+import type { CatalogItem } from '@/adapters/items/codexCatalog';
 import type { DuviriCircuit } from '../hooks/useDuviriCircuit';
 import styles from '../CelestialPendulum.module.css';
 
 /** Best-effort resolution: raw, then camelCase-split, then "And" → "&". */
-function resolveItem(raw: string): WarframeItem | undefined {
+function resolveItem(raw: string): CatalogItem | undefined {
   const direct = findByName(raw);
   if (direct) return direct;
   const spaced = raw.replace(/([a-z0-9])([A-Z])/g, '$1 $2').trim();
@@ -38,8 +38,8 @@ const CircuitTile = memo(function CircuitTile({ raw, onPreview }: { raw: string;
   const inner = (
     <>
       <span className={styles.rewardIcon}>
-        {found?.imageName ? (
-          <ItemIcon imageName={found.imageName} name={label} size={40} />
+        {found ? (
+          <ItemIcon uniqueName={found.uniqueName} name={label} size={40} />
         ) : (
           <span className={styles.iconFallback} />
         )}

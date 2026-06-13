@@ -15,7 +15,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { ItemIcon } from './ItemIcon';
-import { findByName } from '@/adapters/items/itemsAdapter';
+import { findByName } from '@/adapters/items/codexCatalog';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -61,10 +61,16 @@ export function ResourceTag({
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Resolve icon: prop override → items adapter → placeholder
-  const item         = findByName(name);
-  const resolvedIcon = imageNameProp ?? item?.imageName;
-  const iconPx       = size === 'sm' ? 20 : 32;
+  // Resolve icon: explicit imageName prop → codex/items-map by name → placeholder.
+  // Render by uniqueName so ItemIcon runs its own codex→items-map→placeholder chain.
+  const codexItem  = imageNameProp ? undefined : findByName(name);
+  const iconUnique = codexItem?.uniqueName;
+  const iconPx     = size === 'sm' ? 20 : 32;
+
+  const renderIcon = (px: number, style?: React.CSSProperties) =>
+    imageNameProp ? <ItemIcon imageName={imageNameProp} name={name} size={px} style={style} />
+    : iconUnique  ? <ItemIcon uniqueName={iconUnique} name={name} size={px} style={style} />
+    : null;
 
   // Close tooltip on click outside
   useEffect(() => {
@@ -91,14 +97,7 @@ export function ResourceTag({
     >
       {/* ── Icon ────────────────────────────────────────────────────────── */}
       <div style={{ position: 'relative', flexShrink: 0 }}>
-        {resolvedIcon ? (
-          <ItemIcon
-            imageName={resolvedIcon}
-            name={name}
-            size={iconPx}
-            style={{ opacity: 0.90 }}
-          />
-        ) : (
+        {renderIcon(iconPx, { opacity: 0.90 }) ?? (
           <div style={{
             width:          iconPx,
             height:         iconPx,
@@ -121,9 +120,7 @@ export function ResourceTag({
           <div className="resource-tag-tooltip">
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-              {resolvedIcon && (
-                <ItemIcon imageName={resolvedIcon} name={name} size={28} />
-              )}
+              {renderIcon(28)}
               <div>
                 <div style={{
                   fontFamily:    'var(--font-sans)',

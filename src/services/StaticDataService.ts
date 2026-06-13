@@ -60,6 +60,7 @@ import type {
 import { SYNTHETIC_ITEMS } from '@/core/domain/syntheticItems';
 import { SYNTHETIC_ICON_URLS } from '@/lib/icons/syntheticIcons';
 import { primeCodexIndex } from '@/adapters/items/dropResolverAdapter';
+import { primeCodexCatalog } from '@/adapters/items/codexCatalog';
 
 const log = logger.scope('StaticDataService');
 
@@ -490,9 +491,10 @@ async function ensureSyntheticItems(): Promise<void> {
   }));
   try {
     await db.tennoplanItems.bulkPut(rows);
-    // Warm the sync codex icon index so ItemIcon can resolve codex-only icons
-    // (component parts, synthetics) app-wide on first render.
+    // Warm the sync codex indexes so ItemIcon + codexCatalog can resolve
+    // codex icons/names (component parts, synthetics) app-wide on first render.
     await primeCodexIndex();
+    await primeCodexCatalog();
   } catch (e) {
     log.warn('Failed to upsert synthetic codex items', errMsg(e));
   }

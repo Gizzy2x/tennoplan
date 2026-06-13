@@ -18,7 +18,7 @@
 
 import { memo, useMemo } from 'react';
 import { ItemIcon } from './ItemIcon';
-import { findByName } from '@/adapters/items/itemsAdapter';
+import { findByName } from '@/adapters/items/codexCatalog';
 import { useQuickLook, type QuickLookContext } from '@/store/quickLook';
 import styles from './ItemTile.module.css';
 
@@ -99,8 +99,8 @@ export const ItemTile = memo(function ItemTile({
           <ItemIcon uniqueName={uniqueName} name={name} size={size ?? 64} style={iconStyle} />
         ) : imageName ? (
           <ItemIcon imageName={imageName} name={name} size={size ?? 64} style={iconStyle} />
-        ) : nameFallback?.imageName ? (
-          <ItemIcon imageName={nameFallback.imageName} name={name} size={size ?? 64} style={iconStyle} />
+        ) : nameFallback ? (
+          <ItemIcon uniqueName={nameFallback.uniqueName} name={name} size={size ?? 64} style={iconStyle} />
         ) : (
           <span className={styles.placeholder} style={{ width: iconCss, height: iconCss }} />
         )}

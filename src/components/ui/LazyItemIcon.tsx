@@ -4,9 +4,9 @@
  * Renders a skeleton until the element enters the viewport, then resolves
  * the icon URL and shows the image. Never produces a broken "(image.png)".
  *
- * Resolution when `uniqueName` is supplied:
- *   1. db.items.iconUrl  — pre-resolved at Phase 1 sync, guaranteed non-empty
- *   2. itemsAdapter.findByUniqueName → getIconUrl  — baked build-time fallback
+ * Resolution when `uniqueName` is supplied (via codexCatalog — sync, cached):
+ *   1. codex (db.tennoplanItems) iconUrl  — authoritative + current
+ *   2. frozen items-map fallback           — long tail / pre-prime window
  *   3. /lotus-placeholder.svg
  *
  * When `imageName` or `item` is supplied, delegates to ItemIcon (sync, no Dexie).
@@ -17,9 +17,7 @@ import { useRef, useState, useEffect } from 'react';
 import type React from 'react';
 import { ItemIcon, type ItemIconProps } from './ItemIcon';
 import { cn } from '@/lib/utils';
-import { db } from '@/adapters/storage/db';
-import { findByUniqueName } from '@/adapters/items/itemsAdapter';
-import { getIconUrl } from '@/lib/icons/IconResolver';
+import { findByUniqueName } from '@/adapters/items/codexCatalog';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -29,15 +27,9 @@ function toPx(size: ItemIconProps['size'] = 'md'): number {
   return typeof size === 'number' ? size : SIZE_PX[size as keyof typeof SIZE_PX] ?? 48;
 }
 
-async function resolveUniqueNameUrl(uniqueName: string): Promise<string> {
-  try {
-    const stored = await db.items.get(uniqueName);
-    if (stored?.iconUrl) return stored.iconUrl;
-  } catch {
-    // Dexie not yet available (first-ever launch) — fall through to baked map
-  }
-  const entry = findByUniqueName(uniqueName);
-  return entry?.imageName ? getIconUrl(entry.imageName) : '/lotus-placeholder.svg';
+function resolveUniqueNameUrl(uniqueName: string): string {
+  // codexCatalog is codex-first with the frozen items-map as fallback (sync).
+  return findByUniqueName(uniqueName)?.iconUrl || '/lotus-placeholder.svg';
 }
 
 // ─── Props ───────────────────────────────────────────────────────────────────
@@ -92,15 +84,10 @@ export function LazyItemIcon(props: LazyItemIconProps) {
     return () => observer.disconnect();
   }, [rootMargin]);
 
-  // ── Dexie resolution (uniqueName path only) ──────────────────────────────
+  // ── Icon resolution (uniqueName path only) — sync via codexCatalog ────────
   useEffect(() => {
     if (!visible || !uniqueName) return;
-
-    let cancelled = false;
-    resolveUniqueNameUrl(uniqueName).then((url) => {
-      if (!cancelled) setResolvedUrl(url);
-    });
-    return () => { cancelled = true; };
+    setResolvedUrl(resolveUniqueNameUrl(uniqueName));
   }, [visible, uniqueName]);
 
   // ── Pre-visibility skeleton (holds ref for IntersectionObserver) ─────────

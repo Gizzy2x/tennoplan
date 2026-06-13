@@ -19,8 +19,7 @@
 
 import { useEffect, useRef } from 'react';
 import type { EnrichedBounty } from '@/core/domain/bounty';
-import { findByName } from '@/adapters/items/itemsAdapter';
-import { getIconUrl } from '@/lib/icons/IconResolver';
+import { findByName } from '@/adapters/items/codexCatalog';
 
 export function useIconPreloader(bounties: EnrichedBounty[]): void {
   // Keep a stable ref to the injected <link> elements so we can remove
@@ -36,33 +35,33 @@ export function useIconPreloader(bounties: EnrichedBounty[]): void {
 
     if (bounties.length === 0) return;
 
-    // ── Collect unique imageNames ─────────────────────────────────────────
-    const imageNames = new Set<string>();
+    // ── Collect unique icon URLs (codex-first, items-map fallback) ─────────
+    const urls = new Set<string>();
 
     for (const bounty of bounties) {
       // Regular rotation rewards
       for (const rotation of bounty.rotations) {
         for (const reward of rotation.rewards) {
           const item = findByName(reward.itemName);
-          if (item?.imageName) imageNames.add(item.imageName);
+          if (item?.iconUrl) urls.add(item.iconUrl);
         }
       }
       // Fallback pool (pre-sync flat list)
       if (bounty.fallbackPool) {
         for (const name of bounty.fallbackPool) {
           const item = findByName(name);
-          if (item?.imageName) imageNames.add(item.imageName);
+          if (item?.iconUrl) urls.add(item.iconUrl);
         }
       }
     }
 
     // ── Inject <link rel="preload"> for each icon ─────────────────────────
     const newLinks: HTMLLinkElement[] = [];
-    for (const imageName of imageNames) {
+    for (const url of urls) {
       const link = document.createElement('link');
       link.rel          = 'preload';
       link.as           = 'image';
-      link.href         = getIconUrl(imageName);
+      link.href         = url;
       link.crossOrigin  = 'anonymous';
       document.head.appendChild(link);
       newLinks.push(link);
