@@ -9,6 +9,9 @@ export const config = {
       current:  'codex:current',
       previous: 'codex:previous',
       metadata: 'codex:metadata',
+      // Phase B — chunk manifest (per-category content-addressed R2 chunks).
+      manifest:         'codex:manifest',
+      manifestPrevious: 'codex:manifest:previous',
     },
   },
 

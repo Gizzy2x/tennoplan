@@ -2,6 +2,8 @@ import type { Env } from '../types';
 import { handleHealth } from './handlers/health';
 import { handleWorldstate } from './handlers/worldstate';
 import { handleCodex } from './handlers/codex';
+import { handleCodexManifest } from './handlers/codexManifest';
+import { handleCodexChunk } from './handlers/codexChunk';
 import { handlePulse } from './handlers/pulse';
 import { corsResponse, handleOptions } from '../middleware/cors';
 
@@ -22,6 +24,9 @@ export async function route(request: Request, env: Env, ctx: ExecutionContext): 
   if (pathname === '/v1/health')             return handleHealth(request, env);
   if (pathname === '/v1/pulse')              return edgeCached(request, ctx, () => handlePulse(request, env));
   if (pathname.startsWith('/v1/worldstate')) return edgeCached(request, ctx, () => handleWorldstate(request, env));
+  // Phase B codex routes — MUST come before the /v1/codex monolith catch-all.
+  if (pathname === '/v1/codex/manifest')        return edgeCached(request, ctx, () => handleCodexManifest(request, env));
+  if (pathname.startsWith('/v1/codex/chunk/'))  return edgeCached(request, ctx, () => handleCodexChunk(request, env));
   if (pathname.startsWith('/v1/codex'))      return handleCodex(request, env);
 
   return corsResponse(
