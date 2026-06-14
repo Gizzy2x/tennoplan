@@ -113,10 +113,14 @@
   color: var(--color-text-muted);
 }
 
-.reward {
-  font-family: var(--font-sans);
-  font-size: 0.82rem;
-  color: var(--color-accent-gold);
+/* Reward tiles — uniform <ItemTile> grid, shared with the bounty board so
+   every reward across the app reads identically. Wraps; each tile carries its
+   own icon + quick-look. */
+.rewardTiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3, 12px);
+  margin-top: var(--space-2, 8px);
 }
 
 .rowFoot {
@@ -172,28 +176,6 @@
   font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
   color: var(--color-text-primary);
-}
-
-.invasionRewards {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 0.8rem;
-}
-
-.invasionRewardSide {
-  display: flex;
-  gap: var(--space-2, 8px);
-  align-items: baseline;
-}
-
-.sideTag {
-  font-family: var(--font-mono, monospace);
-  font-size: 0.66rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--color-text-muted);
-  min-width: 5.5ch;
 }
 
 /* Progress bar — jade fill. */
@@ -259,20 +241,6 @@
   font-family: var(--font-sans);
   font-size: 0.76rem;
   color: color-mix(in oklab, var(--color-accent-jade) 80%, var(--color-text-muted));
-}
-
-.rewardPool {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px var(--space-2, 8px);
-  padding-top: var(--space-2, 8px);
-  border-top: 1px solid color-mix(in oklab, var(--color-border-default) 70%, transparent);
-}
-
-.rewardChip {
-  font-family: var(--font-sans);
-  font-size: 0.78rem;
-  color: var(--color-accent-gold);
 }
 
 .boss {

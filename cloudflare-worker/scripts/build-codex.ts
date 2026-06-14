@@ -29,6 +29,7 @@ import { syntheticBuiltItems }  from '../src/codex/syntheticItems';
 import { enrichCodex }          from '../src/codex/enricher';
 import { loadPePlus }           from './lib/peplus';
 import { applyPePlusAuthority } from './lib/peplusOverlay';
+import { checkPePlusSchema, formatSchemaGuard } from './lib/peplusSchemaGuard';
 import { normalizeCodex }       from '../src/codex/normalizer';
 import { validateCodex }        from '../src/codex/validator';
 import { scanCodexTokens, formatUnknownTokens } from '../src/codex/tokenScanner';
@@ -96,6 +97,16 @@ async function main(): Promise<void> {
   // CI installs `warframe-public-export-plus@latest` right before this runs.
   const peplus = loadPePlus();
   if (peplus) {
+    // SCHEMA-DRIFT GUARD — run before the overlay reads any field. A critical
+    // PE+ field vanishing (DE rename/removal) would silently degrade the codex
+    // to stale WFCD numbers; fail clean instead so last-good keeps serving.
+    const schema = checkPePlusSchema(peplus);
+    console.error('[build-codex] PE+ schema guard:\n' + formatSchemaGuard(schema));
+    if (!schema.ok) {
+      console.error('[build-codex] FATAL: PE+ schema drift detected — refusing to publish degraded data.');
+      process.exit(1);
+    }
+
     const overlay = applyPePlusAuthority(enriched.items, peplus);
     console.error(`[build-codex] PE+ v${overlay.peVersion}: matched ${JSON.stringify(overlay.matched)}, ` +
       `divergence ${JSON.stringify(overlay.statDivergence)}, synthesized ${overlay.synthesized} ` +

@@ -24,9 +24,10 @@
  *   the previous codex stays intact. Network failures bump errorCount
  *   but never touch the items table.
  *
- * The Worker URL is required: VITE_WORLDSTATE_WORKER_URL (shared with
- * the worldstate sync). Without it, init() / refreshCodex() are no-ops
- * with a warning log.
+ * The Worker URL resolves via `@/lib/config/workerBase` (shared with the
+ * worldstate sync): the VITE_WORLDSTATE_WORKER_URL env var when set, else a
+ * hardcoded production default. It is never empty, so the codex sync can't be
+ * silently disabled by a missing build-time env var.
  */
 
 import { logger } from '@/core/utils/logger';
@@ -61,18 +62,20 @@ import { SYNTHETIC_ITEMS } from '@/core/domain/syntheticItems';
 import { SYNTHETIC_ICON_URLS } from '@/lib/icons/syntheticIcons';
 import { primeCodexIndex } from '@/adapters/items/dropResolverAdapter';
 import { primeCodexCatalog } from '@/adapters/items/codexCatalog';
+import { WORKER_BASE } from '@/lib/config/workerBase';
 
 const log = logger.scope('StaticDataService');
 
 // ─── Endpoint config ──────────────────────────────────────────────────────────
 
-const WORKER_BASE = (import.meta.env.VITE_WORLDSTATE_WORKER_URL as string | undefined)?.replace(/\/$/, '');
-const ENDPOINT    = WORKER_BASE ? `${WORKER_BASE}/v1/codex` : null;
+// WORKER_BASE carries a hardcoded production default (see workerBase.ts), so
+// these endpoints are always non-null — the env var is an override, not a gate.
+const ENDPOINT    = `${WORKER_BASE}/v1/codex`;
 
 // ─── Phase B — chunk delta endpoints ────────────────────────────────────────────
 
 /** Manifest of per-category content-addressed chunks (Phase B delta downloads). */
-const MANIFEST_ENDPOINT = WORKER_BASE ? `${WORKER_BASE}/v1/codex/manifest` : null;
+const MANIFEST_ENDPOINT = `${WORKER_BASE}/v1/codex/manifest`;
 
 /** A manifest chunk key is `chunks/<Cat>-<hash>.json`; the route serves the part
  *  after `chunks/`. */
@@ -414,14 +417,27 @@ async function performDeltaSync(force: boolean): Promise<DeltaSyncResult> {
   // Diff manifest vs what we hold.
   const storedHashes = await getCodexChunkHashes();
   const manifestCats = new Set(manifest.chunks.map((c) => c.category));
-  const toFetch = manifest.chunks.filter((c) => storedHashes[c.category] !== c.hash);
+  let   toFetch = manifest.chunks.filter((c) => storedHashes[c.category] !== c.hash);
   const removed = (Object.keys(storedHashes) as ItemCategory[]).filter((cat) => !manifestCats.has(cat));
 
   const newHashes: Record<string, string> = {};
   for (const c of manifest.chunks) newHashes[c.category] = c.hash;
 
   if (toFetch.length === 0 && removed.length === 0) {
-    return { status: 'not-modified' };
+    // The hash diff says we're current — but the chunk-hash map can OUTLIVE the
+    // rows it describes: "Clear Local Data" wipes tennoplanItems but not this
+    // map, and quota eviction can drop the table independently. Then every sync
+    // sees matching hashes, fetches nothing, and the codex stays empty forever
+    // (the exact "0 items, manifest unchanged" stuck state). So trust
+    // "not-modified" only when we actually hold the data the manifest describes;
+    // otherwise force a full re-download of every chunk. Synthetics (a handful)
+    // can linger after a wipe, so compare to the manifest count, not zero.
+    const localCount = (await getCodexStatus()).itemCount;
+    if (localCount >= manifest.itemCount) {
+      return { status: 'not-modified' };
+    }
+    log.warn(`Codex chunk hashes intact but local cache short (${localCount}/${manifest.itemCount}) — re-downloading all chunks.`);
+    toFetch = manifest.chunks.slice();
   }
 
   // Download the changed chunks in parallel — sequential would stack round-trips
