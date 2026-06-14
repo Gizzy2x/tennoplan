@@ -172,224 +172,7 @@ interface SharedNote {
 }
 
 const WARFRAME_NOTES: SharedNote[] = [
-  // ── Shieldless frames (shield-gating gear is dead weight) ──
-  {
-    keys: ['/Lotus/Powersuits/Sandman/Sandman', '/Lotus/Powersuits/Sandman/InarosPrime'],
-    note: {
-      tldr: 'A shieldless wall of health and armor — Inaros tanks with raw HP, not shields, and can revive himself.',
-      points: [
-        'He has NO shields, so shield-gating gear does nothing: Brief Respite, Catalyzing Shields, and shield-based arcanes are wasted slots.',
-        'Survivability scales off Health and Armor instead — think Adaptation, Arcane Grace, and armor/health mods.',
-        'His energy economy is thin, so most builds lean on Equilibrium plus health-orb generation (or Arcane Energize) to stay powered.',
-        'The self-revive passive only triggers from a sarcophagus; you still need to finish a nearby enemy (or be revived) to get back up.',
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: ['/Lotus/Powersuits/Infestation/Infestation', '/Lotus/Powersuits/Infestation/InfestationPrime'],
-    note: {
-      tldr: 'Nidus survives on Mutation stacks, not shields — build stacks up and they become a free death-save.',
-      points: [
-        'He is shieldless, so shield-gating mods and arcanes are pointless; his defense is stacks, armor, and Parasitic Link.',
-        'Cast Virulence repeatedly to bank Mutation stacks — at 15+, taking lethal damage spends them to revive you with invulnerability instead of dying.',
-        'Stacks also power his other abilities, so range and strength (to land Virulence on crowds) matter more than duration on most builds.',
-        'Energy is easy to keep up: Ravenous spawns health orbs, pairing perfectly with Equilibrium.',
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: ['/Lotus/Powersuits/PaxDuviricus/PaxDuviricus'],
-    note: {
-      tldr: 'A shieldless heavy-attack duelist who tanks behind Overguard and recovers energy from the damage he deals.',
-      points: [
-        'No shields — but Wrathful Advance grants Overguard, which soaks hits AND blocks status procs and knockdowns while it lasts, so shield-gating gear is irrelevant.',
-        'His passive gives big heavy-attack efficiency and wind-up speed to ANY melee, so he is built around heavy-attack weapons.',
-        'Recompense converts the health you lose into energy, so taking some damage is part of his loop rather than a problem.',
-        'Storm of Ukko marks enemies; hitting marked targets is how he heals and sustains in a fight.',
-      ],
-      status: 'beta',
-    },
-  },
-  // ── Resource quirks (energy gear that does nothing) ──
-  {
-    keys: ['/Lotus/Powersuits/IronFrame/IronFrame', '/Lotus/Powersuits/IronFrame/IronFramePrime'],
-    note: {
-      tldr: 'Hildryn pays for abilities with SHIELDS, not energy — so every energy mod and arcane is dead weight on her.',
-      points: [
-        'She has no energy bar for abilities: Flow, Streamline, Arcane Energize, and the Zenurik energy dash do nothing for her.',
-        'Pillage is her engine — it strips enemy shields/armor and refunds her shields, letting her cast almost endlessly.',
-        'Build for a big shield pool plus shield regen and Ability Strength; survivability comes from her unusually long shield-gate.',
-        'Because casting drains shields, anything that caps or lowers max shields (like Catalyzing Shields) actively hurts her.',
-      ],
-      status: 'beta',
-    },
-  },
-  // ── Invulnerability mechanics (not shield-gating) ──
-  {
-    keys: ['/Lotus/Powersuits/Revenant/Revenant', '/Lotus/Powersuits/Revenant/RevenantPrime'],
-    note: {
-      tldr: 'Mesmer Skin gives Revenant charges of full invulnerability — survival is about charge count, not shields or armor.',
-      points: [
-        'Each enemy that hits you spends one Mesmer Skin charge and gets stunned; when charges hit zero you are exposed, so recast before they run out.',
-        'More Ability Strength = more charges, which is why strength is his core survival stat rather than health or armor.',
-        'It is not perfect: damage-over-time already ticking on you, and some special attacks, can still get through.',
-        'Danse Macabre is his main damage; Mesmer Shield (augment) shares the invulnerability with allies.',
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: ['/Lotus/Powersuits/Nezha/Nezha', '/Lotus/Powersuits/Nezha/NezhaPrime'],
-    note: {
-      tldr: 'Nezha has low base health — his real health bar is Warding Halo, a one-cast damage buffer that scales with Strength.',
-      points: [
-        'Warding Halo absorbs a chunk of damage set at the moment you cast it, plus a brief immunity window when it pops; Ability Strength makes it bigger.',
-        'Because the buffer is the build, stacking Strength (and recasting the Halo) matters more than raw health mods.',
-        'Blazing Chakram strips armor and amplifies headshot damage, turning him into a strong weapon-platform frame.',
-        'The Safeguard augment lets you cast Warding Halo onto allies — a popular pick for defense and support runs.',
-      ],
-      status: 'beta',
-    },
-  },
-  // ── Snapshot buffs (cast order matters) ──
-  {
-    keys: ['/Lotus/Powersuits/Rhino/Rhino', '/Lotus/Powersuits/Rhino/RhinoPrime'],
-    note: {
-      tldr: 'Iron Skin snapshots your armor and strength at the instant you cast it — so the order you buff in changes how tanky it is.',
-      points: [
-        'Iron Skin locks in its health from your armor and Ability Strength AT CAST. Apply armor buffs/arcanes first, then cast, for a much bigger shield.',
-        'There is a short window right after casting where extra hits add to the Iron Skin value before it locks — many players cast in a busy room on purpose.',
-        'Roar is a damage multiplier that also boosts status and damage-over-time, and it stacks multiplicatively with mods — a top-tier party buff.',
-        'A classic, beginner-friendly frame: simple kit, very hard to kill once Iron Skin is up.',
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: ['/Lotus/Powersuits/Dragon/Dragon', '/Lotus/Powersuits/Dragon/ChromaPrime'],
-    note: {
-      tldr: 'Chroma is a buff battery — his element is chosen by your ENERGY COLOR, and his big buffs build up as he takes damage.',
-      points: [
-        'Energy color sets his element for Elemental Ward and Spectral Scream/Effigy (e.g. cold-range colors = Ice, hot colors = Heat) — pick the color deliberately.',
-        'Vex Armor has two meters, Fury (more damage) and Scorn (more armor), that you charge by TAKING and DEALING damage; both scale with Ability Strength.',
-        'Vex Armor’s damage bonus snapshots onto your weapons, which is why he is a famous single-target/Eidolon nuke platform.',
-        'He has no resource quirk — just remember the buffs need a moment (and a little incoming damage) to ramp before they are at full power.',
-      ],
-      status: 'beta',
-    },
-  },
-  // ── Caster / status identity ──
-  {
-    keys: ['/Lotus/Powersuits/Saryn/Saryn', '/Lotus/Powersuits/Saryn/SarynPrime'],
-    note: {
-      tldr: 'Saryn is the queen of spreading status — Spores ramp up and jump from corpse to corpse to melt whole rooms.',
-      points: [
-        'Spores grow stronger over time and spread when an infected enemy dies or you pop them, so Range (to spread) and Strength (for spore damage) carry the build.',
-        'Her passive makes your status effects last longer, leaning her even harder into status-stacking weapons and Viral.',
-        'Toxic Lash boosts melee and helps re-pop Spores; Molt gives a decoy plus a speed buff (Regenerative Molt for healing).',
-        'If every infected enemy dies at once, Spores reset — keep at least one target alive to hold the ramp.',
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: ['/Lotus/Powersuits/Runner/Runner', '/Lotus/Powersuits/Runner/GaussPrime'],
-    note: {
-      tldr: 'Gauss runs on a Battery — keep moving to charge it, and his speed, damage reduction, and overdrive all key off how full it is.',
-      points: [
-        'Movement (especially Mach Rush) fills the battery; let it sit and the battery drains, so this is a frame you play by staying in motion.',
-        'Kinetic Plating turns incoming damage into battery charge and grants heavy damage reduction plus status/knockdown immunity that scales with battery level.',
-        'Redline overdrives fire rate, reload, and more once the battery is high — built for Duration and Strength to hold the redline zone.',
-        'Thermal Sunder (Cold/Heat AoE) is a huge part of his kit and one of the most-borrowed Helminth abilities in the game.',
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: ['/Lotus/Powersuits/AntiMatter/Anti', '/Lotus/Powersuits/AntiMatter/NovaPrime'],
-    note: {
-      tldr: 'Nova is the textbook reason to build NEGATIVE Ability Strength on purpose — it flips her slow into a speed boost.',
-      points: [
-        'Molecular Prime slows enemies and makes them take extra damage; at NEGATIVE Strength it instead SPEEDS enemies up to rush objectives (speed-nova).',
-        'So her build is a deliberate choice: positive Strength for a slow-and-amplify nuke setup, negative Strength for fast Defense/Interception pushes.',
-        'Null Star gives orbiting motes that grant damage reduction, her main survival tool on a squishy frame.',
-        'Antimatter Drop is a high-skill nuke that absorbs incoming fire to multiply its own damage.',
-      ],
-      status: 'beta',
-    },
-  },
-  // ── Survival / utility identity ──
-  {
-    keys: ['/Lotus/Powersuits/Berserker/Berserker', '/Lotus/Powersuits/Berserker/ValkyrPrime'],
-    note: {
-      tldr: 'Valkyr is the melee berserker — Hysteria makes her invincible while she claws, and her sky-high armor carries the rest.',
-      points: [
-        'Hysteria is an exalted melee with invulnerability, but it drains and leaves a brief vulnerable window when it ends, so it is not truly infinite.',
-        'Her enormous base armor (and Warcry’s armor/attack-speed buff) makes armor-stacking and Steel Fiber especially effective.',
-        'Because Hysteria blocks damage, energy-from-damage mods (Rage/Hunter Adrenaline) sustain her between casts, not during them.',
-        'Eternal War (augment) lets you keep Warcry’s attack speed up for long stretches — a staple melee buff build.',
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: ['/Lotus/Powersuits/MonkeyKing/MonkeyKing', '/Lotus/Powersuits/MonkeyKing/WukongPrime'],
-    note: {
-      tldr: 'Wukong brings a second him (Celestial Twin) and an invisible heal (Cloud Walker) — a famously forgiving, low-effort frame.',
-      points: [
-        'Celestial Twin fights alongside you with its own weapon, effectively adding a second gun to every mission.',
-        'Cloud Walker turns you invisible while moving and heals you, his main escape-and-reset button.',
-        'Defy still gives a window of heavy damage reduction and an armor buff, though it was toned down from the old "unkillable" version.',
-        'Primal Fury is his exalted Iron Staff — long reach and strong crit scaling for melee builds.',
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: ['/Lotus/Powersuits/Wisp/Wisp', '/Lotus/Powersuits/Wisp/WispPrime'],
-    note: {
-      tldr: 'Wisp drops Reservoir motes that buff the whole squad — and the buff sticks for a while even after you walk away from them.',
-      points: [
-        'Place all three motes (Haste for speed/fire-rate, Vitality for health/regen, Shock for stun); allies pick them up by passing through, then keep the buff for a duration.',
-        'Her passive makes her invisible while airborne — bullet-jump or hover and enemies lose track of her, so positioning is her defense.',
-        'Range and Duration are the key stats: bigger aura to grab buffs, longer-lasting motes.',
-        'Breach Surge pairs with her teleport for blinds and chain damage; Sol Gate is her exalted beam.',
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: ['/Lotus/Powersuits/Bard/Bard', '/Lotus/Powersuits/Bard/OctaviaPrime'],
-    note: {
-      tldr: 'Octavia’s Mallet reflects enemy damage back at them — the harder they shoot it, the harder it hits, so it scales endlessly.',
-      points: [
-        'Mallet stores the damage enemies deal TO it and pulses it back out, which is why it stays lethal even at very high levels.',
-        'Metronome turns you (and allies) invisible and hands out buffs when you do simple actions like jumping or crouching to the beat.',
-        'Range and Duration are the priority stats; she is the classic AFK-friendly survival and affinity-farm frame.',
-        'Amp boosts ability damage in its aura and Resonator drags enemies onto the Mallet — drop all three together for a self-running room clear.',
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: ['/Lotus/Powersuits/Devourer/Devourer', '/Lotus/Powersuits/Devourer/GrendelPrime'],
-    note: {
-      tldr: 'Grendel eats enemies to fuel himself — and despite the rumor he is NOT shieldless (he just has a tiny shield).',
-      points: [
-        'Feast swallows enemies into his belly; each one he holds grants bonus armor (his passive) while they take damage inside him.',
-        'He does have a small shield pool, so he is not a true shieldless frame — but his real tankiness is armor and the enemies he is digesting.',
-        'Build for Armor, Strength, and Duration; the more he holds, the tankier he gets.',
-        'Nourish is one of the most popular Helminth abilities in the whole game (energy sustain plus a Viral damage buff) — many players borrow it off him.',
-      ],
-      status: 'beta',
-    },
-  },
-
-  // ===== Alphabetical sweep (wiki-researched, our own words) =====
-
-  // Amesha (Archwing)
+  // Amesha
   {
     keys: ['/Lotus/Powersuits/Archwing/SupportJetPack/SupportJetPack'],
     note: {
@@ -406,7 +189,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Ash
   {
-    keys: ['/Lotus/Powersuits/Ninja/Ninja', '/Lotus/Powersuits/Ninja/AshPrime'],
+    keys: [
+      '/Lotus/Powersuits/Ninja/Ninja',
+      '/Lotus/Powersuits/Ninja/AshPrime',
+    ],
     note: {
       tldr: 'A stealth assassin built around invisibility and finishers — Ash turns Slash bleeds into a quiet, lethal loop.',
       points: [
@@ -421,7 +207,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Atlas
   {
-    keys: ['/Lotus/Powersuits/Brawler/Brawler', '/Lotus/Powersuits/Brawler/AtlasPrime'],
+    keys: [
+      '/Lotus/Powersuits/Brawler/Brawler',
+      '/Lotus/Powersuits/Brawler/AtlasPrime',
+    ],
     note: {
       tldr: 'A melee brawler who tanks by punching — Landslide scales off your MELEE weapon, and every hit banks Rubble into armor.',
       points: [
@@ -436,7 +225,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Banshee
   {
-    keys: ['/Lotus/Powersuits/Banshee/Banshee', '/Lotus/Powersuits/Banshee/BansheePrime'],
+    keys: [
+      '/Lotus/Powersuits/Banshee/Banshee',
+      '/Lotus/Powersuits/Banshee/BansheePrime',
+    ],
     note: {
       tldr: 'A glass-cannon force multiplier — Sonar paints weak spots that make ANY weapon hit for many times its normal damage.',
       points: [
@@ -451,7 +243,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Baruuk
   {
-    keys: ['/Lotus/Powersuits/Pacifist/Pacifist', '/Lotus/Powersuits/Pacifist/BaruukPrime'],
+    keys: [
+      '/Lotus/Powersuits/Pacifist/Pacifist',
+      '/Lotus/Powersuits/Pacifist/BaruukPrime',
+    ],
     note: {
       tldr: 'A reluctant pacifist who stacks enormous damage reduction, then unleashes energy-free exalted fists once his Restraint runs out.',
       points: [
@@ -464,7 +259,7 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
-  // Bonewidow (Necramech)
+  // Bonewidow
   {
     keys: ['/Lotus/Powersuits/EntratiMech/ThanoTech'],
     note: {
@@ -481,7 +276,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Caliban
   {
-    keys: ['/Lotus/Powersuits/Sentient/Sentient', '/Lotus/Powersuits/Sentient/CalibanPrime'],
+    keys: [
+      '/Lotus/Powersuits/Sentient/Sentient',
+      '/Lotus/Powersuits/Sentient/CalibanPrime',
+    ],
     note: {
       tldr: 'A Sentient-hybrid armor-stripper — after his rework, Fusion Strike tears off shields AND armor so your weapons hit full force.',
       points: [
@@ -489,6 +287,24 @@ const WARFRAME_NOTES: SharedNote[] = [
         'All of his abilities apply Tau status, a neutral damage type that opens enemies up no matter their faction.',
         'Lethal Progeny summons Sentient helpers that restore your shields and harass enemies, giving him steady on-field sustain.',
         'His passive grants the squad adaptive damage resistance that adjusts to whatever damage type is hitting you — a quiet team-wide buff.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Chroma
+  {
+    keys: [
+      '/Lotus/Powersuits/Dragon/Dragon',
+      '/Lotus/Powersuits/Dragon/ChromaPrime',
+    ],
+    note: {
+      tldr: 'Chroma is a buff battery — his element is chosen by your ENERGY COLOR, and his big buffs build up as he takes damage.',
+      points: [
+        'Energy color sets his element for Elemental Ward and Spectral Scream/Effigy (e.g. cold-range colors = Ice, hot colors = Heat) — pick the color deliberately.',
+        'Vex Armor has two meters, Fury (more damage) and Scorn (more armor), that you charge by TAKING and DEALING damage; both scale with Ability Strength.',
+        'Vex Armor’s damage bonus snapshots onto your weapons, which is why he is a famous single-target/Eidolon nuke platform.',
+        'He has no resource quirk — just remember the buffs need a moment (and a little incoming damage) to ramp before they are at full power.',
       ],
       status: 'beta',
     },
@@ -554,7 +370,7 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
-  // Elytron (Archwing)
+  // Elytron
   {
     keys: ['/Lotus/Powersuits/Archwing/DemolitionJetPack/DemolitionJetPack'],
     note: {
@@ -571,7 +387,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Ember
   {
-    keys: ['/Lotus/Powersuits/Ember/Ember', '/Lotus/Powersuits/Ember/EmberPrime'],
+    keys: [
+      '/Lotus/Powersuits/Ember/Ember',
+      '/Lotus/Powersuits/Ember/EmberPrime',
+    ],
     note: {
       tldr: 'A fire caster who runs hot — Ember’s damage and toughness both ride a heat meter you have to keep from boiling over.',
       points: [
@@ -586,7 +405,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Equinox
   {
-    keys: ['/Lotus/Powersuits/YinYang/YinYang', '/Lotus/Powersuits/YinYang/EquinoxPrime'],
+    keys: [
+      '/Lotus/Powersuits/YinYang/YinYang',
+      '/Lotus/Powersuits/YinYang/EquinoxPrime',
+    ],
     note: {
       tldr: 'A two-in-one frame — Equinox swaps between an offensive Day form and a defensive Night form, and is famous for a stored-damage room nuke.',
       points: [
@@ -599,7 +421,7 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
-  // Excalibur (+ Prime, + Umbra)
+  // Excalibur
   {
     keys: [
       '/Lotus/Powersuits/Excalibur/Excalibur',
@@ -635,7 +457,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Frost
   {
-    keys: ['/Lotus/Powersuits/Frost/Frost', '/Lotus/Powersuits/Frost/FrostPrime'],
+    keys: [
+      '/Lotus/Powersuits/Frost/Frost',
+      '/Lotus/Powersuits/Frost/FrostPrime',
+    ],
     note: {
       tldr: 'The classic defense frame — Frost drops a Snow Globe that walls off an objective and an Avalanche that freezes and strips armor.',
       points: [
@@ -650,7 +475,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Gara
   {
-    keys: ['/Lotus/Powersuits/Glass/Glass', '/Lotus/Powersuits/Glass/GaraPrime'],
+    keys: [
+      '/Lotus/Powersuits/Glass/Glass',
+      '/Lotus/Powersuits/Glass/GaraPrime',
+    ],
     note: {
       tldr: 'A glass frame with a famous scaling loop — Gara stacks Splinter Storm’s damage by hitting it with her own Shattered Lash, on top of being a strong defender.',
       points: [
@@ -665,7 +493,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Garuda
   {
-    keys: ['/Lotus/Powersuits/Garuda/Garuda', '/Lotus/Powersuits/Garuda/GarudaPrime'],
+    keys: [
+      '/Lotus/Powersuits/Garuda/Garuda',
+      '/Lotus/Powersuits/Garuda/GarudaPrime',
+    ],
     note: {
       tldr: 'A blood-powered berserker — Garuda turns her own health into energy and hits harder the closer she is to death.',
       points: [
@@ -678,9 +509,48 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
+  // Gauss
+  {
+    keys: [
+      '/Lotus/Powersuits/Runner/Runner',
+      '/Lotus/Powersuits/Runner/GaussPrime',
+    ],
+    note: {
+      tldr: 'Gauss runs on a Battery — keep moving to charge it, and his speed, damage reduction, and overdrive all key off how full it is.',
+      points: [
+        'Movement (especially Mach Rush) fills the battery; let it sit and the battery drains, so this is a frame you play by staying in motion.',
+        'Kinetic Plating turns incoming damage into battery charge and grants heavy damage reduction plus status/knockdown immunity that scales with battery level.',
+        'Redline overdrives fire rate, reload, and more once the battery is high — built for Duration and Strength to hold the redline zone.',
+        'Thermal Sunder (Cold/Heat AoE) is a huge part of his kit and one of the most-borrowed Helminth abilities in the game.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Grendel
+  {
+    keys: [
+      '/Lotus/Powersuits/Devourer/Devourer',
+      '/Lotus/Powersuits/Devourer/GrendelPrime',
+    ],
+    note: {
+      tldr: 'Grendel eats enemies to fuel himself — and despite the rumor he is NOT shieldless (he just has a tiny shield).',
+      points: [
+        'Feast swallows enemies into his belly; each one he holds grants bonus armor (his passive) while they take damage inside him.',
+        'He does have a small shield pool, so he is not a true shieldless frame — but his real tankiness is armor and the enemies he is digesting.',
+        'Build for Armor, Strength, and Duration; the more he holds, the tankier he gets.',
+        'Nourish is one of the most popular Helminth abilities in the whole game (energy sustain plus a Viral damage buff) — many players borrow it off him.',
+      ],
+      status: 'beta',
+    },
+  },
+
   // Gyre
   {
-    keys: ['/Lotus/Powersuits/Gyre/Gyre', '/Lotus/Powersuits/Gyre/GyrePrime'],
+    keys: [
+      '/Lotus/Powersuits/Gyre/Gyre',
+      '/Lotus/Powersuits/Gyre/GyrePrime',
+    ],
     note: {
       tldr: 'An electric crit-nuker — Gyre turns Electricity status into critical hits that chain across a whole room.',
       points: [
@@ -695,7 +565,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Harrow
   {
-    keys: ['/Lotus/Powersuits/Priest/Priest', '/Lotus/Powersuits/Priest/HarrowPrime'],
+    keys: [
+      '/Lotus/Powersuits/Priest/Priest',
+      '/Lotus/Powersuits/Priest/HarrowPrime',
+    ],
     note: {
       tldr: 'A priest-themed crit buffer — Harrow hands the squad fire-rate, lifesteal, and a huge critical-chance boost, all fueled by overshields and headshots.',
       points: [
@@ -708,9 +581,45 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
+  // Helminth
+  {
+    keys: ['/Lotus/Powersuits/PowersuitAbilities/Helminth'],
+    note: {
+      tldr: 'Not a Warframe you play — the Helminth is the Infested system in your ship that lets you swap one ability onto any frame. It is why so many of these notes mention a "Helminth pick".',
+      points: [
+        'Once unlocked (through the Heart of Deimos and Entrati path), you can "subsume" a Warframe to permanently learn one of its abilities — but doing so consumes that copy of the frame.',
+        'You then inject that learned ability onto another frame, replacing one of its four abilities; each frame can hold one subsumed ability at a time.',
+        'This is how players fix a frame’s weak slot, dropping in staples like Gloom, Dispensary, Nourish, Eclipse, Roar, or Pillage that show up across these notes.',
+        'Feeding the Helminth costs resources and it needs time to recover between uses, so decide which ability you want before sacrificing a frame.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Hildryn
+  {
+    keys: [
+      '/Lotus/Powersuits/IronFrame/IronFrame',
+      '/Lotus/Powersuits/IronFrame/IronFramePrime',
+    ],
+    note: {
+      tldr: 'Hildryn pays for abilities with SHIELDS, not energy — so every energy mod and arcane is dead weight on her.',
+      points: [
+        'She has no energy bar for abilities: Flow, Streamline, Arcane Energize, and the Zenurik energy dash do nothing for her.',
+        'Pillage is her engine — it strips enemy shields/armor and refunds her shields, letting her cast almost endlessly.',
+        'Build for a big shield pool plus shield regen and Ability Strength; survivability comes from her unusually long shield-gate.',
+        'Because casting drains shields, anything that caps or lowers max shields (like Catalyzing Shields) actively hurts her.',
+      ],
+      status: 'beta',
+    },
+  },
+
   // Hydroid
   {
-    keys: ['/Lotus/Powersuits/Pirate/Pirate', '/Lotus/Powersuits/Pirate/HydroidPrime'],
+    keys: [
+      '/Lotus/Powersuits/Pirate/Pirate',
+      '/Lotus/Powersuits/Pirate/HydroidPrime',
+    ],
     note: {
       tldr: 'The reworked pirate — Hydroid is now a Corrosive armor-stripper who buffs his own tankiness and weapons while melting enemy armor.',
       points: [
@@ -723,7 +632,25 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
-  // Itzal (Archwing)
+  // Inaros
+  {
+    keys: [
+      '/Lotus/Powersuits/Sandman/Sandman',
+      '/Lotus/Powersuits/Sandman/InarosPrime',
+    ],
+    note: {
+      tldr: 'A shieldless wall of health and armor — Inaros tanks with raw HP, not shields, and can revive himself.',
+      points: [
+        'He has NO shields, so shield-gating gear does nothing: Brief Respite, Catalyzing Shields, and shield-based arcanes are wasted slots.',
+        'Survivability scales off Health and Armor instead — think Adaptation, Arcane Grace, and armor/health mods.',
+        'His energy economy is thin, so most builds lean on Equilibrium plus health-orb generation (or Arcane Energize) to stay powered.',
+        'The self-revive passive only triggers from a sarcophagus; you still need to finish a nearby enemy (or be revived) to get back up.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Itzal
   {
     keys: ['/Lotus/Powersuits/Archwing/StealthJetPack/StealthJetPack'],
     note: {
@@ -740,7 +667,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Ivara
   {
-    keys: ['/Lotus/Powersuits/Ranger/Ranger', '/Lotus/Powersuits/Ranger/IvaraPrime'],
+    keys: [
+      '/Lotus/Powersuits/Ranger/Ranger',
+      '/Lotus/Powersuits/Ranger/IvaraPrime',
+    ],
     note: {
       tldr: 'The stealth-and-theft archer — Ivara stays invisible, pickpockets enemies, and steers her shots for pinpoint kills.',
       points: [
@@ -770,7 +700,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Khora
   {
-    keys: ['/Lotus/Powersuits/Khora/Khora', '/Lotus/Powersuits/Khora/KhoraPrime'],
+    keys: [
+      '/Lotus/Powersuits/Khora/Khora',
+      '/Lotus/Powersuits/Khora/KhoraPrime',
+    ],
     note: {
       tldr: 'A farming and crowd-control favorite — Khora groups enemies, whips them all at once, and (with one augment) makes them rain loot.',
       points: [
@@ -798,9 +731,27 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
+  // Kullervo
+  {
+    keys: ['/Lotus/Powersuits/PaxDuviricus/PaxDuviricus'],
+    note: {
+      tldr: 'A shieldless heavy-attack duelist who tanks behind Overguard and recovers energy from the damage he deals.',
+      points: [
+        'No shields — but Wrathful Advance grants Overguard, which soaks hits AND blocks status procs and knockdowns while it lasts, so shield-gating gear is irrelevant.',
+        'His passive gives big heavy-attack efficiency and wind-up speed to ANY melee, so he is built around heavy-attack weapons.',
+        'Recompense converts the health you lose into energy, so taking some damage is part of his loop rather than a problem.',
+        'Storm of Ukko marks enemies; hitting marked targets is how he heals and sustains in a fight.',
+      ],
+      status: 'beta',
+    },
+  },
+
   // Lavos
   {
-    keys: ['/Lotus/Powersuits/Alchemist/Alchemist', '/Lotus/Powersuits/Alchemist/LavosPrime'],
+    keys: [
+      '/Lotus/Powersuits/Alchemist/Alchemist',
+      '/Lotus/Powersuits/Alchemist/LavosPrime',
+    ],
     note: {
       tldr: 'The alchemist with NO energy bar — Lavos runs on cooldowns instead, and energy mods and arcanes do nothing for him.',
       points: [
@@ -815,7 +766,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Limbo
   {
-    keys: ['/Lotus/Powersuits/Magician/Magician', '/Lotus/Powersuits/Magician/LimboPrime'],
+    keys: [
+      '/Lotus/Powersuits/Magician/Magician',
+      '/Lotus/Powersuits/Magician/LimboPrime',
+    ],
     note: {
       tldr: 'The rift magician — Limbo can make a whole objective untouchable, or accidentally grief his own squad, depending on how carefully he is played.',
       points: [
@@ -830,7 +784,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Loki
   {
-    keys: ['/Lotus/Powersuits/Loki/Loki', '/Lotus/Powersuits/Loki/LokiPrime'],
+    keys: [
+      '/Lotus/Powersuits/Loki/Loki',
+      '/Lotus/Powersuits/Loki/LokiPrime',
+    ],
     note: {
       tldr: 'The original trickster — Loki leans on long-duration invisibility and a disarm that turns gun-toting enemies into harmless melee.',
       points: [
@@ -845,7 +802,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Mag
   {
-    keys: ['/Lotus/Powersuits/Mag/Mag', '/Lotus/Powersuits/Mag/MagPrime'],
+    keys: [
+      '/Lotus/Powersuits/Mag/Mag',
+      '/Lotus/Powersuits/Mag/MagPrime',
+    ],
     note: {
       tldr: 'A magnetic starter frame and Corpus specialist — Mag strips shields, vacuums loot, and turns enemy gunfire into a damage amplifier.',
       points: [
@@ -860,7 +820,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Mesa
   {
-    keys: ['/Lotus/Powersuits/Cowgirl/Cowgirl', '/Lotus/Powersuits/Cowgirl/MesaPrime'],
+    keys: [
+      '/Lotus/Powersuits/Cowgirl/Cowgirl',
+      '/Lotus/Powersuits/Cowgirl/MesaPrime',
+    ],
     note: {
       tldr: 'The gunslinger — Mesa’s Peacemaker auto-targets a room with exalted pistols, and Shatter Shield makes her nearly bulletproof.',
       points: [
@@ -875,7 +838,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Mirage
   {
-    keys: ['/Lotus/Powersuits/Harlequin/Harlequin', '/Lotus/Powersuits/Harlequin/MiragePrime'],
+    keys: [
+      '/Lotus/Powersuits/Harlequin/Harlequin',
+      '/Lotus/Powersuits/Harlequin/MiragePrime',
+    ],
     note: {
       tldr: 'A trickster who multiplies your guns — Mirage’s clones each fire your weapon, and Eclipse can nearly double your damage if you mind the lighting.',
       points: [
@@ -890,7 +856,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Nekros
   {
-    keys: ['/Lotus/Powersuits/Necro/Necro', '/Lotus/Powersuits/Necro/NekrosPrime'],
+    keys: [
+      '/Lotus/Powersuits/Necro/Necro',
+      '/Lotus/Powersuits/Necro/NekrosPrime',
+    ],
     note: {
       tldr: 'The loot necromancer — Nekros doubles drops from corpses and raises slain enemies to fight for him.',
       points: [
@@ -898,6 +867,42 @@ const WARFRAME_NOTES: SharedNote[] = [
         'The Despoil augment makes Desecrate cost health instead of energy; pair it with Equilibrium (orbs into energy) for a self-sustaining loop you can spam forever.',
         'Terrify sends enemies fleeing while stripping their armor, a strong pick to subsume onto other frames too.',
         'Shadows of the Dead raises a squad of dead enemies as minions; he has low armor, so he leans on those distractions and orb healing.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Nezha
+  {
+    keys: [
+      '/Lotus/Powersuits/Nezha/Nezha',
+      '/Lotus/Powersuits/Nezha/NezhaPrime',
+    ],
+    note: {
+      tldr: 'Nezha has low base health — his real health bar is Warding Halo, a one-cast damage buffer that scales with Strength.',
+      points: [
+        'Warding Halo absorbs a chunk of damage set at the moment you cast it, plus a brief immunity window when it pops; Ability Strength makes it bigger.',
+        'Because the buffer is the build, stacking Strength (and recasting the Halo) matters more than raw health mods.',
+        'Blazing Chakram strips armor and amplifies headshot damage, turning him into a strong weapon-platform frame.',
+        'The Safeguard augment lets you cast Warding Halo onto allies — a popular pick for defense and support runs.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Nidus
+  {
+    keys: [
+      '/Lotus/Powersuits/Infestation/Infestation',
+      '/Lotus/Powersuits/Infestation/InfestationPrime',
+    ],
+    note: {
+      tldr: 'Nidus survives on Mutation stacks, not shields — build stacks up and they become a free death-save.',
+      points: [
+        'He is shieldless, so shield-gating mods and arcanes are pointless; his defense is stacks, armor, and Parasitic Link.',
+        'Cast Virulence repeatedly to bank Mutation stacks — at 15+, taking lethal damage spends them to revive you with invulnerability instead of dying.',
+        'Stacks also power his other abilities, so range and strength (to land Virulence on crowds) matter more than duration on most builds.',
+        'Energy is easy to keep up: Ravenous spawns health orbs, pairing perfectly with Equilibrium.',
       ],
       status: 'beta',
     },
@@ -918,9 +923,30 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
+  // Nova
+  {
+    keys: [
+      '/Lotus/Powersuits/AntiMatter/Anti',
+      '/Lotus/Powersuits/AntiMatter/NovaPrime',
+    ],
+    note: {
+      tldr: 'Nova is the textbook reason to build NEGATIVE Ability Strength on purpose — it flips her slow into a speed boost.',
+      points: [
+        'Molecular Prime slows enemies and makes them take extra damage; at NEGATIVE Strength it instead SPEEDS enemies up to rush objectives (speed-nova).',
+        'So her build is a deliberate choice: positive Strength for a slow-and-amplify nuke setup, negative Strength for fast Defense/Interception pushes.',
+        'Null Star gives orbiting motes that grant damage reduction, her main survival tool on a squishy frame.',
+        'Antimatter Drop is a high-skill nuke that absorbs incoming fire to multiply its own damage.',
+      ],
+      status: 'beta',
+    },
+  },
+
   // Nyx
   {
-    keys: ['/Lotus/Powersuits/Jade/Jade', '/Lotus/Powersuits/Jade/NyxPrime'],
+    keys: [
+      '/Lotus/Powersuits/Jade/Jade',
+      '/Lotus/Powersuits/Jade/NyxPrime',
+    ],
     note: {
       tldr: 'A psychic crowd-controller — Nyx turns enemies against each other with Chaos and peels their defenses with Psychic Bolts.',
       points: [
@@ -935,7 +961,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Oberon
   {
-    keys: ['/Lotus/Powersuits/Paladin/Paladin', '/Lotus/Powersuits/Paladin/PaladinPrime'],
+    keys: [
+      '/Lotus/Powersuits/Paladin/Paladin',
+      '/Lotus/Powersuits/Paladin/PaladinPrime',
+    ],
     note: {
       tldr: 'The do-everything paladin — Oberon heals the squad, strips armor, and cleanses status, making him a reliable budget pick for almost any mission.',
       points: [
@@ -948,7 +977,25 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
-  // Odonata (Archwing, + Prime)
+  // Octavia
+  {
+    keys: [
+      '/Lotus/Powersuits/Bard/Bard',
+      '/Lotus/Powersuits/Bard/OctaviaPrime',
+    ],
+    note: {
+      tldr: 'Octavia’s Mallet reflects enemy damage back at them — the harder they shoot it, the harder it hits, so it scales endlessly.',
+      points: [
+        'Mallet stores the damage enemies deal TO it and pulses it back out, which is why it stays lethal even at very high levels.',
+        'Metronome turns you (and allies) invisible and hands out buffs when you do simple actions like jumping or crouching to the beat.',
+        'Range and Duration are the priority stats; she is the classic AFK-friendly survival and affinity-farm frame.',
+        'Amp boosts ability damage in its aura and Resonator drags enemies onto the Mallet — drop all three together for a self-running room clear.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Odonata
   {
     keys: [
       '/Lotus/Powersuits/Archwing/StandardJetPack/StandardJetPack',
@@ -983,7 +1030,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Protea
   {
-    keys: ['/Lotus/Powersuits/Odalisk/Odalisk', '/Lotus/Powersuits/Odalisk/ProteaPrime'],
+    keys: [
+      '/Lotus/Powersuits/Odalisk/Odalisk',
+      '/Lotus/Powersuits/Odalisk/ProteaPrime',
+    ],
     note: {
       tldr: 'A self-sufficient gadgeteer — Protea drops turrets, grenades, and supply caches, and can literally rewind time to undo a death.',
       points: [
@@ -1011,9 +1061,66 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
+  // Revenant
+  {
+    keys: [
+      '/Lotus/Powersuits/Revenant/Revenant',
+      '/Lotus/Powersuits/Revenant/RevenantPrime',
+    ],
+    note: {
+      tldr: 'Mesmer Skin gives Revenant charges of full invulnerability — survival is about charge count, not shields or armor.',
+      points: [
+        'Each enemy that hits you spends one Mesmer Skin charge and gets stunned; when charges hit zero you are exposed, so recast before they run out.',
+        'More Ability Strength = more charges, which is why strength is his core survival stat rather than health or armor.',
+        'It is not perfect: damage-over-time already ticking on you, and some special attacks, can still get through.',
+        'Danse Macabre is his main damage; Mesmer Shield (augment) shares the invulnerability with allies.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Rhino
+  {
+    keys: [
+      '/Lotus/Powersuits/Rhino/Rhino',
+      '/Lotus/Powersuits/Rhino/RhinoPrime',
+    ],
+    note: {
+      tldr: 'Iron Skin snapshots your armor and strength at the instant you cast it — so the order you buff in changes how tanky it is.',
+      points: [
+        'Iron Skin locks in its health from your armor and Ability Strength AT CAST. Apply armor buffs/arcanes first, then cast, for a much bigger shield.',
+        'There is a short window right after casting where extra hits add to the Iron Skin value before it locks — many players cast in a busy room on purpose.',
+        'Roar is a damage multiplier that also boosts status and damage-over-time, and it stacks multiplicatively with mods — a top-tier party buff.',
+        'A classic, beginner-friendly frame: simple kit, very hard to kill once Iron Skin is up.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Saryn
+  {
+    keys: [
+      '/Lotus/Powersuits/Saryn/Saryn',
+      '/Lotus/Powersuits/Saryn/SarynPrime',
+    ],
+    note: {
+      tldr: 'Saryn is the queen of spreading status — Spores ramp up and jump from corpse to corpse to melt whole rooms.',
+      points: [
+        'Spores grow stronger over time and spread when an infected enemy dies or you pop them, so Range (to spread) and Strength (for spore damage) carry the build.',
+        'Her passive makes your status effects last longer, leaning her even harder into status-stacking weapons and Viral.',
+        'Toxic Lash boosts melee and helps re-pop Spores; Molt gives a decoy plus a speed buff (Regenerative Molt for healing).',
+        'If every infected enemy dies at once, Spores reset — keep at least one target alive to hold the ramp.',
+      ],
+      status: 'beta',
+    },
+  },
+
   // Sevagoth
   {
-    keys: ['/Lotus/Powersuits/Wraith/Wraith', '/Lotus/Powersuits/Wraith/SevagothPrime'],
+    keys: [
+      '/Lotus/Powersuits/Wraith/Wraith',
+      '/Lotus/Powersuits/Wraith/SevagothPrime',
+    ],
     note: {
       tldr: 'A two-in-one death frame — Sevagoth fights as himself, then bursts into a separate, claw-wielding Shadow when he falls.',
       points: [
@@ -1058,7 +1165,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Titania
   {
-    keys: ['/Lotus/Powersuits/Fairy/Fairy', '/Lotus/Powersuits/Fairy/TitaniaPrime'],
+    keys: [
+      '/Lotus/Powersuits/Fairy/Fairy',
+      '/Lotus/Powersuits/Fairy/TitaniaPrime',
+    ],
     note: {
       tldr: 'The fairy gunner — Razorwing shrinks Titania into a flying form with exalted pistols, turning her into a mobile, hard-to-hit DPS platform.',
       points: [
@@ -1073,7 +1183,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Trinity
   {
-    keys: ['/Lotus/Powersuits/Trinity/Trinity', '/Lotus/Powersuits/Trinity/TrinityPrime'],
+    keys: [
+      '/Lotus/Powersuits/Trinity/Trinity',
+      '/Lotus/Powersuits/Trinity/TrinityPrime',
+    ],
     note: {
       tldr: 'The original healer and energy battery — Trinity keeps the squad alive and powered, and can strip armor while she does it.',
       points: [
@@ -1101,9 +1214,30 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
+  // Valkyr
+  {
+    keys: [
+      '/Lotus/Powersuits/Berserker/Berserker',
+      '/Lotus/Powersuits/Berserker/ValkyrPrime',
+    ],
+    note: {
+      tldr: 'Valkyr is the melee berserker — Hysteria makes her invincible while she claws, and her sky-high armor carries the rest.',
+      points: [
+        'Hysteria is an exalted melee with invulnerability, but it drains and leaves a brief vulnerable window when it ends, so it is not truly infinite.',
+        'Her enormous base armor (and Warcry’s armor/attack-speed buff) makes armor-stacking and Steel Fiber especially effective.',
+        'Because Hysteria blocks damage, energy-from-damage mods (Rage/Hunter Adrenaline) sustain her between casts, not during them.',
+        'Eternal War (augment) lets you keep Warcry’s attack speed up for long stretches — a staple melee buff build.',
+      ],
+      status: 'beta',
+    },
+  },
+
   // Vauban
   {
-    keys: ['/Lotus/Powersuits/Trapper/Trapper', '/Lotus/Powersuits/Trapper/TrapperPrime'],
+    keys: [
+      '/Lotus/Powersuits/Trapper/Trapper',
+      '/Lotus/Powersuits/Trapper/TrapperPrime',
+    ],
     note: {
       tldr: 'The combat engineer — Vauban locks rooms down with traps, then yanks every enemy into a single pile to be deleted.',
       points: [
@@ -1116,7 +1250,7 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
-  // Voidrig (Necramech)
+  // Voidrig
   {
     keys: ['/Lotus/Powersuits/EntratiMech/NechroTech'],
     note: {
@@ -1133,7 +1267,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Volt
   {
-    keys: ['/Lotus/Powersuits/Volt/Volt', '/Lotus/Powersuits/Volt/VoltPrime'],
+    keys: [
+      '/Lotus/Powersuits/Volt/Volt',
+      '/Lotus/Powersuits/Volt/VoltPrime',
+    ],
     note: {
       tldr: 'A versatile starter — Volt speeds up the squad and plants Electric Shields that supercharge any shots fired through them.',
       points: [
@@ -1148,7 +1285,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Voruna
   {
-    keys: ['/Lotus/Powersuits/Werewolf/Werewolf', '/Lotus/Powersuits/Werewolf/VorunaPrime'],
+    keys: [
+      '/Lotus/Powersuits/Werewolf/Werewolf',
+      '/Lotus/Powersuits/Werewolf/VorunaPrime',
+    ],
     note: {
       tldr: 'A wolf-pack stalker — Voruna slips into invisibility, drowns enemies in status, and chains finishers with her claws.',
       points: [
@@ -1161,9 +1301,48 @@ const WARFRAME_NOTES: SharedNote[] = [
     },
   },
 
+  // Wisp
+  {
+    keys: [
+      '/Lotus/Powersuits/Wisp/Wisp',
+      '/Lotus/Powersuits/Wisp/WispPrime',
+    ],
+    note: {
+      tldr: 'Wisp drops Reservoir motes that buff the whole squad — and the buff sticks for a while even after you walk away from them.',
+      points: [
+        'Place all three motes (Haste for speed/fire-rate, Vitality for health/regen, Shock for stun); allies pick them up by passing through, then keep the buff for a duration.',
+        'Her passive makes her invisible while airborne — bullet-jump or hover and enemies lose track of her, so positioning is her defense.',
+        'Range and Duration are the key stats: bigger aura to grab buffs, longer-lasting motes.',
+        'Breach Surge pairs with her teleport for blinds and chain damage; Sol Gate is her exalted beam.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Wukong
+  {
+    keys: [
+      '/Lotus/Powersuits/MonkeyKing/MonkeyKing',
+      '/Lotus/Powersuits/MonkeyKing/WukongPrime',
+    ],
+    note: {
+      tldr: 'Wukong brings a second him (Celestial Twin) and an invisible heal (Cloud Walker) — a famously forgiving, low-effort frame.',
+      points: [
+        'Celestial Twin fights alongside you with its own weapon, effectively adding a second gun to every mission.',
+        'Cloud Walker turns you invisible while moving and heals you, his main escape-and-reset button.',
+        'Defy still gives a window of heavy damage reduction and an armor buff, though it was toned down from the old "unkillable" version.',
+        'Primal Fury is his exalted Iron Staff — long reach and strong crit scaling for melee builds.',
+      ],
+      status: 'beta',
+    },
+  },
+
   // Xaku
   {
-    keys: ['/Lotus/Powersuits/BrokenFrame/BrokenFrame', '/Lotus/Powersuits/BrokenFrame/XakuPrime'],
+    keys: [
+      '/Lotus/Powersuits/BrokenFrame/BrokenFrame',
+      '/Lotus/Powersuits/BrokenFrame/XakuPrime',
+    ],
     note: {
       tldr: 'Three broken frames in one — Xaku steals enemy guns, strips armor, and shrugs off most damage with a skeletal final form.',
       points: [
@@ -1178,7 +1357,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Yareli
   {
-    keys: ['/Lotus/Powersuits/Yareli/Yareli', '/Lotus/Powersuits/Yareli/YareliPrime'],
+    keys: [
+      '/Lotus/Powersuits/Yareli/Yareli',
+      '/Lotus/Powersuits/Yareli/YareliPrime',
+    ],
     note: {
       tldr: 'A surf’s-up frame — Yareli fights from a water-board mount and rewards staying in motion with a huge secondary-weapon crit boost.',
       points: [
@@ -1193,7 +1375,10 @@ const WARFRAME_NOTES: SharedNote[] = [
 
   // Zephyr
   {
-    keys: ['/Lotus/Powersuits/Tengu/Tengu', '/Lotus/Powersuits/Tengu/ZephyrPrime'],
+    keys: [
+      '/Lotus/Powersuits/Tengu/Tengu',
+      '/Lotus/Powersuits/Tengu/ZephyrPrime',
+    ],
     note: {
       tldr: 'An aerial frame — Zephyr rules the air, and Turbulence makes her nearly immune to enemy gunfire while it is up.',
       points: [
@@ -1201,21 +1386,6 @@ const WARFRAME_NOTES: SharedNote[] = [
         'Her passive lowers her gravity for long hovers and floaty jumps and boosts her weapon critical chance while airborne, rewarding a fly-and-shoot style.',
         'Tail Wind launches and hovers her, and Airburst groups or shoves enemies (a useful Helminth pick).',
         'Tornado scatters roaming twisters that ragdoll enemies and can absorb elemental damage; build for Duration and Strength to keep Turbulence and the tornadoes going.',
-      ],
-      status: 'beta',
-    },
-  },
-
-  // Helminth (the ability-subsumption system, not a playable frame)
-  {
-    keys: ['/Lotus/Powersuits/PowersuitAbilities/Helminth'],
-    note: {
-      tldr: 'Not a Warframe you play — the Helminth is the Infested system in your ship that lets you swap one ability onto any frame. It is why so many of these notes mention a "Helminth pick".',
-      points: [
-        'Once unlocked (through the Heart of Deimos and Entrati path), you can "subsume" a Warframe to permanently learn one of its abilities — but doing so consumes that copy of the frame.',
-        'You then inject that learned ability onto another frame, replacing one of its four abilities; each frame can hold one subsumed ability at a time.',
-        'This is how players fix a frame’s weak slot, dropping in staples like Gloom, Dispensary, Nourish, Eclipse, Roar, or Pillage that show up across these notes.',
-        'Feeding the Helminth costs resources and it needs time to recover between uses, so decide which ability you want before sacrificing a frame.',
       ],
       status: 'beta',
     },
