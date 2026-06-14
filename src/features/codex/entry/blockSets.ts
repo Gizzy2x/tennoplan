@@ -17,6 +17,7 @@ export type BlockKey =
   | 'HeroIcon'
   | 'Description'
   | 'CephalonNotes'
+  | 'Characteristics'
   | 'Drops'
   | 'BestFarms'
   | 'Build'
@@ -57,27 +58,27 @@ export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
   // Related sits just before WikiFooter so the page peaks on
   // discovery (see RelatedEntriesBlock for the resolution rules).
   Warframe: [
-    'Header', 'Polarities', 'GeneralInformation', 'Description', 'CephalonNotes',
+    'Header', 'Polarities', 'GeneralInformation', 'Characteristics', 'Description', 'CephalonNotes',
     'Passive', 'Abilities', 'Components', 'BestFarms', 'PatchHistory',
     'Related', 'WikiFooter',
   ],
   // HeroIcon + StatsWeapon are owned by the right-rail WeaponSummaryCard.
   // Polarities stays left — it's build-context, not at-a-glance summary.
   Weapon: [
-    'Header', 'Polarities', 'Description', 'CephalonNotes',
+    'Header', 'Polarities', 'Characteristics', 'Description', 'CephalonNotes',
     'Components', 'BestFarms', 'PatchHistory', 'Related', 'WikiFooter',
   ],
   // HeroIcon + StatsCompanion live in the right-rail CompanionSummaryCard,
   // which is shared with Sentinel below. Polarities stays left as build context.
   Companion: [
-    'Header', 'Polarities', 'Description', 'CephalonNotes',
+    'Header', 'Polarities', 'Characteristics', 'Description', 'CephalonNotes',
     'Components', 'BestFarms', 'Related', 'WikiFooter',
   ],
   // Same rail as Companion; the left column keeps the prose blocks
   // (Passive + Abilities carry the descriptions the rail tiles only
   // gesture at).
   Sentinel: [
-    'Header', 'Polarities', 'Description', 'CephalonNotes',
+    'Header', 'Polarities', 'Characteristics', 'Description', 'CephalonNotes',
     'Passive', 'Abilities', 'Components', 'BestFarms', 'Related', 'WikiFooter',
   ],
   // ModCard renders the signature card + rank-synced stat ladder + meta in one

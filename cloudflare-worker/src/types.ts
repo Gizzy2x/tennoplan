@@ -504,6 +504,13 @@ export interface TennoplanItem {
   fieldNotes?:   FieldNotes;
 
   /**
+   * Computed Advantages / Disadvantages vs peer items (the wiki
+   * "Characteristics" section), generated from stats in CI — no curation.
+   * Stat-bearing categories only (Weapon, Warframe, Companion, Sentinel).
+   */
+  characteristics?: ItemCharacteristics;
+
+  /**
    * Warframe/Sentinel/Pet passive ability text.
    * Wiki-resolved prose when available (no |TOKEN| placeholders); falls back
    * to WFCD's templated string. Sanitize for residual game-markup tags
@@ -719,6 +726,22 @@ export interface BuildRequirement {
 export interface UpgradeCost {
   /** Total Endo to upgrade from rank 0 to max rank. */
   endoToMax: number;
+}
+
+/** A computed Advantage/Disadvantage (the wiki "Characteristics" idea). */
+export type CharacteristicBand = 'very-high' | 'above-average' | 'below-average' | 'very-low';
+
+export interface Characteristic {
+  /** ItemStats key this came from (UI can theme by stat). */
+  stat: string;
+  band: CharacteristicBand;
+  /** Pre-formatted line, e.g. "Very high magazine (209)". */
+  text: string;
+}
+
+export interface ItemCharacteristics {
+  advantages:    Characteristic[];
+  disadvantages: Characteristic[];
 }
 
 /** "Cephalon's Notes" — authored, own-words practical knowledge for an entry. */
