@@ -1334,11 +1334,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Koumei/Koumei'],
     note: {
       tldr: 'A luck-themed frame — Koumei rolls dice on her abilities, and higher rolls (or perfect ones) make the effects much stronger.',
-      points: [
-        'Her kit runs on RNG: abilities roll dice, and a top roll unlocks an enhanced version, so she rewards leaning into the randomness rather than fighting it.',
-        'Omikuji sets a small challenge that, once met, grants a random Decree-style buff — a stacking power-up over a mission.',
-        'Her passive periodically grants one of your weapons a guaranteed status effect, layering with the statuses her abilities scatter.',
-        'Omamori provides a chance to shrug off damage while healing; her energy pool is small, so efficiency helps keep the dice rolling.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Her kit runs on RNG: abilities roll dice, and a top "perfect" roll unlocks an enhanced version, so she rewards leaning into the randomness rather than fighting it.',
+            'Omikuji sets a small challenge that, once met, grants a random Decree-style buff — a stacking power-up over a mission.',
+            'Kumihimo weaves random status effects across an area, and Bunraku binds enemies with puppet strings while applying more random statuses.',
+            'Her passive periodically grants one of your weapons a guaranteed status effect, layering with the statuses her abilities scatter.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Omamori gives a chance to shrug off damage while healing and is her Helminth-subsumable ability.',
+            'Her energy pool is small, so Efficiency helps keep the dice rolling.',
+            'Stacking her random statuses pairs well with status-driven weapons and Condition-Overload-style melee.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'All her ability names are Japanese — Kumihimo (braided cords), Omikuji (fortune slips), Omamori (charms), Bunraku (puppet theater).',
+            'Her 444 health and armor nod to East Asian tetraphobia, and she builds in an unusually short 24 hours.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1349,11 +1369,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/PaxDuviricus/PaxDuviricus'],
     note: {
       tldr: 'A shieldless heavy-attack duelist who tanks behind Overguard and recovers energy from the damage he deals.',
-      points: [
-        'No shields — but Wrathful Advance grants Overguard, which soaks hits AND blocks status procs and knockdowns while it lasts, so shield-gating gear is irrelevant.',
-        'His passive gives big heavy-attack efficiency and wind-up speed to ANY melee, so he is built around heavy-attack weapons.',
-        'Recompense converts the health you lose into energy, so taking some damage is part of his loop rather than a problem.',
-        'Storm of Ukko marks enemies; hitting marked targets is how he heals and sustains in a fight.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'He is shieldless; his defense is Overguard from Wrathful Advance, which soaks hits and blocks status procs and knockdowns while it lasts — so shield-gating gear is irrelevant.',
+            'His passive grants big heavy-attack efficiency and wind-up speed to ANY melee, so he is built around heavy-attack weapons.',
+            'Wrathful Advance teleports him to a target and guarantees a critical hit on the follow-up, his burst opener.',
+            'Collective Curse links a group of enemies so damage to one spreads to all, and Storm of Ukko rains daggers onto them.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Recompense turns the health he loses into energy, so taking a little damage fuels his kit rather than threatening him.',
+            'Because he is shieldless, Rage and Hunter Adrenaline always make energy from damage, and "No Shield" Nightmare modifiers don’t affect him.',
+            'Wrathful Advance is a popular Helminth subsume for its teleport-and-guaranteed-crit; his signature Rauta extends melee combo duration.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A Duviri outlaw named for the tragic hero of the Finnish Kalevala, imprisoned for his "Seven Crimes."',
+            'The third shieldless frame, after Inaros and Nidus, and the first to use Overguard as its main defense.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1367,11 +1407,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The alchemist with NO energy bar — Lavos runs on cooldowns instead, and energy mods and arcanes do nothing for him.',
-      points: [
-        'He has no energy, so Flow, Energy Siphon, Rage/Hunter Adrenaline, Quick Thinking, and Arcane Energize are all wasted — his abilities are on timers.',
-        'Because of that, he is immune to energy-drain effects (like Parasitic Eximus), which makes him fantastic for energy-penalty Sorties and Nightmare runs.',
-        'Hold any ability to imbue your NEXT cast with an extra element and status — he picks his damage type on the fly to match the enemy.',
-        'Transmutation Probe shortens his cooldowns and turns pickups into universal ammo and orbs; he has very high armor, so he tanks well while you wait on timers.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'He has no energy bar — his abilities run on cooldowns instead, so timing replaces energy management.',
+            'Hold any ability to imbue your NEXT cast with an extra element and status, letting him pick his damage type on the fly to match the enemy.',
+            'Transmutation Probe shortens his cooldowns and converts pickups into universal ammo and orbs — the linchpin of his uptime.',
+            'His passive grants brief status immunity whenever he grabs an orb, and his four abilities each carry a different base element (Toxin, Cold, Electricity, Heat).',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Energy mods and arcanes are all wasted — Flow, Energy Siphon, Rage, Quick Thinking, Arcane Energize, even Equilibrium do nothing for him.',
+            'In exchange he is immune to energy-drain effects like Parasitic Eximus, which makes him fantastic for energy-penalty Sorties and Nightmares.',
+            'He has very high armor, so he tanks comfortably while his cooldowns refresh; Transient Fortitude is safe since few of his effects care about Duration.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'The second frame after Hildryn to ditch the energy bar entirely, with the fourth-highest base armor of any frame.',
+            'Named after the chemist Antoine Lavoisier — fitting for an alchemist — and paired with the Cedo shotgun.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1385,11 +1445,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The rift magician — Limbo can make a whole objective untouchable, or accidentally grief his own squad, depending on how carefully he is played.',
-      points: [
-        'Banish and Cataclysm move things into the Rift, a parallel plane where enemies outside can’t touch you — perfect for protecting a Defense target.',
-        'Stasis freezes enemies AND their bullets inside the Rift, letting you set up kills at your leisure.',
-        'The catch: banishing teammates or an objective can lock them out of shooting normal enemies, so sloppy Limbo play is the classic way to ruin a mission for the group.',
-        'His passive rolls him in and out of the Rift and regenerates energy there; in Spy missions the Rift even lets him walk through laser barriers.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Banish and Cataclysm move things into the Rift, a parallel plane where enemies outside can’t touch you — perfect for protecting a Defense target.',
+            'Stasis freezes enemies AND their bullets inside the Rift, letting you set up kills at your leisure.',
+            'Rift Surge marks rifted enemies and re-banishes them when they leave, spreading the effect.',
+            'His passive rolls him in and out of the Rift and regenerates energy there, and killing enemies in the Rift gives him more.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The catch: banishing teammates or an objective can lock them out of shooting normal enemies, so sloppy Limbo play is the classic way to ruin a mission for the group.',
+            'In Spy missions the Rift lets him walk through laser barriers; some Eximus and bosses ignore the Rift, so it is not a universal shield.',
+            'Cataclysm collapses fast under Nullifier fire — keep that in mind around Corpus.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'The tallest frame once you count his top hat, themed as a stage magician of the void.',
+            'In lore the original Limbo was scattered across the system after a botched Void crossing.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1403,11 +1483,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The original trickster — Loki leans on long-duration invisibility and a disarm that turns gun-toting enemies into harmless melee.',
-      points: [
-        'Invisibility makes him a top stealth and Spy frame; Decoy pulls enemy fire and Switch Teleport swaps places with a target to escape or reposition.',
-        'Radial Disarm strips enemies of their guns and forces them into melee — and his crowd control works even on Overguard-protected units.',
-        'The Irradiating Disarm augment adds Radiation so disarmed enemies also turn on each other, a strong panic button for big crowds.',
-        'He is fragile with no defensive ability, so he survives through stealth and positioning — his passive also lets him cling to walls far longer than normal.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Invisibility makes him a top stealth and Spy frame, and his crowd control even works on Overguard-protected enemies.',
+            'Radial Disarm strips enemies of their guns and forces them into harmless melee — his signature panic button.',
+            'Decoy plants a clone that pulls enemy fire, and Switch Teleport swaps places with a target to escape or reposition.',
+            'His passive lets him cling to walls far longer than normal, handy for waiting out patrols.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The Irradiating Disarm augment adds Radiation so disarmed enemies also turn on each other, a strong crowd panic button.',
+            'He is fragile with no defensive ability, so he survives through stealth and positioning, not tanking.',
+            'Invisibility is a coveted Helminth subsume for giving other frames reliable stealth.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'One of the oldest frames and a former starter, named for the Norse trickster god.',
+            'His progenitor element is Radiation — fitting his disarm-and-confuse theme.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1421,11 +1521,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A magnetic starter frame and Corpus specialist — Mag strips shields, vacuums loot, and turns enemy gunfire into a damage amplifier.',
-      points: [
-        'Magnetize wraps a target in a field that sucks in bullets and amplifies their damage before bursting — stacking multiple bubbles on one enemy multiplies the payoff.',
-        'Polarize strips shields and armor and scatters shards, making her excellent against shield-heavy Corpus enemies.',
-        'Crush suspends and crushes a crowd while restoring squad shields; the Fracturing Crush augment adds an armor strip on top.',
-        'Her passive pulls nearby loot toward her on a bullet jump, and her low armor means you survive through her abilities, not by tanking.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Magnetize wraps a target in a field that sucks in bullets and amplifies their damage before bursting — stacking multiple bubbles on one enemy multiplies the payoff.',
+            'Polarize strips shields and armor and scatters shards, making her excellent against shield-heavy Corpus enemies.',
+            'Pull yanks a crowd toward her for quick control, and Crush suspends and crushes them while restoring squad shields.',
+            'Her passive vacuums nearby loot toward her, especially on a bullet jump.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'She is the classic anti-Corpus specialist; the Fracturing Crush augment adds an armor strip, and Magnetize shards can be absorbed to power the bubble further.',
+            'Her low armor means you survive through her abilities and positioning, not by tanking.',
+            'Pull is a handy Helminth subsume for grouping enemies on another frame.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'One of the three starter frames, and the first female frame to receive a Prime.',
+            'A foundational frame present since the earliest closed beta.',
+          ],
+        },
       ],
       status: 'beta',
     },
