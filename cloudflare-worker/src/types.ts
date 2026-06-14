@@ -601,6 +601,8 @@ export interface TennoplanItem {
   releaseDate?:   string;
   /** Whether this item can appear in mod transmutation (Mod only). */
   transmutable?:  boolean;
+  /** Foundry build cost (credits + time + rush platinum) for craftable items. */
+  buildCost?:     BuildCost;
   /** Patch history excerpts pulled from upstream WFCD `patchlogs`. */
   patchHistory?:  PatchLogEntry[];
 
@@ -726,6 +728,16 @@ export interface BuildRequirement {
 export interface UpgradeCost {
   /** Total Endo to upgrade from rank 0 to max rank. */
   endoToMax: number;
+}
+
+/** Cost to craft an item in the foundry, from PE+ ExportRecipes. */
+export interface BuildCost {
+  /** Credits to build. */
+  credits:       number;
+  /** Foundry build time in seconds. */
+  buildTime:     number;
+  /** Platinum to rush the build (skip the timer), when offered. */
+  rushPlatinum?: number;
 }
 
 /** A computed Advantage/Disadvantage (the wiki "Characteristics" idea). */

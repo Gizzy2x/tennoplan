@@ -28,7 +28,7 @@
 
 import type { EnrichedItem } from '../../src/codex/enricher';
 import type { ItemStats, ItemRarity } from '../../src/types';
-import type { PePlusData, PePowersuit, PeWeapon, PeUpgrade } from './peplus';
+import type { PePlusData, PePowersuit, PeWeapon, PeUpgrade, PeRecipe } from './peplus';
 import { peName } from './peplus';
 import { logger } from '../../src/logger';
 
@@ -55,6 +55,8 @@ export interface OverlayReport {
   damageSumWarnings: number;
   /** Mods given a computed Endo-to-max upgrade cost (matched + synthesized). */
   upgradeCosts:     number;
+  /** Items given a foundry build cost from ExportRecipes (any category). */
+  buildCosts:       number;
   /** PE+ records with no codex row (after junk filters) — the patch-day gap. */
   peOnly:           Record<string, number>;
   /** Of those, how many we synthesized into minimal entries. */
@@ -77,6 +79,7 @@ export function applyPePlusAuthority(items: EnrichedItem[], pe: PePlusData): Ove
     damageBreakdowns:  0,
     damageSumWarnings: 0,
     upgradeCosts:      0,
+    buildCosts:        0,
     peOnly:          {},
     synthesized:     0,
     wfcdOnly:        {},
@@ -92,6 +95,8 @@ export function applyPePlusAuthority(items: EnrichedItem[], pe: PePlusData): Ove
       case 'Mod':      overlayMod(item, pe.mods.get(item.uniqueName), pe, report);       break;
       default: break;
     }
+    // Build cost applies to ANY craftable item, regardless of category.
+    applyBuildCost(item, pe.recipes.get(item.uniqueName), report);
   }
 
   // ── 2. Gap report + synthesis ──
@@ -372,6 +377,24 @@ function deriveDamageTypes(
     report.damageSumWarnings++;
   }
   return out;
+}
+
+/**
+ * Foundry build cost from the item's recipe (keyed by resultType = uniqueName).
+ * Requires a real buildTime; credits fall back across buildPrice/creditsCost.
+ * Applies to any craftable item.
+ */
+function applyBuildCost(item: EnrichedItem, recipe: PeRecipe | undefined, report: OverlayReport): void {
+  if (!recipe || typeof recipe.buildTime !== 'number' || recipe.buildTime <= 0) return;
+  const credits = recipe.buildPrice ?? recipe.creditsCost;
+  item.buildCost = {
+    credits:   typeof credits === 'number' && credits > 0 ? credits : 0,
+    buildTime: recipe.buildTime,
+    ...(typeof recipe.skipBuildTimePrice === 'number' && recipe.skipBuildTimePrice > 0
+      ? { rushPlatinum: recipe.skipBuildTimePrice }
+      : {}),
+  };
+  report.buildCosts++;
 }
 
 /**

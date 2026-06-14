@@ -42,6 +42,7 @@ import { PatchHistoryBlock } from './blocks/PatchHistoryBlock';
 import { BuildBlock } from './blocks/BuildBlock';
 import { DropsBlock } from './blocks/DropsBlock';
 import { ComponentsBlock } from './blocks/ComponentsBlock';
+import { BuildCostBlock } from './blocks/BuildCostBlock';
 import { AugmentContextBlock } from './blocks/AugmentContextBlock';
 import { PlanetaryOriginsBlock } from './blocks/PlanetaryOriginsBlock';
 import { ConsumersBlock } from './blocks/ConsumersBlock';
@@ -120,6 +121,7 @@ function BlockSlot({ blockKey, entry, onSelectEntry }: BlockSlotProps) {
     case 'PatchHistory':   return <PatchHistoryBlock entry={entry} />;
     case 'Build':          return <BuildBlock entry={entry} />;
     case 'Drops':          return <DropsBlock entry={entry} />;
+    case 'BuildCost':      return <BuildCostBlock entry={entry} />;
     case 'Components':     return <ComponentsBlock entry={entry} onSelectEntry={onSelectEntry} />;
     case 'Related':        return <RelatedEntriesBlock entry={entry} onSelectEntry={onSelectEntry} />;
     default:
