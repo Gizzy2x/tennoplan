@@ -835,11 +835,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A glass frame with a famous scaling loop — Gara stacks Splinter Storm’s damage by hitting it with her own Shattered Lash, on top of being a strong defender.',
-      points: [
-        'Splinter Storm wraps allies in glass for damage reduction and makes enemies take extra damage; its damage builds up as it absorbs hits.',
-        'The signature loop: cast Splinter Storm, then strike it with Shattered Lash to multiply its stored damage — repeat to scale into very high numbers.',
-        'Mass Vitrify lays a ring of glass walls that block gunfire and crystallize enemies, great for sealing off an objective.',
-        'Her passive can radial-blind enemies when she casts; Spectrorage (with its augment) is a popular energy-farming and decoy subsume.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Splinter Storm wraps allies in glass for damage reduction and makes enemies take extra damage, and its damage builds up as it absorbs hits.',
+            'The signature loop: cast Splinter Storm, then strike it with Shattered Lash to multiply its stored damage — repeat to scale into very high numbers.',
+            'Mass Vitrify lays a ring of glass walls that block gunfire and crystallize enemies; Shattered Lash can shatter those walls for a glass-fragment burst.',
+            'Her passive has a chance to radial-blind nearby enemies whenever she casts an ability.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Spectrorage is her Helminth-subsumable decoy, and its augment Spectrosiphon turns the mirrors into an energy farm.',
+            'In a squad, several Garas can refresh each other’s Splinter Storm with Mass Vitrify and feed each other’s stored damage.',
+            'Her three signature weapons — Astilla, Fusilai, and Volnus — each gain a bonus in her hands.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Her name blends the Japanese word for glass (garasu) with a Yoruba word for crystal.',
+            'In lore she is the only Warframe said to have defeated a Sentient during the Old War.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -853,11 +873,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A blood-powered berserker — Garuda turns her own health into energy and hits harder the closer she is to death.',
-      points: [
-        'Bloodletting spends most of her health to refill energy, so she runs casters’ kits without ever touching an energy orb — her signature loop.',
-        'Her passive ramps her damage up as her health drops, rewarding that low-health playstyle (and she claws bare-handed with no melee equipped).',
-        'Dread Mirror steals an enemy’s life for a damage-absorbing shield plus a throwable heart; Blood Altar impales a target to heal the squad.',
-        'She is squishy by design — build Strength and lean on Dread Mirror’s shield and life-steal rather than a big health pool.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Bloodletting spends most of her health to refill energy, so she runs caster kits without ever touching an energy orb — her signature loop.',
+            'Her passive ramps her damage up as her health drops, rewarding that low-health playstyle (and she claws bare-handed with no melee equipped).',
+            'Dread Mirror steals an enemy’s life for a damage-absorbing shield plus a throwable heart; Blood Altar impales a target to heal the squad.',
+            'Seeking Talons flings claws that make struck enemies more vulnerable to Slash.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Bloodletting and the passive work together: sacrificing health both refills energy and powers up her damage at once.',
+            'She is squishy by design — build Strength and lean on Dread Mirror’s shield and life-steal rather than a big health pool.',
+            'She has an unusually large energy pool, and her signature Nagantaka gains innate punch-through in her hands.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Named for Garuda, the bird-mount of the Hindu god Vishnu, and modeled on shrikes that impale their prey.',
+            'She shares a gory aesthetic with Valkyr but plays it as calculated slaughter.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -871,11 +911,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Gauss runs on a Battery — keep moving to charge it, and his speed, damage reduction, and overdrive all key off how full it is.',
-      points: [
-        'Movement (especially Mach Rush) fills the battery; let it sit and the battery drains, so this is a frame you play by staying in motion.',
-        'Kinetic Plating turns incoming damage into battery charge and grants heavy damage reduction plus status/knockdown immunity that scales with battery level.',
-        'Redline overdrives fire rate, reload, and more once the battery is high — built for Duration and Strength to hold the redline zone.',
-        'Thermal Sunder (Cold/Heat AoE) is a huge part of his kit and one of the most-borrowed Helminth abilities in the game.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Movement, especially Mach Rush, fills his Battery; let it sit and it drains, so he is a frame you play by staying in constant motion.',
+            'Kinetic Plating converts incoming damage into battery charge and grants heavy damage reduction plus status and knockdown immunity that scales with battery level.',
+            'Redline overdrives fire rate, reload, attack, and cast speed once the battery is high — build Duration and Strength to hold the redline zone.',
+            'The battery also speeds his shield recharge and shortens its delay, so a full battery makes him tankier too.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Thermal Sunder (his Cold/Heat AoE, which combines into Blast) is one of the most-borrowed Helminth abilities in the game.',
+            'Sprint-reload weapons like Acceltra and Akarius pair perfectly with his constant movement.',
+            'Kinetic Plating only blocks the listed physical and temperature damage types, so plan around Toxin and other gaps.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'The second-fastest frame by sprint speed (Gauss Prime is the fastest), named after the mathematician Carl Friedrich Gauss.',
+            'He was the first frame to get a Leverian exhibit, which tells how he and Grendel freed a frozen Europa city.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -889,11 +949,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Grendel eats enemies to fuel himself — and despite the rumor he is NOT shieldless (he just has a tiny shield).',
-      points: [
-        'Feast swallows enemies into his belly; each one he holds grants bonus armor (his passive) while they take damage inside him.',
-        'He does have a small shield pool, so he is not a true shieldless frame — but his real tankiness is armor and the enemies he is digesting.',
-        'Build for Armor, Strength, and Duration; the more he holds, the tankier he gets.',
-        'Nourish is one of the most popular Helminth abilities in the whole game (energy sustain plus a Viral damage buff) — many players borrow it off him.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Feast inhales enemies into his belly, where each one he holds grants bonus armor (his passive) while it takes damage inside him.',
+            'He has a small shield pool, so he is NOT a true shieldless frame — but his real tankiness is armor and the enemies he is digesting.',
+            'Pulverize turns him into a rolling ball that tramples and strips armor while healing; Regurgitate spits a held enemy as a toxin projectile.',
+            'Build Armor, Strength, and Duration — the more he holds, the tankier he gets.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Nourish is one of the best Helminth subsumes in the whole game — squad energy regen plus a Viral damage buff — so many players borrow it off him.',
+            'The enemies he consumes sustain both his armor and his squad buffs at the same time.',
+            'His signature Masseter makes him crowd-control immune during heavy attacks.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Named after the monster of Beowulf, and worked under the name "Oni" during development.',
+            'In lore he and Gauss freed Europa’s frozen city of Riddha from a cruel Executor.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -907,11 +987,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'An electric crit-nuker — Gyre turns Electricity status into critical hits that chain across a whole room.',
-      points: [
-        'Her passive grants bonus critical chance for every Electricity status on an enemy, so stacking shocks turns her abilities and guns into crit machines.',
-        'Rotorswell makes your critical hits arc lightning to nearby enemies, spreading damage and more Electric procs to feed the passive.',
-        'Cathode Grace buffs weapon and ability crit chance and trickles energy, with kills extending it — the backbone of long ability-spam runs.',
-        'Coil Horizon groups and detonates enemies; build Strength and Duration and lean into electric weapons to keep the crit-status loop rolling.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Her passive grants bonus critical chance for every Electricity status on an enemy, so stacking shocks turns her abilities and guns into crit machines.',
+            'Rotorswell makes your critical hits arc lightning to nearby enemies, spreading damage and more Electric procs to feed the passive.',
+            'Cathode Grace buffs weapon and ability crit chance and trickles energy, with kills extending it — the backbone of long ability-spam runs.',
+            'Coil Horizon groups and detonates enemies, setting up a clustered target for the chain.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The loop is self-feeding: electric status raises crit, crits trigger Rotorswell chains, and the chains apply more status.',
+            'Coil Horizon is her Helminth-subsumable ability; lean into electric weapons to keep the loop rolling.',
+            'Build Strength and Duration — Cathode Grace’s energy trickle keeps her casting without leaning hard on efficiency.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Themed around artificial electricity — coils and transmitters — in contrast to Volt’s natural lightning.',
+            'In lore she was an Orokin ship figurehead named Gyra aboard the Zariman who went mad crossing the Void.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -925,11 +1025,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A priest-themed crit buffer — Harrow hands the squad fire-rate, lifesteal, and a huge critical-chance boost, all fueled by overshields and headshots.',
-      points: [
-        'His passive doubles his overshield cap and starts him with full energy; overshields are the resource the rest of his kit feeds on.',
-        'Penance converts overshields into a team fire-rate, reload, and lifesteal buff, while Condemn roots enemies and refills shields on each hit.',
-        'Covenant gives a brief party-wide invulnerability, then turns the damage it blocked into a critical-chance buff that headshot kills extend — the reason he is a staple for Eidolon and boss squads.',
-        'Thurible is a channeled energy-regen ritual rewarded by headshot kills; his kit is so self-reliant that subsuming a Helminth ability onto him is tricky.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'His passive doubles his overshield cap and starts him at full energy; overshields are the resource the rest of his kit feeds on.',
+            'Penance converts overshields into a team fire-rate, reload, and lifesteal buff, while Condemn roots enemies and refills shields on each hit.',
+            'Covenant grants a brief party-wide invulnerability, then turns the damage it blocked into a critical-chance buff that headshot kills extend.',
+            'Thurible is a channeled energy-regen ritual rewarded by kills and especially headshots.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'He is a staple for Eidolon and boss squads: Condemn exposes heads while Covenant multiplies everyone’s crit chance.',
+            'His kit is so self-reliant that subsuming a Helminth ability onto him usually wastes one of his own synergies.',
+            'His signature Knell rewards precise headshots and gains a magazine bonus in his hands.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Tied in lore to the outcast Operator Rell, and one of the few frames active since the Orokin era.',
+            'His ability names all reference Catholic rites — Condemn, Penance, Thurible, Covenant.',
+          ],
+        },
       ],
       status: 'beta',
     },
