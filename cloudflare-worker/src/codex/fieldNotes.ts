@@ -1010,6 +1010,216 @@ const WARFRAME_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
+
+  // Sevagoth
+  {
+    keys: ['/Lotus/Powersuits/Wraith/Wraith', '/Lotus/Powersuits/Wraith/SevagothPrime'],
+    note: {
+      tldr: 'A two-in-one death frame — Sevagoth fights as himself, then bursts into a separate, claw-wielding Shadow when he falls.',
+      points: [
+        'Gloom slows nearby enemies and heals him off the damage he deals — it is one of the most-borrowed Helminth abilities in the game for survivability.',
+        'Sow plants damage-over-time seeds and Reap detonates them, a combo that pumps out big area burst.',
+        'His Exalted Shadow is a full second form with its own mods and claws; casting his other abilities charges the Death Well that powers it.',
+        'His passive turns death into the Shadow instead of a downed state — collect souls as the Shadow to rebuild and revive yourself.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Styanax
+  {
+    keys: ['/Lotus/Powersuits/Hoplite/Hoplite'],
+    note: {
+      tldr: 'A spear-throwing hoplite — Styanax strips defenses, showers the squad with energy, and rains exalted javelins, all while shields keep him critting.',
+      points: [
+        'His passive raises critical chance based on his current shields (overshields included), so shield-gating builds make him both tanky and hard-hitting.',
+        'Tharros Strike strips enemy shields and armor and converts it into healing and overshields — survival and a defense-strip in one cast.',
+        'Final Stand launches him airborne to hurl a barrage of javelins, his exalted nuke; Rally Point feeds the whole team energy.',
+        'The Augur mod set pairs naturally with his shield scaling; he was given away free during a Veilbreaker event, so many players already own him.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Temple
+  {
+    keys: ['/Lotus/Powersuits/Temple/Temple'],
+    note: {
+      tldr: 'A rock-and-roll frame — Temple plays to a beat, rewarding well-timed casts, and wields an infested flamethrower as an exalted weapon.',
+      points: [
+        'His passive runs on a metronome: time your ability casts to the beat for a big Ability Efficiency boost and stronger effects — rhythm is the gameplay.',
+        'Exalted Solo summons Lizzie, an infested flamethrower that replaces your melee for a sustained Heat-damage playstyle.',
+        'Ripper’s Wail makes him briefly invulnerable while he heals, shields, and buffs allied Heat damage — a defensive reset and a team buff at once.',
+        'Pyrotechnics erupts Heat pillars (and is a fine Helminth pick), while Overdrive softens enemies by raising their critical-hit vulnerability.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Titania
+  {
+    keys: ['/Lotus/Powersuits/Fairy/Fairy', '/Lotus/Powersuits/Fairy/TitaniaPrime'],
+    note: {
+      tldr: 'The fairy gunner — Razorwing shrinks Titania into a flying form with exalted pistols, turning her into a mobile, hard-to-hit DPS platform.',
+      points: [
+        'Razorwing grants constant flight plus Dex Pixia (exalted dual pistols, scaling with pistol mods) and the Diwata sword — she fights from the air where most enemies struggle to track her.',
+        'It is a channeled ability that drains energy over time, so energy economy and the Razorwing Blitz augment (fire rate + speed) are core to the build.',
+        'Spellbind makes her and allies immune to status and disarms enemies, a handy cleanse before diving in.',
+        'Tribute pulls one of four squad buffs off enemies, and her passive heals on every cast — she sustains herself between flights.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Trinity
+  {
+    keys: ['/Lotus/Powersuits/Trinity/Trinity', '/Lotus/Powersuits/Trinity/TrinityPrime'],
+    note: {
+      tldr: 'The original healer and energy battery — Trinity keeps the squad alive and powered, and can strip armor while she does it.',
+      points: [
+        'Blessing heals the whole team’s health and shields and grants damage reduction, her signature panic button.',
+        'Energy Vampire turns an enemy into a team-wide energy fountain, the classic reason to bring her to energy-hungry squads.',
+        'Link shares incoming damage out to nearby enemies and can give her invulnerability windows; the Abating Link augment also strips their armor.',
+        'Her passive feeds allies bonus health from her energy pool, so high energy and efficiency builds make the whole team tankier.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Uriel
+  {
+    keys: ['/Lotus/Powersuits/DemonFrame/DemonFrame'],
+    note: {
+      tldr: 'A demon-summoner — Uriel fights alongside three permanent minions, and his whole kit is about unlocking and feeding them.',
+      points: [
+        'His passive grants three demons, each unlocked by casting a matching ability: one chains enemies so damage spreads, one applies damage-over-time and drops orbs on death, and one marks the dead for fire-rate and Heat buffs.',
+        'Because the demons gate his power, you plan your ability rotation to keep all three active rather than spamming one button.',
+        'Remedium heals him, cleanses status, and revives fallen demons, while Brimstone unleashes a Heat-damage field powered by the pack.',
+        'He leans on Heat damage and minion sustain; stacking Strength and Heat amplifies both the demons and his ultimate.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Vauban
+  {
+    keys: ['/Lotus/Powersuits/Trapper/Trapper', '/Lotus/Powersuits/Trapper/TrapperPrime'],
+    note: {
+      tldr: 'The combat engineer — Vauban locks rooms down with traps, then yanks every enemy into a single pile to be deleted.',
+      points: [
+        'Bastille suspends enemies and strips their armor, handing that armor to you and your allies; recast it to collapse into a Vortex that sucks the whole crowd together.',
+        'That suspend-strip-and-group loop is his identity, and his passive adds bonus damage against the helpless enemies he has trapped.',
+        'Minelayer is a toolbox in one slot — pulling tethers, knockback-and-speed pads, and more — while Photon Strike calls in an orbital blast (extra effective on Overguard).',
+        'Build Strength and Range so Bastille covers a room and strips fully; he is a top-tier crowd-controller for Defense and survival.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Voidrig (Necramech)
+  {
+    keys: ['/Lotus/Powersuits/EntratiMech/NechroTech'],
+    note: {
+      tldr: 'A Necramech built for artillery — Voidrig plants itself and fires the Arquebex, one of the heaviest-hitting weapons in the game.',
+      points: [
+        'Guard Mode deploys the Arquebex twin mortars for enormous ranged damage, but roots the mech in place — you trade mobility for raw firepower.',
+        'It is the burst-DPS answer for Profit-Taker, Archon hunts, and Eidolons, where a parked Voidrig melts boss health bars.',
+        'Storm Shroud raises a damage-absorbing barrier; cast it before Guard Mode so you have a protection window while you sit still.',
+        'Necramechs use their OWN mods (not Warframe mods) and the shared Mausolon arch-gun — Voidrig is the ranged pick, Bonewidow the melee one.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Volt
+  {
+    keys: ['/Lotus/Powersuits/Volt/Volt', '/Lotus/Powersuits/Volt/VoltPrime'],
+    note: {
+      tldr: 'A versatile starter — Volt speeds up the squad and plants Electric Shields that supercharge any shots fired through them.',
+      points: [
+        'Speed buffs the whole team’s movement, attack, and reload speed — a simple, beloved team buff for clearing missions fast.',
+        'Electric Shield blocks incoming fire and amplifies the damage and crit of allied shots passing through it, making him a staple support for Eidolon hunts.',
+        'Shock chains lightning for quick crowd control, and Discharge stuns and arcs across a group.',
+        'His passive builds electric damage as he moves, released on his next melee hit; low energy rewards casting often, and he is a strong, flexible first frame.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Voruna
+  {
+    keys: ['/Lotus/Powersuits/Werewolf/Werewolf', '/Lotus/Powersuits/Werewolf/VorunaPrime'],
+    note: {
+      tldr: 'A wolf-pack stalker — Voruna slips into invisibility, drowns enemies in status, and chains finishers with her claws.',
+      points: [
+        'Shroud of Dynar cloaks her and, when she strikes from stealth, buffs her melee crit and status — built for ambush melee.',
+        'Fangs of Raksh slaps several random status effects on a target that then spread when it dies, melting crowds in status; Lycath’s Hunt turns kills into health and headshots into energy.',
+        'Ulfrun’s Descent unleashes charged claw lunges whose kills stack damage and crit, her main burst tool.',
+        'Instead of a fixed passive, holding each ability grants a wolf buff (speed, status immunity, heavy-attack efficiency, or a death save) — pick the one the fight needs.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Xaku
+  {
+    keys: ['/Lotus/Powersuits/BrokenFrame/BrokenFrame', '/Lotus/Powersuits/BrokenFrame/XakuPrime'],
+    note: {
+      tldr: 'Three broken frames in one — Xaku steals enemy guns, strips armor, and shrugs off most damage with a skeletal final form.',
+      points: [
+        'Grasp of Lohk disarms enemies and turns their stolen weapons into hovering guns that auto-fire around Xaku — free sustained damage that also removes enemy firepower.',
+        'Gaze (part of The Lost) strips a target’s shields and armor, the strip the rest of your guns want; Xata’s Whisper laces your weapons with Void damage.',
+        'The Vast Untime sheds them into a skeletal form with around 75% damage avoidance and even pauses their other ability timers while it is active.',
+        'Their passive adds area-damage reduction and a chance to dodge weapon hits — survival is about avoidance, not a health bar, so positioning still matters.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Yareli
+  {
+    keys: ['/Lotus/Powersuits/Yareli/Yareli', '/Lotus/Powersuits/Yareli/YareliPrime'],
+    note: {
+      tldr: 'A surf’s-up frame — Yareli fights from a water-board mount and rewards staying in motion with a huge secondary-weapon crit boost.',
+      points: [
+        'Her passive grants a big secondary-weapon critical-chance bonus while she keeps moving (about a second and a half), so sidearms are her main weapon.',
+        'Merulina is a summonable water K-drive she rides into battle; it soaks a share of incoming damage, giving her mobile survivability (augments let it protect allies or free up ground play).',
+        'Sea Snares suspend and weaken a group, and Aquablades orbit her for steady damage (a decent Helminth pick).',
+        'The catch: leaning on Merulina locks out normal ground tactics, so she is a love-it-or-leave-it mobility playstyle.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Zephyr
+  {
+    keys: ['/Lotus/Powersuits/Tengu/Tengu', '/Lotus/Powersuits/Tengu/ZephyrPrime'],
+    note: {
+      tldr: 'An aerial frame — Zephyr rules the air, and Turbulence makes her nearly immune to enemy gunfire while it is up.',
+      points: [
+        'Turbulence deflects incoming projectiles around her, a strong bubble of bullet-immunity against ranged enemies — but it is active, so keep it refreshed.',
+        'Her passive lowers her gravity for long hovers and floaty jumps and boosts her weapon critical chance while airborne, rewarding a fly-and-shoot style.',
+        'Tail Wind launches and hovers her, and Airburst groups or shoves enemies (a useful Helminth pick).',
+        'Tornado scatters roaming twisters that ragdoll enemies and can absorb elemental damage; build for Duration and Strength to keep Turbulence and the tornadoes going.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Helminth (the ability-subsumption system, not a playable frame)
+  {
+    keys: ['/Lotus/Powersuits/PowersuitAbilities/Helminth'],
+    note: {
+      tldr: 'Not a Warframe you play — the Helminth is the Infested system in your ship that lets you swap one ability onto any frame. It is why so many of these notes mention a "Helminth pick".',
+      points: [
+        'Once unlocked (through the Heart of Deimos and Entrati path), you can "subsume" a Warframe to permanently learn one of its abilities — but doing so consumes that copy of the frame.',
+        'You then inject that learned ability onto another frame, replacing one of its four abilities; each frame can hold one subsumed ability at a time.',
+        'This is how players fix a frame’s weak slot, dropping in staples like Gloom, Dispensary, Nourish, Eclipse, Roar, or Pillage that show up across these notes.',
+        'Feeding the Helminth costs resources and it needs time to recover between uses, so decide which ability you want before sacrificing a frame.',
+      ],
+      status: 'beta',
+    },
+  },
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
