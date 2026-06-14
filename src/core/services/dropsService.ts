@@ -66,18 +66,16 @@ interface RawEnemy {
   drops?: RawDropEntry[];
 }
 
-interface RawSortie {
-  rewardType?: string;
-  drops?: RawDropEntry[];
-}
-
 export interface RawDropPayload {
   missionRewards?: Record<string, Record<string, RawMissionNode>>;
   relics?: RawRelicTier[];
   transientRewards?: RawTransient[];
   modLocations?: RawEnemy[];
   enemyModTables?: RawEnemy[];
-  sortieRewards?: RawSortie[];
+  /** Upstream ships this as a FLAT reward array ([{ itemName, rarity, chance }]),
+   *  NOT a list of {rewardType, drops} buckets. The whole Sortie reward POOL is
+   *  one table. */
+  sortieRewards?: RawDropEntry[];
   keyRewards?: RawNamed[];
   cetusBountyRewards?: RawBounty[];
   solarisBountyRewards?: RawBounty[];
@@ -216,17 +214,21 @@ export function normaliseDropPayload(
   }
 
   // 6. Sortie rewards  -----------------------------------------------------
-  for (const s of raw.sortieRewards ?? []) {
-    const rewards = normaliseRewards(s.drops);
-    if (rewards.length === 0) continue;
-    const bucket = s.rewardType ?? 'Sortie';
-    out.push({
-      locationKey: keyFrom(['sortie', bucket]),
-      type: 'Sortie Reward',
-      displayName: bucket,
-      rewards,
-      fetchedAt,
-    });
+  // Upstream `sortieRewards` is a FLAT reward array — the entire Sortie reward
+  // pool as one table. (It is NOT a list of {rewardType, drops} buckets; the old
+  // code read a non-existent `.drops` per entry and silently dropped the whole
+  // section, so no Sortie pool was ever stored.)
+  {
+    const rewards = normaliseRewards(raw.sortieRewards);
+    if (rewards.length > 0) {
+      out.push({
+        locationKey: keyFrom(['sortie', 'pool']),
+        type: 'Sortie Reward',
+        displayName: 'Sortie',
+        rewards,
+        fetchedAt,
+      });
+    }
   }
 
   // 7. Key rewards  --------------------------------------------------------

@@ -56,9 +56,12 @@ const STALE_AFTER_MS = 14 * 24 * 60 * 60 * 1000;
  * parser. (v2: fixed bounty reward parsing — itemName field, bare A/B/C
  * rotation keys, deimos/zariman section names.
  *  v3: preserve per-stage `stage` on bounty rewards for the wiki-style view.
- *  v4: parse entratiLabRewards (Sanctum) + hexRewards (1999) bounty tables.)
+ *  v4: parse entratiLabRewards (Sanctum) + hexRewards (1999) bounty tables.
+ *  v5: fix Sortie rewards — upstream ships a FLAT reward array, not
+ *      {rewardType, drops} buckets; the old shape read a non-existent `.drops`
+ *      and stored ZERO sortie rows. Forces a re-parse so the Sortie pool lands.)
  */
-const PARSER_VERSION = 4;
+const PARSER_VERSION = 5;
 
 /** Drop payload is ~10 MB; keep timeout generous. */
 const REQUEST_TIMEOUT_MS = 30_000;

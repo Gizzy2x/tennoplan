@@ -6,15 +6,24 @@
  * timer; data comes from `useWorldstate()` (ParsedWorldstate). Countdowns tick
  * via `useGameClock` and items past expiry are dropped.
  *
- * Rewards are rendered as TEXT only this pass — no codex resolution / quick-look
- * / icons yet. A later pass will thread `uniqueName` through reward strings and
- * wire `useQuickLook` per the standard Codex access pattern.
+ * Rewards follow the standard Codex access pattern: each reward STRING from
+ * worldstate is resolved to a codex `uniqueName` via the shared `dropResolver`
+ * (the same deterministic name→uniqueName cascade the bounty board uses —
+ * quantity-strip, synthetics, blueprint/component fallbacks), then rendered as
+ * an <ItemTile>. That gives every reward its real icon + the app-wide quick-look
+ * (click → smart window → "Open full entry → codex"). Unresolved strings still
+ * render as a non-linkable tile so nothing is lost.
  */
 
 import { memo, useMemo } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
 import { useWorldstate } from '@/hooks/useWorldstate';
 import { useGameClock } from '@/hooks/useGameClock';
 import { formatMsHuman } from '@/core/services/cycleService';
+import { ItemTile, type ItemTag } from '@/components/ui/ItemTile';
+import { getDropResolver } from '@/adapters/items/dropResolverAdapter';
+import type { DropResolver } from '@/core/services/dropResolver';
+import { useSortieRewardPool, type SortieReward } from '../hooks/useSortieRewardPool';
 import type {
   Alert,
   Invasion,
@@ -31,6 +40,58 @@ function endsInLabel(expiry: number | undefined, now: number): string | null {
   const ms = expiry - now;
   if (ms <= 0) return null;
   return `ends in ${formatMsHuman(ms)}`;
+}
+
+// ── Reward tiles ──────────────────────────────────────────────────────────────
+
+/** One worldstate reward string → ItemTile (icon + quick-look). Resolves the
+ *  string to a codex uniqueName via the shared resolver; unresolved strings
+ *  render as a non-linkable tile (ItemTile still tries a name→icon lookup). */
+function RewardTile({
+  raw,
+  resolver,
+  source,
+  tags,
+}: {
+  raw: string;
+  resolver: DropResolver | null;
+  source?: string;
+  tags?: ItemTag[];
+}) {
+  const uniqueName = resolver?.resolve(raw)?.uniqueName;
+  return (
+    <ItemTile
+      name={raw}
+      uniqueName={uniqueName}
+      tags={tags}
+      context={source ? { source } : undefined}
+    />
+  );
+}
+
+/** DropReward rarity string → ItemTile rarity tint. Legendary has no distinct
+ *  ItemTile tone, so it folds into the strongest tint (rare). */
+function tileRarity(rarity: string): 'rare' | 'uncommon' | 'common' | 'unknown' {
+  switch (rarity.toLowerCase()) {
+    case 'legendary':
+    case 'rare':     return 'rare';
+    case 'uncommon': return 'uncommon';
+    case 'common':   return 'common';
+    default:         return 'unknown';
+  }
+}
+
+/** One reward from a static POOL (sortie/…), already resolved to a uniqueName
+ *  with a known drop chance — the chance surfaces in the quick-look. */
+function PoolRewardTile({ reward, source }: { reward: SortieReward; source: string }) {
+  return (
+    <ItemTile
+      name={reward.itemName}
+      uniqueName={reward.uniqueName}
+      rarity={tileRarity(reward.rarity)}
+      context={{ source, drops: [{ label: source, chance: reward.chance }] }}
+    />
+  );
 }
 
 // ── Card shell ──────────────────────────────────────────────────────────────
@@ -64,7 +125,7 @@ function Card({
 
 // ── Alerts ──────────────────────────────────────────────────────────────────
 
-function AlertsCard({ alerts, now }: { alerts: Alert[]; now: number }) {
+function AlertsCard({ alerts, now, resolver }: { alerts: Alert[]; now: number; resolver: DropResolver | null }) {
   const live = alerts.filter((a) => (a.expiry ?? 0) > now);
   return (
     <Card title="Alerts" count={live.length}>
@@ -80,11 +141,15 @@ function AlertsCard({ alerts, now }: { alerts: Alert[]; now: number }) {
                 {a.level ? ` · ${a.level}` : ''}
               </span>
               <div className={styles.rowFoot}>
-                {a.reward ? <span className={styles.reward}>{a.reward}</span> : <span />}
                 {endsInLabel(a.expiry, now) && (
                   <span className={styles.endsIn}>{endsInLabel(a.expiry, now)}</span>
                 )}
               </div>
+              {a.reward && (
+                <div className={styles.rewardTiles}>
+                  <RewardTile raw={a.reward} resolver={resolver} source={`Alert · ${a.node}`} />
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -95,7 +160,7 @@ function AlertsCard({ alerts, now }: { alerts: Alert[]; now: number }) {
 
 // ── Invasions (with progress bars) ──────────────────────────────────────────
 
-function InvasionsCard({ invasions, now }: { invasions: Invasion[]; now: number }) {
+function InvasionsCard({ invasions, now, resolver }: { invasions: Invasion[]; now: number; resolver: DropResolver | null }) {
   // Drop completed and (when an expiry is present) expired invasions.
   const live = invasions.filter(
     (inv) => !inv.completed && (inv.expiry == null || inv.expiry > now),
@@ -119,21 +184,6 @@ function InvasionsCard({ invasions, now }: { invasions: Invasion[]; now: number 
                   <span className={styles.pct}>{pct}%</span>
                 </div>
 
-                <div className={styles.invasionRewards}>
-                  {inv.attackerReward && (
-                    <span className={styles.invasionRewardSide}>
-                      <span className={styles.sideTag}>Attack</span>
-                      <span className={styles.reward}>{inv.attackerReward}</span>
-                    </span>
-                  )}
-                  {inv.defenderReward && (
-                    <span className={styles.invasionRewardSide}>
-                      <span className={styles.sideTag}>Defend</span>
-                      <span className={styles.reward}>{inv.defenderReward}</span>
-                    </span>
-                  )}
-                </div>
-
                 <div
                   className={styles.bar}
                   role="progressbar"
@@ -148,6 +198,27 @@ function InvasionsCard({ invasions, now }: { invasions: Invasion[]; now: number 
                 <div className={styles.rowFoot}>
                   <span className={styles.meta}>{inv.node}</span>
                 </div>
+
+                {(inv.attackerReward || inv.defenderReward) && (
+                  <div className={styles.rewardTiles}>
+                    {inv.attackerReward && (
+                      <RewardTile
+                        raw={inv.attackerReward}
+                        resolver={resolver}
+                        source={`Invasion · ${inv.node}`}
+                        tags={[{ label: 'ATTACK', tone: 'muted' }]}
+                      />
+                    )}
+                    {inv.defenderReward && (
+                      <RewardTile
+                        raw={inv.defenderReward}
+                        resolver={resolver}
+                        source={`Invasion · ${inv.node}`}
+                        tags={[{ label: 'DEFEND', tone: 'muted' }]}
+                      />
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -164,14 +235,18 @@ function MissionBoard({
   heading,
   endsIn,
   missions,
-  rewardPool,
+  rewards,
+  rewardLabel,
 }: {
   title: string;
   /** boss / faction line shown under the title. */
   heading?: string;
   endsIn: string | null;
   missions: { node: string; missionType: string; modifier?: string }[];
-  rewardPool: string[];
+  /** Static reward POOL (resolved to codex identities). Empty → no pool shown. */
+  rewards: SortieReward[];
+  /** Quick-look source/label for each pool tile (e.g. "Sortie pool"). */
+  rewardLabel: string;
 }) {
   return (
     <Card title={title} endsIn={endsIn} wide>
@@ -187,14 +262,15 @@ function MissionBoard({
           </li>
         ))}
       </ul>
-      {rewardPool.length > 0 && (
-        <div className={styles.rewardPool}>
-          {rewardPool.map((r, i) => (
-            <span key={`${r}-${i}`} className={styles.rewardChip}>
-              {r}
-            </span>
-          ))}
-        </div>
+      {rewards.length > 0 && (
+        <>
+          <span className="typo-section-label">{rewardLabel}</span>
+          <div className={styles.rewardTiles}>
+            {rewards.map((r) => (
+              <PoolRewardTile key={r.uniqueName ?? r.itemName} reward={r} source={rewardLabel} />
+            ))}
+          </div>
+        </>
       )}
     </Card>
   );
@@ -207,13 +283,16 @@ function SortieCard({ sortie, now }: { sortie: Sortie; now: number }) {
     missionType,
     modifier: sortie.modifiers[i],
   }));
+  // The reward POOL is static (drop tables), not the live placeholder string.
+  const rewards = useSortieRewardPool();
   return (
     <MissionBoard
       title="Sortie"
       heading={sortie.faction ? `${sortie.faction}` : undefined}
       endsIn={endsInLabel(sortie.expiry, now)}
       missions={missions}
-      rewardPool={sortie.rewards}
+      rewards={rewards}
+      rewardLabel="Sortie pool"
     />
   );
 }
@@ -230,7 +309,10 @@ function ArchonHuntCard({ hunt, now }: { hunt: ArchonHunt; now: number }) {
         missionType: m.missionType,
         modifier: m.modifier,
       }))}
-      rewardPool={[]}
+      // Archon Hunt rewards (Archon Shards) aren't a static drop-table pool — no
+      // tiles for now; the live shards model can hook in later.
+      rewards={[]}
+      rewardLabel="Archon rewards"
     />
   );
 }
@@ -282,6 +364,11 @@ export const ActivitiesTab = memo(function ActivitiesTab() {
   const { data: ws, isLoading } = useWorldstate();
   const now = useGameClock();
 
+  // Codex name→uniqueName resolver, reactive to codex syncs. Drives every
+  // reward tile's icon + quick-look. `null` until the codex index is primed
+  // (first paint / cold cache) — tiles degrade to non-linkable until then.
+  const resolver = useLiveQuery(() => getDropResolver(), []) ?? null;
+
   // Stable empty references so cards don't churn when a slice is absent.
   const persistentEnemies = useMemo(() => ws?.persistentEnemies ?? [], [ws?.persistentEnemies]);
 
@@ -297,8 +384,8 @@ export const ActivitiesTab = memo(function ActivitiesTab() {
 
   return (
     <div className={styles.board}>
-      <AlertsCard alerts={ws.alerts} now={now} />
-      <InvasionsCard invasions={ws.invasions} now={now} />
+      <AlertsCard alerts={ws.alerts} now={now} resolver={resolver} />
+      <InvasionsCard invasions={ws.invasions} now={now} resolver={resolver} />
       {ws.sortie && <SortieCard sortie={ws.sortie} now={now} />}
       {ws.archonHunt && <ArchonHuntCard hunt={ws.archonHunt} now={now} />}
       {ws.arbitration && <ArbitrationCard arb={ws.arbitration} now={now} />}
