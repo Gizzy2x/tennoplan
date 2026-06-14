@@ -32,6 +32,7 @@ export type BlockKey =
   | 'Abilities'
   | 'Passive'
   | 'GeneralInformation'
+  | 'BuildCost'
   | 'Components'
   | 'ModCard'
   | 'ModStats'
@@ -59,27 +60,27 @@ export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
   // discovery (see RelatedEntriesBlock for the resolution rules).
   Warframe: [
     'Header', 'Polarities', 'GeneralInformation', 'Characteristics', 'Description', 'CephalonNotes',
-    'Passive', 'Abilities', 'Components', 'BestFarms', 'PatchHistory',
+    'Passive', 'Abilities', 'BuildCost', 'Components', 'BestFarms', 'PatchHistory',
     'Related', 'WikiFooter',
   ],
   // HeroIcon + StatsWeapon are owned by the right-rail WeaponSummaryCard.
   // Polarities stays left — it's build-context, not at-a-glance summary.
   Weapon: [
     'Header', 'Polarities', 'Characteristics', 'Description', 'CephalonNotes',
-    'Components', 'BestFarms', 'PatchHistory', 'Related', 'WikiFooter',
+    'BuildCost', 'Components', 'BestFarms', 'PatchHistory', 'Related', 'WikiFooter',
   ],
   // HeroIcon + StatsCompanion live in the right-rail CompanionSummaryCard,
   // which is shared with Sentinel below. Polarities stays left as build context.
   Companion: [
     'Header', 'Polarities', 'Characteristics', 'Description', 'CephalonNotes',
-    'Components', 'BestFarms', 'Related', 'WikiFooter',
+    'BuildCost', 'Components', 'BestFarms', 'Related', 'WikiFooter',
   ],
   // Same rail as Companion; the left column keeps the prose blocks
   // (Passive + Abilities carry the descriptions the rail tiles only
   // gesture at).
   Sentinel: [
     'Header', 'Polarities', 'Characteristics', 'Description', 'CephalonNotes',
-    'Passive', 'Abilities', 'Components', 'BestFarms', 'Related', 'WikiFooter',
+    'Passive', 'Abilities', 'BuildCost', 'Components', 'BestFarms', 'Related', 'WikiFooter',
   ],
   // ModCard renders the signature card + rank-synced stat ladder + meta in one
   // block (the old ModDetailModal body, now a page section).
@@ -95,7 +96,7 @@ export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
     'BestFarms', 'Related', 'WikiFooter',
   ],
   Blueprint: [
-    'Header', 'HeroIcon', 'Description', 'CephalonNotes', 'Build', 'Drops',
+    'Header', 'HeroIcon', 'Description', 'CephalonNotes', 'BuildCost', 'Build', 'Drops',
     'BestFarms', 'Related', 'WikiFooter',
   ],
   // Resources lead with the cinematic Planetary Origins hero (planet

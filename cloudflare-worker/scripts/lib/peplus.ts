@@ -101,11 +101,22 @@ export interface PeArcane {
   codexSecret?:        boolean;
 }
 
+/** ExportRecipes entry — the crafting recipe that builds `resultType`. */
+export interface PeRecipe {
+  resultType:          string;   // uniqueName of the built item
+  buildPrice?:         number;   // credits to build
+  creditsCost?:        number;   // credits (mirror of buildPrice)
+  buildTime?:          number;   // seconds in the foundry
+  skipBuildTimePrice?: number;   // platinum to rush
+}
+
 export interface PePlusData {
   warframes: ReadonlyMap<string, PePowersuit>;
   weapons:   ReadonlyMap<string, PeWeapon>;
   mods:      ReadonlyMap<string, PeUpgrade>;
   arcanes:   ReadonlyMap<string, PeArcane>;
+  /** Crafting recipes keyed by `resultType` (the built item's uniqueName). */
+  recipes:   ReadonlyMap<string, PeRecipe>;
   /** English localization: dict key → display string. */
   dict:      Record<string, string>;
   /** Package version, recorded for provenance (e.g. "0.6.2"). */
@@ -139,14 +150,23 @@ export function loadPePlus(): PePlusData | null {
     const weapons   = read<Record<string, PeWeapon>>('ExportWeapons.json');
     const mods      = read<Record<string, PeUpgrade>>('ExportUpgrades.json');
     const arcanes   = read<Record<string, PeArcane>>('ExportArcanes.json');
+    const recipesRaw = read<Record<string, PeRecipe>>('ExportRecipes.json');
     const dict      = read<Record<string, string>>('dict.en.json');
     const version   = read<{ version?: string }>('package.json').version ?? 'unknown';
+
+    // Recipes are keyed by recipe id; we index by resultType (the built item)
+    // so an item can look up its own build cost by uniqueName.
+    const recipes = new Map<string, PeRecipe>();
+    for (const r of Object.values(recipesRaw)) {
+      if (r && typeof r.resultType === 'string') recipes.set(r.resultType, r);
+    }
 
     const data: PePlusData = {
       warframes: toMap(warframes),
       weapons:   toMap(weapons),
       mods:      toMap(mods),
       arcanes:   toMap(arcanes),
+      recipes,
       dict,
       version,
     };
@@ -158,6 +178,7 @@ export function loadPePlus(): PePlusData | null {
       weapons:   data.weapons.size,
       mods:      data.mods.size,
       arcanes:   data.arcanes.size,
+      recipes:   data.recipes.size,
       dictKeys:  Object.keys(dict).length,
     });
     return data;

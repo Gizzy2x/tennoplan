@@ -613,6 +613,8 @@ export interface TennoplanItem {
   releaseDate?:   string;
   /** Whether this item can appear in mod transmutation (Mod only). */
   transmutable?:  boolean;
+  /** Foundry build cost (credits + time + rush platinum) for craftable items. */
+  buildCost?:     BuildCost;
   /** Patch history excerpts pulled from upstream WFCD `patchlogs`. */
   patchHistory?:  PatchLogEntry[];
 
@@ -723,6 +725,14 @@ export interface BuildRequirement {
 /** Endo to fully rank a mod (rank 0 → max). Computed in CI. Mirrors Worker. */
 export interface UpgradeCost {
   endoToMax: number;
+}
+
+/** Foundry craft cost (credits + time + rush platinum). Mirrors Worker. */
+export interface BuildCost {
+  credits:       number;
+  /** Foundry build time in seconds. */
+  buildTime:     number;
+  rushPlatinum?: number;
 }
 
 /** A computed Advantage/Disadvantage (the wiki "Characteristics" idea). Mirrors Worker. */
