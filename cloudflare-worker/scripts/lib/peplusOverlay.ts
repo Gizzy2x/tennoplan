@@ -53,6 +53,8 @@ export interface OverlayReport {
   /** Weapons where the mapped damagePerShot sum deviated >2% from totalDamage —
    *  a slot reorder/new-type signal (non-fatal; schema guard owns the hard fail). */
   damageSumWarnings: number;
+  /** Mods given a computed Endo-to-max upgrade cost (matched + synthesized). */
+  upgradeCosts:     number;
   /** PE+ records with no codex row (after junk filters) — the patch-day gap. */
   peOnly:           Record<string, number>;
   /** Of those, how many we synthesized into minimal entries. */
@@ -74,6 +76,7 @@ export function applyPePlusAuthority(items: EnrichedItem[], pe: PePlusData): Ove
     enumFills:       0,
     damageBreakdowns:  0,
     damageSumWarnings: 0,
+    upgradeCosts:      0,
     peOnly:          {},
     synthesized:     0,
     wfcdOnly:        {},
@@ -172,6 +175,10 @@ function overlayMod(item: EnrichedItem, peRec: PeUpgrade | undefined, pe: PePlus
     item.tradeable = peRec.tradable;
     report.enumFills++;
   }
+
+  // Upgrade cost — Endo to fully rank, from the resolved rarity + PE+ max rank.
+  const endo = modEndoToMax(item.rarity, peRec.fusionLimit);
+  if (endo !== undefined) { item.upgradeCost = { endoToMax: endo }; report.upgradeCosts++; }
 }
 
 // ─── Synthesis of PE+-only items (the patch-day gap) ──────────────────────────
@@ -250,6 +257,8 @@ function synthesizeMissing(
     const compat = peName(pe, rec.compatName);
     if (compat) item.compatName = compat;
     if (typeof rec.tradable === 'boolean') item.tradeable = rec.tradable;
+    const endo = modEndoToMax(item.rarity, rec.fusionLimit);
+    if (endo !== undefined) { item.upgradeCost = { endoToMax: endo }; report.upgradeCosts++; }
     push(item, 'Mod');
   }
 
@@ -356,6 +365,24 @@ function deriveDamageTypes(
     report.damageSumWarnings++;
   }
   return out;
+}
+
+/**
+ * Total Endo to rank a mod from 0 to max, via DE's fusion formula:
+ *   endoToMax = 10 × rarityNum × (2^maxRank − 1)
+ * rarityNum: Common 1, Uncommon 2, Rare 3, Legendary 4. PE+'s rarity field
+ * already encodes the cost tier (Primed/Umbra/Archon → Legendary, Galvanized/
+ * Amalgam/Riven → Rare), verified against known mods (Vitality 10230, Primed
+ * Continuity 40920, Galvanized Aptitude 30690). Returns undefined when rarity
+ * or max rank is unknown / max rank is 0.
+ */
+const RARITY_FUSION_NUM: Record<string, number> = { Common: 1, Uncommon: 2, Rare: 3, Legendary: 4 };
+
+function modEndoToMax(rarity: string | undefined, maxRank: number | undefined): number | undefined {
+  if (!rarity || typeof maxRank !== 'number' || maxRank <= 0) return undefined;
+  const n = RARITY_FUSION_NUM[rarity];
+  if (!n) return undefined;
+  return 10 * n * (2 ** maxRank - 1);
 }
 
 /** DE polarity tags → our lowercase school names (same map WFCD uses). */

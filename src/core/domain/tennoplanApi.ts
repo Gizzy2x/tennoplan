@@ -515,6 +515,13 @@ export interface TennoplanItem {
   description?:  string;
 
   /**
+   * "Cephalon's Notes" — our own-words practical knowledge (how it really
+   * works, interactions, gotchas, synergies). Authored, keyed by uniqueName,
+   * `status:'beta'` until community-vetted. Mirrors the Worker type.
+   */
+  fieldNotes?:   FieldNotes;
+
+  /**
    * Warframe/Sentinel/Pet passive ability text.
    * Wiki-resolved prose when available (no |TOKEN| placeholders); falls back
    * to WFCD's templated string. Sanitize for residual game-markup tags
@@ -583,6 +590,8 @@ export interface TennoplanItem {
    * Distinct from iconUrl when we want to render at a non-standard size.
    */
   imageName?:    string;
+  /** Endo to fully rank this mod (rank 0 → max), computed in CI. Mod only. */
+  upgradeCost?:  UpgradeCost;
 
   // ── Economy ─────────────────────────────────────────────────
   ducatValue?:    number;
@@ -699,6 +708,21 @@ export interface BuildRequirement {
   /** Display name of the required ingredient. */
   item:   string;
   count:  number;
+}
+
+/** Endo to fully rank a mod (rank 0 → max). Computed in CI. Mirrors Worker. */
+export interface UpgradeCost {
+  endoToMax: number;
+}
+
+/** "Cephalon's Notes" — authored own-words practical knowledge. Mirrors Worker. */
+export interface FieldNotes {
+  /** One-line plain-language summary. */
+  tldr?:   string;
+  /** Bullet facts: interactions, gotchas ("doesn't affect X"), synergies. */
+  points?: string[];
+  /** 'beta' until community-vetted; surfaces a BETA tag. */
+  status:  'beta' | 'verified';
 }
 
 export interface UserItemState {

@@ -495,6 +495,15 @@ export interface TennoplanItem {
   description?:  string;
 
   /**
+   * "Cephalon's Notes" — our own-words practical knowledge the game/UI never
+   * surfaces: how it really works, key interactions (stacks with / does NOT
+   * affect X), gotchas, synergies. Authored (not from a source feed), keyed by
+   * uniqueName, `status:'beta'` until community-vetted. Facts are free to use;
+   * the prose is original.
+   */
+  fieldNotes?:   FieldNotes;
+
+  /**
    * Warframe/Sentinel/Pet passive ability text.
    * Wiki-resolved prose when available (no |TOKEN| placeholders); falls back
    * to WFCD's templated string. Sanitize for residual game-markup tags
@@ -563,6 +572,14 @@ export interface TennoplanItem {
    * Distinct from iconUrl when we want to render at a non-standard size.
    */
   imageName?:    string;
+  /**
+   * Cost to fully rank this mod, rank 0 → max (Mod only). Endo is computed
+   * deterministically from rarity + max rank (10 × rarityNum × (2^maxRank − 1),
+   * rarityNum Common 1 / Uncommon 2 / Rare 3 / Legendary 4) — DE's own fusion
+   * formula, verified against known mods. Fills the in-game/codex gap (neither
+   * shows endo-to-max). The wiki itself often omits this.
+   */
+  upgradeCost?:  UpgradeCost;
 
   // ── Economy ─────────────────────────────────────────────────
   ducatValue?:    number;
@@ -692,6 +709,23 @@ export interface Ability {
 export interface BuildRequirement {
   item:   string;
   count:  number;
+}
+
+/** Cost to fully rank a mod (rank 0 → max). Computed in CI from rarity + max
+ *  rank via DE's fusion formula. Credits deferred until a verified table exists. */
+export interface UpgradeCost {
+  /** Total Endo to upgrade from rank 0 to max rank. */
+  endoToMax: number;
+}
+
+/** "Cephalon's Notes" — authored, own-words practical knowledge for an entry. */
+export interface FieldNotes {
+  /** One-line plain-language summary (what it does / why you'd use it). */
+  tldr?:   string;
+  /** Bullet facts: interactions, gotchas ("doesn't affect X"), synergies. */
+  points?: string[];
+  /** 'beta' until community-vetted; surfaces a BETA tag + suggest-a-fix path. */
+  status:  'beta' | 'verified';
 }
 
 export interface UserItemState {

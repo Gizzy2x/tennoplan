@@ -26,6 +26,7 @@ import { fetchAllCodexSources } from '../src/codex/fetcher';
 import { parseCodex }           from '../src/codex/parser';
 import { buildCodex }           from '../src/codex/builder';
 import { syntheticBuiltItems }  from '../src/codex/syntheticItems';
+import { applyFieldNotes }       from '../src/codex/fieldNotes';
 import { enrichCodex }          from '../src/codex/enricher';
 import { loadPePlus }           from './lib/peplus';
 import { applyPePlusAuthority } from './lib/peplusOverlay';
@@ -127,6 +128,14 @@ async function main(): Promise<void> {
     console.error('[build-codex] FATAL validation:', validation.report.notes);
     process.exit(1);
   }
+
+  // ── 6a. CEPHALON'S NOTES (authored knowledge overlay, B1) ──
+  // Our own-words practical knowledge keyed by uniqueName, merged onto the
+  // validated items. Runs before the token scan so any glyph tokens in the
+  // prose are caught too. Unmatched keys mean a stale uniqueName to fix.
+  const notes = applyFieldNotes(validation.items);
+  console.error(`[build-codex] Cephalon's Notes: applied ${notes.applied}` +
+    (notes.unmatched.length ? `, UNMATCHED keys (fix these): ${JSON.stringify(notes.unmatched)}` : ''));
 
   // ── 6b. TOKEN SCAN ──
   // Surface any `<CODE>` glyph tokens that appear in the data but aren't

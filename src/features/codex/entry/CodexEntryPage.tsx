@@ -28,6 +28,7 @@ import { HeaderBlock } from './blocks/HeaderBlock';
 import { HeroIconBlock } from './blocks/HeroIconBlock';
 import { StatsWarframeBlock } from './blocks/StatsWarframeBlock';
 import { DescriptionBlock } from './blocks/DescriptionBlock';
+import { CephalonNotesBlock } from './blocks/CephalonNotesBlock';
 import { PolaritiesBlock } from './blocks/PolaritiesBlock';
 import { AbilitiesBlock } from './blocks/AbilitiesBlock';
 import { PassiveBlock } from './blocks/PassiveBlock';
@@ -94,6 +95,7 @@ function BlockSlot({ blockKey, entry, onSelectEntry }: BlockSlotProps) {
     case 'HeroIcon':       return <HeroIconBlock entry={entry} />;
     case 'StatsWarframe':  return <StatsWarframeBlock entry={entry} />;
     case 'Description':    return <DescriptionBlock entry={entry} />;
+    case 'CephalonNotes':  return <CephalonNotesBlock entry={entry} />;
     case 'Polarities':     return <PolaritiesBlock entry={entry} />;
     case 'Abilities':      return <AbilitiesBlock entry={entry} />;
     case 'Passive':        return <PassiveBlock entry={entry} />;
