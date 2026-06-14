@@ -1118,11 +1118,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The reworked pirate — Hydroid is now a Corrosive armor-stripper who buffs his own tankiness and weapons while melting enemy armor.',
-      points: [
-        'Plunder permanently strips enemy armor with Corrosive, then funnels that into bonus armor for him and Corrosive damage on his weapons — his defining ability.',
-        'His passive makes enemies he damages more vulnerable to Corrosive and chips their armor on the first proc, stacking with Plunder.',
-        'Tempest Barrage rains Corrosive projectiles for status, and Tidal Surge is an invulnerable water-dash for getting around or repositioning.',
-        'Tentacle Swarm is his hard crowd control; build Strength and Range to keep armor stripped and enemies pinned.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Plunder permanently strips enemy armor with Corrosive, then funnels that into bonus armor for him and Corrosive damage on his weapons — his defining ability.',
+            'His passive makes enemies he damages more vulnerable to Corrosive and chips their armor on the first proc, stacking with Plunder.',
+            'Tempest Barrage rains Corrosive projectiles for status, and Tidal Surge is an invulnerable water-dash for repositioning.',
+            'Tentacle Swarm summons a kraken that suspends and thrashes a crowd — his hard crowd control.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Build Strength and Range to keep armor fully stripped and enemies pinned; his rework turned a slow farming frame into a real armor-strip damage enabler.',
+            'Pilfering Swarm (Tentacle Swarm augment) makes caught enemies drop extra loot, keeping a bit of his old farming identity.',
+            'Tidal Surge can be subsumed, and Plunder pairs his self-buff with squad-wide armor denial.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A pirate frame styled after Davy Jones, named from the Greek word for water.',
+            'He is one of the few frames whose kit can ignore enemy armor outright.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1136,11 +1156,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A shieldless wall of health and armor — Inaros tanks with raw HP, not shields, and can revive himself.',
-      points: [
-        'He has NO shields, so shield-gating gear does nothing: Brief Respite, Catalyzing Shields, and shield-based arcanes are wasted slots.',
-        'Survivability scales off Health and Armor instead — think Adaptation, Arcane Grace, and armor/health mods.',
-        'His energy economy is thin, so most builds lean on Equilibrium plus health-orb generation (or Arcane Energize) to stay powered.',
-        'The self-revive passive only triggers from a sarcophagus; you still need to finish a nearby enemy (or be revived) to get back up.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'He has NO shields and instead carries an enormous health pool with solid armor, plus a passive that entombs him in a sarcophagus on lethal damage so he can self-revive.',
+            'Desiccation blinds and heals him while opening enemies to finishers, and finishers restore big chunks of his health.',
+            'Scarab Swarm scales Corrosive damage off his max health and spreads, while Scarab Shell trades health for an armor buff and status immunity.',
+            'Devour swallows an enemy to heal him and lock it down.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Shield-gating gear does nothing on him — Brief Respite, Catalyzing Shields, Negation Swarm’s shield effects, and shield-based arcanes are wasted slots.',
+            'Because he is shieldless, Rage and Hunter Adrenaline always make energy from the damage he takes; Equilibrium and health orbs cover his thin energy economy.',
+            'Survivability scales off Health and Armor — Adaptation and Arcane Grace are his staples, and the Negation Swarm augment grants status immunity.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A mummy-themed "Fear-Eater" earned from the Sands of Inaros quest, with among the highest health of any frame.',
+            'Inaros Prime pushes that already-huge health pool even higher.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1151,11 +1191,28 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Archwing/StealthJetPack/StealthJetPack'],
     note: {
       tldr: 'The utility Archwing — Itzal is the stealth-and-loot pick, though its old signature teleport is now shared by every Archwing.',
-      points: [
-        'Cosmic Crush vacuums in nearby enemies and pickups then detonates — handy for hoovering up loot in open-world flight and Railjack.',
-        'Penumbra cloaks it for stealthy approaches, and Arch Line grapples to surfaces or yanks enemies for unconventional mobility.',
-        'Blink — its famous instant teleport — was made a universal Archwing maneuver, so Itzal no longer has a monopoly on fast travel.',
-        'It trades Amesha’s protection and Elytron’s firepower for evasion and utility, favored by players who want to dart in, grab, and go.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Cosmic Crush vacuums in nearby enemies and pickups then detonates — handy for hoovering up loot in open-world flight and Railjack.',
+            'Penumbra cloaks it for stealthy approaches, and Arch Line grapples to surfaces or yanks enemies for unconventional mobility.',
+            'Its famous Blink teleport was made a universal Archwing maneuver, so Itzal no longer has a monopoly on fast travel.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'It trades Amesha’s protection and Elytron’s firepower for evasion, stealth, and utility — the pick for darting in, grabbing, and getting out.',
+            'The loot-vacuum on Cosmic Crush makes it a favorite for open-world resource runs.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Its name means "shadow" in Basque, breaking the insect-naming pattern of the other Archwings.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1169,11 +1226,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The stealth-and-theft archer — Ivara stays invisible, pickpockets enemies, and steers her shots for pinpoint kills.',
-      points: [
-        'Quiver swaps between four arrows: Cloak (an invisibility bubble), Sleep (stun), Noise (a lure), and Dashwire (a zipline) — a toolkit for Spy and stealth runs.',
-        'Prowl keeps her invisible, boosts headshot damage, and automatically pickpockets loot from nearby enemies, but slows her and can break if she moves too fast (the Infiltrate augment fixes that).',
-        'Navigator lets her fly and steer a single projectile, multiplying the damage of a sniper or bow shot for big single-target hits.',
-        'Artemis Bow is her exalted bow for fanning out arrows; build Duration and Range to keep stealth and utility up.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Quiver swaps between four arrows: Cloak (an invisibility bubble), Sleep (stun), Noise (a lure), and Dashwire (a zipline) — a toolkit for Spy and stealth runs.',
+            'Prowl keeps her invisible, boosts headshot damage, and automatically pickpockets loot from nearby enemies, but slows her and can break if she sprints or rolls.',
+            'Navigator lets her fly and steer a single projectile, multiplying the damage of a sniper or bow shot for big single-target hits.',
+            'Her passive widens her radar to spot enemies, and Artemis Bow is her exalted bow for fanning out arrows.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The Infiltrate augment lets her move at full speed and walk through laser barriers while Prowled — a near-essential Spy pick.',
+            'Navigator pairs with sniper and bow mods, and Concentrated Arrow turns Artemis Bow into a crit-headshot single shot.',
+            'Build Duration and Range to keep her stealth and utility up across long missions.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Her name nods to legendary archers, and her design is modeled on brightly-colored poison frogs.',
+            'Her main blueprint drops from Spy Rotation C — the first frame to drop from standard mission loot.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1184,11 +1261,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Choir/Choir'],
     note: {
       tldr: 'A winged support frame — Jade buffs the squad with rotating hymns, strips defenses from afar, and is the only frame with TWO aura slots.',
-      points: [
-        'Her standout perk is two aura mod slots, letting her run two squad auras at once for unmatched team-buff flexibility.',
-        'Symphony of Mercy cycles three hymns — an Ability Strength buff, a weapon-damage buff, and shield resilience — so she adapts to whatever the squad needs.',
-        'Ophanim Eyes slows enemies, strips their shields and armor, and revives downed allies from range, making it a strong Helminth pick too.',
-        'Glory on High is a flight-based exalted weapon that tags enemies with a damage-vulnerability "Judgment" and detonates them; she is obtained from the Jade Shadows quest.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Her standout perk is two aura mod slots, letting her run two squad auras at once — unique among Warframes.',
+            'Symphony of Mercy cycles three hymns: an Ability Strength buff, a weapon-damage buff, and shield resilience, so she adapts to whatever the squad needs.',
+            'Light’s Judgment drops healing wells and tags enemies with "Judgment", a damage-vulnerability debuff her kit can detonate.',
+            'Glory on High is a flight-based exalted weapon whose shots apply Judgment, with an alt-fire that detonates all active Judgments at once.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Ophanim Eyes slows enemies, strips their shields and armor, and revives downed allies from range — a strong Helminth pick.',
+            'Stacking Judgment on a target and detonating scales with how many were applied, rewarding a buff-and-burst rhythm.',
+            'Those two aura slots make her uniquely flexible for any team composition.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Earned from the Jade Shadows quest, with a tragic story of a frame transformed while pregnant.',
+            'Her presence makes the Stalker instantly flee — a unique quirk — and her signature weapons mirror his arsenal.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1202,11 +1299,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A farming and crowd-control favorite — Khora groups enemies, whips them all at once, and (with one augment) makes them rain loot.',
-      points: [
-        'Whipclaw is her main damage and scales with MELEE mods and your combo counter, not Ability Strength — a key build detail newer players miss.',
-        'Ensnare bunches enemies together and Whipclaw spreads it further, so one whip can hit a whole clustered group for full damage.',
-        'Venari, her kavat companion, has Attack, Protect, and Heal stances and gives a passive move-speed boost — she is a second pet that never takes a slot.',
-        'Strangledome cages a crowd, and the Pilfering Strangledome augment makes caged enemies drop extra loot — the reason she is a go-to farming frame.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Whipclaw is her main damage and scales with MELEE mods and your combo counter, not Ability Strength — the build detail newer players miss most.',
+            'Ensnare bunches enemies together, and Whipclaw spreads it further, so one whip can hit a whole clustered group for full damage.',
+            'Venari, her kavat companion, has Attack, Protect, and Heal stances and gives a passive move-speed boost — a second pet that never takes a slot.',
+            'Strangledome cages a crowd and makes them take extra damage, the perfect target for Whipclaw.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The Pilfering Strangledome augment makes caged enemies drop extra loot — the reason she is a premier farming frame.',
+            'Accumulating Whipclaw (augment) lets repeated casts stack damage, and Ensnare is her Helminth-subsumable grouping tool.',
+            'Build melee damage and combo for Whipclaw, plus Range and Duration for Ensnare and Strangledome.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Her component blueprints drop from Sanctuary Onslaught, and she was the first frame to need Kavat Genetic Codes.',
+            'Her arachnid design — web-patterned chest and abdomen-like skirt — matches her trapping kit.',
+          ],
+        },
       ],
       status: 'beta',
     },
