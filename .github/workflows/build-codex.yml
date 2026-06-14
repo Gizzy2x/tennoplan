@@ -33,6 +33,7 @@ on:
     paths:
       - 'cloudflare-worker/scripts/build-codex.ts'
       - 'cloudflare-worker/scripts/upload-codex.ts'
+      - 'cloudflare-worker/scripts/lib/**'
       - 'cloudflare-worker/src/codex/**'
       - 'cloudflare-worker/src/config.ts'
       - 'cloudflare-worker/src/types.ts'

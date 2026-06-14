@@ -46,6 +46,13 @@ export interface OverlayReport {
   statDivergence:   Record<string, number>;
   /** Enum/string holes filled from PE+. */
   enumFills:        number;
+  /** Weapons whose per-type damage breakdown was authored from PE+
+   *  damagePerShot (matched + synthesized). PE+ ships melee splits WFCD omits,
+   *  so this exceeds WFCD's damage-map coverage. */
+  damageBreakdowns: number;
+  /** Weapons where the mapped damagePerShot sum deviated >2% from totalDamage —
+   *  a slot reorder/new-type signal (non-fatal; schema guard owns the hard fail). */
+  damageSumWarnings: number;
   /** PE+ records with no codex row (after junk filters) — the patch-day gap. */
   peOnly:           Record<string, number>;
   /** Of those, how many we synthesized into minimal entries. */
@@ -62,12 +69,14 @@ export function applyPePlusAuthority(items: EnrichedItem[], pe: PePlusData): Ove
 
   const report: OverlayReport = {
     peVersion:      pe.version,
-    matched:        {},
-    statDivergence: {},
-    enumFills:      0,
-    peOnly:         {},
-    synthesized:    0,
-    wfcdOnly:       {},
+    matched:         {},
+    statDivergence:  {},
+    enumFills:       0,
+    damageBreakdowns:  0,
+    damageSumWarnings: 0,
+    peOnly:          {},
+    synthesized:     0,
+    wfcdOnly:        {},
   };
 
   const byUniqueName = new Map(items.map((i) => [i.uniqueName, i]));
@@ -122,6 +131,13 @@ function overlayWeapon(item: EnrichedItem, peRec: PeWeapon | undefined, report: 
     rivenDisposition: peRec.omegaAttenuation,
   });
   if (typeof peRec.masteryReq === 'number') item.masteryRank = peRec.masteryReq;
+
+  // Damage-type breakdown — PE+ authority over WFCD's `damage` map. PE+'s
+  // damagePerShot is the per-type split that sums to totalDamage (verified 0
+  // mismatch across 647 weapons), so it corrects post-patch drift AND fills
+  // melee, which WFCD ships no `damage` map for (the DamageStrip's known gap).
+  const dmg = deriveDamageTypes(peRec.damagePerShot, peRec.totalDamage, report);
+  if (dmg) { item.damageTypes = dmg; report.damageBreakdowns++; }
 
   // Enum fills — WFCD casing is the display convention; only patch holes.
   if (!item.weaponTrigger && peRec.trigger) { item.weaponTrigger = normalizeTrigger(peRec.trigger); report.enumFills++; }
@@ -213,6 +229,8 @@ function synthesizeMissing(
     if (typeof rec.reloadTime         === 'number' && rec.reloadTime         > 0) stats.reload           = rec.reloadTime;
     if (typeof rec.omegaAttenuation   === 'number' && rec.omegaAttenuation   > 0) stats.rivenDisposition = rec.omegaAttenuation;
     if (Object.keys(stats).length > 0) item.stats = stats;
+    const dmg = deriveDamageTypes(rec.damagePerShot, rec.totalDamage, report);
+    if (dmg) { item.damageTypes = dmg; report.damageBreakdowns++; }
     if (typeof rec.masteryReq === 'number') item.masteryRank   = rec.masteryReq;
     if (rec.trigger)                        item.weaponTrigger = normalizeTrigger(rec.trigger);
     if (rec.noise)                          item.weaponNoise   = titleCase(rec.noise);
@@ -292,6 +310,52 @@ function overrideStats(item: EnrichedItem, updates: Partial<ItemStats>): boolean
     stats[key] = value;
   }
   return diverged;
+}
+
+/**
+ * PE+ `damagePerShot` slot index → our lowercase UI damage-type key (the same
+ * vocabulary WFCD's `damage` map and WeaponSummaryCard's damageIconFor speak,
+ * so no frontend change is needed). The slot order mirrors the IAttackData key
+ * declaration in PE+'s shipped index.d.ts (DT_IMPACT, DT_PUNCTURE, DT_SLASH,
+ * DT_FIRE, …) and was verified against live data: slots 0–13 are the standard
+ * elements and the mapped sum equals totalDamage for every weapon. Slot 15
+ * (DT_FINISHER) and slot 19 (the cinematic slot on Wukong's Shadow Clones)
+ * carry "true" damage. Unmapped/unused slots are skipped. The schema guard
+ * marks damagePerShot critical; deriveDamageTypes' sum check catches a reorder.
+ */
+const DPS_INDEX_TO_KEY: readonly (string | undefined)[] = [
+  'impact', 'puncture', 'slash', 'heat', 'cold', 'electricity', 'toxin', 'blast',
+  'radiation', 'gas', 'magnetic', 'viral', 'corrosive', 'void',
+  undefined, 'true', undefined, undefined, undefined, 'true',
+];
+
+/**
+ * Map a PE+ damagePerShot array into TennoplanItem.damageTypes (absolute damage
+ * per lowercase type). Returns undefined when there's no usable breakdown so the
+ * caller keeps WFCD's map. Bumps report.damageSumWarnings when the mapped sum
+ * drifts >2% from totalDamage (a slot reorder/new-type tell — non-fatal).
+ */
+function deriveDamageTypes(
+  dps:    number[] | undefined,
+  total:  number | undefined,
+  report: OverlayReport,
+): Record<string, number> | undefined {
+  if (!Array.isArray(dps)) return undefined;
+  const out: Record<string, number> = {};
+  let sum = 0;
+  for (let i = 0; i < dps.length; i++) {
+    const v = dps[i];
+    if (!(v > 0)) continue;
+    const key = DPS_INDEX_TO_KEY[i];
+    if (!key) continue;                       // unmapped/special slot
+    out[key] = (out[key] ?? 0) + v;
+    sum += v;
+  }
+  if (sum <= 0) return undefined;
+  if (typeof total === 'number' && total > 0 && Math.abs(sum - total) > total * 0.02) {
+    report.damageSumWarnings++;
+  }
+  return out;
 }
 
 /** DE polarity tags → our lowercase school names (same map WFCD uses). */

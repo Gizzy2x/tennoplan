@@ -83,8 +83,8 @@ const SCHEMA: readonly ExportSpec[] = [
     exportFile: 'ExportWeapons.json',
     mapKey:     'weapons',
     consumed: [
-      C('name'), C('totalDamage'), C('criticalChance'), C('criticalMultiplier'),
-      C('procChance'), C('fireRate'), C('productCategory'),
+      C('name'), C('totalDamage'), C('damagePerShot'), C('criticalChance'),
+      C('criticalMultiplier'), C('procChance'), C('fireRate'), C('productCategory'),
       o('description'), o('magazineSize'), o('reloadTime'), o('accuracy'),
       o('omegaAttenuation'), o('masteryReq'), o('trigger'), o('noise'),
       o('codexSecret'), o('tradable'), o('variantType'),
