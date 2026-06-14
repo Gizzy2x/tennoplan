@@ -65,6 +65,9 @@ export function ModDetailBlock({ entry }: { entry: CodexEntry }) {
           {mod.polarity && <Meta label="Polarity" value={POLARITY_DISPLAY[mod.polarity] ?? mod.polarity} />}
           <Meta label="Tradeable" value={mod.tradeable ? 'Yes' : 'No'} />
           <Meta label="Max Rank" value={String(maxRank)} />
+          {entry.upgradeCost && (
+            <Meta label="Endo to Max" value={entry.upgradeCost.endoToMax.toLocaleString()} />
+          )}
         </dl>
       </div>
     </section>

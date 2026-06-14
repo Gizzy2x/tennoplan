@@ -16,6 +16,7 @@ export type BlockKey =
   | 'Header'
   | 'HeroIcon'
   | 'Description'
+  | 'CephalonNotes'
   | 'Drops'
   | 'BestFarms'
   | 'Build'
@@ -45,7 +46,7 @@ export type BlockKey =
  * universal subset so unknown categories still render meaningfully.
  */
 export const UNIVERSAL_BLOCKS: BlockKey[] = [
-  'Header', 'HeroIcon', 'Description', 'Drops', 'BestFarms',
+  'Header', 'HeroIcon', 'Description', 'CephalonNotes', 'Drops', 'BestFarms',
   'Related', 'WikiFooter',
 ];
 
@@ -56,44 +57,44 @@ export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
   // Related sits just before WikiFooter so the page peaks on
   // discovery (see RelatedEntriesBlock for the resolution rules).
   Warframe: [
-    'Header', 'Polarities', 'GeneralInformation', 'Description',
+    'Header', 'Polarities', 'GeneralInformation', 'Description', 'CephalonNotes',
     'Passive', 'Abilities', 'Components', 'BestFarms', 'PatchHistory',
     'Related', 'WikiFooter',
   ],
   // HeroIcon + StatsWeapon are owned by the right-rail WeaponSummaryCard.
   // Polarities stays left — it's build-context, not at-a-glance summary.
   Weapon: [
-    'Header', 'Polarities', 'Description',
+    'Header', 'Polarities', 'Description', 'CephalonNotes',
     'Components', 'BestFarms', 'PatchHistory', 'Related', 'WikiFooter',
   ],
   // HeroIcon + StatsCompanion live in the right-rail CompanionSummaryCard,
   // which is shared with Sentinel below. Polarities stays left as build context.
   Companion: [
-    'Header', 'Polarities', 'Description',
+    'Header', 'Polarities', 'Description', 'CephalonNotes',
     'Components', 'BestFarms', 'Related', 'WikiFooter',
   ],
   // Same rail as Companion; the left column keeps the prose blocks
   // (Passive + Abilities carry the descriptions the rail tiles only
   // gesture at).
   Sentinel: [
-    'Header', 'Polarities', 'Description',
+    'Header', 'Polarities', 'Description', 'CephalonNotes',
     'Passive', 'Abilities', 'Components', 'BestFarms', 'Related', 'WikiFooter',
   ],
   // ModCard renders the signature card + rank-synced stat ladder + meta in one
   // block (the old ModDetailModal body, now a page section).
   Mod: [
-    'Header', 'ModCard', 'AugmentContext', 'Description', 'Drops',
+    'Header', 'ModCard', 'AugmentContext', 'Description', 'CephalonNotes', 'Drops',
     'BestFarms', 'PatchHistory', 'Related', 'WikiFooter',
   ],
   Relic: [
     'Header', 'RelicRewards', 'Drops', 'BestFarms', 'WikiFooter',
   ],
   Arcane: [
-    'Header', 'HeroIcon', 'ArcaneStats', 'Description', 'Drops',
+    'Header', 'HeroIcon', 'ArcaneStats', 'Description', 'CephalonNotes', 'Drops',
     'BestFarms', 'Related', 'WikiFooter',
   ],
   Blueprint: [
-    'Header', 'HeroIcon', 'Description', 'Build', 'Drops',
+    'Header', 'HeroIcon', 'Description', 'CephalonNotes', 'Build', 'Drops',
     'BestFarms', 'Related', 'WikiFooter',
   ],
   // Resources lead with the cinematic Planetary Origins hero (planet
@@ -102,7 +103,7 @@ export const BLOCK_SETS: Partial<Record<ItemCategory, BlockKey[]>> = {
   // it craft" in the first viewport. Drops + BestFarms keep the full
   // node-level detail below for power users.
   Resource: [
-    'Header', 'PlanetaryOrigins', 'Description', 'Consumers',
+    'Header', 'PlanetaryOrigins', 'Description', 'CephalonNotes', 'Consumers',
     'BestFarms', 'Drops', 'Related', 'WikiFooter',
   ],
 };
