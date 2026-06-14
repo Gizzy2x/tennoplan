@@ -1,0 +1,67 @@
+/* ================================================================
+   CharacteristicsBlock — computed Advantages / Disadvantages.
+   Two reflowing columns; advantages jade, disadvantages stat-red.
+   Markers are +/− generated content (no emoji).
+   ================================================================ */
+
+.root {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-md);
+  padding:        var(--space-md);
+  background:     transparent;
+}
+
+.columns {
+  display:               grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap:                   var(--space-lg);
+}
+
+.col {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-sm);
+}
+
+.colHeader {
+  font-family:    var(--font-sans);
+  font-size:      0.75rem;
+  font-weight:    600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.colHeader[data-kind='adv'] { color: var(--color-accent-jade); }
+.colHeader[data-kind='dis'] { color: var(--color-stat-health); }
+
+.list {
+  list-style:     none;
+  margin:         0;
+  padding:        0;
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-xs);
+}
+
+.list li {
+  font-family: var(--font-sans);
+  font-size:   0.9375rem;
+  line-height: 1.5;
+  color:       var(--color-text-primary);
+  display:     flex;
+  gap:         8px;
+}
+
+.adv::before {
+  content:     '+';
+  flex:        none;
+  font-weight: 600;
+  color:       var(--color-accent-jade);
+}
+
+.dis::before {
+  content:     '\2212';
+  flex:        none;
+  font-weight: 600;
+  color:       var(--color-stat-health);
+}

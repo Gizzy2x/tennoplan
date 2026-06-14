@@ -27,6 +27,7 @@ import { parseCodex }           from '../src/codex/parser';
 import { buildCodex }           from '../src/codex/builder';
 import { syntheticBuiltItems }  from '../src/codex/syntheticItems';
 import { applyFieldNotes }       from '../src/codex/fieldNotes';
+import { applyCharacteristics }  from '../src/codex/characteristics';
 import { enrichCodex }          from '../src/codex/enricher';
 import { loadPePlus }           from './lib/peplus';
 import { applyPePlusAuthority } from './lib/peplusOverlay';
@@ -136,6 +137,11 @@ async function main(): Promise<void> {
   const notes = applyFieldNotes(validation.items);
   console.error(`[build-codex] Cephalon's Notes: applied ${notes.applied}` +
     (notes.unmatched.length ? `, UNMATCHED keys (fix these): ${JSON.stringify(notes.unmatched)}` : ''));
+
+  // Computed Advantages/Disadvantages (the wiki "Characteristics") — ranks each
+  // stat-bearing item against its peer cohort. Runs on the full validated set.
+  const chars = applyCharacteristics(validation.items);
+  console.error(`[build-codex] Characteristics: computed for ${chars} items`);
 
   // ── 6b. TOKEN SCAN ──
   // Surface any `<CODE>` glyph tokens that appear in the data but aren't
