@@ -756,12 +756,22 @@ export interface ItemCharacteristics {
   disadvantages: Characteristic[];
 }
 
+/** A labeled sub-section of a Cephalon's Note (wiki-style depth). */
+export interface FieldNoteSection {
+  /** Short heading in our voice, e.g. "Mechanics", "Interactions", "Trivia". */
+  heading: string;
+  /** Bullet facts under this heading. */
+  points:  string[];
+}
+
 /** "Cephalon's Notes" — authored, own-words practical knowledge for an entry. */
 export interface FieldNotes {
   /** One-line plain-language summary (what it does / why you'd use it). */
   tldr?:   string;
   /** Bullet facts: interactions, gotchas ("doesn't affect X"), synergies. */
   points?: string[];
+  /** Structured wiki-depth detail under labeled sub-sections (optional). */
+  sections?: FieldNoteSection[];
   /** 'beta' until community-vetted; surfaces a BETA tag + suggest-a-fix path. */
   status:  'beta' | 'verified';
 }

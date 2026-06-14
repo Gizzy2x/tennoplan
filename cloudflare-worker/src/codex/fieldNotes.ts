@@ -603,12 +603,34 @@ const WARFRAME_NOTES: SharedNote[] = [
       '/Lotus/Powersuits/IronFrame/IronFramePrime',
     ],
     note: {
-      tldr: 'Hildryn pays for abilities with SHIELDS, not energy — so every energy mod and arcane is dead weight on her.',
-      points: [
-        'She has no energy bar for abilities: Flow, Streamline, Arcane Energize, and the Zenurik energy dash do nothing for her.',
-        'Pillage is her engine — it strips enemy shields/armor and refunds her shields, letting her cast almost endlessly.',
-        'Build for a big shield pool plus shield regen and Ability Strength; survivability comes from her unusually long shield-gate.',
-        'Because casting drains shields, anything that caps or lowers max shields (like Catalyzing Shields) actively hurts her.',
+      tldr: 'Hildryn runs entirely on Shields instead of energy — she has no energy bar at all, which rewrites how her mods, arcanes, and survival work.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Her abilities cost Shields and Overshields, not energy; Ability Efficiency mods lower those shield costs instead of energy costs.',
+            'Pillage is her engine — it strips enemy shields and armor and refunds her own shields, letting her cast almost endlessly.',
+            'Her shield-gate is unusually strong: a full 3.5-second invulnerability window when shields are full, and Overshields even protect her health from damage that normally bypasses shields, like Toxin.',
+            'Haven shares this stronger shield-gating with linked allies, and the whole system works in Archwing too.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Energy mods are dead weight: Flow, Primed Flow, and the Zenurik energy dash do nothing for her.',
+            'Mods that convert energy spent into shields — Brief Respite and the Augur set — do NOT refill her either.',
+            'But energy-ORB effects still work: an Energy Orb restores shields and instantly resets her recharge delay, so Equilibrium and Energy Conversion still function (Arcane Energize will trigger but gives her nothing).',
+            'An Amber Archon Shard that boosts Energy Orb effectiveness also increases the shields she gains per orb.',
+            'Avoid anything that caps or lowers max shields — Catalyzing Shields actively hurts her; build a big shield pool plus Ability Strength.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Hildryn Prime has the highest base shields of any Warframe — 1,380 unranked, rising to 1,880 at rank 30.',
+            'Like every Prime she sends an energy pulse to allies near an Orokin Death Orb, even though she herself can’t use energy.',
+          ],
+        },
       ],
       status: 'beta',
     },

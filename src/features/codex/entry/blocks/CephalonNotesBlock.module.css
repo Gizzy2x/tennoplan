@@ -54,3 +54,16 @@
   color:       var(--color-text-muted);
   line-height: 1.55;
 }
+
+/* Wiki-depth sub-sections (Mechanics / Interactions / Trivia). */
+.section {
+  display:        flex;
+  flex-direction: column;
+  gap:            var(--space-xs);
+  margin-top:     var(--space-xs);
+}
+
+.sectionHeading {
+  margin:      0;
+  color:       var(--color-text-muted);
+}

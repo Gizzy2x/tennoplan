@@ -751,12 +751,22 @@ export interface ItemCharacteristics {
   disadvantages: Characteristic[];
 }
 
+/** A labeled sub-section of a Cephalon's Note (wiki-style depth). Mirrors Worker. */
+export interface FieldNoteSection {
+  /** Short heading in our voice, e.g. "Mechanics", "Interactions", "Trivia". */
+  heading: string;
+  /** Bullet facts under this heading. */
+  points:  string[];
+}
+
 /** "Cephalon's Notes" — authored own-words practical knowledge. Mirrors Worker. */
 export interface FieldNotes {
   /** One-line plain-language summary. */
   tldr?:   string;
   /** Bullet facts: interactions, gotchas ("doesn't affect X"), synergies. */
   points?: string[];
+  /** Structured wiki-depth detail under labeled sub-sections (optional). */
+  sections?: FieldNoteSection[];
   /** 'beta' until community-vetted; surfaces a BETA tag. */
   status:  'beta' | 'verified';
 }
