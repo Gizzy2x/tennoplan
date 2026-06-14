@@ -647,6 +647,126 @@ const WARFRAME_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
+
+  // Gara
+  {
+    keys: ['/Lotus/Powersuits/Glass/Glass', '/Lotus/Powersuits/Glass/GaraPrime'],
+    note: {
+      tldr: 'A glass frame with a famous scaling loop — Gara stacks Splinter Storm’s damage by hitting it with her own Shattered Lash, on top of being a strong defender.',
+      points: [
+        'Splinter Storm wraps allies in glass for damage reduction and makes enemies take extra damage; its damage builds up as it absorbs hits.',
+        'The signature loop: cast Splinter Storm, then strike it with Shattered Lash to multiply its stored damage — repeat to scale into very high numbers.',
+        'Mass Vitrify lays a ring of glass walls that block gunfire and crystallize enemies, great for sealing off an objective.',
+        'Her passive can radial-blind enemies when she casts; Spectrorage (with its augment) is a popular energy-farming and decoy subsume.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Garuda
+  {
+    keys: ['/Lotus/Powersuits/Garuda/Garuda', '/Lotus/Powersuits/Garuda/GarudaPrime'],
+    note: {
+      tldr: 'A blood-powered berserker — Garuda turns her own health into energy and hits harder the closer she is to death.',
+      points: [
+        'Bloodletting spends most of her health to refill energy, so she runs casters’ kits without ever touching an energy orb — her signature loop.',
+        'Her passive ramps her damage up as her health drops, rewarding that low-health playstyle (and she claws bare-handed with no melee equipped).',
+        'Dread Mirror steals an enemy’s life for a damage-absorbing shield plus a throwable heart; Blood Altar impales a target to heal the squad.',
+        'She is squishy by design — build Strength and lean on Dread Mirror’s shield and life-steal rather than a big health pool.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Gyre
+  {
+    keys: ['/Lotus/Powersuits/Gyre/Gyre', '/Lotus/Powersuits/Gyre/GyrePrime'],
+    note: {
+      tldr: 'An electric crit-nuker — Gyre turns Electricity status into critical hits that chain across a whole room.',
+      points: [
+        'Her passive grants bonus critical chance for every Electricity status on an enemy, so stacking shocks turns her abilities and guns into crit machines.',
+        'Rotorswell makes your critical hits arc lightning to nearby enemies, spreading damage and more Electric procs to feed the passive.',
+        'Cathode Grace buffs weapon and ability crit chance and trickles energy, with kills extending it — the backbone of long ability-spam runs.',
+        'Coil Horizon groups and detonates enemies; build Strength and Duration and lean into electric weapons to keep the crit-status loop rolling.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Harrow
+  {
+    keys: ['/Lotus/Powersuits/Priest/Priest', '/Lotus/Powersuits/Priest/HarrowPrime'],
+    note: {
+      tldr: 'A priest-themed crit buffer — Harrow hands the squad fire-rate, lifesteal, and a huge critical-chance boost, all fueled by overshields and headshots.',
+      points: [
+        'His passive doubles his overshield cap and starts him with full energy; overshields are the resource the rest of his kit feeds on.',
+        'Penance converts overshields into a team fire-rate, reload, and lifesteal buff, while Condemn roots enemies and refills shields on each hit.',
+        'Covenant gives a brief party-wide invulnerability, then turns the damage it blocked into a critical-chance buff that headshot kills extend — the reason he is a staple for Eidolon and boss squads.',
+        'Thurible is a channeled energy-regen ritual rewarded by headshot kills; his kit is so self-reliant that subsuming a Helminth ability onto him is tricky.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Hydroid
+  {
+    keys: ['/Lotus/Powersuits/Pirate/Pirate', '/Lotus/Powersuits/Pirate/HydroidPrime'],
+    note: {
+      tldr: 'The reworked pirate — Hydroid is now a Corrosive armor-stripper who buffs his own tankiness and weapons while melting enemy armor.',
+      points: [
+        'Plunder permanently strips enemy armor with Corrosive, then funnels that into bonus armor for him and Corrosive damage on his weapons — his defining ability.',
+        'His passive makes enemies he damages more vulnerable to Corrosive and chips their armor on the first proc, stacking with Plunder.',
+        'Tempest Barrage rains Corrosive projectiles for status, and Tidal Surge is an invulnerable water-dash for getting around or repositioning.',
+        'Tentacle Swarm is his hard crowd control; build Strength and Range to keep armor stripped and enemies pinned.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Itzal (Archwing)
+  {
+    keys: ['/Lotus/Powersuits/Archwing/StealthJetPack/StealthJetPack'],
+    note: {
+      tldr: 'The utility Archwing — Itzal is the stealth-and-loot pick, though its old signature teleport is now shared by every Archwing.',
+      points: [
+        'Cosmic Crush vacuums in nearby enemies and pickups then detonates — handy for hoovering up loot in open-world flight and Railjack.',
+        'Penumbra cloaks it for stealthy approaches, and Arch Line grapples to surfaces or yanks enemies for unconventional mobility.',
+        'Blink — its famous instant teleport — was made a universal Archwing maneuver, so Itzal no longer has a monopoly on fast travel.',
+        'It trades Amesha’s protection and Elytron’s firepower for evasion and utility, favored by players who want to dart in, grab, and go.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Ivara
+  {
+    keys: ['/Lotus/Powersuits/Ranger/Ranger', '/Lotus/Powersuits/Ranger/IvaraPrime'],
+    note: {
+      tldr: 'The stealth-and-theft archer — Ivara stays invisible, pickpockets enemies, and steers her shots for pinpoint kills.',
+      points: [
+        'Quiver swaps between four arrows: Cloak (an invisibility bubble), Sleep (stun), Noise (a lure), and Dashwire (a zipline) — a toolkit for Spy and stealth runs.',
+        'Prowl keeps her invisible, boosts headshot damage, and automatically pickpockets loot from nearby enemies, but slows her and can break if she moves too fast (the Infiltrate augment fixes that).',
+        'Navigator lets her fly and steer a single projectile, multiplying the damage of a sniper or bow shot for big single-target hits.',
+        'Artemis Bow is her exalted bow for fanning out arrows; build Duration and Range to keep stealth and utility up.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Jade
+  {
+    keys: ['/Lotus/Powersuits/Choir/Choir'],
+    note: {
+      tldr: 'A winged support frame — Jade buffs the squad with rotating hymns, strips defenses from afar, and is the only frame with TWO aura slots.',
+      points: [
+        'Her standout perk is two aura mod slots, letting her run two squad auras at once for unmatched team-buff flexibility.',
+        'Symphony of Mercy cycles three hymns — an Ability Strength buff, a weapon-damage buff, and shield resilience — so she adapts to whatever the squad needs.',
+        'Ophanim Eyes slows enemies, strips their shields and armor, and revives downed allies from range, making it a strong Helminth pick too.',
+        'Glory on High is a flight-based exalted weapon that tags enemies with a damage-vulnerability "Judgment" and detonates them; she is obtained from the Jade Shadows quest.',
+      ],
+      status: 'beta',
+    },
+  },
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
