@@ -402,11 +402,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A Sentient-hybrid armor-stripper — after his rework, Fusion Strike tears off shields AND armor so your weapons hit full force.',
-      points: [
-        'Fusion Strike is the centerpiece: a full shield-and-armor strip on a group, exactly what high-level enemies need to become killable.',
-        'All of his abilities apply Tau status, a neutral damage type that opens enemies up no matter their faction.',
-        'Lethal Progeny summons Sentient helpers that restore your shields and harass enemies, giving him steady on-field sustain.',
-        'His passive grants the squad adaptive damage resistance that adjusts to whatever damage type is hitting you — a quiet team-wide buff.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Fusion Strike fires three converging beams that leave a field stripping a group’s shields and armor completely — his headline ability.',
+            'Every ability applies Tau status, a neutral damage type that adds vulnerability regardless of the enemy’s faction or health type.',
+            'Lethal Progeny summons three kinds of Sentient helper that harass enemies and restore his shields for steady sustain.',
+            'Razor Gyre is a spin-dash that deals damage while restoring his health, shields, and energy at once.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The full armor strip is what makes him valuable at high levels — bring him to let the whole squad’s weapons hit unmitigated.',
+            'Sentient Wrath is his subsumable ability — a stomp that lifts and weakens enemies — and a fine Helminth pick for crowd control.',
+            'His passive grants the squad damage resistance that adapts to whatever damage type is hitting them; his signature Venato can grant melee combo on hit.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'The second Sentient-themed Warframe after Revenant, named for the half-monster of Shakespeare’s The Tempest.',
+            'He was handed out free as a login reward during his rework, so many players already own him.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -420,11 +440,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Chroma is a buff battery — his element is chosen by your ENERGY COLOR, and his big buffs build up as he takes damage.',
-      points: [
-        'Energy color sets his element for Elemental Ward and Spectral Scream/Effigy (e.g. cold-range colors = Ice, hot colors = Heat) — pick the color deliberately.',
-        'Vex Armor has two meters, Fury (more damage) and Scorn (more armor), that you charge by TAKING and DEALING damage; both scale with Ability Strength.',
-        'Vex Armor’s damage bonus snapshots onto your weapons, which is why he is a famous single-target/Eidolon nuke platform.',
-        'He has no resource quirk — just remember the buffs need a moment (and a little incoming damage) to ramp before they are at full power.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Your energy color sets his element across Spectral Scream, Elemental Ward, and Effigy — Heat boosts health, Cold boosts armor and reflects, Electricity boosts shields, Toxin boosts reload and holster speed.',
+            'Vex Armor has two meters: Scorn (more armor, charged by shield damage and melee kills) and Fury (more weapon damage, charged by health damage and ranged kills); both scale with Ability Strength.',
+            'Vex Armor’s damage bonus snapshots onto your equipped weapons, which is what makes him a famous single-target and Eidolon nuke platform.',
+            'Effigy sheds his pelt as an autonomous sentry and boosts credit and reward drops — a popular farming toggle.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Pick the energy color deliberately: cold-range colors give Ice, hot colors give Heat, and so on — it changes both his offense and his defense.',
+            'His buffs need a moment and a little incoming damage to ramp, so cast Vex Armor and Elemental Ward before a fight, not mid-panic.',
+            'Build Ability Strength above all; he is the go-to for burst setups where you snapshot Vex Armor onto a heavy weapon.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'He is the only Warframe built from other Warframes’ parts — Volt, Ember, Frost, and Saryn components.',
+            'Internally codenamed "Dragon", and his dragon pelt makes him one of the tallest frames.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -435,11 +475,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Geode/Geode'],
     note: {
       tldr: 'A crystalline support frame — she buffs the squad’s crit and status, hands out steady healing, and showers health and energy orbs.',
-      points: [
-        'Prismatic Gem parks a floating gem that boosts allies’ status chance and duration while tagging enemies with several elements — a primer and a buff in one.',
-        'Crystallize locks enemies in place and grows crystals that raise Critical Chance, turning a room into a crit-boosted shooting gallery.',
-        'Her passive heals nearby allies over time and ramps up as the squad collects Health Orbs — which her abilities generate plenty of.',
-        'She is a low-stress survival and farming pick: drop the gem, hold ground, and keep the team topped up and critting.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Prismatic Gem parks a floating gem that boosts allies’ Status Chance and Duration while tagging enemies with Heat, Cold, Toxin, and Electricity — a primer and a buff in one.',
+            'Crystallize slams the ground to pin enemies and grow crystals that raise Critical Chance across the area.',
+            'Her passive heals nearby allies a few health per second, climbing toward a cap as the squad picks up Health Orbs.',
+            'Fractured Blast makes enemies killed by its shards drop more Health and Energy Orbs, feeding her own passive.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Her crit and status buffs apply to the whole squad inside the gem’s aura, so she shines with weapon-heavy teams.',
+            'Preserving Shell gives damage reduction that grows with kills; she is a low-stress survival and farming pick.',
+            'Position the gem where the team actually fights — its buff radius is what matters, not raw damage.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'In lore she sacrificed herself crystallizing two people, Belric and Rania, to save them from the Infestation during the Old War.',
+            'Her name is a golden quartz once called the "merchant’s stone" for prosperity.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -450,11 +510,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Frumentarius/Frumentarius'],
     note: {
       tldr: 'A precision sniper frame — Cyte-09 marks targets, snaps to their weak points, and wields an exalted sniper rifle that rewards headshots.',
-      points: [
-        'Seek plants a beacon that highlights enemies through walls, makes their weak points more vulnerable, and gives your guns punch-through.',
-        'Neutralize summons an exalted sniper rifle whose weak-point hits ricochet to nearby enemies — built around crit, headshot, and precision mods.',
-        'His passive stacks weak-point critical chance with every precision kill across a mission, so accuracy snowballs the longer you play.',
-        'Evade grants invisibility that weak-point kills refresh, letting a careful sniper stay hidden almost indefinitely; Resupply hands out ammo and a chosen element.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Neutralize summons an exalted sniper rifle whose weak-point hits ricochet to nearby enemies, and its alternate fire lobs cold grenades.',
+            'Seek plants an antenna that reveals enemies through walls, makes their weak points more vulnerable, and grants his guns punch-through.',
+            'His passive permanently raises weak-point critical chance with every weak-point kill (up to a large cap) over the course of a mission.',
+            'Evade cloaks him, and weak-point kills extend that invisibility — a careful sniper can stay hidden almost indefinitely.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Build crit, headshot, and precision mods; his whole kit rewards landing weak-point shots rather than spraying.',
+            'Evade is his subsumable ability — handy invisibility for other frames — and Resupply hands out ammo plus a chosen element.',
+            'Because his crit ramps over a mission, he only gets stronger the longer an endurance run goes.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'The first Warframe named with a hyphen and numbers, and the first with an exalted sniper rifle.',
+            'His progenitor (bonus) element is Magnetic, and he hails from the 1999 storyline.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -465,11 +545,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Dagath/Dagath'],
     note: {
       tldr: 'A spectral cavalry frame — Dagath spreads Viral, banks enemy damage to detonate later, and buys herself a window where she simply can’t die.',
-      points: [
-        'Wyrd Scythes apply Viral and slow — a strong opener (and a popular Helminth pick) that softens a group before you shoot.',
-        'Doom curses enemies so part of the damage they take is stored and dumped back out when the curse ends, scaling up against tougher targets.',
-        'Grave Spirit grants a big Critical Damage buff plus a brief no-death window, and enemies killed during it drop guaranteed Health Orbs to keep her going.',
-        'Her health pool is low, so she leans on that invulnerability window and orb healing rather than raw tankiness; Rakhali’s Cavalry strips shields and armor on the charge.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Wyrd Scythes throw out blades that apply Viral and slow, a strong opener that softens a group before you shoot.',
+            'Doom curses enemies so a share of the damage they take is stored, then released as a bonus hit when the curse ends — it scales against tougher targets.',
+            'Grave Spirit grants a big Critical Damage buff and a brief window where she can’t die, during which slain enemies drop guaranteed Health Orbs.',
+            'Rakhali’s Cavalry sends phantom steeds charging through enemies, stripping their shields and armor.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Wyrd Scythes is a popular Helminth subsume for its Viral-and-slow opener.',
+            'Her health pool is low, so she relies on the Grave Spirit window plus orb healing (boosted by her passive) rather than raw tankiness.',
+            'Her signature Dorrclave heals her for each status effect on the enemy it strikes, rewarding status-heavy builds.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Her unranked health is 666 — a deliberate nod to her death-and-reaper theme.',
+            'She is themed on the Dullahan, the headless horseman of Irish myth, and was a Dax cavalry rider in lore.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -480,11 +580,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Pagemaster/Pagemaster'],
     note: {
       tldr: 'A storyteller support-nuker — Dante shields the whole squad with Overguard and detonates status for huge Slash damage.',
-      points: [
-        'He casts "verses" that combine: Light Verse builds Overguard for you and allies, Dark Verse stacks Slash, and Final Verse cashes them in.',
-        'The Tragedy finish detonates Slash, Heat, and Toxin status on everything nearby for a massive area nuke; Triumph instead refreshes Overguard on kills.',
-        'Overguard makes him extremely hard to stagger or kill and is the best squad-wide protection in the game — a top pick for hard endurance runs.',
-        'Noctua, his exalted tome, scans enemies as it hits them, and his passive rewards those scans with extra status chance.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'He casts "verses" that combine: Light Verse builds Overguard for himself and allies, Dark Verse stacks Slash, and Final Verse cashes the pair in.',
+            'Final Verse has outcomes by order: Tragedy detonates Slash, Heat, and Toxin status on everything nearby for a massive nuke; Triumph refreshes Overguard on kills.',
+            'Noctua, his exalted tome, ricochets its shots and scans enemies as it hits them; his passive rewards fully-scanned targets with extra status chance.',
+            'Pageflight sends out invulnerable Paragrimm birds that weaken enemies, while Wordwarden summons a Noctua to fire alongside the squad.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Overguard makes him extremely hard to stagger or kill and is the best squad-wide protection in the game — a top pick for hard endurance runs.',
+            'Tragedy needs status already on the enemies to detonate, so pair it with Dark Verse or a status weapon; Dark Verse is his Helminth-subsumable ability.',
+            'He was toned down shortly after release but remains a premier support-and-nuke hybrid.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Named after the poet Dante Alighieri, and every ability cast murmurs in Voidtongue.',
+            'His signature Ruvox was the first Incarnon melee tied to a Warframe.',
+          ],
+        },
       ],
       status: 'beta',
     },
