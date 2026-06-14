@@ -59,6 +59,12 @@ export function WeaponSummaryCard({ entry }: WeaponSummaryCardProps) {
         {s.damage != null && (
           <StatRow label="Damage" value={fmtNum(s.damage)} />
         )}
+        {s.multishot != null && (
+          <StatRow
+            label="Multishot"
+            value={s.multishot % 1 === 0 ? String(s.multishot) : s.multishot.toFixed(1)}
+          />
+        )}
         {s.fireRate != null && (
           <StatRow
             label={isMelee ? 'Attack Speed' : 'Fire Rate'}

@@ -135,6 +135,12 @@ function overlayWeapon(item: EnrichedItem, peRec: PeWeapon | undefined, report: 
   });
   if (typeof peRec.masteryReq === 'number') item.masteryRank = peRec.masteryReq;
 
+  // Multishot — store only innate (>1); single-shot weapons default to 1 in
+  // display/calc, so storing 1 on every rifle would be pure blob bloat.
+  if (typeof peRec.multishot === 'number' && peRec.multishot > 1) {
+    (item.stats ??= {}).multishot = peRec.multishot;
+  }
+
   // Damage-type breakdown — PE+ authority over WFCD's `damage` map. PE+'s
   // damagePerShot is the per-type split that sums to totalDamage (verified 0
   // mismatch across 647 weapons), so it corrects post-patch drift AND fills
@@ -235,6 +241,7 @@ function synthesizeMissing(
     if (typeof rec.magazineSize       === 'number' && rec.magazineSize       > 0) stats.magazine         = rec.magazineSize;
     if (typeof rec.reloadTime         === 'number' && rec.reloadTime         > 0) stats.reload           = rec.reloadTime;
     if (typeof rec.omegaAttenuation   === 'number' && rec.omegaAttenuation   > 0) stats.rivenDisposition = rec.omegaAttenuation;
+    if (typeof rec.multishot          === 'number' && rec.multishot          > 1) stats.multishot        = rec.multishot;
     if (Object.keys(stats).length > 0) item.stats = stats;
     const dmg = deriveDamageTypes(rec.damagePerShot, rec.totalDamage, report);
     if (dmg) { item.damageTypes = dmg; report.damageBreakdowns++; }

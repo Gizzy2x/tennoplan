@@ -86,7 +86,7 @@ const SCHEMA: readonly ExportSpec[] = [
       C('name'), C('totalDamage'), C('damagePerShot'), C('criticalChance'),
       C('criticalMultiplier'), C('procChance'), C('fireRate'), C('productCategory'),
       o('description'), o('magazineSize'), o('reloadTime'), o('accuracy'),
-      o('omegaAttenuation'), o('masteryReq'), o('trigger'), o('noise'),
+      o('multishot'), o('omegaAttenuation'), o('masteryReq'), o('trigger'), o('noise'),
       o('codexSecret'), o('tradable'), o('variantType'),
     ],
     knownKeys: [
