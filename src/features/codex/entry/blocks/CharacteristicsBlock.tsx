@@ -19,12 +19,12 @@ export function CharacteristicsBlock({ entry }: { entry: CodexEntry }) {
 
   return (
     <section className={styles.root} aria-labelledby="characteristics-label">
-      <h2 id="characteristics-label" className="typo-section-label">Characteristics</h2>
+      <h2 id="characteristics-label" className="typo-section-label">Stat Profile</h2>
       {primary && <p className={styles.summary}>{primary}</p>}
       <div className={styles.columns}>
         {c.advantages.length > 0 && (
           <div className={styles.col}>
-            <div className={styles.colHeader} data-kind="adv">Advantages</div>
+            <div className={styles.colHeader} data-kind="adv">Strengths</div>
             <ul className={styles.list}>
               {c.advantages.map((a, i) => (
                 <li key={i} className={styles.adv}>{a.text}</li>
@@ -34,7 +34,7 @@ export function CharacteristicsBlock({ entry }: { entry: CodexEntry }) {
         )}
         {c.disadvantages.length > 0 && (
           <div className={styles.col}>
-            <div className={styles.colHeader} data-kind="dis">Disadvantages</div>
+            <div className={styles.colHeader} data-kind="dis">Weaknesses</div>
             <ul className={styles.list}>
               {c.disadvantages.map((a, i) => (
                 <li key={i} className={styles.dis}>{a.text}</li>

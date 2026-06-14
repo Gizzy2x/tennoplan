@@ -79,6 +79,80 @@ export const FIELD_NOTES: Record<string, FieldNotes> = {
     ],
     status: 'beta',
   },
+  '/Lotus/Upgrades/Mods/Sets/Hunter/PrimaryHunterMunitionsMod': {
+    tldr: 'On a critical hit, a chance to also apply a Slash proc — turning crit weapons into bleed machines.',
+    points: [
+      'It scales with how often you crit: the higher your critical chance, the more Slash procs you land.',
+      'Slash procs ignore armor, so this is the go-to for chewing through heavily armored enemies on crit guns.',
+      'Weak on low-crit weapons — it needs the crits to trigger.',
+    ],
+    status: 'beta',
+  },
+  '/Lotus/Upgrades/Mods/Melee/Event/ComboCritChanceMod': {
+    tldr: 'Melee: your critical chance climbs with your combo counter — the more combo you build, the harder you crit.',
+    points: [
+      'It multiplies your weapon’s base crit, so it scales hardest on weapons that already have decent crit chance.',
+      'Pairs with Weeping Wounds (combo-scaling status) as the backbone of most combo-melee builds.',
+      'Let the combo drop or expire and the bonus drops with it — keep the combo alive.',
+    ],
+    status: 'beta',
+  },
+  '/Lotus/Upgrades/Mods/Melee/Event/ComboStatusChanceMod': {
+    tldr: 'Melee: your status chance climbs with your combo counter — more combo, more procs.',
+    points: [
+      'Like Blood Rush but for status — together they turn combo melee into reliable crit and status.',
+      'Great for stacking Viral or Slash, especially alongside Condition Overload (more status types = more damage).',
+    ],
+    status: 'beta',
+  },
+  '/Lotus/Upgrades/Mods/Rifle/WeaponFireIterationsSPMod': {
+    tldr: 'Rifle multishot that ramps on kills — base multishot plus a stacking bonus for a few seconds after each kill.',
+    points: [
+      'In a steady fight the on-kill stacks make it outperform plain Split Chamber; it’s weak as an opener with no kills yet.',
+      'Galvanized mods only fit their weapon type — this one is primary-rifle only.',
+    ],
+    status: 'beta',
+  },
+  '/Lotus/Upgrades/Mods/Rifle/WeaponStatusChanceSPMod': {
+    tldr: 'Rifle status chance that ramps on kills — base status plus a stacking bonus per status type on the enemy you killed.',
+    points: [
+      'Huge for status builds in sustained fights, since the stacks refresh on every kill.',
+      'Primary-rifle only, like the other Galvanized mods.',
+    ],
+    status: 'beta',
+  },
+
+  // ── Weapons ──
+  '/Lotus/Weapons/Tenno/LongGuns/SapientPrimary/SapientPrimaryWeapon': {
+    tldr: 'Gauss’ rapid-fire rocket rifle — fast explosive rockets, strong crit, built for clearing rooms.',
+    points: [
+      'Rockets arm after a short distance (~7m), so point-blank shots bounce instead of exploding — keep a little range.',
+      'The direct hit and the explosion apply status separately, and a direct rocket impact is a guaranteed Impact proc.',
+      'The explosion penetrates walls and needs no line of sight.',
+      'Reloading while sprinting is faster (+25%), and faster still in Gauss’ hands (+50%) — its signature synergy.',
+      'Firestorm (and Primed) widen the blast; Cautious Shot cuts the self-stagger from your own explosions.',
+    ],
+    status: 'beta',
+  },
+  '/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Nukor/KuvaNukor': {
+    tldr: 'A beam secondary with enormous status and crit — its “microwave” beam arcs between enemies, making it one of the best primers in the game.',
+    points: [
+      'Low raw damage: you bring it to blanket a group with status (Viral, etc.) before finishing with another weapon, not to DPS.',
+      'The beam chains to several nearby targets, so one trigger-pull statuses a whole cluster.',
+      'Carries a bonus innate element from its Kuva Lich — pick the lich element to fit your build.',
+    ],
+    status: 'beta',
+  },
+  '/Lotus/Weapons/Grineer/Bows/GrnBow/GrnBowWeapon': {
+    tldr: 'A bow that fires explosive arrows which burst into cluster bombs — brutal AoE clear.',
+    points: [
+      'Arrows explode on impact and scatter cluster bombs that detonate a moment later, for big multi-hit AoE.',
+      'Mind the self-stagger from your own blasts; Cautious Shot helps.',
+      'Tiny ammo reserve — you reload often, so pair it with ammo mutation or efficiency.',
+      'Carries a bonus innate element from its Kuva Lich progenitor.',
+    ],
+    status: 'beta',
+  },
 };
 
 /**
