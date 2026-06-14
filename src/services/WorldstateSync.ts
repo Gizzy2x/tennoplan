@@ -48,14 +48,16 @@ import type {
   DataQuality,
   PulseHead,
 } from '@/core/domain/tennoplanApi';
+import { WORKER_BASE } from '@/lib/config/workerBase';
 
 const log = logger.scope('WorldstateSync');
 
 // ─── Endpoint config ──────────────────────────────────────────────────────────
 
-const WORKER_BASE    = (import.meta.env.VITE_WORLDSTATE_WORKER_URL as string | undefined)?.replace(/\/$/, '');
-const ENDPOINT       = WORKER_BASE ? `${WORKER_BASE}/v1/worldstate` : null;
-const PULSE_ENDPOINT = WORKER_BASE ? `${WORKER_BASE}/v1/pulse` : null;
+// WORKER_BASE carries a hardcoded production default (see workerBase.ts), so
+// these endpoints are always non-null — the env var is an override, not a gate.
+const ENDPOINT       = `${WORKER_BASE}/v1/worldstate`;
+const PULSE_ENDPOINT = `${WORKER_BASE}/v1/pulse`;
 
 // ─── Tunables ─────────────────────────────────────────────────────────────────
 

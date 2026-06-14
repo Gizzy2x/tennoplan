@@ -56,6 +56,10 @@ export interface PeWeapon {
   name:                string;   // dict key
   description?:        string;   // dict key
   totalDamage?:        number;
+  /** Per-damage-type split for one shot/hit — a 20-slot array indexed by DE's
+   *  damage-type enum (IAttackData key order: Impact/Puncture/Slash/Fire/…).
+   *  Sums to totalDamage. The overlay maps it into TennoplanItem.damageTypes. */
+  damagePerShot?:      number[];
   criticalChance?:     number;
   criticalMultiplier?: number;
   procChance?:         number;
