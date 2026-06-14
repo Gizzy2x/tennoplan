@@ -1559,11 +1559,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The gunslinger — Mesa’s Peacemaker auto-targets a room with exalted pistols, and Shatter Shield makes her nearly bulletproof.',
-      points: [
-        'Peacemaker summons exalted dual pistols that scale with your SECONDARY/pistol mods (not melee), but root her in place while firing — the Mesa’s Waltz augment lets her move.',
-        'Shatter Shield reduces incoming gunfire dramatically and even reflects it; its strength scales with Ability Strength, so Strength protects and powers her at once.',
-        'Shooting Gallery buffs weapon damage and jams nearby enemies’ guns, and is a popular Helminth pick for other frames.',
-        'Her passive rewards skipping a melee weapon (+health) and speeds up sidearms — she is built to be a pure gun platform.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Peacemaker summons exalted dual pistols that auto-target a room and scale with your SECONDARY/pistol mods (not melee), but root her in place while firing.',
+            'Shatter Shield slashes incoming gunfire damage and even reflects it; its strength scales with Ability Strength, so Strength both protects and powers her.',
+            'Shooting Gallery buffs weapon damage and jams nearby enemies’ guns, rotating its lasso between squadmates.',
+            'Ballistic Battery stores up damage to dump into a single big shot.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The Mesa’s Waltz augment lets her move while firing Peacemaker, fixing her one real weakness.',
+            'Shooting Gallery is a popular Helminth subsume for the weapon-damage buff and enemy gun-jam.',
+            'Her passive rewards skipping a melee weapon (+health) and speeds up sidearms — she is built as a pure gun platform.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A gunslinger styled on the "gun-kata" of the film Equilibrium, codenamed "Cowgirl" in development.',
+            'The second frame to come with built-in exalted weapons, after Valkyr.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1577,11 +1597,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A trickster who multiplies your guns — Mirage’s clones each fire your weapon, and Eclipse can nearly double your damage if you mind the lighting.',
-      points: [
-        'Hall of Mirrors spawns clones that each deal a share of your weapon’s damage, so a strong primary or secondary becomes several at once — weapon choice is everything.',
-        'Eclipse buffs your weapon damage in bright light and gives damage reduction in shadow; the light-level dependence is the classic gotcha to learn (and one of the best Helminth subsumes).',
-        'Prism floats out a light beam that blinds enemies and then bursts for area damage, doubling as crowd control.',
-        'Her passive makes her slides and acrobatics faster and longer — she is a mobile DPS frame that lives and dies by her weapon mods.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Hall of Mirrors spawns clones that each deal a share of your weapon’s damage, so a strong primary or secondary becomes several at once — weapon choice is everything.',
+            'Eclipse buffs your weapon damage in bright light and gives damage reduction in shadow; the light-level dependence is the classic gotcha to learn.',
+            'Prism floats out a light beam that blinds enemies and then bursts for area damage, doubling as crowd control.',
+            'Her passive makes her slides and acrobatics faster and longer.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Eclipse is one of the best Helminth subsumes in the game; the Total Eclipse augment shares its buff with the whole squad.',
+            'Sleight of Hand’s Explosive Legerdemain augment turns pickups into bombs for stealth farming.',
+            'She is a mobile DPS frame that lives and dies by her weapon mods, since the clones simply copy your guns.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'The first Warframe earned from a quest (Hidden Messages), and the first quest frame to get a Prime.',
+            'A harlequin design with cuttlefish touches, internally named "Harlequin".',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1595,11 +1635,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The loot necromancer — Nekros doubles drops from corpses and raises slain enemies to fight for him.',
-      points: [
-        'Desecrate consumes nearby corpses for extra loot and Health Orbs — the reason a Nekros is welcomed on almost every farming squad.',
-        'The Despoil augment makes Desecrate cost health instead of energy; pair it with Equilibrium (orbs into energy) for a self-sustaining loop you can spam forever.',
-        'Terrify sends enemies fleeing while stripping their armor, a strong pick to subsume onto other frames too.',
-        'Shadows of the Dead raises a squad of dead enemies as minions; he has low armor, so he leans on those distractions and orb healing.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Desecrate consumes nearby corpses for extra loot and Health Orbs — the reason a Nekros is welcomed on almost every farming squad.',
+            'Terrify sends enemies fleeing while stripping their armor, useful as both control and a damage enabler.',
+            'Shadows of the Dead raises a squad of slain enemies as minions to soak fire and fight for him.',
+            'His passive heals him for each enemy that dies nearby, and Soul Punch executes low-health targets.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The Despoil augment makes Desecrate cost health instead of energy; pair it with Equilibrium (orbs into energy) for a self-sustaining loop you can spam forever.',
+            'Terrify is a strong Helminth subsume for its fear-and-armor-strip, and Shield of Shadows turns his minions into damage reduction.',
+            'He has low armor, so he leans on minions and orb healing; only one Nekros per squad needs to Desecrate to avoid wasted casts.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Named from the Greek word for "dead", and released on a Friday the 13th.',
+            'One of only a few frames with no innate aura polarity.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1613,11 +1673,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Nezha has low base health — his real health bar is Warding Halo, a one-cast damage buffer that scales with Strength.',
-      points: [
-        'Warding Halo absorbs a chunk of damage set at the moment you cast it, plus a brief immunity window when it pops; Ability Strength makes it bigger.',
-        'Because the buffer is the build, stacking Strength (and recasting the Halo) matters more than raw health mods.',
-        'Blazing Chakram strips armor and amplifies headshot damage, turning him into a strong weapon-platform frame.',
-        'The Safeguard augment lets you cast Warding Halo onto allies — a popular pick for defense and support runs.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Warding Halo absorbs a chunk of damage set the moment you cast it, plus a brief immunity window when it goes up; Ability Strength and armor make it bigger.',
+            'Because the Halo is his real health bar, stacking Strength (and recasting it) matters more than raw health mods.',
+            'Blazing Chakram strips armor, marks targets, and amplifies headshot damage, turning him into a strong weapon platform.',
+            'Fire Walker leaves a damaging trail and cleanses ally status, and Divine Spears pins a crowd.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The Safeguard augment lets him cast Warding Halo onto allies — a popular pick for Defense and support runs.',
+            'His low base health means he survives almost entirely through the Halo, so keep it refreshed.',
+            'Fire Walker is his Helminth-subsumable ability; Reaping Chakram and Pyroclastic Flow add damage options.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Named after the Chinese protection deity Nezha, the "Third Lotus Prince".',
+            'Players nickname him the "road roller" for his fire-trail, slide-everywhere playstyle.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1631,11 +1711,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Nidus survives on Mutation stacks, not shields — build stacks up and they become a free death-save.',
-      points: [
-        'He is shieldless, so shield-gating mods and arcanes are pointless; his defense is stacks, armor, and Parasitic Link.',
-        'Cast Virulence repeatedly to bank Mutation stacks — at 15+, taking lethal damage spends them to revive you with invulnerability instead of dying.',
-        'Stacks also power his other abilities, so range and strength (to land Virulence on crowds) matter more than duration on most builds.',
-        'Energy is easy to keep up: Ravenous spawns health orbs, pairing perfectly with Equilibrium.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'He is shieldless; his survival is Mutation stacks. Cast Virulence to bank them, and at 15+ taking lethal damage spends them to revive you with invulnerability and a heal instead of dying.',
+            'Larva drags a crowd into a clump, the perfect setup for Virulence and weapons; Parasitic Link buffs an ally or shares damage off an enemy.',
+            'Ravenous lays an infested field that heals him over time and spawns exploding maggots, and he passively regenerates health.',
+            'Stacks also power his other abilities, so Range and Strength (to land Virulence on crowds) matter more than Duration on most builds.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Shield-gating mods and arcanes are pointless on him; Rage and Hunter Adrenaline always make energy from the damage he takes.',
+            'Energy is easy to keep up — Ravenous spawns health orbs that pair perfectly with Equilibrium.',
+            'Parasitic Link is his Helminth-subsumable ability, and he is the only frame that can self-infect to unlock the Helminth cyst.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'An Infested frame earned from The Glast Gambit quest, named from the Latin for "nest".',
+            'The second shieldless frame alongside Inaros, and one of the few with innate health regeneration.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1646,11 +1746,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Nokko/Nokko'],
     note: {
       tldr: 'A mushroom-colony frame — Nokko seeds the field with spores that spread Viral, sleep, and buffs, then keeps them alive by bouncing a mushroom around.',
-      points: [
-        'Sporespring fires a bouncing Toxin mushroom; each bounce off enemies and other mushrooms refreshes and speeds up his other spore abilities — managing the colony is the gameplay.',
-        'Stinkbrain pulses Viral and Sleep onto nearby enemies, while Brightbonnet buffs Ability Strength and restores ally energy (a handy Helminth pick).',
-        'Reroot turns him into an invulnerable little Sprodling that heals and shields while dropping speed pickups — a built-in panic button.',
-        'His passive lets him revert to a Sprodling on a lethal hit and crawl back to a glowing mushroom to self-revive.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Sporespring fires a bouncing Toxin mushroom; each bounce off enemies and other mushrooms refreshes and speeds up his other spore abilities — managing the colony is the gameplay.',
+            'Stinkbrain pulses Viral and Sleep onto nearby enemies, while Brightbonnet buffs Ability Strength and restores ally energy.',
+            'Reroot turns him into an invulnerable little Sprodling that heals and shields while dropping speed pickups — a built-in panic button.',
+            'His passive lets him revert to a Sprodling on a lethal hit and crawl to a glowing mushroom to self-revive.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Brightbonnet is his Helminth-subsumable ability for a strength-and-energy pulse.',
+            'His signature Arbucep triggers Stinkbrain and Brightbonnet pulses when shot, tightening the loop.',
+            'Keeping a mushroom bouncing is how you extend the whole colony, so positioning and Range matter.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A 2025 mushroom frame whose name blends the Japanese word for mushroom (kinoko), and the first frame to chant its own name.',
+            'His look draws on real fungi like king trumpet, chanterelle, and cordyceps.',
+          ],
+        },
       ],
       status: 'beta',
     },
