@@ -14,6 +14,7 @@ import { useWorldstate }     from '@/hooks/useWorldstate';
 import { StaticDataService } from '@/services/StaticDataService';
 import { SystemPulse }       from '@/components/layout/SystemPulse';
 import { db }                from '@/adapters/storage/db';
+import { clearCodexChunkHashes } from '@/adapters/storage/codexStore';
 import {
   onIconSyncProgress,
   verifyAndRepairIcons,
@@ -502,6 +503,10 @@ function DangerPanel() {
         db.tennoplanItems.clear(),
         db.syncMetadata.clear(),
         db.cache.clear(),
+        // The codex chunk-hash map MUST be cleared with the rows it describes —
+        // otherwise the next delta sync sees matching hashes, fetches nothing,
+        // and the wiped codex never repopulates (stays empty after a clear).
+        clearCodexChunkHashes(),
       ]);
       localStorage.removeItem(LS_CODEX_KEY);
       setResult('Local data cleared. Reloading the app…');
