@@ -767,6 +767,126 @@ const WARFRAME_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
+
+  // Khora
+  {
+    keys: ['/Lotus/Powersuits/Khora/Khora', '/Lotus/Powersuits/Khora/KhoraPrime'],
+    note: {
+      tldr: 'A farming and crowd-control favorite — Khora groups enemies, whips them all at once, and (with one augment) makes them rain loot.',
+      points: [
+        'Whipclaw is her main damage and scales with MELEE mods and your combo counter, not Ability Strength — a key build detail newer players miss.',
+        'Ensnare bunches enemies together and Whipclaw spreads it further, so one whip can hit a whole clustered group for full damage.',
+        'Venari, her kavat companion, has Attack, Protect, and Heal stances and gives a passive move-speed boost — she is a second pet that never takes a slot.',
+        'Strangledome cages a crowd, and the Pilfering Strangledome augment makes caged enemies drop extra loot — the reason she is a go-to farming frame.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Koumei
+  {
+    keys: ['/Lotus/Powersuits/Koumei/Koumei'],
+    note: {
+      tldr: 'A luck-themed frame — Koumei rolls dice on her abilities, and higher rolls (or perfect ones) make the effects much stronger.',
+      points: [
+        'Her kit runs on RNG: abilities roll dice, and a top roll unlocks an enhanced version, so she rewards leaning into the randomness rather than fighting it.',
+        'Omikuji sets a small challenge that, once met, grants a random Decree-style buff — a stacking power-up over a mission.',
+        'Her passive periodically grants one of your weapons a guaranteed status effect, layering with the statuses her abilities scatter.',
+        'Omamori provides a chance to shrug off damage while healing; her energy pool is small, so efficiency helps keep the dice rolling.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Lavos
+  {
+    keys: ['/Lotus/Powersuits/Alchemist/Alchemist', '/Lotus/Powersuits/Alchemist/LavosPrime'],
+    note: {
+      tldr: 'The alchemist with NO energy bar — Lavos runs on cooldowns instead, and energy mods and arcanes do nothing for him.',
+      points: [
+        'He has no energy, so Flow, Energy Siphon, Rage/Hunter Adrenaline, Quick Thinking, and Arcane Energize are all wasted — his abilities are on timers.',
+        'Because of that, he is immune to energy-drain effects (like Parasitic Eximus), which makes him fantastic for energy-penalty Sorties and Nightmare runs.',
+        'Hold any ability to imbue your NEXT cast with an extra element and status — he picks his damage type on the fly to match the enemy.',
+        'Transmutation Probe shortens his cooldowns and turns pickups into universal ammo and orbs; he has very high armor, so he tanks well while you wait on timers.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Limbo
+  {
+    keys: ['/Lotus/Powersuits/Magician/Magician', '/Lotus/Powersuits/Magician/LimboPrime'],
+    note: {
+      tldr: 'The rift magician — Limbo can make a whole objective untouchable, or accidentally grief his own squad, depending on how carefully he is played.',
+      points: [
+        'Banish and Cataclysm move things into the Rift, a parallel plane where enemies outside can’t touch you — perfect for protecting a Defense target.',
+        'Stasis freezes enemies AND their bullets inside the Rift, letting you set up kills at your leisure.',
+        'The catch: banishing teammates or an objective can lock them out of shooting normal enemies, so sloppy Limbo play is the classic way to ruin a mission for the group.',
+        'His passive rolls him in and out of the Rift and regenerates energy there; in Spy missions the Rift even lets him walk through laser barriers.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Loki
+  {
+    keys: ['/Lotus/Powersuits/Loki/Loki', '/Lotus/Powersuits/Loki/LokiPrime'],
+    note: {
+      tldr: 'The original trickster — Loki leans on long-duration invisibility and a disarm that turns gun-toting enemies into harmless melee.',
+      points: [
+        'Invisibility makes him a top stealth and Spy frame; Decoy pulls enemy fire and Switch Teleport swaps places with a target to escape or reposition.',
+        'Radial Disarm strips enemies of their guns and forces them into melee — and his crowd control works even on Overguard-protected units.',
+        'The Irradiating Disarm augment adds Radiation so disarmed enemies also turn on each other, a strong panic button for big crowds.',
+        'He is fragile with no defensive ability, so he survives through stealth and positioning — his passive also lets him cling to walls far longer than normal.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Mag
+  {
+    keys: ['/Lotus/Powersuits/Mag/Mag', '/Lotus/Powersuits/Mag/MagPrime'],
+    note: {
+      tldr: 'A magnetic starter frame and Corpus specialist — Mag strips shields, vacuums loot, and turns enemy gunfire into a damage amplifier.',
+      points: [
+        'Magnetize wraps a target in a field that sucks in bullets and amplifies their damage before bursting — stacking multiple bubbles on one enemy multiplies the payoff.',
+        'Polarize strips shields and armor and scatters shards, making her excellent against shield-heavy Corpus enemies.',
+        'Crush suspends and crushes a crowd while restoring squad shields; the Fracturing Crush augment adds an armor strip on top.',
+        'Her passive pulls nearby loot toward her on a bullet jump, and her low armor means you survive through her abilities, not by tanking.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Mesa
+  {
+    keys: ['/Lotus/Powersuits/Cowgirl/Cowgirl', '/Lotus/Powersuits/Cowgirl/MesaPrime'],
+    note: {
+      tldr: 'The gunslinger — Mesa’s Peacemaker auto-targets a room with exalted pistols, and Shatter Shield makes her nearly bulletproof.',
+      points: [
+        'Peacemaker summons exalted dual pistols that scale with your SECONDARY/pistol mods (not melee), but root her in place while firing — the Mesa’s Waltz augment lets her move.',
+        'Shatter Shield reduces incoming gunfire dramatically and even reflects it; its strength scales with Ability Strength, so Strength protects and powers her at once.',
+        'Shooting Gallery buffs weapon damage and jams nearby enemies’ guns, and is a popular Helminth pick for other frames.',
+        'Her passive rewards skipping a melee weapon (+health) and speeds up sidearms — she is built to be a pure gun platform.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Mirage
+  {
+    keys: ['/Lotus/Powersuits/Harlequin/Harlequin', '/Lotus/Powersuits/Harlequin/MiragePrime'],
+    note: {
+      tldr: 'A trickster who multiplies your guns — Mirage’s clones each fire your weapon, and Eclipse can nearly double your damage if you mind the lighting.',
+      points: [
+        'Hall of Mirrors spawns clones that each deal a share of your weapon’s damage, so a strong primary or secondary becomes several at once — weapon choice is everything.',
+        'Eclipse buffs your weapon damage in bright light and gives damage reduction in shadow; the light-level dependence is the classic gotcha to learn (and one of the best Helminth subsumes).',
+        'Prism floats out a light beam that blinds enemies and then bursts for area damage, doubling as crowd control.',
+        'Her passive makes her slides and acrobatics faster and longer — she is a mobile DPS frame that lives and dies by her weapon mods.',
+      ],
+      status: 'beta',
+    },
+  },
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
