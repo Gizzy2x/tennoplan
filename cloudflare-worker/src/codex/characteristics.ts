@@ -52,6 +52,7 @@ const RANGED: StatSpec[] = [
   { key: 'magazine',        label: 'magazine',            fmt: num,  higherIsBetter: true },
   { key: 'reload',          label: 'reload speed',        fmt: sec,  higherIsBetter: false },
   { key: 'accuracy',        label: 'accuracy',            fmt: num,  higherIsBetter: true },
+  { key: 'rivenDisposition', label: 'riven disposition',  fmt: mult, higherIsBetter: true },
 ];
 
 const MELEE: StatSpec[] = [
@@ -63,6 +64,7 @@ const MELEE: StatSpec[] = [
   { key: 'range',           label: 'range',               fmt: mtr,  higherIsBetter: true },
   { key: 'comboDuration',   label: 'combo duration',      fmt: sec,  higherIsBetter: true },
   { key: 'slamAttack',      label: 'slam attack',         fmt: num,  higherIsBetter: true },
+  { key: 'rivenDisposition', label: 'riven disposition',  fmt: mult, higherIsBetter: true },
 ];
 
 const WARFRAME: StatSpec[] = [
@@ -92,7 +94,7 @@ const BAND_WORD: Record<CharacteristicBand, string> = {
 /** Min cohort sample (with the stat present) to make a "very high/low" call. */
 const MIN_COHORT = 8;
 /** Cap per side so a page isn't a wall of bullets. */
-const MAX_PER_SIDE = 6;
+const MAX_PER_SIDE = 8;
 
 function cohortOf(item: TennoplanItem): string | null {
   switch (item.category) {
@@ -115,11 +117,15 @@ function specsFor(cohort: string): StatSpec[] {
 }
 
 function bandOf(goodness: number): CharacteristicBand | null {
-  if (goodness >= 0.90) return 'very-high';
-  if (goodness >= 0.75) return 'above-average';
-  if (goodness <= 0.10) return 'very-low';
-  if (goodness <= 0.25) return 'below-average';
-  return null; // the average middle — omit
+  // Tuned toward the wiki's completeness: surface anything outside the middle
+  // ~40%, so reload/magazine/disposition show like the wiki does — but keep
+  // "very high/low" reserved for genuine outliers. We stay clean via the
+  // MAX_PER_SIDE cap + progressive disclosure, not by hiding notable stats.
+  if (goodness >= 0.88) return 'very-high';
+  if (goodness >= 0.62) return 'above-average';
+  if (goodness <= 0.12) return 'very-low';
+  if (goodness <= 0.38) return 'below-average';
+  return null; // the unremarkable middle — omit
 }
 
 const isAdvantage = (b: CharacteristicBand) => b === 'very-high' || b === 'above-average';
