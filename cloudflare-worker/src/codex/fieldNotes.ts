@@ -615,11 +615,28 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Archwing/DemolitionJetPack/DemolitionJetPack'],
     note: {
       tldr: 'The bombardment Archwing — Elytron is the heavy-artillery option, built to blow up clustered targets in space.',
-      points: [
-        'Warhead fires a single big missile for a massive explosion, while Bloomer scatters tracking mines you can detonate on command.',
-        'It is the most durable offensive wing, trading Itzal’s mobility and Amesha’s protection for raw area damage.',
-        'Core Vent lays a gas trail that soaks up enemy fire, giving it a little staying power between bombing runs.',
-        'You bring it to Archwing and Railjack content where the goal is clearing dense groups of fighters fast.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Warhead fires a single big missile for a massive explosion, and Bloomer scatters tracking mines you detonate on command.',
+            'Thumper drops a beacon that calls down a stream of bombardments on an area.',
+            'Core Vent lays a gas trail that negates enemy gunfire, giving it staying power between bombing runs.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'It is the most durable Archwing by total health and shields, trading Itzal’s mobility and Amesha’s protection for raw area damage.',
+            'Bring it to Archwing and Railjack content where the job is clearing dense groups of fighters fast.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Its name is the hard wing-case of a beetle — fitting for the armored, explosive wing.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -633,11 +650,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A fire caster who runs hot — Ember’s damage and toughness both ride a heat meter you have to keep from boiling over.',
-      points: [
-        'Immolation builds heat that raises her damage reduction, but let it max out and it drains energy fast — managing that meter IS the gameplay.',
-        'Fire Blast strips enemy armor, turning a room of tanky enemies into easy targets for the whole squad.',
-        'Her passive grants bonus Ability Strength for each heat-afflicted enemy nearby, so she snowballs hardest in dense crowds.',
-        'Inferno is her room-clearing nuke; build Strength and Range and keep one eye on the heat gauge.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Immolation builds a heat meter that raises her damage reduction, but if it maxes out it starts draining energy fast — managing the meter IS the gameplay.',
+            'Fire Blast releases a wave that strips enemy armor, turning a room of tanky enemies into easy targets for the squad.',
+            'Inferno rains meteors that spread Heat status — her room-clearing nuke.',
+            'Her passive grants bonus Ability Strength for each Heat-afflicted enemy nearby, so she snowballs hardest in dense crowds.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Fire Blast is a strong Helminth subsume for its squad-wide armor strip; build Strength and Range and watch the heat gauge.',
+            'Fireball Frenzy (augment) imbues the squad’s weapons with Heat, while Healing Flame turns Fireball into a heal.',
+            'Because her abilities’ Heat feeds the passive, she wants enemies burning around her rather than instantly dead.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'She was the fourth Warframe to get a Prime, after Excalibur, Frost, and Mag.',
+            'She was designed as male in the earliest concepts before being changed to female.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -651,11 +688,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A two-in-one frame — Equinox swaps between an offensive Day form and a defensive Night form, and is famous for a stored-damage room nuke.',
-      points: [
-        'Metamorphosis flips between forms: Day leans into damage and offense, Night into survivability and crowd control, so you carry two kits in one frame.',
-        'Maim (Day) banks Slash damage from every kill and releases it as a wide explosion on recast — the classic Equinox nuke, usually set up by sleeping a crowd with Rest first.',
-        'Rest & Rage and Pacify & Provoke each do opposite things per form (sleep vs. damage-vulnerability, weaken enemies vs. buff allies), making her a flexible support.',
-        'She is one of the more complex and expensive frames to build, but rewards players who learn to juggle her two halves.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Metamorphosis flips between forms: Day leans into damage and offense, Night into survivability and crowd control, so you carry two kits in one frame.',
+            'Maim (Day) banks Slash damage from every kill and releases it as a wide explosion on recast — the classic Equinox nuke.',
+            'Rest & Rage and Pacify & Provoke each do opposite things per form (sleep vs. damage-vulnerability, weaken enemies vs. buff allies).',
+            'Her passive turns a slice of Health Orbs into energy and Energy Orbs into health, smoothing her sustain.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The signature combo is Rest to sleep a crowd, then Maim to detonate stored damage across the whole room.',
+            'Metamorphosis snapshots Ability Strength at the moment you switch forms, so buff before you swap.',
+            'She is famously the most expensive frame to build and the only one that needs a Forma in its construction.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Internally named "YinYang", her whole design is the yin-yang of complementary opposites.',
+            'Day and Night are a single androgynous frame, shown in composite form in town.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -670,11 +727,29 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The sword-master starter frame — his Exalted Blade scales with your melee mods, and Radial Blind turns a crowd into free finishers.',
-      points: [
-        'Exalted Blade summons an ethereal sword that fires energy waves and scales with your equipped melee mods; the Chromatic Blade augment swaps its element by energy color and boosts status.',
-        'Radial Blind blinds nearby enemies and opens every one of them to a melee finisher — his core survival-and-burst tool.',
-        'His passive makes swords, nikanas, rapiers and similar melee hit harder and faster, so he loves sword-type weapons.',
-        'Excalibur Umbra plays the same but adds the Umbral mod set and a sentient AI that keeps fighting on its own while you are in Operator/Transference.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Exalted Blade summons an ethereal sword that fires energy waves and scales with your equipped melee mods (stance mods aside).',
+            'Radial Blind flashes nearby enemies blind and opens every one of them to a melee finisher — his core survival-and-burst tool.',
+            'Slash Dash zips through enemies with a sword strike and Radial Javelin pins a crowd; his passive makes swords, nikanas, and rapiers hit harder and faster.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Chromatic Blade (augment) changes Exalted Blade’s element by your energy color and boosts its status chance — a popular damage build.',
+            'Radial Blind is a solid Helminth subsume; pair Excalibur with a strong sword-type melee to lean on his passive.',
+          ],
+        },
+        {
+          heading: 'Umbra & Trivia',
+          points: [
+            'Excalibur Umbra plays the same kit but adds the Umbral mod set and a sentient AI that keeps fighting on its own while you are in Operator/Transference, swapping Radial Blind for Radial Howl.',
+            'A starter frame named for King Arthur’s sword, with more alternate helmets than any other frame; the Prime is Founder-exclusive.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -685,11 +760,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Inkblot/Inkblot'],
     note: {
       tldr: 'An ink-and-clown trickster — Follie slows and blinds crowds with ink, conjures tools from thin air, and floats enemies away while stripping their defenses.',
-      points: [
-        'Her passive coats enemies in ink that slows them and gives a chance to drop Health and Energy Orbs on death — built-in crowd control and sustain.',
-        'Plein Air lifts enemies on balloons and strips their armor and shields, then drops them for fall damage — control and a defense-strip in one cast.',
-        'Self Portrait spawns an inky clone that grants damage reduction (and is a handy Helminth pick); Forced Perspective repositions her with brief invulnerability and a status cleanse.',
-        'Shadowgraph even sketches usable tools and objects into the world — she is a utility-and-control frame rather than a raw damage dealer.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Her passive coats enemies in ink that slows them by half for several seconds and gives a chance to drop Health and Energy Orbs on death.',
+            'Plein Air lifts enemies on balloons and strips their armor and shields, then drops them for fall damage — control and a defense-strip in one cast.',
+            'Self Portrait spawns an inky clone that grants damage reduction, and Forced Perspective repositions her with brief invulnerability and a full status cleanse.',
+            'Shadowgraph sketches usable tools and objects into the world, a flexible utility ability.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Self Portrait is her Helminth-subsumable ability — easy damage reduction for another frame.',
+            'Her signature Enkaus applies the Inkblot slow on its alternate fire, extending her crowd control.',
+            'She is a utility-and-control frame rather than a raw damage dealer.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Her name comes from the French "folie" (madness), and her look mixes Pierrot clowns with Rorschach inkblots.',
+            'A 2026 release, she is rendered almost entirely in black-and-white ink despite the purple in her official art.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -703,11 +798,30 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The classic defense frame — Frost drops a Snow Globe that walls off an objective and an Avalanche that freezes and strips armor.',
-      points: [
-        'Snow Globe creates a dome that blocks incoming fire; its strength is set when you cast it, so place it where you want to hold and recast to refresh.',
-        'Avalanche freezes everything nearby and strips their armor, letting the squad cut through otherwise-tanky enemies — the Icy Avalanche augment also hands out Overguard.',
-        'His passive makes Cold status last longer and grants armor for each chilled enemy nearby, rewarding a freeze-everything playstyle.',
-        'He is a staple for Defense, Interception, and Mobile Defense, where a well-placed globe trivializes protecting a point.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Snow Globe creates a dome that blocks incoming fire; its health and damage reduction are set the moment you cast it, so place it where you want to hold and recast to refresh.',
+            'Avalanche freezes everything nearby solid and strips their armor, letting the squad cut through otherwise-tanky enemies.',
+            'His passive makes Cold status last longer and grants armor for each chilled enemy nearby, rewarding a freeze-everything style.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The Icy Avalanche augment grants Overguard to allies on cast — a popular survivability pick; Freeze Force imbues the squad with Cold.',
+            'He is a staple for Defense, Interception, and Mobile Defense, where a well-placed globe trivializes protecting a point.',
+            'Ice Wave is his Helminth-subsumable ability for a quick cold-status line on another frame.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'One of the oldest frames, drawn from unused Dark Sector boss concept art.',
+            'His chassis is a crafting ingredient for Chroma.',
+          ],
+        },
       ],
       status: 'beta',
     },
