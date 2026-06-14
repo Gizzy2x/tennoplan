@@ -887,6 +887,129 @@ const WARFRAME_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
+
+  // Nekros
+  {
+    keys: ['/Lotus/Powersuits/Necro/Necro', '/Lotus/Powersuits/Necro/NekrosPrime'],
+    note: {
+      tldr: 'The loot necromancer — Nekros doubles drops from corpses and raises slain enemies to fight for him.',
+      points: [
+        'Desecrate consumes nearby corpses for extra loot and Health Orbs — the reason a Nekros is welcomed on almost every farming squad.',
+        'The Despoil augment makes Desecrate cost health instead of energy; pair it with Equilibrium (orbs into energy) for a self-sustaining loop you can spam forever.',
+        'Terrify sends enemies fleeing while stripping their armor, a strong pick to subsume onto other frames too.',
+        'Shadows of the Dead raises a squad of dead enemies as minions; he has low armor, so he leans on those distractions and orb healing.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Nokko
+  {
+    keys: ['/Lotus/Powersuits/Nokko/Nokko'],
+    note: {
+      tldr: 'A mushroom-colony frame — Nokko seeds the field with spores that spread Viral, sleep, and buffs, then keeps them alive by bouncing a mushroom around.',
+      points: [
+        'Sporespring fires a bouncing Toxin mushroom; each bounce off enemies and other mushrooms refreshes and speeds up his other spore abilities — managing the colony is the gameplay.',
+        'Stinkbrain pulses Viral and Sleep onto nearby enemies, while Brightbonnet buffs Ability Strength and restores ally energy (a handy Helminth pick).',
+        'Reroot turns him into an invulnerable little Sprodling that heals and shields while dropping speed pickups — a built-in panic button.',
+        'His passive lets him revert to a Sprodling on a lethal hit and crawl back to a glowing mushroom to self-revive.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Nyx
+  {
+    keys: ['/Lotus/Powersuits/Jade/Jade', '/Lotus/Powersuits/Jade/NyxPrime'],
+    note: {
+      tldr: 'A psychic crowd-controller — Nyx turns enemies against each other with Chaos and peels their defenses with Psychic Bolts.',
+      points: [
+        'Psychic Bolts strip armor and shields from a group (and even steal a bit for her), which is the modern reason to bring her into high-level content.',
+        'Chaos confuses a whole crowd into fighting one another, a strong panic-button crowd control; Mind Control turns one enemy into a buffed bodyguard.',
+        'Her passive grants bonus weapon critical chance for each confused enemy nearby, rewarding keeping Chaos up.',
+        'Absorb makes her invulnerable while she soaks damage to release it as a blast — the Assimilate augment lets her walk around while doing it.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Oberon
+  {
+    keys: ['/Lotus/Powersuits/Paladin/Paladin', '/Lotus/Powersuits/Paladin/PaladinPrime'],
+    note: {
+      tldr: 'The do-everything paladin — Oberon heals the squad, strips armor, and cleanses status, making him a reliable budget pick for almost any mission.',
+      points: [
+        'Renewal pours out healing, an armor buff, and a longer revive timer to the whole squad, his core support tool.',
+        'Reckoning and Smite both strip enemy armor (Smite also handles Overguard), so he provides damage-enabling strips without a dedicated build.',
+        'Hallowed Ground lays a Radiation carpet that cleanses allies of status and makes Reckoning hit harder — the two synergize.',
+        'His passive turns picked-up orbs into brief team invulnerability, and he is famously easy to acquire, making him a great early all-rounder.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Odonata (Archwing, + Prime)
+  {
+    keys: [
+      '/Lotus/Powersuits/Archwing/StandardJetPack/StandardJetPack',
+      '/Lotus/Powersuits/Archwing/PrimeJetPack/PrimeJetPack',
+    ],
+    note: {
+      tldr: 'The starter Archwing — Odonata is the balanced, do-a-bit-of-everything wing you unlock from The Archwing quest.',
+      points: [
+        'Energy Shell throws up a barrier that blocks fire and boosts the damage of shots passing through it; Seeking Fire answers back with homing missiles.',
+        'Disarray drops flares to shoot down incoming missiles, and Repel knocks surrounding enemies away when you need breathing room.',
+        'It splits the difference between Amesha’s protection, Itzal’s mobility, and Elytron’s firepower — a fine generalist while you decide which specialist to build.',
+        'You get it during The Archwing quest, so it is most players’ first taste of space combat.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Oraxia
+  {
+    keys: ['/Lotus/Powersuits/Oraxia/Oraxia'],
+    note: {
+      tldr: 'A spider predator — Oraxia stalks from invisibility, laces her guns with Toxin, executes the weak, and spawns broodlings from the dead.',
+      points: [
+        'Silken Stride grants status immunity and bonus health and coats your primary and secondary with Toxin so enemies they kill explode; it also swaps your roll for a silk dash.',
+        'Her passive cloaks her in invisibility whenever she wall-latches, setting up ambushes and repositioning.',
+        'Mercy’s Kiss lunges in to instantly finish low-health enemies and drops Health and Energy orbs, while Webbed Embrace snares a group and makes them take more damage (a solid Helminth pick).',
+        'Widow’s Brood marks enemies with toxin darts so their deaths spawn friendly Scuttlers — her kill-driven swarm loop.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Protea
+  {
+    keys: ['/Lotus/Powersuits/Odalisk/Odalisk', '/Lotus/Powersuits/Odalisk/ProteaPrime'],
+    note: {
+      tldr: 'A self-sufficient gadgeteer — Protea drops turrets, grenades, and supply caches, and can literally rewind time to undo a death.',
+      points: [
+        'Dispensary spits out health, energy, and ammo pickups on a timer — it is one of the single most popular Helminth subsumes in the game for keeping any frame fueled.',
+        'Blaze Artillery is a Heat turret that grows stronger the longer it fires, and Grenade Fan can throw shield satellites that feed shield-gating survival.',
+        'Temporal Anchor stores the damage you take, then rewinds you to where you cast it with full health and unleashes the stored damage — a built-in second chance.',
+        'Her passive grants +100% Ability Strength on every fourth ability cast, which lines up perfectly with detonating Temporal Anchor.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Qorvex
+  {
+    keys: ['/Lotus/Powersuits/ConcreteFrame/ConcreteFrame'],
+    note: {
+      tldr: 'A brutalist radiation tank — Qorvex blankets enemies in Radiation status, herds them with concrete walls, and soaks hits behind huge armor.',
+      points: [
+        'His whole kit stacks Radiation status: Chyrinka Pillar pulses it, Crucible Blast beams it, and Radiation-afflicted enemies detonate when his beam touches them.',
+        'Containment Wall slams two walls together to bunch enemies up and make them take extra damage — his main setup tool.',
+        'Disometric Guard surrounds him with plates that block status effects and rebuild as Radiation-status enemies die, keeping him sturdy.',
+        'He has the second-highest base armor of any frame and grants weapons punch-through, so he plays as a tanky crowd-controller; build Strength and Range.',
+      ],
+      status: 'beta',
+    },
+  },
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
