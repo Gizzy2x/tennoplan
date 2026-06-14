@@ -508,6 +508,145 @@ const WARFRAME_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
+
+  // Cyte-09
+  {
+    keys: ['/Lotus/Powersuits/Frumentarius/Frumentarius'],
+    note: {
+      tldr: 'A precision sniper frame — Cyte-09 marks targets, snaps to their weak points, and wields an exalted sniper rifle that rewards headshots.',
+      points: [
+        'Seek plants a beacon that highlights enemies through walls, makes their weak points more vulnerable, and gives your guns punch-through.',
+        'Neutralize summons an exalted sniper rifle whose weak-point hits ricochet to nearby enemies — built around crit, headshot, and precision mods.',
+        'His passive stacks weak-point critical chance with every precision kill across a mission, so accuracy snowballs the longer you play.',
+        'Evade grants invisibility that weak-point kills refresh, letting a careful sniper stay hidden almost indefinitely; Resupply hands out ammo and a chosen element.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Dagath
+  {
+    keys: ['/Lotus/Powersuits/Dagath/Dagath'],
+    note: {
+      tldr: 'A spectral cavalry frame — Dagath spreads Viral, banks enemy damage to detonate later, and buys herself a window where she simply can’t die.',
+      points: [
+        'Wyrd Scythes apply Viral and slow — a strong opener (and a popular Helminth pick) that softens a group before you shoot.',
+        'Doom curses enemies so part of the damage they take is stored and dumped back out when the curse ends, scaling up against tougher targets.',
+        'Grave Spirit grants a big Critical Damage buff plus a brief no-death window, and enemies killed during it drop guaranteed Health Orbs to keep her going.',
+        'Her health pool is low, so she leans on that invulnerability window and orb healing rather than raw tankiness; Rakhali’s Cavalry strips shields and armor on the charge.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Dante
+  {
+    keys: ['/Lotus/Powersuits/Pagemaster/Pagemaster'],
+    note: {
+      tldr: 'A storyteller support-nuker — Dante shields the whole squad with Overguard and detonates status for huge Slash damage.',
+      points: [
+        'He casts "verses" that combine: Light Verse builds Overguard for you and allies, Dark Verse stacks Slash, and Final Verse cashes them in.',
+        'The Tragedy finish detonates Slash, Heat, and Toxin status on everything nearby for a massive area nuke; Triumph instead refreshes Overguard on kills.',
+        'Overguard makes him extremely hard to stagger or kill and is the best squad-wide protection in the game — a top pick for hard endurance runs.',
+        'Noctua, his exalted tome, scans enemies as it hits them, and his passive rewards those scans with extra status chance.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Elytron (Archwing)
+  {
+    keys: ['/Lotus/Powersuits/Archwing/DemolitionJetPack/DemolitionJetPack'],
+    note: {
+      tldr: 'The bombardment Archwing — Elytron is the heavy-artillery option, built to blow up clustered targets in space.',
+      points: [
+        'Warhead fires a single big missile for a massive explosion, while Bloomer scatters tracking mines you can detonate on command.',
+        'It is the most durable offensive wing, trading Itzal’s mobility and Amesha’s protection for raw area damage.',
+        'Core Vent lays a gas trail that soaks up enemy fire, giving it a little staying power between bombing runs.',
+        'You bring it to Archwing and Railjack content where the goal is clearing dense groups of fighters fast.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Ember
+  {
+    keys: ['/Lotus/Powersuits/Ember/Ember', '/Lotus/Powersuits/Ember/EmberPrime'],
+    note: {
+      tldr: 'A fire caster who runs hot — Ember’s damage and toughness both ride a heat meter you have to keep from boiling over.',
+      points: [
+        'Immolation builds heat that raises her damage reduction, but let it max out and it drains energy fast — managing that meter IS the gameplay.',
+        'Fire Blast strips enemy armor, turning a room of tanky enemies into easy targets for the whole squad.',
+        'Her passive grants bonus Ability Strength for each heat-afflicted enemy nearby, so she snowballs hardest in dense crowds.',
+        'Inferno is her room-clearing nuke; build Strength and Range and keep one eye on the heat gauge.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Equinox
+  {
+    keys: ['/Lotus/Powersuits/YinYang/YinYang', '/Lotus/Powersuits/YinYang/EquinoxPrime'],
+    note: {
+      tldr: 'A two-in-one frame — Equinox swaps between an offensive Day form and a defensive Night form, and is famous for a stored-damage room nuke.',
+      points: [
+        'Metamorphosis flips between forms: Day leans into damage and offense, Night into survivability and crowd control, so you carry two kits in one frame.',
+        'Maim (Day) banks Slash damage from every kill and releases it as a wide explosion on recast — the classic Equinox nuke, usually set up by sleeping a crowd with Rest first.',
+        'Rest & Rage and Pacify & Provoke each do opposite things per form (sleep vs. damage-vulnerability, weaken enemies vs. buff allies), making her a flexible support.',
+        'She is one of the more complex and expensive frames to build, but rewards players who learn to juggle her two halves.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Excalibur (+ Prime, + Umbra)
+  {
+    keys: [
+      '/Lotus/Powersuits/Excalibur/Excalibur',
+      '/Lotus/Powersuits/Excalibur/ExcaliburPrime',
+      '/Lotus/Powersuits/Excalibur/ExcaliburUmbra',
+    ],
+    note: {
+      tldr: 'The sword-master starter frame — his Exalted Blade scales with your melee mods, and Radial Blind turns a crowd into free finishers.',
+      points: [
+        'Exalted Blade summons an ethereal sword that fires energy waves and scales with your equipped melee mods; the Chromatic Blade augment swaps its element by energy color and boosts status.',
+        'Radial Blind blinds nearby enemies and opens every one of them to a melee finisher — his core survival-and-burst tool.',
+        'His passive makes swords, nikanas, rapiers and similar melee hit harder and faster, so he loves sword-type weapons.',
+        'Excalibur Umbra plays the same but adds the Umbral mod set and a sentient AI that keeps fighting on its own while you are in Operator/Transference.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Follie
+  {
+    keys: ['/Lotus/Powersuits/Inkblot/Inkblot'],
+    note: {
+      tldr: 'An ink-and-clown trickster — Follie slows and blinds crowds with ink, conjures tools from thin air, and floats enemies away while stripping their defenses.',
+      points: [
+        'Her passive coats enemies in ink that slows them and gives a chance to drop Health and Energy Orbs on death — built-in crowd control and sustain.',
+        'Plein Air lifts enemies on balloons and strips their armor and shields, then drops them for fall damage — control and a defense-strip in one cast.',
+        'Self Portrait spawns an inky clone that grants damage reduction (and is a handy Helminth pick); Forced Perspective repositions her with brief invulnerability and a status cleanse.',
+        'Shadowgraph even sketches usable tools and objects into the world — she is a utility-and-control frame rather than a raw damage dealer.',
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Frost
+  {
+    keys: ['/Lotus/Powersuits/Frost/Frost', '/Lotus/Powersuits/Frost/FrostPrime'],
+    note: {
+      tldr: 'The classic defense frame — Frost drops a Snow Globe that walls off an objective and an Avalanche that freezes and strips armor.',
+      points: [
+        'Snow Globe creates a dome that blocks incoming fire; its strength is set when you cast it, so place it where you want to hold and recast to refresh.',
+        'Avalanche freezes everything nearby and strips their armor, letting the squad cut through otherwise-tanky enemies — the Icy Avalanche augment also hands out Overguard.',
+        'His passive makes Cold status last longer and grants armor for each chilled enemy nearby, rewarding a freeze-everything playstyle.',
+        'He is a staple for Defense, Interception, and Mobile Defense, where a well-placed globe trivializes protecting a point.',
+      ],
+      status: 'beta',
+    },
+  },
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
