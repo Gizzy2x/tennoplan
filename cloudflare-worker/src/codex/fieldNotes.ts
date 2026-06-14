@@ -177,11 +177,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Archwing/SupportJetPack/SupportJetPack'],
     note: {
       tldr: 'The support Archwing — Amesha is the survivability pick for hard space content, trading firepower for near-constant protection.',
-      points: [
-        'Watchful Swarm spawns drones that each soak an incoming hit outright — the closest thing to on-demand invulnerability in Archwing combat.',
-        'Warding Grace makes you and nearby allies immune to status procs and slows the enemies around you — a lifesaver in messy Railjack and open-world fights.',
-        'Vengeful Rush turns the damage you take into energy and buffs allied ability range, strength, and duration, so getting shot actually fuels you.',
-        'It is the go-to Archwing for tanking Profit-Taker, ferrying a squad through Railjack, and outlasting anything that out-damages the offensive wings.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Watchful Swarm surrounds you with drones that each absorb an incoming hit, giving short windows of effective invulnerability you refresh on demand.',
+            'Warding Grace is an aura that makes you and nearby allies immune to status procs while slowing the enemies around you.',
+            'Vengeful Rush converts the damage you take into energy and buffs allied ability Range, Strength, and Duration — taking fire actually powers you.',
+            'Benevolent Decoy drops a sphere that draws enemy fire, heals allies inside it, and damages nearby foes.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'It is the protection pick among the four Archwings (Amesha, Elytron, Itzal, Odonata), trading their firepower and speed for group resilience.',
+            'The go-to wing for tanking Profit-Taker, ferrying a squad through Railjack, and surviving anything that out-damages the offensive wings.',
+            'Archwings deploy in Archwing missions, open-world flight, and Railjack, so Amesha pulls double duty across all space content.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Its name nods to the Amesha Spenta, the angel-like divine beings of Zoroastrian belief — fitting for a guardian frame.',
+            'The blueprint is researched in the dojo Tenno Lab after The Archwing quest.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -195,11 +215,32 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A stealth assassin built around invisibility and finishers — Ash turns Slash bleeds into a quiet, lethal loop.',
-      points: [
-        'Smoke Screen makes him invisible, not invincible — most enemies can’t target him, but lingering damage-over-time and some area attacks still land.',
-        'Teleport drops him next to a target set up for a finisher; the Fatal Teleport augment makes that finisher automatic and pairs famously with finisher-damage mods.',
-        'His passive makes the Slash bleeds he applies hit harder and last longer, so he loves high-Slash melee and status weapons.',
-        'Blade Storm marks enemies for shadow clones to execute, and the clones lock in their power when summoned — buff up before you mark.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Smoke Screen makes him (and nearby allies) invisible, not invincible — most enemies can’t target him, but lingering damage-over-time and some area attacks still land.',
+            'Teleport zips him to a target and sets up a finisher on arrival; that finisher scales with melee weapon mods.',
+            'Blade Storm marks enemies for shadow clones to execute, and the clones snapshot his power when summoned — so buff up before you mark.',
+            'His passive makes EVERY Slash bleed he applies deal more damage and last longer, not just bleeds from his abilities.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Fatal Teleport makes Teleport’s finisher automatic and pairs famously with Covert Lethality and finisher-damage mods for one-shot kills.',
+            'Seeking Shuriken (augment) turns his 1 into an armor strip to set up bigger finishers; Rising Storm feeds his melee combo.',
+            'He loves high-Slash melee and status weapons to exploit the bleed passive; Shuriken can be subsumed onto other frames.',
+            'Invisibility ends if the duration lapses, so recast Smoke Screen before it runs out.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'He is still called "Ninja" in the game files — his original working name before "Ash".',
+            'One of the earliest Warframes, and the first whose ultimate strikes with innate hidden blades.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -213,11 +254,32 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A melee brawler who tanks by punching — Landslide scales off your MELEE weapon, and every hit banks Rubble into armor.',
-      points: [
-        'Landslide is a punch that scales with melee mods and your equipped weapon, not Ability Strength, and chains into a faster combo if you keep tapping it.',
-        'Killing petrified or destroyed enemies showers Rubble, which stacks bonus armor and slowly heals you — the heart of his survivability.',
-        'Petrify is one of the best Helminth picks in the game: it freezes a crowd, opens them to finishers, and makes them take extra damage.',
-        'His passive makes him immune to knockdown while on the ground, so he is built to stand and fight rather than reposition.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Landslide is a dash-punch that scales with your melee mods and equipped weapon (not Ability Strength) and chains into a faster combo if you keep tapping it.',
+            'The Rubble system is his core: killing petrified or destroyed enemies drops Rubble that stacks bonus armor and slowly heals him.',
+            'Petrify freezes a cone of enemies in stone, opening them to finishers and making them take extra damage; Tectonics raises a wall you can also launch.',
+            'His passive makes him immune to knockdown while his feet are on the ground, so he is built to stand and brawl.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Petrify is one of the most popular Helminth subsumes in the game for its instant crowd-freeze and damage amp.',
+            'Ore Gaze (Petrify augment) makes petrified enemies drop extra resources — a handy farming pick; Path of Statues lays a petrifying trail.',
+            'His signature Tekko (and Tekko Prime) gain bonus status chance in his hands, leaning into a status-melee build.',
+            'Build melee damage and combo for Landslide; the knockdown immunity means you can skip anti-stagger utility.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'His main blueprint comes from The Jordas Precept quest — the only frame sourced from an Archwing boss.',
+            'His kit riffs on the Greek Titan Atlas and the giant Antaeus, who was unbeatable while touching the ground.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -231,11 +293,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A glass-cannon force multiplier — Sonar paints weak spots that make ANY weapon hit for many times its normal damage.',
-      points: [
-        'Sonar tags glowing weak points that multiply your damage; the Resonance augment spreads those spots on kills to keep a whole room lit up.',
-        'She is extremely fragile, so she plays from stealth and range — her job is amplifying the squad’s damage, not soaking hits.',
-        'Silence is a top-tier Helminth ability: it staggers enemies on cast and shuts off their special abilities and Eximus auras.',
-        'Sound Quake channels a stagger that drains energy fast; the Resonating Quake augment turns it into a wide nuke for low-level farming.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Sonar tags glowing weak points on enemies that multiply the damage of shots landing on them, and recasting can layer the effect even higher.',
+            'Silence stuns enemies on cast and suppresses their special abilities, opening them to finishers.',
+            'Sound Quake is a channeled stomp that staggers everything around her while steadily draining energy.',
+            'Her passive silences your weapons so gunfire no longer alerts enemies — useful for stealth.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Resonance spreads Sonar’s weak spots from a dying enemy to others, keeping a whole room lit up; Resonating Quake turns Sound Quake into a wide low-level nuke.',
+            'Savage Silence adds finisher damage to silenced enemies, and Silence itself is a top-tier Helminth subsume.',
+            'She is extremely fragile (low health, shields, and armor), so she plays from stealth and range — her value is amplifying the squad, not tanking.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'One of the oldest frames in the game, named for the wailing death-spirit of Irish myth.',
+            'Her progenitor element is Electricity — the bonus element she imparts as a Kuva Lich template.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -249,11 +331,30 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A reluctant pacifist who stacks enormous damage reduction, then unleashes energy-free exalted fists once his Restraint runs out.',
-      points: [
-        'His abilities drain a Restraint meter: dodging with Elude, putting enemies to sleep with Lull, and disarming them with Desolate Hands all erode it.',
-        'At zero Restraint, Serene Storm summons Desert Wind — exalted fists that cost NO energy, only Restraint, and grow stronger the lower Restraint sits.',
-        'Between his passive, the Desolate Hands daggers, and Serene Storm he reaches some of the highest damage reduction in the game — a perfect Adaptation partner.',
-        'Elude dodges all attacks while you aren’t attacking, so he tanks standing still and turns into a melee monster once wound up; Reactive Storm (augment) makes his fists match the enemy’s weakness.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'A Restraint meter drains as he dodges (Elude), sleeps enemies (Lull), and disarms them (Desolate Hands); the lower it falls, the stronger he gets.',
+            'At zero Restraint, Serene Storm summons Desert Wind — exalted fists that cost NO energy, only Restraint, and hit harder the lower Restraint sits.',
+            'Elude makes him dodge all attacks while he isn’t attacking, and Desolate Hands’ daggers grant heavy damage reduction while disarming foes.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Stacking his passive, Desolate Hands, and Serene Storm reaches some of the highest damage reduction in the game — and Adaptation pushes it to near-immortality.',
+            'Reactive Storm (augment) makes Desert Wind adapt its element to the enemy; Endless Lull widens his sleep, and Lull is a strong Helminth subsume.',
+            'His signature Cobra & Crane sleeps the first enemy it hits, feeding the same loop that powers his kit.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'His name means "blessed," and his design borrows from Sudanese and priestly aesthetics — fitting for a pacifist.',
+            'He was the first Warframe bought with syndicate Standing (Vox Solaris) rather than dropped, and his only signature weapon is a melee, never a gun.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -264,11 +365,30 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/EntratiMech/ThanoTech'],
     note: {
       tldr: 'A Necramech — a piloted war machine — built for melee tanking, the close-range counterpart to the gun-focused Voidrig.',
-      points: [
-        'Necramechs use their OWN separate mods (not your Warframe mods); you summon and pilot them in the open worlds and certain heavy-duty missions.',
-        'Ironbride is her exalted curved sword for wading into crowds; Meathook skewers an enemy and heals her, and Shield Maiden raises a tower shield that blocks and reflects fire.',
-        'She favors armor and health over shields, making her the aggressive front-line mech — Voidrig instead camps with the long-range Arquebex cannon.',
-        'Both mechs share the Mausolon arch-gun, so the choice comes down to melee brawling (Bonewidow) versus ranged artillery (Voidrig).',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Necramechs are summoned and piloted directly, and they use their OWN separate mod pool (not your Warframe mods), plus the shared Mausolon arch-gun.',
+            'Exalted Ironbride is her heavy curved sword for cleaving crowds; Meathook skewers an enemy for damage and life-steal (and can be thrown).',
+            'Shield Maiden raises a tower shield that blocks and reflects fire, and Firing Line lifts and weakens a group of enemies.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'She favors armor and a huge health pool over shields, making her the aggressive front-line mech; Voidrig instead camps with its long-range Arquebex artillery.',
+            'You bring a mech to the open worlds and certain heavy missions where a Warframe alone would struggle.',
+            'Necramech mods and Arcanes are a separate progression, so investment in one mech carries over when you swap to the other.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'She is the tankier of the two Necramechs, with the higher base health (around 1,880) and armor.',
+            'Her Ironbride is modeled on the Egyptian khopesh, and "Shield Maiden" nods to Norse warrior women.',
+          ],
+        },
       ],
       status: 'beta',
     },
