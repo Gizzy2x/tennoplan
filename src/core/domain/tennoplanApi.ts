@@ -673,6 +673,9 @@ export interface ItemStats {
   critChance?:     number;
   critMultiplier?: number;
   statusChance?:   number;
+  /** Base multishot (projectiles per shot). Present only when >1 (innate
+   *  multishot, e.g. shotguns); absent means 1. Weapon only. */
+  multishot?:      number;
   magazine?:       number;
   reload?:         number;
   health?:         number;

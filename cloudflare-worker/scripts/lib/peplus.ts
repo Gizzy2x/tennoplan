@@ -64,6 +64,7 @@ export interface PeWeapon {
   criticalMultiplier?: number;
   procChance?:         number;
   fireRate?:           number;
+  multishot?:          number;   // base pellet count; >1 = innate multishot
   magazineSize?:       number;
   reloadTime?:         number;
   accuracy?:           number;
