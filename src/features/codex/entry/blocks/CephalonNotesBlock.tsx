@@ -16,7 +16,11 @@ import styles from './CephalonNotesBlock.module.css';
 
 export function CephalonNotesBlock({ entry }: { entry: CodexEntry }) {
   const notes = entry.fieldNotes;
-  if (!notes || (!notes.tldr && !(notes.points && notes.points.length > 0))) return null;
+  const sections = (notes?.sections ?? []).filter((s) => s.points && s.points.length > 0);
+  const hasContent =
+    !!notes &&
+    (!!notes.tldr || (!!notes.points && notes.points.length > 0) || sections.length > 0);
+  if (!notes || !hasContent) return null;
 
   return (
     <section className={styles.root} aria-labelledby="cephalon-notes-label">
@@ -41,6 +45,17 @@ export function CephalonNotesBlock({ entry }: { entry: CodexEntry }) {
           ))}
         </ul>
       )}
+
+      {sections.map((section, si) => (
+        <div key={si} className={styles.section}>
+          <h3 className={`typo-section-label ${styles.sectionHeading}`}>{section.heading}</h3>
+          <ul className={styles.points}>
+            {section.points.map((point, i) => (
+              <li key={i}>{point}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </section>
   );
 }
