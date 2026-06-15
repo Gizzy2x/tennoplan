@@ -2307,11 +2307,289 @@ const WARFRAME_NOTES: SharedNote[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Sentinels — floating robot companions that follow you, can equip a sentinel
+// weapon + mods, and revive on a cooldown (Regen / Primed Regen for more).
+// Notes cover their precepts (special-ability mods) and what each is best at.
+// Shared across base + Prime (+ Prisma) by uniqueName, same as Warframes.
+// ---------------------------------------------------------------------------
+
+const SENTINEL_NOTES: SharedNote[] = [
+  // Carrier
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelPowersuits/CarrierPowerSuit',
+      '/Lotus/Types/Sentinels/SentinelPowersuits/PrimeCarrierPowerSuit',
+    ],
+    note: {
+      tldr: 'The loot-and-ammo sentinel — Carrier keeps your guns fed and hoovers up resources.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Ammo Case raises your ammo capacity and converts ammo pickups into the type your equipped weapon needs, so ammo-hungry guns rarely run dry.',
+            'Looter pulses out to break nearby containers and resource caches automatically, gathering loot as you move.',
+            'It comes with the Sweeper, a burst-fire shotgun, as its sentinel weapon.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Best for ammo-thirsty weapons and resource farming; pair it with Vacuum (which every sentinel can run now) to sweep up drops.',
+            'Carrier Prime is the same kit with better stats.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Dethcube
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelPowersuits/DethCubePowerSuit',
+      '/Lotus/Types/Sentinels/SentinelPowersuits/PrimeDethCubePowerSuit',
+    ],
+    note: {
+      tldr: 'The combat sentinel — Dethcube adds steady damage and drops energy orbs to keep you casting.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Vaporize blasts a nearby enemy for solid damage, its offensive precept.',
+            'Energy Generator drops an Energy Orb when it helps land a kill, feeding energy-hungry frames.',
+            'It comes with the Deth Machine Rifle, a high-fire-rate sentinel gun.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'A good all-round damage-and-energy pick; Dethcube Prime is the same kit with better stats.',
+            'Like all sentinels, equip Regen (or Primed Regen) so it revives more times per mission.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Diriga
+  {
+    keys: ['/Lotus/Types/Sentinels/SentinelPowersuits/ArcDronePowerSuit'],
+    note: {
+      tldr: 'The ranged-stun sentinel — Diriga snipes from afar and zaps nearby enemies into a stun.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Arc Coil shocks several nearby enemies with Electricity, and Electro Pulse locks a single target in a stun.',
+            'Calculated Shot fires its Vulklok sniper at the first enemy in range for ranged damage.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Useful for hands-off crowd control and chip damage; build Health and Armor over its small shield pool.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Djinn
+  {
+    keys: ['/Lotus/Types/Sentinels/SentinelPowersuits/GubberPowerSuit'],
+    note: {
+      tldr: 'The self-reviving sentinel — Djinn pulls enemies together and brings itself back when destroyed.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Reawaken lets it revive itself after being destroyed, and grabbing Energy Orbs shortens that cooldown.',
+            'Fatal Attraction yanks nearby enemies into a clump and damages them, a built-in grouping tool.',
+            'It comes with the Stinger, a toxin-dart weapon.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The self-revive makes it one of the most durable sentinels, and Fatal Attraction sets enemies up for AoE.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Helios
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelPowersuits/MeleePetPowerSuit',
+      '/Lotus/Types/Sentinels/SentinelPowersuits/PrimeHeliosPowerSuit',
+    ],
+    note: {
+      tldr: 'The codex scanner — Helios auto-scans enemies to fill your Codex and fights with an exalted glaive.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Investigator automatically scans enemies and objects (using your Codex Scanner charges), completing Codex entries with no manual effort.',
+            'Detect Vulnerability highlights weak points on enemies you have already fully scanned.',
+            'It is the only sentinel that can wield the Deconstructor, a glaive-type weapon that hits surprisingly hard.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Bring it (with a Codex Scanner in your gear) to finish scanning the star chart’s enemies; Helios Prime is the same kit with better stats.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Nautilus
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelPowersuits/EmpyreanSentinelPowerSuit',
+      '/Lotus/Types/Sentinels/SentinelPowersuits/NautilusPrimeSentinelPowerSuit',
+    ],
+    note: {
+      tldr: 'The enemy-grouper — Nautilus’ Cordon yanks whole crowds into one ball, perfect for AoE.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Cordon tethers nearby enemies into a single clump — one of the best grouping precepts in the game for setting up area damage and status.',
+            'Auto Omni repairs Railjack hull breaches and douses fires automatically during space missions.',
+            'It comes with the Verglas, a Cold-element shotgun.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Cordon makes it a favourite for nuke and status builds (and a help on long Railjack runs); Nautilus Prime is the same kit with better stats.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Oxylus
+  {
+    keys: ['/Lotus/Types/Sentinels/SentinelPowersuits/RadarPowerSuit'],
+    note: {
+      tldr: 'The fishing-and-foraging sentinel — Oxylus is the open-world gathering helper.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Scan Aquatic Lifeforms reveals fishing hotspots and dyes nearby fish so they are easy to spot.',
+            'Scan Matter marks resource containers on your minimap, and Botanist auto-picks nearby plants.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Bring it to the open worlds when you are fishing or farming resources; it does little in regular combat missions.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Shade
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelPowersuits/ShadePowerSuit',
+      '/Lotus/Types/Sentinels/SentinelPowersuits/PrimeShadePowerSuit',
+      '/Lotus/Types/Sentinels/SentinelPowersuits/PrismaShadePowerSuit',
+    ],
+    note: {
+      tldr: 'The stealth sentinel — Shade’s Ghost cloaks you whenever an enemy gets close.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Ghost turns you and Shade invisible when an enemy is nearby and in line of sight; the cloak breaks if you attack, then re-cloaks after a short cooldown.',
+            'Revenge has it fire its Burst Laser only at enemies that have already attacked you.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Great for stealth play and for reviving teammates unseen; Shade Prime and Prisma Shade are the same kit with better stats or cosmetics.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Taxon
+  {
+    keys: ['/Lotus/Types/Sentinels/SentinelPowersuits/TnSentinelCrossPowerSuit'],
+    note: {
+      tldr: 'The beginner sentinel — Taxon is cheap, easy to get, and refills your shields.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Molecular Conversion damages nearby enemies and turns that damage into shields for your Warframe.',
+            'It comes with the Artax, a Cold-beam rifle that slows enemies.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The cheapest, earliest sentinel — a fine first companion that adds a little shield sustain while you build toward others.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Wyrm
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelPowersuits/WyrmPowerSuit',
+      '/Lotus/Types/Sentinels/SentinelPowersuits/PrimeWyrmPowerSuit',
+    ],
+    note: {
+      tldr: 'The defensive sentinel — Wyrm stuns crowds and, with Negate, shrugs a status proc off you.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Crowd Dispersion stuns nearby enemies when several are close, a panic crowd control.',
+            'Negate blocks one incoming status effect on you every so often — handy against proc-heavy enemies.',
+            'It comes with the Laser Rifle.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Bring it for the stun and the status protection; Wyrm Prime adds Negate by default and has better stats.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+];
+
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
 export const FIELD_NOTES: Record<string, FieldNotes> = {
   ...BASE_NOTES,
   ...Object.fromEntries(
-    WARFRAME_NOTES.flatMap(({ keys, note }) => keys.map((k) => [k, note] as const)),
+    [...WARFRAME_NOTES, ...SENTINEL_NOTES].flatMap(({ keys, note }) =>
+      keys.map((k) => [k, note] as const),
+    ),
   ),
 };
 
