@@ -102,37 +102,7 @@ const BASE_NOTES: Record<string, FieldNotes> = {
     status: 'beta',
   },
 
-  // ── Weapons ──
-  '/Lotus/Weapons/Tenno/LongGuns/SapientPrimary/SapientPrimaryWeapon': {
-    tldr: 'Gauss’ rapid-fire rocket rifle — fast explosive rockets, strong crit, built for clearing rooms.',
-    points: [
-      'Rockets arm after a short distance (~7m), so point-blank shots bounce instead of exploding — keep a little range.',
-      'The direct hit and the explosion apply status separately, and a direct rocket impact is a guaranteed Impact proc.',
-      'The explosion penetrates walls and needs no line of sight.',
-      'Reloading while sprinting is faster (+25%), and faster still in Gauss’ hands (+50%) — its signature synergy.',
-      'Firestorm (and Primed) widen the blast; Cautious Shot cuts the self-stagger from your own explosions.',
-    ],
-    status: 'beta',
-  },
-  '/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Nukor/KuvaNukor': {
-    tldr: 'A beam secondary with enormous status and crit — its “microwave” beam arcs between enemies, making it one of the best primers in the game.',
-    points: [
-      'Low raw damage: you bring it to blanket a group with status (Viral, etc.) before finishing with another weapon, not to DPS.',
-      'The beam chains to several nearby targets, so one trigger-pull statuses a whole cluster.',
-      'Carries a bonus innate element from its Kuva Lich — pick the lich element to fit your build.',
-    ],
-    status: 'beta',
-  },
-  '/Lotus/Weapons/Grineer/Bows/GrnBow/GrnBowWeapon': {
-    tldr: 'A bow that fires explosive arrows which burst into cluster bombs — brutal AoE clear.',
-    points: [
-      'Arrows explode on impact and scatter cluster bombs that detonate a moment later, for big multi-hit AoE.',
-      'Mind the self-stagger from your own blasts; Cautious Shot helps.',
-      'Tiny ammo reserve — you reload often, so pair it with ammo mutation or efficiency.',
-      'Carries a bonus innate element from its Kuva Lich progenitor.',
-    ],
-    status: 'beta',
-  },
+  // (Weapon notes are authored in WEAPON_NOTES below, sectioned.)
 };
 
 // ---------------------------------------------------------------------------
@@ -4804,11 +4774,422 @@ const ARCANE_NOTES: SharedNote[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Weapons — knowledge-driven "how it plays" notes (trigger, identity, quirks),
+// Mechanics + Interactions, no Trivia. Phased by distinctiveness/meta (664 is a
+// multi-session category; modular Zaw Components are parts, skipped). Base +
+// Prime/Wraith/Vandal share a note where the playstyle matches; lich variants
+// (Kuva/Tenet/Coda) get their own note for the bonus progenitor element.
+// Phase 1: Launchers, Bows, Snipers.
+// ---------------------------------------------------------------------------
+
+const WEAPON_NOTES: SharedNote[] = [
+  // ── Signature / lich guns carried over from the pilot ──
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/SapientPrimary/SapientPrimaryWeapon'],
+    note: {
+      tldr: 'Gauss’ rapid-fire rocket rifle — fast explosive rockets, strong crit, built for clearing rooms.',
+      sections: [
+        { heading: 'Mechanics', points: ['Rockets arm after a short distance (~7m), so point-blank shots bounce instead of exploding — keep a little range.', 'The direct hit and the explosion apply status separately, and a direct rocket impact is a guaranteed Impact proc; the explosion penetrates walls.'] },
+        { heading: 'Interactions', points: ['Reloading while sprinting is faster (+25%), and faster still in Gauss’ hands (+50%) — its signature synergy.', 'Firestorm widens the blast; Cautious Shot cuts the self-stagger from your own explosions.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Nukor/KuvaNukor'],
+    note: {
+      tldr: 'A beam secondary with enormous status and crit — its "microwave" beam arcs between enemies, making it one of the best primers in the game.',
+      sections: [
+        { heading: 'Mechanics', points: ['Low raw damage: you bring it to blanket a group with status (Viral, etc.) before finishing with another weapon, not to DPS.', 'The beam chains to several nearby targets, so one trigger-pull statuses a whole cluster.'] },
+        { heading: 'Interactions', points: ['Carries a bonus innate element from its Kuva Lich — pick the lich element to fit your build.'] },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Launchers ──
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/LongGuns/GrenadeLauncher/GrenadeLauncher',
+      '/Lotus/Weapons/Syndicates/PerrinSequence/LongGuns/PSPenta',
+      '/Lotus/Weapons/Corpus/LongGuns/GrenadeLauncher/CarminePenta',
+    ],
+    note: {
+      tldr: 'A grenade launcher that lobs sticky grenades you detonate on command.',
+      sections: [
+        { heading: 'Mechanics', points: ['Fires up to five grenades that stick to surfaces and enemies, then detonate all at once when you trigger them — set traps or chains.', 'Deals Blast damage; mind the self-stagger from your own explosions (Cautious Shot helps).'] },
+        { heading: 'Interactions', points: ['Secura Penta adds a bigger magazine and a Perrin Sequence proc; Carmine Penta fires and reloads faster. Pair with a primer for status.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/ClanTech/Chemical/RocketLauncher'],
+    note: {
+      tldr: 'A Grineer rocket launcher with a heavy area blast.',
+      sections: [
+        { heading: 'Mechanics', points: ['Charge-fires a rocket that explodes on impact for Blast damage; its augment (Nightwatch Napalm) leaves lingering fire.'] },
+        { heading: 'Interactions', points: ['Watch your own blast radius — a strong AoE clearer with Firestorm and a status build. The Kuva Ogris is a stronger Lich variant.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Ogris/KuvaOgris'],
+    note: {
+      tldr: 'The Kuva-Lich rocket launcher — air-bursting rockets and a bonus progenitor element.',
+      sections: [
+        { heading: 'Mechanics', points: ['Unlike the base Ogris it fires a rocket that air-bursts into a cluster, raining explosions over an area; very high status.'] },
+        { heading: 'Interactions', points: ['Carries a bonus innate element set by the Kuva Lich it came from — pick the element to fit your build. Self-stagger applies.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnGrenadeLauncher/GrnGrenadeLauncher'],
+    note: {
+      tldr: 'A Grineer grenade launcher that arcs bouncing grenades downrange.',
+      sections: [
+        { heading: 'Mechanics', points: ['Lobs grenades that bounce and explode for Blast damage with high crit — a crit-AoE launcher.'] },
+        { heading: 'Interactions', points: ['Lead your shots and mind the arc; the Kuva Tonkor is the stronger Lich variant.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Tonkor/KuvaTonkor'],
+    note: {
+      tldr: 'The Kuva-Lich grenade launcher — fast reload, impact detonation, and a bonus element.',
+      sections: [
+        { heading: 'Mechanics', points: ['Arcs grenades that detonate on impact (no fuse delay) for Blast crit damage, with a quick reload.'] },
+        { heading: 'Interactions', points: ['Carries a bonus innate element from its Kuva Lich; a strong crit-AoE pick. Self-stagger applies.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnCannon/GrnCannonWeapon'],
+    note: {
+      tldr: 'A Grineer hand-cannon with two modes — long-range explosive shells or a close-range flak blast.',
+      sections: [
+        { heading: 'Mechanics', points: ['Swap between Cannon mode (an arcing shell that bursts into shrapnel) and Barrage mode (a shotgun-like spread of flak).'] },
+        { heading: 'Interactions', points: ['Cannon for AoE clear, Barrage for close range; mind the self-stagger. The Kuva Zarr is the stronger Lich variant.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Zarr/KuvaZarr'],
+    note: {
+      tldr: 'The Kuva-Lich Zarr — both firing modes, stronger explosives, and a bonus element.',
+      sections: [
+        { heading: 'Mechanics', points: ['Keeps the dual Cannon/Barrage modes with bigger explosive output and high status.'] },
+        { heading: 'Interactions', points: ['One of the strongest AoE primaries; carries a bonus innate element from its Lich. Self-stagger is heavy — Cautious Shot or Primed Sure Footed helps.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/ClanTech/Bio/BioWeapon'],
+    note: {
+      tldr: 'A toxic grenade lobber that leaves damaging gas clouds — and a strong Incarnon weapon.',
+      sections: [
+        { heading: 'Mechanics', points: ['Lobs canisters that burst into a lingering Toxin cloud; its Incarnon form fires sticky orbs that detonate for big area damage.'] },
+        { heading: 'Interactions', points: ['A top-tier status-AoE primary once you unlock its Incarnon Genesis; build for Toxin/Viral or Gas.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/LongGuns/CrpBriefcaseLauncher/CrpBriefcaseLauncher'],
+    note: {
+      tldr: 'A Corpus "briefcase" rocket launcher — fire a rocket, then steer it to the target.',
+      sections: [
+        { heading: 'Mechanics', points: ['Launches a rocket you pilot in flight, detonating it where you want for precise Blast damage.'] },
+        { heading: 'Interactions', points: ['A Tenet (Sister of Parvos) weapon that carries a bonus innate element you choose; great for hitting around cover.'] },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Bows (all silent unless noted; charge to fire, arrows have punch-through) ──
+  {
+    keys: [
+      '/Lotus/Weapons/MK1Series/MK1Paris',
+      '/Lotus/Weapons/Tenno/Bows/HuntingBow',
+      '/Lotus/Weapons/Tenno/Bows/PrimeHuntingBow',
+    ],
+    note: {
+      tldr: 'The classic Tenno bow — charge a single high-damage arrow, silent and deadly.',
+      sections: [
+        { heading: 'Mechanics', points: ['Charge to fire one powerful arrow; bows are silent (great for stealth) and arrows punch through to line up multiple kills.'] },
+        { heading: 'Interactions', points: ['Paris Prime adds strong Slash and crit for a true damage bow; the MK1-Paris is the starter version. Charge fully for max damage.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Bows/AntlerBow/AntlerBow',
+      '/Lotus/Weapons/Tenno/Bows/PrimeCernos/PrimeCernos',
+    ],
+    note: {
+      tldr: 'A fast, silent bow — Cernos Prime famously looses a three-arrow horizontal spread.',
+      sections: [
+        { heading: 'Mechanics', points: ['Charge-fires arrows with punch-through; the Prime fires three arrows at once in a wide fan, great for hitting groups.'] },
+        { heading: 'Interactions', points: ['Cernos Prime is a strong crit/status hybrid and a stealth favourite; build for Slash or Viral.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Syndicates/RedVeil/Bows/RVCernos'],
+    note: {
+      tldr: 'A Red Veil assassination bow — fast charge, and brief invisibility on its syndicate proc.',
+      sections: [
+        { heading: 'Mechanics', points: ['A quick-charging silent bow; its Red Veil proc damages enemies and briefly turns you invisible.'] },
+        { heading: 'Interactions', points: ['A stealth-assassin pick; the fast charge suits rapid headshots.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Bows/PrimeDerelictCernos/DerelictCernos'],
+    note: {
+      tldr: 'A bizarre bow whose arrows sprout tongues that drag enemies together.',
+      sections: [
+        { heading: 'Mechanics', points: ['Each arrow bursts into sticky probes that latch onto nearby enemies and reel them into a clump.'] },
+        { heading: 'Interactions', points: ['A niche crowd-grouping tool — pull enemies together, then finish with AoE.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Bows/StalkerBow'],
+    note: {
+      tldr: 'The Stalker’s bow — a high-crit Slash bow that decapitates.',
+      sections: [
+        { heading: 'Mechanics', points: ['Charge-fires arrows with high critical chance and heavy Slash, silent like all bows.'] },
+        { heading: 'Interactions', points: ['A red-crit Slash bow; build crit and Slash for big bleed damage. Dropped by the Stalker.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Bows/AsymetricalBow/AsymetricalBow',
+      '/Lotus/Weapons/Tenno/Bows/PrimeDaikyu/PrimeDaikyuBow',
+    ],
+    note: {
+      tldr: 'A heavy war bow — slow to draw but hits with huge status and no damage falloff.',
+      sections: [
+        { heading: 'Mechanics', points: ['A single arrow with very high status chance and no damage drop-off over distance; its arrows can’t be picked back up.'] },
+        { heading: 'Interactions', points: ['Daikyu Prime pushes status and crit higher; a status-priming bow whose slow draw rewards reload/charge-speed mods.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Bow/Longbow/CrpBow',
+      '/Lotus/Weapons/Corpus/Bow/Longbow/PrismaLenz/PrismaLenzWeapon',
+    ],
+    note: {
+      tldr: 'A Corpus bow that freezes a target with a Cold pulse, then detonates a big explosion.',
+      sections: [
+        { heading: 'Mechanics', points: ['Each shot lands a Cold bubble that groups and chills enemies, followed a beat later by a powerful Blast explosion.'] },
+        { heading: 'Interactions', points: ['Huge crit AoE — but it self-staggers, so Cautious Shot or Primed Sure Footed is recommended. Prisma Lenz adds multishot and ammo.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/Bows/GrnBow/GrnBowWeapon'],
+    note: {
+      tldr: 'A Grineer bow that fires cluster-bomb arrows — brutal AoE clear, and a bonus progenitor element.',
+      sections: [
+        { heading: 'Mechanics', points: ['Arrows explode on impact and scatter cluster bombs that detonate a moment later for big multi-hit AoE; tiny quiver, so you reload often.'] },
+        { heading: 'Interactions', points: ['Carries a bonus innate element from its Kuva Lich; mind the heavy self-stagger and pair it with ammo mutation or efficiency.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Bows/Omicrus/OmicrusPlayerWep'],
+    note: {
+      tldr: 'A precise charge-and-hold bow from the Zariman — perfect-shot timing rewards big damage.',
+      sections: [
+        { heading: 'Mechanics', points: ['Hold the draw and release at the perfect moment for a high-damage, high-status shot.'] },
+        { heading: 'Interactions', points: ['An easy-to-get, strong status bow (from the Angels of the Zariman quest); reward consistent perfect releases.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Bows/DaxDuviriAsymetricalBow/DaxDuviriAsymmetricalLongBowPlayerWeapon'],
+    note: {
+      tldr: 'A Duviri Dax bow with several firing tricks — rapid shots, a charged shockwave, or a precise arrow.',
+      sections: [
+        { heading: 'Mechanics', points: ['Fires arrows in quick succession or charges into a shockwave; a crit/status hybrid.'] },
+        { heading: 'Interactions', points: ['A flexible bow earned in Duviri; suits both rapid fire and charged play.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Bows/TnChoirBow/TnChoirBow'],
+    note: {
+      tldr: 'A 1999-era bow that shields your allies while you fire.',
+      sections: [
+        { heading: 'Mechanics', points: ['A silent charge bow whose held effect prevents enemies from harming your allies; strong Slash and Puncture.'] },
+        { heading: 'Interactions', points: ['A support-flavoured bow for protecting a squad; build for status or crit.'] },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Snipers (zoom adds bonus damage; consecutive hits build a combo multiplier) ──
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Rifle/TennoSniperRifle',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeVectis/PrimeVectisRifle',
+    ],
+    note: {
+      tldr: 'A one-shot-per-reload sniper — fast cycling, high crit and status, ideal for precise kills.',
+      sections: [
+        { heading: 'Mechanics', points: ['Fires a single round then auto-reloads, snapshotting a fresh shot quickly; Vectis Prime adds a two-round magazine and better crit/status.'] },
+        { heading: 'Interactions', points: ['A top all-round sniper; build crit and aim for heads. Snipers gain a stacking combo multiplier on consecutive hits.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/FiveShotSniper/FiveShotSniper',
+      '/Lotus/Weapons/Tenno/LongGuns/RubicoPrime/RubicoPrimeWeapon',
+    ],
+    note: {
+      tldr: 'The Eidolon-hunter’s sniper — sky-high critical damage that scales with the combo counter.',
+      sections: [
+        { heading: 'Mechanics', points: ['A revolver-style sniper with excellent crit; its zoom adds bonus critical damage, and consecutive hits build a combo multiplier.'] },
+        { heading: 'Interactions', points: ['Rubico Prime is the staple Eidolon weapon — pair with Harrow/Volt buffs and crit mods.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/LongGuns/GrineerSniperRifle/GrnSniperRifle',
+      '/Lotus/Weapons/Grineer/LongGuns/GrineerSniperRifle/VulkarWraith',
+    ],
+    note: {
+      tldr: 'A heavy Grineer sniper that trades fire rate for big Impact hits.',
+      sections: [
+        { heading: 'Mechanics', points: ['Slow, hard-hitting bolts; the Vulkar Wraith variant adds better crit and status.'] },
+        { heading: 'Interactions', points: ['A budget sniper; the Wraith is the one to build, leaning on headshots.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Rifle/SniperRifle',
+      '/Lotus/Weapons/Tenno/Rifle/VandalSniperRifle',
+    ],
+    note: {
+      tldr: 'The original Corpus sniper — accurate and steady, with a stronger Vandal variant.',
+      sections: [
+        { heading: 'Mechanics', points: ['A semi-auto precision rifle; the Snipetron Vandal adds crit and status.'] },
+        { heading: 'Interactions', points: ['A solid early/mid sniper; the Vandal is the keeper.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/ClanTech/Energy/Railgun'],
+    note: {
+      tldr: 'A Corpus railgun sniper — charge a high-velocity Electric shot with strong crit.',
+      sections: [
+        { heading: 'Mechanics', points: ['Charge-fires a very fast Electric projectile with high critical chance and no damage falloff.'] },
+        { heading: 'Interactions', points: ['A classic Eidolon weapon (its innate Electric and crit suit the fight); build crit and charge speed.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Infested/LongGuns/InfSniperRifle/InfSniperRifle'],
+    note: {
+      tldr: 'An Infested sniper that plants a virus barb which keeps damaging, then bursts — and a strong Incarnon.',
+      sections: [
+        { heading: 'Mechanics', points: ['Fires a slow barb that sticks, ticks damage, then explodes; very high status, and its Incarnon form adds heavy multi-target damage.'] },
+        { heading: 'Interactions', points: ['A status-and-Incarnon sniper; build for status and let the barbs spread.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Infested/InfestedLich/LongGuns/CodaSporothrix'],
+    note: {
+      tldr: 'The Infested-Lich Sporothrix — the virus-barb sniper with a bonus progenitor element.',
+      sections: [
+        { heading: 'Mechanics', points: ['Plants a damaging, exploding virus barb like the base, with even higher status and a Coda Lich’s bonus element.'] },
+        { heading: 'Interactions', points: ['A Coda (Infested Lich) weapon — pick the bonus element to fit your status build.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/LongGuns/CrpSentAmlgSniper/CrpSentAmlgSniper'],
+    note: {
+      tldr: 'A Corpus sniper whose zoom changes its fire — scope in for an area burst, hip-fire for precision.',
+      sections: [
+        { heading: 'Mechanics', points: ['Higher zoom levels add an area blast to its shots; high status.'] },
+        { heading: 'Interactions', points: ['A flexible status sniper that doubles as a soft AoE at range.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnGorgSniperRifle/GrnGorgSniperRifle'],
+    note: {
+      tldr: 'A Grineer sniper that fires a tracking beacon — then every bullet homes to the marked target.',
+      sections: [
+        { heading: 'Mechanics', points: ['Alt-fire plants a beacon on an enemy; your rounds curve toward whatever is marked, so you can shoot from cover.'] },
+        { heading: 'Interactions', points: ['A gimmicky but fun precision rifle — mark a priority target and fire freely.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnQuadSniper/TnQuadSniper'],
+    note: {
+      tldr: 'Voruna’s signature multi-barrel sniper — fast bursts of precise crit shots.',
+      sections: [
+        { heading: 'Mechanics', points: ['Fires a quick burst from its four barrels with high critical chance.'] },
+        { heading: 'Interactions', points: ['It gains a bonus in Voruna’s hands; a strong crit burst-sniper.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/PrimeLightningGun/PrimeLightningGun'],
+    note: {
+      tldr: 'Caliban Prime’s signature sniper — a charged Electric railgun-style shot.',
+      sections: [
+        { heading: 'Mechanics', points: ['Charge-fires a high-velocity Electric projectile with strong crit, in the Lanka mold.'] },
+        { heading: 'Interactions', points: ['A signature sniper that pairs with Caliban; build crit and combined elements off its innate Electric.'] },
+      ],
+      status: 'beta',
+    },
+  },
+];
+
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
 export const FIELD_NOTES: Record<string, FieldNotes> = {
   ...BASE_NOTES,
   ...Object.fromEntries(
-    [...WARFRAME_NOTES, ...SENTINEL_NOTES, ...COMPANION_NOTES, ...ARCANE_NOTES].flatMap(
+    [...WARFRAME_NOTES, ...SENTINEL_NOTES, ...COMPANION_NOTES, ...ARCANE_NOTES, ...WEAPON_NOTES].flatMap(
       ({ keys, note }) => keys.map((k) => [k, note] as const),
     ),
   ),
