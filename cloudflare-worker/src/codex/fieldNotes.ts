@@ -2227,11 +2227,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Hoplite/Hoplite'],
     note: {
       tldr: 'A spear-throwing hoplite — Styanax strips defenses, showers the squad with energy, and rains exalted javelins, all while shields keep him critting.',
-      points: [
-        'His passive raises critical chance based on his current shields (overshields included), so shield-gating builds make him both tanky and hard-hitting.',
-        'Tharros Strike strips enemy shields and armor and converts it into healing and overshields — survival and a defense-strip in one cast.',
-        'Final Stand launches him airborne to hurl a barrage of javelins, his exalted nuke; Rally Point feeds the whole team energy.',
-        'The Augur mod set pairs naturally with his shield scaling; he was given away free during a Veilbreaker event, so many players already own him.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'His passive raises critical chance based on his current shields (overshields included) — and DOUBLES it when he wields a speargun, so shield-gating builds make him both tanky and hard-hitting.',
+            'Tharros Strike strips enemy shields and armor and converts it into healing and overshields — survival and a defense-strip in one cast.',
+            'Final Stand launches him airborne to hurl a barrage of javelins, his exalted nuke.',
+            'Rally Point feeds the whole team energy and draws enemy attention to him.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The Augur mod set pairs naturally with his shield scaling, topping up overshields as he casts.',
+            'Tharros Strike is his Helminth-subsumable strip-and-heal, and the Intrepid Stand augment refunds energy on Final Stand kills.',
+            'Build shields and Strength so the passive crit and the javelin nuke both hit hard.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Earned from Kahl’s Garrison via the Veilbreaker missions, and given away free during a 50th-frame celebration.',
+            'Named after Astyanax of Greek myth, styled as an ancient hoplite.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2242,11 +2262,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Temple/Temple'],
     note: {
       tldr: 'A rock-and-roll frame — Temple plays to a beat, rewarding well-timed casts, and wields an infested flamethrower as an exalted weapon.',
-      points: [
-        'His passive runs on a metronome: time your ability casts to the beat for a big Ability Efficiency boost and stronger effects — rhythm is the gameplay.',
-        'Exalted Solo summons Lizzie, an infested flamethrower that replaces your melee for a sustained Heat-damage playstyle.',
-        'Ripper’s Wail makes him briefly invulnerable while he heals, shields, and buffs allied Heat damage — a defensive reset and a team buff at once.',
-        'Pyrotechnics erupts Heat pillars (and is a fine Helminth pick), while Overdrive softens enemies by raising their critical-hit vulnerability.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Their passive runs on a metronome: time your ability casts to the beat for a big Ability Efficiency boost and stronger effects — rhythm is the gameplay.',
+            'Exalted Solo summons Lizzie, an infested flamethrower that replaces your melee for a sustained Heat-damage playstyle.',
+            'Ripper’s Wail grants brief invulnerability while it heals, shields, and buffs allied Heat damage — a defensive reset and a team buff at once.',
+            'Pyrotechnics erupts Heat pillars, and Overdrive softens enemies by raising their critical-hit vulnerability.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Pyrotechnics is their Helminth-subsumable Heat pillar.',
+            'Build Heat and Strength to stack the Ripper’s Wail buff and the flamethrower’s damage.',
+            'Hitting the beat is the whole skill curve — sloppy timing leaves a lot of efficiency on the table.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A glam-rock frame named after the band Stone Temple Pilots, and the first inherently non-binary Warframe.',
+            'In lore their human source, Flare, is a 1999 rockstar deemed too rebellious for the future to build.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2260,11 +2300,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The fairy gunner — Razorwing shrinks Titania into a flying form with exalted pistols, turning her into a mobile, hard-to-hit DPS platform.',
-      points: [
-        'Razorwing grants constant flight plus Dex Pixia (exalted dual pistols, scaling with pistol mods) and the Diwata sword — she fights from the air where most enemies struggle to track her.',
-        'It is a channeled ability that drains energy over time, so energy economy and the Razorwing Blitz augment (fire rate + speed) are core to the build.',
-        'Spellbind makes her and allies immune to status and disarms enemies, a handy cleanse before diving in.',
-        'Tribute pulls one of four squad buffs off enemies, and her passive heals on every cast — she sustains herself between flights.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Razorwing shrinks her into a flying form with Dex Pixia (exalted dual pistols that scale with pistol mods) and the Diwata sword — she fights from the air where most enemies struggle to track her.',
+            'Razorwing is channeled and drains energy over time, so energy economy and the Razorwing Blitz augment (fire rate and flight speed) are core to the build.',
+            'Spellbind makes her and allies immune to status and disarms enemies, a handy cleanse before diving in.',
+            'Tribute pulls one of four rotating squad buffs off an enemy, and Lantern charms a crowd to follow a floating light.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Her passive heals her and nearby allies on every ability cast, so she sustains herself between flights.',
+            'Spellbind is her Helminth-subsumable status-immunity ability.',
+            'She is the only frame with two exalted weapons at once — pistols and a sword in Razorwing.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A fairy queen from the Silver Grove quest, pronounced "Tie-TAY-nia" after the chemical, not the Shakespeare character.',
+            'She was the first frame to require Tellurium to build.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2278,11 +2338,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The original healer and energy battery — Trinity keeps the squad alive and powered, and can strip armor while she does it.',
-      points: [
-        'Blessing heals the whole team’s health and shields and grants damage reduction, her signature panic button.',
-        'Energy Vampire turns an enemy into a team-wide energy fountain, the classic reason to bring her to energy-hungry squads.',
-        'Link shares incoming damage out to nearby enemies and can give her invulnerability windows; the Abating Link augment also strips their armor.',
-        'Her passive feeds allies bonus health from her energy pool, so high energy and efficiency builds make the whole team tankier.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Blessing heals the whole team’s health and shields and grants damage reduction — her signature panic button.',
+            'Energy Vampire turns an enemy into a team-wide energy fountain, the classic reason to bring her to energy-hungry squads.',
+            'Link tethers nearby enemies to share incoming damage out to them and can give her invulnerability windows.',
+            'Well of Life suspends an enemy and turns it into a healing-and-lifesteal source for allies.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The Abating Link augment also strips enemy armor while she is linked, turning her into a damage enabler.',
+            'Build Efficiency and Duration; her passive feeds allies bonus health from her energy pool, so a big energy build makes the whole team tankier.',
+            'Well of Life is her Helminth-subsumable healing tool.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'One of the oldest frames, named for the "holy trinity" of the tank, healer, and damage MMO roles.',
+            'Her Immortal skin carries an Ankh, the symbol of eternal life.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2293,11 +2373,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/DemonFrame/DemonFrame'],
     note: {
       tldr: 'A demon-summoner — Uriel fights alongside three permanent minions, and his whole kit is about unlocking and feeding them.',
-      points: [
-        'His passive grants three demons, each unlocked by casting a matching ability: one chains enemies so damage spreads, one applies damage-over-time and drops orbs on death, and one marks the dead for fire-rate and Heat buffs.',
-        'Because the demons gate his power, you plan your ability rotation to keep all three active rather than spamming one button.',
-        'Remedium heals him, cleanses status, and revives fallen demons, while Brimstone unleashes a Heat-damage field powered by the pack.',
-        'He leans on Heat damage and minion sustain; stacking Strength and Heat amplifies both the demons and his ultimate.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'His passive grants three demons, each unlocked by casting its ability: Catenach chains enemies so damage spreads, Gulphagor applies damage-over-time and drops orbs on death, and Vythelas marks the dead for fire-rate and Heat buffs.',
+            'Because the demons gate his power, you plan your ability rotation to keep all three active rather than spamming one button.',
+            'Remedium heals him, cleanses status, and revives fallen demons, while Brimstone unleashes a Heat field powered by the pack.',
+            'Infernalis ignites him and turns his dodge into a flying drill, and Demonium hurls minion souls to weaken enemies.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'He leans on Heat damage and minion sustain; stacking Strength and Heat amplifies both the demons and his ultimate.',
+            'Keeping the trio alive with Remedium between fights is his real engine — lose them and his kit goes quiet.',
+            'Plan casts so each ability’s demon is up before you commit to Brimstone.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A demon-and-angel frame with deliberate 666 health and shields, the last frame designed by Michael "Mynki" Brennan.',
+            'In lore he was so feared the Orokin tried to destroy every copy of him.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2311,11 +2411,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Valkyr is the melee berserker — Hysteria makes her invincible while she claws, and her sky-high armor carries the rest.',
-      points: [
-        'Hysteria is an exalted melee with invulnerability, but it drains and leaves a brief vulnerable window when it ends, so it is not truly infinite.',
-        'Her enormous base armor (and Warcry’s armor/attack-speed buff) makes armor-stacking and Steel Fiber especially effective.',
-        'Because Hysteria blocks damage, energy-from-damage mods (Rage/Hunter Adrenaline) sustain her between casts, not during them.',
-        'Eternal War (augment) lets you keep Warcry’s attack speed up for long stretches — a staple melee buff build.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Hysteria is an exalted claw weapon with full invulnerability and lifesteal, but it drains over time and leaves a brief vulnerable window when it ends, so it is not truly infinite.',
+            'Warcry buffs the team’s attack speed and armor while slowing nearby enemies and making them take more melee damage.',
+            'Her enormous base armor (third-highest in the game) makes armor-stacking and Steel Fiber especially effective.',
+            'Her passive lets her recover from knockdowns much faster, fitting her relentless melee style.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Because Hysteria blocks damage, energy-from-damage mods (Rage and Hunter Adrenaline) refill her between casts, not during them.',
+            'Eternal War (augment) lets you keep Warcry’s attack speed up for long stretches — a staple melee-buff build.',
+            'Warcry is a popular Helminth subsume for the squad attack-speed and armor buff.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A berserker-feline frame named for the Norse valkyries, with a Bastet helmet nodding to the Egyptian cat goddess.',
+            'Her scarred look and prison-orange coloring come from being experimented on by Alad V; her original form was Gersemi.',
+          ],
+        },
       ],
       status: 'beta',
     },
