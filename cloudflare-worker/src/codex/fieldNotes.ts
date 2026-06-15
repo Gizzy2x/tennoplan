@@ -195,13 +195,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Archwings deploy in Archwing missions, open-world flight, and Railjack, so Amesha pulls double duty across all space content.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Its name nods to the Amesha Spenta, the angel-like divine beings of Zoroastrian belief — fitting for a guardian frame.',
-            'The blueprint is researched in the dojo Tenno Lab after The Archwing quest.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -232,13 +225,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Seeking Shuriken (augment) turns his 1 into an armor strip to set up bigger finishers; Rising Storm feeds his melee combo.',
             'He loves high-Slash melee and status weapons to exploit the bleed passive; Shuriken can be subsumed onto other frames.',
             'Invisibility ends if the duration lapses, so recast Smoke Screen before it runs out.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'He is still called "Ninja" in the game files — his original working name before "Ash".',
-            'One of the earliest Warframes, and the first whose ultimate strikes with innate hidden blades.',
           ],
         },
       ],
@@ -273,13 +259,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Build melee damage and combo for Landslide; the knockdown immunity means you can skip anti-stagger utility.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'His main blueprint comes from The Jordas Precept quest — the only frame sourced from an Archwing boss.',
-            'His kit riffs on the Greek Titan Atlas and the giant Antaeus, who was unbeatable while touching the ground.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -309,13 +288,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Resonance spreads Sonar’s weak spots from a dying enemy to others, keeping a whole room lit up; Resonating Quake turns Sound Quake into a wide low-level nuke.',
             'Savage Silence adds finisher damage to silenced enemies, and Silence itself is a top-tier Helminth subsume.',
             'She is extremely fragile (low health, shields, and armor), so she plays from stealth and range — her value is amplifying the squad, not tanking.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'One of the oldest frames in the game, named for the wailing death-spirit of Irish myth.',
-            'Her progenitor element is Electricity — the bonus element she imparts as a Kuva Lich template.',
           ],
         },
       ],
@@ -348,13 +320,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'His signature Cobra & Crane sleeps the first enemy it hits, feeding the same loop that powers his kit.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'His name means "blessed," and his design borrows from Sudanese and priestly aesthetics — fitting for a pacifist.',
-            'He was the first Warframe bought with syndicate Standing (Vox Solaris) rather than dropped, and his only signature weapon is a melee, never a gun.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -380,13 +345,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'She favors armor and a huge health pool over shields, making her the aggressive front-line mech; Voidrig instead camps with its long-range Arquebex artillery.',
             'You bring a mech to the open worlds and certain heavy missions where a Warframe alone would struggle.',
             'Necramech mods and Arcanes are a separate progression, so investment in one mech carries over when you swap to the other.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'She is the tankier of the two Necramechs, with the higher base health (around 1,880) and armor.',
-            'Her Ironbride is modeled on the Egyptian khopesh, and "Shield Maiden" nods to Norse warrior women.',
           ],
         },
       ],
@@ -420,13 +378,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'His passive grants the squad damage resistance that adapts to whatever damage type is hitting them; his signature Venato can grant melee combo on hit.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'The second Sentient-themed Warframe after Revenant, named for the half-monster of Shakespeare’s The Tempest.',
-            'He was handed out free as a login reward during his rework, so many players already own him.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -458,13 +409,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Build Ability Strength above all; he is the go-to for burst setups where you snapshot Vex Armor onto a heavy weapon.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'He is the only Warframe built from other Warframes’ parts — Volt, Ember, Frost, and Saryn components.',
-            'Internally codenamed "Dragon", and his dragon pelt makes him one of the tallest frames.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -491,13 +435,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Her crit and status buffs apply to the whole squad inside the gem’s aura, so she shines with weapon-heavy teams.',
             'Preserving Shell gives damage reduction that grows with kills; she is a low-stress survival and farming pick.',
             'Position the gem where the team actually fights — its buff radius is what matters, not raw damage.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'In lore she sacrificed herself crystallizing two people, Belric and Rania, to save them from the Infestation during the Old War.',
-            'Her name is a golden quartz once called the "merchant’s stone" for prosperity.',
           ],
         },
       ],
@@ -528,13 +465,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Because his crit ramps over a mission, he only gets stronger the longer an endurance run goes.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'The first Warframe named with a hyphen and numbers, and the first with an exalted sniper rifle.',
-            'His progenitor (bonus) element is Magnetic, and he hails from the 1999 storyline.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -561,13 +491,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Wyrd Scythes is a popular Helminth subsume for its Viral-and-slow opener.',
             'Her health pool is low, so she relies on the Grave Spirit window plus orb healing (boosted by her passive) rather than raw tankiness.',
             'Her signature Dorrclave heals her for each status effect on the enemy it strikes, rewarding status-heavy builds.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'Her unranked health is 666 — a deliberate nod to her death-and-reaper theme.',
-            'She is themed on the Dullahan, the headless horseman of Irish myth, and was a Dax cavalry rider in lore.',
           ],
         },
       ],
@@ -598,13 +521,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'He was toned down shortly after release but remains a premier support-and-nuke hybrid.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Named after the poet Dante Alighieri, and every ability cast murmurs in Voidtongue.',
-            'His signature Ruvox was the first Incarnon melee tied to a Warframe.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -629,12 +545,6 @@ const WARFRAME_NOTES: SharedNote[] = [
           points: [
             'It is the most durable Archwing by total health and shields, trading Itzal’s mobility and Amesha’s protection for raw area damage.',
             'Bring it to Archwing and Railjack content where the job is clearing dense groups of fighters fast.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'Its name is the hard wing-case of a beetle — fitting for the armored, explosive wing.',
           ],
         },
       ],
@@ -668,13 +578,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Because her abilities’ Heat feeds the passive, she wants enemies burning around her rather than instantly dead.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'She was the fourth Warframe to get a Prime, after Excalibur, Frost, and Mag.',
-            'She was designed as male in the earliest concepts before being changed to female.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -706,13 +609,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'She is famously the most expensive frame to build and the only one that needs a Forma in its construction.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Internally named "YinYang", her whole design is the yin-yang of complementary opposites.',
-            'Day and Night are a single androgynous frame, shown in composite form in town.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -741,13 +637,7 @@ const WARFRAME_NOTES: SharedNote[] = [
           points: [
             'Chromatic Blade (augment) changes Exalted Blade’s element by your energy color and boosts its status chance — a popular damage build.',
             'Radial Blind is a solid Helminth subsume; pair Excalibur with a strong sword-type melee to lean on his passive.',
-          ],
-        },
-        {
-          heading: 'Umbra & Trivia',
-          points: [
             'Excalibur Umbra plays the same kit but adds the Umbral mod set and a sentient AI that keeps fighting on its own while you are in Operator/Transference, swapping Radial Blind for Radial Howl.',
-            'A starter frame named for King Arthur’s sword, with more alternate helmets than any other frame; the Prime is Founder-exclusive.',
           ],
         },
       ],
@@ -778,13 +668,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'She is a utility-and-control frame rather than a raw damage dealer.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Her name comes from the French "folie" (madness), and her look mixes Pierrot clowns with Rorschach inkblots.',
-            'A 2026 release, she is rendered almost entirely in black-and-white ink despite the purple in her official art.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -813,13 +696,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'The Icy Avalanche augment grants Overguard to allies on cast — a popular survivability pick; Freeze Force imbues the squad with Cold.',
             'He is a staple for Defense, Interception, and Mobile Defense, where a well-placed globe trivializes protecting a point.',
             'Ice Wave is his Helminth-subsumable ability for a quick cold-status line on another frame.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'One of the oldest frames, drawn from unused Dark Sector boss concept art.',
-            'His chassis is a crafting ingredient for Chroma.',
           ],
         },
       ],
@@ -853,13 +729,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Her three signature weapons — Astilla, Fusilai, and Volnus — each gain a bonus in her hands.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Her name blends the Japanese word for glass (garasu) with a Yoruba word for crystal.',
-            'In lore she is the only Warframe said to have defeated a Sentient during the Old War.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -889,13 +758,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Bloodletting and the passive work together: sacrificing health both refills energy and powers up her damage at once.',
             'She is squishy by design — build Strength and lean on Dread Mirror’s shield and life-steal rather than a big health pool.',
             'She has an unusually large energy pool, and her signature Nagantaka gains innate punch-through in her hands.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'Named for Garuda, the bird-mount of the Hindu god Vishnu, and modeled on shrikes that impale their prey.',
-            'She shares a gory aesthetic with Valkyr but plays it as calculated slaughter.',
           ],
         },
       ],
@@ -929,13 +791,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Kinetic Plating only blocks the listed physical and temperature damage types, so plan around Toxin and other gaps.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'The second-fastest frame by sprint speed (Gauss Prime is the fastest), named after the mathematician Carl Friedrich Gauss.',
-            'He was the first frame to get a Leverian exhibit, which tells how he and Grendel freed a frozen Europa city.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -965,13 +820,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Nourish is one of the best Helminth subsumes in the whole game — squad energy regen plus a Viral damage buff — so many players borrow it off him.',
             'The enemies he consumes sustain both his armor and his squad buffs at the same time.',
             'His signature Masseter makes him crowd-control immune during heavy attacks.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'Named after the monster of Beowulf, and worked under the name "Oni" during development.',
-            'In lore he and Gauss freed Europa’s frozen city of Riddha from a cruel Executor.',
           ],
         },
       ],
@@ -1005,13 +853,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Build Strength and Duration — Cathode Grace’s energy trickle keeps her casting without leaning hard on efficiency.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Themed around artificial electricity — coils and transmitters — in contrast to Volt’s natural lightning.',
-            'In lore she was an Orokin ship figurehead named Gyra aboard the Zariman who went mad crossing the Void.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1041,13 +882,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'He is a staple for Eidolon and boss squads: Condemn exposes heads while Covenant multiplies everyone’s crit chance.',
             'His kit is so self-reliant that subsuming a Helminth ability onto him usually wastes one of his own synergies.',
             'His signature Knell rewards precise headshots and gains a magazine bonus in his hands.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'Tied in lore to the outcast Operator Rell, and one of the few frames active since the Orokin era.',
-            'His ability names all reference Catholic rites — Condemn, Penance, Thurible, Covenant.',
           ],
         },
       ],
@@ -1110,13 +944,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Avoid anything that caps or lowers max shields — Catalyzing Shields actively hurts her; build a big shield pool plus Ability Strength.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Hildryn Prime has the highest base shields of any Warframe — 1,380 unranked, rising to 1,880 at rank 30.',
-            'Like every Prime she sends an energy pulse to allies near an Orokin Death Orb, even though she herself can’t use energy.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1146,13 +973,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Build Strength and Range to keep armor fully stripped and enemies pinned; his rework turned a slow farming frame into a real armor-strip damage enabler.',
             'Pilfering Swarm (Tentacle Swarm augment) makes caught enemies drop extra loot, keeping a bit of his old farming identity.',
             'Tidal Surge can be subsumed, and Plunder pairs his self-buff with squad-wide armor denial.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'A pirate frame styled after Davy Jones, named from the Greek word for water.',
-            'He is one of the few frames whose kit can ignore enemy armor outright.',
           ],
         },
       ],
@@ -1186,13 +1006,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Survivability scales off Health and Armor — Adaptation and Arcane Grace are his staples, and the Negation Swarm augment grants status immunity.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'A mummy-themed "Fear-Eater" earned from the Sands of Inaros quest, with among the highest health of any frame.',
-            'Inaros Prime pushes that already-huge health pool even higher.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1217,12 +1030,6 @@ const WARFRAME_NOTES: SharedNote[] = [
           points: [
             'It trades Amesha’s protection and Elytron’s firepower for evasion, stealth, and utility — the pick for darting in, grabbing, and getting out.',
             'The loot-vacuum on Cosmic Crush makes it a favorite for open-world resource runs.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'Its name means "shadow" in Basque, breaking the insect-naming pattern of the other Archwings.',
           ],
         },
       ],
@@ -1256,13 +1063,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Build Duration and Range to keep her stealth and utility up across long missions.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Her name nods to legendary archers, and her design is modeled on brightly-colored poison frogs.',
-            'Her main blueprint drops from Spy Rotation C — the first frame to drop from standard mission loot.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1289,13 +1089,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Ophanim Eyes slows enemies, strips their shields and armor, and revives downed allies from range — a strong Helminth pick.',
             'Stacking Judgment on a target and detonating scales with how many were applied, rewarding a buff-and-burst rhythm.',
             'Those two aura slots make her uniquely flexible for any team composition.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'Earned from the Jade Shadows quest, with a tragic story of a frame transformed while pregnant.',
-            'Her presence makes the Stalker instantly flee — a unique quirk — and her signature weapons mirror his arsenal.',
           ],
         },
       ],
@@ -1329,13 +1122,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Build melee damage and combo for Whipclaw, plus Range and Duration for Ensnare and Strangledome.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Her component blueprints drop from Sanctuary Onslaught, and she was the first frame to need Kavat Genetic Codes.',
-            'Her arachnid design — web-patterned chest and abdomen-like skirt — matches her trapping kit.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1364,13 +1150,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Stacking her random statuses pairs well with status-driven weapons and Condition-Overload-style melee.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'All her ability names are Japanese — Kumihimo (braided cords), Omikuji (fortune slips), Omamori (charms), Bunraku (puppet theater).',
-            'Her 444 health and armor nod to East Asian tetraphobia, and she builds in an unusually short 24 hours.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1397,13 +1176,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Recompense turns the health he loses into energy, so taking a little damage fuels his kit rather than threatening him.',
             'Because he is shieldless, Rage and Hunter Adrenaline always make energy from damage, and "No Shield" Nightmare modifiers don’t affect him.',
             'Wrathful Advance is a popular Helminth subsume for its teleport-and-guaranteed-crit; his signature Rauta extends melee combo duration.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'A Duviri outlaw named for the tragic hero of the Finnish Kalevala, imprisoned for his "Seven Crimes."',
-            'The third shieldless frame, after Inaros and Nidus, and the first to use Overguard as its main defense.',
           ],
         },
       ],
@@ -1437,13 +1209,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'He has very high armor, so he tanks comfortably while his cooldowns refresh; Transient Fortitude is safe since few of his effects care about Duration.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'The second frame after Hildryn to ditch the energy bar entirely, with the fourth-highest base armor of any frame.',
-            'Named after the chemist Antoine Lavoisier — fitting for an alchemist — and paired with the Cedo shotgun.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1473,13 +1238,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'The catch: banishing teammates or an objective can lock them out of shooting normal enemies, so sloppy Limbo play is the classic way to ruin a mission for the group.',
             'In Spy missions the Rift lets him walk through laser barriers; some Eximus and bosses ignore the Rift, so it is not a universal shield.',
             'Cataclysm collapses fast under Nullifier fire — keep that in mind around Corpus.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'The tallest frame once you count his top hat, themed as a stage magician of the void.',
-            'In lore the original Limbo was scattered across the system after a botched Void crossing.',
           ],
         },
       ],
@@ -1513,13 +1271,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Invisibility is a coveted Helminth subsume for giving other frames reliable stealth.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'One of the oldest frames and a former starter, named for the Norse trickster god.',
-            'His progenitor element is Radiation — fitting his disarm-and-confuse theme.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1549,13 +1300,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'She is the classic anti-Corpus specialist; the Fracturing Crush augment adds an armor strip, and Magnetize shards can be absorbed to power the bubble further.',
             'Her low armor means you survive through her abilities and positioning, not by tanking.',
             'Pull is a handy Helminth subsume for grouping enemies on another frame.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'One of the three starter frames, and the first female frame to receive a Prime.',
-            'A foundational frame present since the earliest closed beta.',
           ],
         },
       ],
@@ -1589,13 +1333,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Her passive rewards skipping a melee weapon (+health) and speeds up sidearms — she is built as a pure gun platform.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'A gunslinger styled on the "gun-kata" of the film Equilibrium, codenamed "Cowgirl" in development.',
-            'The second frame to come with built-in exalted weapons, after Valkyr.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1625,13 +1362,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Eclipse is one of the best Helminth subsumes in the game; the Total Eclipse augment shares its buff with the whole squad.',
             'Sleight of Hand’s Explosive Legerdemain augment turns pickups into bombs for stealth farming.',
             'She is a mobile DPS frame that lives and dies by her weapon mods, since the clones simply copy your guns.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'The first Warframe earned from a quest (Hidden Messages), and the first quest frame to get a Prime.',
-            'A harlequin design with cuttlefish touches, internally named "Harlequin".',
           ],
         },
       ],
@@ -1665,13 +1395,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'He has low armor, so he leans on minions and orb healing; only one Nekros per squad needs to Desecrate to avoid wasted casts.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Named from the Greek word for "dead", and released on a Friday the 13th.',
-            'One of only a few frames with no innate aura polarity.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1701,13 +1424,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'The Safeguard augment lets him cast Warding Halo onto allies — a popular pick for Defense and support runs.',
             'His low base health means he survives almost entirely through the Halo, so keep it refreshed.',
             'Fire Walker is his Helminth-subsumable ability; Reaping Chakram and Pyroclastic Flow add damage options.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'Named after the Chinese protection deity Nezha, the "Third Lotus Prince".',
-            'Players nickname him the "road roller" for his fire-trail, slide-everywhere playstyle.',
           ],
         },
       ],
@@ -1741,13 +1457,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Parasitic Link is his Helminth-subsumable ability, and he is the only frame that can self-infect to unlock the Helminth cyst.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'An Infested frame earned from The Glast Gambit quest, named from the Latin for "nest".',
-            'The second shieldless frame alongside Inaros, and one of the few with innate health regeneration.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1774,13 +1483,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Brightbonnet is his Helminth-subsumable ability for a strength-and-energy pulse.',
             'His signature Arbucep triggers Stinkbrain and Brightbonnet pulses when shot, tightening the loop.',
             'Keeping a mushroom bouncing is how you extend the whole colony, so positioning and Range matter.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'A 2025 mushroom frame whose name blends the Japanese word for mushroom (kinoko), and the first frame to chant its own name.',
-            'His look draws on real fungi like king trumpet, chanterelle, and cordyceps.',
           ],
         },
       ],
@@ -1814,13 +1516,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Her passive drops health orbs from slowed kills and energy orbs from sped-up kills, matching each build to its sustain.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'One of the earliest community-designed frames, voted in through the Design Council.',
-            'Her whole kit is themed on antimatter manipulation.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1850,13 +1545,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'The Assimilate augment lets her walk around while Absorbing, turning it into a mobile panic room.',
             'Her passive grants bonus weapon crit chance for each confused enemy nearby, so keeping Chaos up powers your guns.',
             'Psychic Bolts is her Helminth-subsumable armor strip.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'One of the oldest frames, named for the Greek goddess of night and internally codenamed "Jade".',
-            'Her early model was nearly identical to Excalibur, a leftover from a pre-alpha experiment.',
           ],
         },
       ],
@@ -1890,13 +1578,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Build Strength for the strips and healing, with enough Range to cover the squad.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Named after Shakespeare’s fairy king Oberon, paired with Titania, and styled on the white-stag myth.',
-            'One of the few frames you can build without Neural Sensors.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1928,13 +1609,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Resonator is her Helminth-subsumable ability for portable crowd control.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'A music frame whose Mandachord lets you compose the songs that drive her abilities.',
-            'In lore she drummed the Tenno’s victory over the Sentients in the Old War.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1963,12 +1637,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'You unlock it during The Archwing quest, so it is most players’ first taste of space combat.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Named for the dragonfly order, and one of the only Archwings earned from a quest rather than dojo research.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -1995,13 +1663,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Webbed Embrace snares a group and makes them take more damage, and is a solid Helminth subsume.',
             'She is a Toxin-and-stealth specialist in the same family as Saryn; build to keep the Silken Stride imbue up.',
             'Build to chain finishers and summons — kills feed both her orbs and her brood.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'A 2025 spider frame with a predator-and-prey theme, earned from the Isleweaver boss.',
-            'Her arachnid look is inspired by the horned orb-weaver spider.',
           ],
         },
       ],
@@ -2035,13 +1696,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Grenade Fan’s shield satellites don’t stack — a new cast replaces the old one — so resummon rather than spam.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Built by Ballas to Parvos Granum’s design, and earned after the Deadlock Protocol quest.',
-            'Her name nods to Proteus the shape-shifter — fitting for a gadgeteer with a tool for everything.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2068,13 +1722,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'He has the second-highest base armor of any frame, so he plays as a tanky crowd-controller; build Strength and Range.',
             'His signature Mandonel arch-gun empowers Chyrinka Pillar with charged shots.',
             'Radiation also makes enemies fight each other, so his debuff is crowd control as well as a damage setup.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'Built by Albrecht Entrati to protect an Operator from his lab’s hazards, in a brutalist concrete style.',
-            'The first Warframe whose name starts with Q, from the Whispers in the Walls update.',
           ],
         },
       ],
@@ -2108,13 +1755,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Because Mesmer Skin replaces tanking, he is one of the most beginner-friendly "unkillable" frames.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'The first Sentient-themed frame, codenamed "Vlad" — a nod to his vampire styling.',
-            'Revenant Prime carries some of the highest base shields in the game.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2144,13 +1784,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Roar is one of the best Helminth subsumes in the game for the multiplicative, party-wide damage boost.',
             'The Iron Shrapnel augment lets him detonate and recast Iron Skin instead of waiting for it to break.',
             'A classic beginner tank: simple kit, very hard to kill once Iron Skin is up.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'One of the oldest frames and the fifth to receive a Prime.',
-            'A go-to first "real" tank for new players climbing the early star chart.',
           ],
         },
       ],
@@ -2184,13 +1817,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Spores can be subsumed onto other frames for a spreading status engine.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'One of the oldest frames, named after the nerve agent sarin.',
-            'A status-spreading specialist that thrives most in big endless missions.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2222,13 +1848,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Reap and Sow feed each other, so build Range and Strength to keep the detonations big.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'A community-designed frame by the artist who also made Zephyr.',
-            'In lore he was the lost captain of the Tempestarii rescue Railjack, found in the Call of the Tempestarii quest.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2257,13 +1876,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Build shields and Strength so the passive crit and the javelin nuke both hit hard.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Earned from Kahl’s Garrison via the Veilbreaker missions, and given away free during a 50th-frame celebration.',
-            'Named after Astyanax of Greek myth, styled as an ancient hoplite.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2290,13 +1902,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Pyrotechnics is their Helminth-subsumable Heat pillar.',
             'Build Heat and Strength to stack the Ripper’s Wail buff and the flamethrower’s damage.',
             'Hitting the beat is the whole skill curve — sloppy timing leaves a lot of efficiency on the table.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'A glam-rock frame named after the band Stone Temple Pilots, and the first inherently non-binary Warframe.',
-            'In lore their human source, Flare, is a 1999 rockstar deemed too rebellious for the future to build.',
           ],
         },
       ],
@@ -2330,13 +1935,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'She is the only frame with two exalted weapons at once — pistols and a sword in Razorwing.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'A fairy queen from the Silver Grove quest, pronounced "Tie-TAY-nia" after the chemical, not the Shakespeare character.',
-            'She was the first frame to require Tellurium to build.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2368,13 +1966,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Well of Life is her Helminth-subsumable healing tool.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'One of the oldest frames, named for the "holy trinity" of the tank, healer, and damage MMO roles.',
-            'Her Immortal skin carries an Ankh, the symbol of eternal life.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2401,13 +1992,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'He leans on Heat damage and minion sustain; stacking Strength and Heat amplifies both the demons and his ultimate.',
             'Keeping the trio alive with Remedium between fights is his real engine — lose them and his kit goes quiet.',
             'Plan casts so each ability’s demon is up before you commit to Brimstone.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'A demon-and-angel frame with deliberate 666 health and shields, the last frame designed by Michael "Mynki" Brennan.',
-            'In lore he was so feared the Orokin tried to destroy every copy of him.',
           ],
         },
       ],
@@ -2441,13 +2025,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Warcry is a popular Helminth subsume for the squad attack-speed and armor buff.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'A berserker-feline frame named for the Norse valkyries, with a Bastet helmet nodding to the Egyptian cat goddess.',
-            'Her scarred look and prison-orange coloring come from being experimented on by Alad V; her original form was Gersemi.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2479,13 +2056,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'He is a top-tier crowd-controller for Defense and survival — control IS his damage, through the passive.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Named after the 17th-century French siege engineer Sébastien de Vauban.',
-            'Affectionately nicknamed "Booben" by the community.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2512,13 +2082,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'It is the burst-DPS answer for Profit-Taker, Archon hunts, and Eidolons, where a parked Voidrig melts boss health bars.',
             'Voidrig is the ranged pick, Bonewidow the melee one; mech mods and Arcanes carry between them.',
             'Abilities lock during Guard Mode, so set up Storm Shroud and positioning before you commit.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'A heavy-artillery Necramech from the Heart of Deimos update.',
-            'Earned from that quest or the Necraloid syndicate, then piloted in the open worlds and heavy missions.',
           ],
         },
       ],
@@ -2552,13 +2115,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Low energy rewards casting often, and he is a strong, flexible first frame.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'One of the three starter frames, named after the unit of electrical potential.',
-            'His Neuroptics are an ingredient in building Chroma.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2588,13 +2144,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Hold the right ability for the wolf buff the fight needs — death prevention for a tough room, status immunity against heavy procs.',
             'She is a stealth-melee status specialist; build crit and status to cash in the Shroud of Dynar bonus.',
             'Her orb generation feeds an otherwise energy-hungry ability rotation.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'A wolf-goddess frame named after the Lithuanian huntress Žvorūna, designed by comic artist Joe Madureira.',
-            'Her name was chosen by a community vote during a charity fundraiser.',
           ],
         },
       ],
@@ -2628,13 +2177,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Overlapping the same mote doesn’t stack — it just refreshes the active buff.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'The first Warframe with no feet, floating everywhere on unique animations.',
-            'Earned from the Ropalolyst boss on Jupiter; her signature Fulmin swaps fire modes faster in her hands.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2664,13 +2206,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Give the Celestial Twin its own strong weapon for a real second source of damage.',
             'Cloud Walker is great for stealth and dodging, and Defy is his Helminth-subsumable ability.',
             'His passive revives plus clone AI earned him an "AFK" reputation that DE has reined in over patches.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'Named after Sun Wukong of Journey to the West, his Iron Staff is the Ruyi Jingu Bang.',
-            'He was China-exclusive at launch before a global release.',
           ],
         },
       ],
@@ -2704,13 +2239,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'The Lost cycles three picks (Accuse, Gaze, Deny), so you choose the tool the fight needs.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'The first non-binary Warframe, made of three broken frames fused by the Void, earned from the Heart of Deimos quest.',
-            'Their ability names — Xata, Lohk, and the rest — echo the Requiem mods.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2742,13 +2270,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Build for secondary crit and keep moving to stay inside the passive.',
           ],
         },
-        {
-          heading: 'Trivia',
-          points: [
-            'Earned from the Waverider comic-quest, the first frame whose K-drive works in normal missions.',
-            'Her name comes from "lady of the water" — the first frame whose name starts with Y.',
-          ],
-        },
       ],
       status: 'beta',
     },
@@ -2778,13 +2299,6 @@ const WARFRAME_NOTES: SharedNote[] = [
             'Build Duration and Strength to keep Turbulence and the tornadoes going; the Funnel Clouds and Jet Stream augments reshape Tornado and Tail Wind.',
             'Airburst is a useful Helminth subsume for grouping enemies.',
             'She rewards a fly-and-shoot style — stay airborne for the crit passive and to dodge ground threats.',
-          ],
-        },
-        {
-          heading: 'Trivia',
-          points: [
-            'The first community-designed frame, and the frame that pioneered the passive-ability system.',
-            'Named for Zephyrus, the Greek god of the west wind; internally called "Tengu".',
           ],
         },
       ],
