@@ -4334,6 +4334,474 @@ const ARCANE_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
+
+  // ── Operator arcanes (Magus / Emergence — Operator & Void-mode effects) ──
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Zariman/EnergyOnGhostDissipate'],
+    note: {
+      tldr: 'Dissipate your Void Sling to drop energy motes for your Operator.',
+      sections: [
+        { heading: 'Mechanics', points: ['While in a Void Sling, pressing again dissipates the endpoint in a 10m radius; enemies hit create a short-lived Void Mote that restores 10 Energy on pickup.'] },
+        { heading: 'Interactions', points: ['Amp-energy sustain for active Operator play.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Zariman/OperatorOnEnergyDepletedRegenEnergy'],
+    note: {
+      tldr: 'Running your Operator out of energy kicks off a big regen burst.',
+      sections: [
+        { heading: 'Mechanics', points: ['On energy depleted, increase Energy Regeneration by 300% over 5 seconds (30-second cooldown).'] },
+        { heading: 'Interactions', points: ['Amp-energy sustain for heavy Operator/Amp use.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Zariman/OperatorOnDeathInvulnerability'],
+    note: {
+      tldr: 'A cheat-death for your Operator — survive a lethal hit and heal.',
+      sections: [
+        { heading: 'Mechanics', points: ['On lethal damage, become invulnerable for 5 seconds and recover 60% Health (90-second cooldown).'] },
+        { heading: 'Interactions', points: ['A safety net for squishy Operator builds in hard content.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/HeatResistOnBlast'],
+    note: {
+      tldr: 'Void Sling to strip enemy Heat resistance.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a Void Sling, reduce enemy resistance to Heat damage by 65%.'] },
+        { heading: 'Interactions', points: ['A niche Eidolon/boss tool to make Heat builds hit harder.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/OperatorHeavyMeleeDamageOnTransference'],
+    note: {
+      tldr: 'Transferring back to your Warframe supercharges heavy-blade crits.',
+      sections: [
+        { heading: 'Mechanics', points: ['On Warframe melee Transference, Heavy Blades deal +300% Critical Damage for 4 consecutive attacks (20-second cooldown).'] },
+        { heading: 'Interactions', points: ['For Operator-weaving heavy-blade melee builds.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/PullOnTransferenceIn'],
+    note: {
+      tldr: 'Jumping back into your Warframe vacuums enemies toward you.',
+      sections: [
+        { heading: 'Mechanics', points: ['On Transference in, enemies within 30m are pulled toward your Warframe.'] },
+        { heading: 'Interactions', points: ['A grouping tool that triggers each time you return from Operator.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/SpeedOnVoidDash'],
+    note: {
+      tldr: 'Void Sling for an Operator sprint-speed boost.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a Void Sling, +90% Sprint Speed for 12 seconds.'] },
+        { heading: 'Interactions', points: ['A mobility pick for open-world Operator traversal.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/ImmunityFallDamageOnVoidDash'],
+    note: {
+      tldr: 'Void Sling to greatly widen your next Sling.',
+      sections: [
+        { heading: 'Mechanics', points: ['On Void Mode, +300% Void Sling radius for 6 seconds.'] },
+        { heading: 'Interactions', points: ['A traversal/utility pick for covering distance with the Operator.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/ProcResistOnBlast'],
+    note: {
+      tldr: 'Void Sling to strip enemy Puncture resistance.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a Void Sling, reduce enemy resistance to Puncture damage by 65%.'] },
+        { heading: 'Interactions', points: ['A niche tool to soften high-resistance targets for Puncture builds.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/HoverboardSpeedOnTransferenceIn'],
+    note: {
+      tldr: 'Transfer in to speed up your K-Drive.',
+      sections: [
+        { heading: 'Mechanics', points: ['On Transference in, +150% K-Drive speed for 30 seconds.'] },
+        { heading: 'Interactions', points: ['A pure open-world traversal pick for K-Drive riders.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/HealOnTransferenceIn'],
+    note: {
+      tldr: 'Jumping back into your Warframe almost always heals it — a staple survivability arcane.',
+      sections: [
+        { heading: 'Mechanics', points: ['On Transference in, a 95% chance to restore 300 Health to your Warframe.'] },
+        { heading: 'Interactions', points: ['One of the most-used Operator arcanes: a quick Operator dip becomes a reliable Warframe heal.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/DamageReductionOnVoidMode'],
+    note: {
+      tldr: 'Crouch in Void Mode to bank stacking damage reduction.',
+      sections: [
+        { heading: 'Mechanics', points: ['In Void Mode, generate a Void Particle every second up to 6, each granting +12.5% Damage Reduction for 60s; taking damage consumes a particle.'] },
+        { heading: 'Interactions', points: ['Strong Operator survivability — charge up particles before a dangerous fight.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/NoPenaltyOnDeath'],
+    note: {
+      tldr: 'Negates Transference Static (the penalty for your Operator dying).',
+      sections: [
+        { heading: 'Mechanics', points: ['On Transference Static, a 102% chance to negate it.'] },
+        { heading: 'Interactions', points: ['Removes the downside of an Operator death, keeping you in the fight.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/ArmourOnOperatorMode'],
+    note: {
+      tldr: 'Switching to your Operator grants it bonus armor.',
+      sections: [
+        { heading: 'Mechanics', points: ['On Transference out, +300 Armor to the Operator.'] },
+        { heading: 'Interactions', points: ['Operator survivability; pairs with the Vigor health arcane.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/TetherMineOnDash'],
+    note: {
+      tldr: 'Void Sling to drop a mine that tethers a crowd in place.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a Void Sling, drop a mine that tethers up to 10 enemies within 15m for 4 seconds.'] },
+        { heading: 'Interactions', points: ['A strong Operator crowd-control tool for setting up kills.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/HeatDamageOnDash'],
+    note: {
+      tldr: 'Void Sling to stack up your Operator’s Heat damage.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a Void Sling, +30% Heat damage in Operator mode for 15 seconds, stacking up to 7 times.'] },
+        { heading: 'Interactions', points: ['For Heat-Amp Operator damage builds.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/HealOnTransferenceOut'],
+    note: {
+      tldr: 'While you’re playing as the Operator, your Warframe steadily heals.',
+      sections: [
+        { heading: 'Mechanics', points: ['While an Operator, restore 35 Health per second to your Warframe.'] },
+        { heading: 'Interactions', points: ['Passive Warframe sustain for Operator-heavy playstyles.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/RobotStunOnBlast'],
+    note: {
+      tldr: 'Void Sling to stun robots and turn them into Electric bombs.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a Void Sling, stun robotic enemies for 3 seconds; they then discharge Electricity dealing 80% of their max health to anyone within 25m.'] },
+        { heading: 'Interactions', points: ['A strong anti-Corpus-robot tool that chains into area damage.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/HealOnVoidMode'],
+    note: {
+      tldr: 'Void Mode heals the whole squad’s Warframes around you.',
+      sections: [
+        { heading: 'Mechanics', points: ['In Void Mode, heal Warframes within 30m for 25% Health per second.'] },
+        { heading: 'Interactions', points: ['A potent team-heal — dip into Void Mode to top up the squad.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/HealOnVoidDash'],
+    note: {
+      tldr: 'Void Sling for a quick Warframe heal.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a Void Sling, heal 30% Health.'] },
+        { heading: 'Interactions', points: ['A simple, on-demand heal via the Operator.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/ReverseOnDash'],
+    note: {
+      tldr: 'Void Sling, then rewind your Operator back to where it started.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a Void Sling, use it again within 3 seconds to return the Operator to its original position at no energy cost and restore 60 Health (3-second cooldown).'] },
+        { heading: 'Interactions', points: ['A mobility-and-escape tool — dart out and snap back safely.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/HealthOnOperatorMode'],
+    note: {
+      tldr: 'Switching to your Operator grants it a big chunk of health.',
+      sections: [
+        { heading: 'Mechanics', points: ['On Transference out, +600 Health to the Operator.'] },
+        { heading: 'Interactions', points: ['Core Operator survivability; pairs with the Husk armor arcane.'] },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Amp arcanes (Eternal / Virtuos — for Operator Amps) ──
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Zariman/OperatorOnOperatorAbilityIncreaseDamage'],
+    note: {
+      tldr: 'Using an Operator ability buffs your Amp’s damage.',
+      sections: [
+        { heading: 'Mechanics', points: ['On an Operator ability, +60% Amp damage for 8 seconds.'] },
+        { heading: 'Interactions', points: ['For active Amp damage play — weave an Operator ability before firing.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Zariman/AmpOnVoidSlingAmpAmmoEfficiency'],
+    note: {
+      tldr: 'Void Sling to make your Amp sip its energy.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a Void Sling, +72% Amp Ammo Efficiency for 8 seconds.'] },
+        { heading: 'Interactions', points: ['Amp-uptime sustain for sustained Operator fire.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Zariman/AmpOnEnergyDepletedCritChance'],
+    note: {
+      tldr: 'Burning through your Amp energy rewards you with huge crit chance.',
+      sections: [
+        { heading: 'Mechanics', points: ['On energy depleted, +180% Critical Chance for 8 seconds.'] },
+        { heading: 'Interactions', points: ['For crit-Amp burst windows; pairs with the energy-regen Operator arcanes.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorAmps/VoidToHeatDamage'],
+    note: {
+      tldr: 'Converts your Amp’s Void damage to Heat.',
+      sections: [
+        { heading: 'Mechanics', points: ['On hit, converts 98% of Void damage to Heat damage.'] },
+        { heading: 'Interactions', points: ['For general content where an elemental Amp beats neutral Void; one of a family of conversion arcanes.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorAmps/IncreasedDamageOnStatusProc'],
+    note: {
+      tldr: 'Amp status procs have a chance to boost its damage.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a status effect, a 20% chance for +30% Amp damage for 4 seconds.'] },
+        { heading: 'Interactions', points: ['For status-converted Amps that proc often.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorAmps/StatusChanceOnHeadshot'],
+    note: {
+      tldr: 'Amp headshots build status chance.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a headshot, a 40% chance for +60% Status Chance for 12 seconds.'] },
+        { heading: 'Interactions', points: ['For status-Amp builds; the status counterpart to Virtuos Shadow.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorAmps/OperatorAmmoRegenOnKill'],
+    note: {
+      tldr: 'Amp kills regenerate Amp energy.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a kill, +20% Amp Energy Regeneration for 4 seconds.'] },
+        { heading: 'Interactions', points: ['Amp-uptime sustain in kill-heavy content.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorAmps/CriticalChanceOnHeadshot'],
+    note: {
+      tldr: 'The Eidolon staple — Amp headshots grant a big critical-chance boost.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a headshot, a 40% chance for +60% Critical Chance for 12 seconds.'] },
+        { heading: 'Interactions', points: ['A go-to arcane for Eidolon-hunting Amps; pairs with Virtuos Strike for crit damage.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorAmps/VoidToPunctureDamage'],
+    note: {
+      tldr: 'Converts your Amp’s Void damage to Puncture.',
+      sections: [
+        { heading: 'Mechanics', points: ['On hit, converts 98% of Void damage to Puncture damage.'] },
+        { heading: 'Interactions', points: ['An anti-armor conversion for content where Void is neutral.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorAmps/IncreasedCriticalDamageOnCriticalStrike'],
+    note: {
+      tldr: 'Amp crits have a chance to boost critical damage.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a critical hit, a 20% chance for +80% Critical Damage for 4 seconds.'] },
+        { heading: 'Interactions', points: ['For crit-Amp builds; stacks the hurt alongside Virtuos Shadow.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorAmps/VoidToElectricDamage'],
+    note: {
+      tldr: 'Converts your Amp’s Void damage to Electricity.',
+      sections: [
+        { heading: 'Mechanics', points: ['On hit, converts 98% of Void damage to Electricity damage.'] },
+        { heading: 'Interactions', points: ['An elemental conversion for general content; one of a family of conversion arcanes.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorAmps/AttackSpeedOnKill'],
+    note: {
+      tldr: 'Amp kills boost its fire rate.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a kill, a 60% chance for +60% Fire Rate for 8 seconds.'] },
+        { heading: 'Interactions', points: ['Smooths sustained Amp DPS in kill-heavy content.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorAmps/VoidToViralDamage'],
+    note: {
+      tldr: 'Converts your Amp’s Void damage to Viral.',
+      sections: [
+        { heading: 'Mechanics', points: ['On hit, converts 98% of Void damage to Viral damage.'] },
+        { heading: 'Interactions', points: ['Viral is a strong general-content conversion, boosting damage to health.'] },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Status-resist arcanes (the rest of the family) ──
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/PunctureProcResist'],
+    note: {
+      tldr: 'Makes you immune to Puncture status (the damage-reduction debuff).',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +102% chance to resist a Puncture status effect.'] },
+        { heading: 'Interactions', points: ['A targeted defensive pick; one of a family of single-status-resist arcanes.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/PoisonProcResist'],
+    note: {
+      tldr: 'Makes you immune to Toxin status (the poison that bypasses shields).',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +102% chance to resist a Toxin status effect.'] },
+        { heading: 'Interactions', points: ['Useful for shield-gating frames, since Toxin ignores shields; status-resist family.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/GasProcResist'],
+    note: {
+      tldr: 'Makes you immune to Gas status (the lingering toxic cloud).',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +102% chance to resist a Gas status effect.'] },
+        { heading: 'Interactions', points: ['A targeted defensive pick; status-resist family.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/CorrosiveProcResist'],
+    note: {
+      tldr: 'Makes you immune to Corrosive status (the armor strip on you).',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +102% chance to resist a Corrosive status effect.'] },
+        { heading: 'Interactions', points: ['A targeted defensive pick; status-resist family.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/ImpactProcResist'],
+    note: {
+      tldr: 'Makes you immune to Impact status (the stagger).',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +102% chance to resist an Impact status effect.'] },
+        { heading: 'Interactions', points: ['A targeted defensive pick against stagger-heavy enemies; status-resist family.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/SlowerBleedOutOnPredeath'],
+    note: {
+      tldr: 'When you go down, a chance to bleed out far more slowly.',
+      sections: [
+        { heading: 'Mechanics', points: ['On reaching a downed state, a 60% chance for -100% Bleedout Rate (you stay down much longer awaiting a revive).'] },
+        { heading: 'Interactions', points: ['A budget safety net that buys time for a teammate to revive you.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/DamageReductionDuringRevive'],
+    note: {
+      tldr: 'Take far less damage while reviving a teammate.',
+      sections: [
+        { heading: 'Mechanics', points: ['-90% Damage Taken while reviving an ally.'] },
+        { heading: 'Interactions', points: ['Lets you safely revive teammates in the middle of a firefight.'] },
+      ],
+      status: 'beta',
+    },
+  },
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
