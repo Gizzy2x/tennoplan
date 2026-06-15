@@ -2583,11 +2583,414 @@ const SENTINEL_NOTES: SharedNote[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Companions — whole-creature pets only (Kavats, Kubrows, Vulpaphylas,
+// Predasites, Venari). The modular MOA/Hound parts and infested Mutagen/Antigen
+// components in this category are crafting pieces, not companions, so they
+// intentionally get no note. Notes cover each breed's precept (signature ability)
+// and what it's best for. Shared across base + Prime by uniqueName.
+// ---------------------------------------------------------------------------
+
+const COMPANION_NOTES: SharedNote[] = [
+  // ── Kavats (cats; self-revive on a short timer, incubated from Kavat Genetic Codes) ──
+  // Adarza Kavat
+  {
+    keys: ['/Lotus/Types/Game/CatbrowPet/MirrorCatbrowPetPowerSuit'],
+    note: {
+      tldr: 'A crit-buff cat — Adarza Kavat hands the whole squad a burst of critical chance.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Cat’s Eye periodically buffs the critical chance of you and nearby allies — its headline support precept.',
+            'Reflect bounces a chunk of damage back at attackers.',
+            'Like all Kavats it collapses and revives itself after a short delay rather than dying for good (no revive cost).',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Bring it to crit-focused squads (Eidolons, boss runs) for the team Cat’s Eye buff; you need Kavat Genetic Codes to incubate one.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Smeeta Kavat
+  {
+    keys: ['/Lotus/Types/Game/CatbrowPet/CheshireCatbrowPetPowerSuit'],
+    note: {
+      tldr: 'The farmer’s best friend — Smeeta Kavat’s Charm randomly doubles your resources and affinity.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Charm rolls a random buff on a timer; the famous one DOUBLES resource and affinity pickups for a short window — the reason it is the go-to farming companion.',
+            'Mischief turns it (and a decoy) invisible to pull enemies off you.',
+            'Like all Kavats it self-revives after a short delay instead of dying.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Run it for any resource, credit, or affinity farm; the Charm proc is random, so it is luck-based rather than on-demand.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Vasca Kavat
+  {
+    keys: ['/Lotus/Types/Game/CatbrowPet/VampireCatbrowPetPowerSuit'],
+    note: {
+      tldr: 'The vampire cat — Vasca Kavat heals itself by biting and can revive a downed you.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Draining Bite deals Slash while healing the Kavat, and Transfusion sacrifices its health to revive you when you go down.',
+            'Like all Kavats it self-revives after a short delay.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'A survivability pick whose Transfusion revive can save you in a pinch; its raw combat output is otherwise modest.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Kubrows (dogs; incubated in the Orbiter, revive on a cooldown) ──
+  // Chesa Kubrow
+  {
+    keys: ['/Lotus/Types/Game/KubrowPet/RetrieverKubrowPetPowerSuit'],
+    note: {
+      tldr: 'The looter dog — Chesa Kubrow scavenges extra loot from the enemies it helps kill.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Retrieve makes it fetch additional loot from fallen enemies, and Neutralize disarms and staggers enemies around it.',
+            'Like all Kubrows it is incubated in your Orbiter and revives on a cooldown.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'A farming-flavoured companion; the loot scavenging is its draw, though dedicated farm frames usually out-earn it.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Huras Kubrow
+  {
+    keys: ['/Lotus/Types/Game/KubrowPet/FurtiveKubrowPetPowerSuit'],
+    note: {
+      tldr: 'The stealth dog — Huras Kubrow cloaks you whenever enemies are near.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Stalk turns both the Kubrow and you invisible when enemies are close, and Hunt charges an enemy and drags it down.',
+            'Like all Kubrows it revives on a cooldown.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'A beast alternative to Shade for stealth play; the cloak lets you revive allies or reposition unseen.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Raksa Kubrow
+  {
+    keys: ['/Lotus/Types/Game/KubrowPet/GuardKubrowPetPowerSuit'],
+    note: {
+      tldr: 'The guard dog — Raksa Kubrow restores your shields and slows enemies.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Protect periodically refills your shields, and Howl slows nearby enemies.',
+            'Like all Kubrows it revives on a cooldown.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'A defensive pick for shield-based frames; the shield top-up helps sustain shield-gating.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Sahasa Kubrow
+  {
+    keys: ['/Lotus/Types/Game/KubrowPet/AdventurerKubrowPetPowerSuit'],
+    note: {
+      tldr: 'The digging dog — Sahasa Kubrow unearths health, ammo, and even heavy-weapon caches.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Dig has it periodically unearth a pickup — health, energy, ammo, or sometimes a heavy-weapon ammo cache — and Ferocity lets it land melee finishers.',
+            'Like all Kubrows it revives on a cooldown.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'A handy sustain-and-utility dog; the Dig pickups (especially heavy ammo) are its claim to fame.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Sunika Kubrow
+  {
+    keys: ['/Lotus/Types/Game/KubrowPet/HunterKubrowPetPowerSuit'],
+    note: {
+      tldr: 'The attack dog — Sunika Kubrow pins enemies and tears into Eximus and Capture targets.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Savagery teleports it between enemies dealing damage, and Unleashed pins a target down — great for holding Capture targets in place.',
+            'Like all Kubrows it revives on a cooldown.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'A single-target attacker; pinning Capture targets and bonus damage to Eximus are its niche uses.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Helminth Charger
+  {
+    keys: ['/Lotus/Types/Game/KubrowPet/ChargerKubrowPetPowerSuit'],
+    note: {
+      tldr: 'An infested dog grown from the Helminth cyst — the Charger pulls enemies in and tramples them.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Proboscis harpoons an enemy and reels it in, while Trample charges through a crowd, gaining health, armor, and damage per enemy hit.',
+            'It revives on a cooldown like other Kubrows, and the Strain mod set spawns corrosive maggots.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Obtained by growing a Helminth cyst on a Warframe (commonly via Nidus) and incubating it — an aggressive melee pet with infested crowd control.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Vulpaphylas (infested Deimos cats; DON'T truly die — collapse and self-revive) ──
+  // Crescent Vulpaphyla
+  {
+    keys: ['/Lotus/Types/Friendly/Pets/CreaturePets/HornedInfestedCatbrowPetPowerSuit'],
+    note: {
+      tldr: 'An infested fox that can’t stay dead — Crescent flings enemies into each other.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Vulpaphylas don’t truly die: when downed they collapse into a devolved form and revive themselves with no revive cost.',
+            'Crescent’s precept lifts an enemy and hurls it at others for crowd control and damage.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The no-death survivability is the family’s big draw; build it from a Mutagen + Antigen on Deimos and gild it to finish it.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Panzer Vulpaphyla
+  {
+    keys: ['/Lotus/Types/Friendly/Pets/CreaturePets/ArmoredInfestedCatbrowPetPowerSuit'],
+    note: {
+      tldr: 'The meta infested pet — Panzer Vulpaphyla blankets enemies in Viral and never truly dies.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Viral Quills fire out to spread Viral status across nearby enemies — a top-tier primer that boosts everyone’s damage.',
+            'Like all Vulpaphylas it collapses and self-revives instead of dying, so it stays useful all mission with no revive cost.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'One of the most popular companions in the game: free Viral priming plus a pet that can’t be permanently killed. Built from a Mutagen + Antigen on Deimos and gilded.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Sly Vulpaphyla
+  {
+    keys: ['/Lotus/Types/Friendly/Pets/CreaturePets/VulpineInfestedCatbrowPetPowerSuit'],
+    note: {
+      tldr: 'A trickster infested fox — Sly Vulpaphyla spawns decoys to soak enemy fire, and can’t stay dead.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Sly’s precept creates decoys as you bullet-jump that draw enemy fire away from you.',
+            'Like all Vulpaphylas it collapses and self-revives rather than dying.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'A survivability-and-distraction pick; the no-death mechanic plus decoys keep heat off you. Built from a Mutagen + Antigen on Deimos and gilded.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Predasites (infested Deimos dogs; also collapse and self-revive) ──
+  // Medjay Predasite
+  {
+    keys: ['/Lotus/Types/Friendly/Pets/CreaturePets/MedjayPredatorKubrowPetPowerSuit'],
+    note: {
+      tldr: 'An infested dog that stuns crowds — Medjay Predasite locks enemies down and soaks damage.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Paralytic Spores stun and slow nearby enemies and open them to finishers, while Infectious Bite absorbs damage and bursts when it overflows.',
+            'Like all infested pets it collapses and self-revives rather than dying.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'A crowd-control-and-tank flavour of the no-death infested companion; built from a Mutagen + Antigen on Deimos and gilded.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Pharaoh Predasite
+  {
+    keys: ['/Lotus/Types/Friendly/Pets/CreaturePets/PharaohPredatorKubrowPetPowerSuit'],
+    note: {
+      tldr: 'A buffing infested dog — Pharaoh Predasite drops damage-boost spore clouds and tangles enemies.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Anabolic Pollination spawns spore clouds that buff damage, and Endoparasitic Vector fires a homing shot that restrains several enemies.',
+            'Like all infested pets it collapses and self-revives rather than dying.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'A support-flavoured infested pet (damage buff plus soft crowd control) that never permanently dies; built from a Mutagen + Antigen on Deimos and gilded.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Vizier Predasite
+  {
+    keys: ['/Lotus/Types/Friendly/Pets/CreaturePets/VizierPredatorKubrowPetPowerSuit'],
+    note: {
+      tldr: 'A healer infested dog — Vizier Predasite lays healing spores and strips armor with Corrosive.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Iatric Mycelium leaves a healing spore trail, and Acidic Spittle spits a Corrosive projectile to chip enemy armor.',
+            'Like all infested pets it collapses and self-revives rather than dying.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'A self-sustain-and-armor-strip pet that can’t be permanently killed; built from a Mutagen + Antigen on Deimos and gilded.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+
+  // Venari (Khora's built-in kavat) + Venari Prime
+  {
+    keys: [
+      '/Lotus/Powersuits/Khora/Kavat/KhoraKavatPowerSuit',
+      '/Lotus/Powersuits/Khora/Kavat/KhoraPrimeKavatPowerSuit',
+    ],
+    note: {
+      tldr: 'Khora’s built-in kavat — Venari fights at her side for free without taking a companion slot.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'She comes bundled with Khora and uses no companion slot; Khora’s third ability cycles her stance between Attack (snare + Slash), Protect (knockdown and disarm), and Heal (an aura that mends nearby allies).',
+            'If downed she revives on her own after a short delay (or instantly for some energy), and she passively speeds Khora up.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'You can’t equip her like a normal pet — she is part of Khora’s kit; Venari Prime comes with Khora Prime.',
+          ],
+        },
+      ],
+      status: 'beta',
+    },
+  },
+];
+
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
 export const FIELD_NOTES: Record<string, FieldNotes> = {
   ...BASE_NOTES,
   ...Object.fromEntries(
-    [...WARFRAME_NOTES, ...SENTINEL_NOTES].flatMap(({ keys, note }) =>
+    [...WARFRAME_NOTES, ...SENTINEL_NOTES, ...COMPANION_NOTES].flatMap(({ keys, note }) =>
       keys.map((k) => [k, note] as const),
     ),
   ),
