@@ -1784,11 +1784,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Nova is the textbook reason to build NEGATIVE Ability Strength on purpose — it flips her slow into a speed boost.',
-      points: [
-        'Molecular Prime slows enemies and makes them take extra damage; at NEGATIVE Strength it instead SPEEDS enemies up to rush objectives (speed-nova).',
-        'So her build is a deliberate choice: positive Strength for a slow-and-amplify nuke setup, negative Strength for fast Defense/Interception pushes.',
-        'Null Star gives orbiting motes that grant damage reduction, her main survival tool on a squishy frame.',
-        'Antimatter Drop is a high-skill nuke that absorbs incoming fire to multiply its own damage.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Molecular Prime sweeps the area, slowing enemies and making them take extra damage; at NEGATIVE Strength it instead SPEEDS enemies up to rush objectives (speed-nova).',
+            'Null Star surrounds her with orbiting motes that grant damage reduction, her main survival tool on a squishy frame.',
+            'Antimatter Drop floats a ball that absorbs incoming fire to multiply its own damage before detonating — a high-skill nuke.',
+            'Wormhole opens a portal pair for instant travel, handy for objectives and speedruns.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Her build is a deliberate choice: positive Strength for a slow-and-amplify nuke, negative Strength for fast Defense and Interception pushes — the textbook reason to run negative Strength.',
+            'Molecular Prime is one of the best Helminth subsumes in the game for its blanket slow and damage amp.',
+            'Her passive drops health orbs from slowed kills and energy orbs from sped-up kills, matching each build to its sustain.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'One of the earliest community-designed frames, voted in through the Design Council.',
+            'Her whole kit is themed on antimatter manipulation.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1802,11 +1822,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A psychic crowd-controller — Nyx turns enemies against each other with Chaos and peels their defenses with Psychic Bolts.',
-      points: [
-        'Psychic Bolts strip armor and shields from a group (and even steal a bit for her), which is the modern reason to bring her into high-level content.',
-        'Chaos confuses a whole crowd into fighting one another, a strong panic-button crowd control; Mind Control turns one enemy into a buffed bodyguard.',
-        'Her passive grants bonus weapon critical chance for each confused enemy nearby, rewarding keeping Chaos up.',
-        'Absorb makes her invulnerable while she soaks damage to release it as a blast — the Assimilate augment lets her walk around while doing it.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Psychic Bolts strip armor and shields from a group (and even steal a bit for her), the modern reason to bring her into high-level content.',
+            'Chaos confuses a whole crowd into fighting one another, a strong panic-button crowd control.',
+            'Mind Control turns one enemy into a buffed bodyguard whose damage you can boost by shooting it during the cast.',
+            'Absorb makes her invulnerable while she soaks damage and confused-enemy fire, then releases it as a blast.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The Assimilate augment lets her walk around while Absorbing, turning it into a mobile panic room.',
+            'Her passive grants bonus weapon crit chance for each confused enemy nearby, so keeping Chaos up powers your guns.',
+            'Psychic Bolts is her Helminth-subsumable armor strip.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'One of the oldest frames, named for the Greek goddess of night and internally codenamed "Jade".',
+            'Her early model was nearly identical to Excalibur, a leftover from a pre-alpha experiment.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1820,11 +1860,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The do-everything paladin — Oberon heals the squad, strips armor, and cleanses status, making him a reliable budget pick for almost any mission.',
-      points: [
-        'Renewal pours out healing, an armor buff, and a longer revive timer to the whole squad, his core support tool.',
-        'Reckoning and Smite both strip enemy armor (Smite also handles Overguard), so he provides damage-enabling strips without a dedicated build.',
-        'Hallowed Ground lays a Radiation carpet that cleanses allies of status and makes Reckoning hit harder — the two synergize.',
-        'His passive turns picked-up orbs into brief team invulnerability, and he is famously easy to acquire, making him a great early all-rounder.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Renewal pours out healing, an armor buff, and a longer revive timer to the whole squad — his core support tool.',
+            'Reckoning and Smite both strip enemy armor (Smite also handles Overguard), so he enables squad damage without a dedicated build.',
+            'Hallowed Ground lays a Radiation carpet that cleanses allies of status and makes Reckoning hit harder — the two synergize.',
+            'His passive turns picked-up orbs into brief team invulnerability stacks.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Smite is a strong Helminth subsume for its quick armor-and-Overguard strip; Hallowed Reckoning extends the carpet under Reckoning.',
+            'He is famously easy to acquire and forgiving, making him a great early all-rounder.',
+            'Build Strength for the strips and healing, with enough Range to cover the squad.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Named after Shakespeare’s fairy king Oberon, paired with Titania, and styled on the white-stag myth.',
+            'One of the few frames you can build without Neural Sensors.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1838,11 +1898,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Octavia’s Mallet reflects enemy damage back at them — the harder they shoot it, the harder it hits, so it scales endlessly.',
-      points: [
-        'Mallet stores the damage enemies deal TO it and pulses it back out, which is why it stays lethal even at very high levels.',
-        'Metronome turns you (and allies) invisible and hands out buffs when you do simple actions like jumping or crouching to the beat.',
-        'Range and Duration are the priority stats; she is the classic AFK-friendly survival and affinity-farm frame.',
-        'Amp boosts ability damage in its aura and Resonator drags enemies onto the Mallet — drop all three together for a self-running room clear.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Mallet stores the damage enemies deal TO it and pulses it back out, which is why it stays lethal even at very high levels.',
+            'Resonator rolls around charming enemies to follow it and scoops up your Mallet, fusing the two into one roaming damage-and-control unit.',
+            'Metronome turns you and allies invisible and hands out buffs when you do simple beat actions — jump, crouch, fire, or melee.',
+            'Amp boosts ability damage in its aura, multiplying the Mallet’s output and range.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Drop Mallet, Resonator, and Amp together for a self-running room clear; Range and Duration are her priority stats.',
+            'Her passive trickles energy to the squad on every cast, supporting endless ability spam — the classic AFK-friendly survival and affinity farm.',
+            'Resonator is her Helminth-subsumable ability for portable crowd control.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A music frame whose Mandachord lets you compose the songs that drive her abilities.',
+            'In lore she drummed the Tenno’s victory over the Sentients in the Old War.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1856,11 +1936,27 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The starter Archwing — Odonata is the balanced, do-a-bit-of-everything wing you unlock from The Archwing quest.',
-      points: [
-        'Energy Shell throws up a barrier that blocks fire and boosts the damage of shots passing through it; Seeking Fire answers back with homing missiles.',
-        'Disarray drops flares to shoot down incoming missiles, and Repel knocks surrounding enemies away when you need breathing room.',
-        'It splits the difference between Amesha’s protection, Itzal’s mobility, and Elytron’s firepower — a fine generalist while you decide which specialist to build.',
-        'You get it during The Archwing quest, so it is most players’ first taste of space combat.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Energy Shell throws up a barrier that blocks fire and boosts the damage of shots passing through it; Seeking Fire answers with homing missiles.',
+            'Disarray drops flares to shoot down incoming missiles, and Repel knocks surrounding enemies away when you need breathing room.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'It splits the difference between Amesha’s protection, Itzal’s mobility, and Elytron’s firepower — a fine generalist while you decide which specialist to build.',
+            'You unlock it during The Archwing quest, so it is most players’ first taste of space combat.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Named for the dragonfly order, and one of the only Archwings earned from a quest rather than dojo research.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -1871,11 +1967,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/Oraxia/Oraxia'],
     note: {
       tldr: 'A spider predator — Oraxia stalks from invisibility, laces her guns with Toxin, executes the weak, and spawns broodlings from the dead.',
-      points: [
-        'Silken Stride grants status immunity and bonus health and coats your primary and secondary with Toxin so enemies they kill explode; it also swaps your roll for a silk dash.',
-        'Her passive cloaks her in invisibility whenever she wall-latches, setting up ambushes and repositioning.',
-        'Mercy’s Kiss lunges in to instantly finish low-health enemies and drops Health and Energy orbs, while Webbed Embrace snares a group and makes them take more damage (a solid Helminth pick).',
-        'Widow’s Brood marks enemies with toxin darts so their deaths spawn friendly Scuttlers — her kill-driven swarm loop.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Silken Stride grants status immunity and bonus health and coats your primary and secondary with Toxin so enemies they kill explode; it also swaps your roll for a directional silk dash.',
+            'Her passive cloaks her in invisibility whenever she wall-latches, setting up ambushes and repositioning.',
+            'Mercy’s Kiss lunges in to instantly finish low-health enemies and drops Health and Energy orbs.',
+            'Widow’s Brood marks enemies with toxin darts so their deaths spawn friendly Scuttlers — her kill-driven swarm loop.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Webbed Embrace snares a group and makes them take more damage, and is a solid Helminth subsume.',
+            'She is a Toxin-and-stealth specialist in the same family as Saryn; build to keep the Silken Stride imbue up.',
+            'Build to chain finishers and summons — kills feed both her orbs and her brood.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A 2025 spider frame with a predator-and-prey theme, earned from the Isleweaver boss.',
+            'Her arachnid look is inspired by the horned orb-weaver spider.',
+          ],
+        },
       ],
       status: 'beta',
     },
