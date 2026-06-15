@@ -2005,11 +2005,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A self-sufficient gadgeteer — Protea drops turrets, grenades, and supply caches, and can literally rewind time to undo a death.',
-      points: [
-        'Dispensary spits out health, energy, and ammo pickups on a timer — it is one of the single most popular Helminth subsumes in the game for keeping any frame fueled.',
-        'Blaze Artillery is a Heat turret that grows stronger the longer it fires, and Grenade Fan can throw shield satellites that feed shield-gating survival.',
-        'Temporal Anchor stores the damage you take, then rewinds you to where you cast it with full health and unleashes the stored damage — a built-in second chance.',
-        'Her passive grants +100% Ability Strength on every fourth ability cast, which lines up perfectly with detonating Temporal Anchor.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Dispensary spits out health, energy, and ammo pickups on a timer — built-in self-sufficiency.',
+            'Blaze Artillery is a Heat turret that grows stronger the longer it fires, and Grenade Fan throws either shrapnel or shield satellites that feed shield-gating survival.',
+            'Temporal Anchor stores the damage taken nearby, then rewinds her to where she cast it with full health and unleashes the stored damage — a built-in second chance.',
+            'Her passive grants +100% Ability Strength on every fourth ability cast.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Dispensary is one of the single most popular Helminth subsumes in the game for keeping any frame fueled.',
+            'Count your casts so the fourth-cast strength bonus lands on Temporal Anchor for a bigger rewind detonation.',
+            'Grenade Fan’s shield satellites don’t stack — a new cast replaces the old one — so resummon rather than spam.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Built by Ballas to Parvos Granum’s design, and earned after the Deadlock Protocol quest.',
+            'Her name nods to Proteus the shape-shifter — fitting for a gadgeteer with a tool for everything.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2020,11 +2040,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/ConcreteFrame/ConcreteFrame'],
     note: {
       tldr: 'A brutalist radiation tank — Qorvex blankets enemies in Radiation status, herds them with concrete walls, and soaks hits behind huge armor.',
-      points: [
-        'His whole kit stacks Radiation status: Chyrinka Pillar pulses it, Crucible Blast beams it, and Radiation-afflicted enemies detonate when his beam touches them.',
-        'Containment Wall slams two walls together to bunch enemies up and make them take extra damage — his main setup tool.',
-        'Disometric Guard surrounds him with plates that block status effects and rebuild as Radiation-status enemies die, keeping him sturdy.',
-        'He has the second-highest base armor of any frame and grants weapons punch-through, so he plays as a tanky crowd-controller; build Strength and Range.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'His whole kit stacks Radiation status: Chyrinka Pillar pulses it, Crucible Blast beams it, and Radiation-afflicted enemies detonate when the beam touches them.',
+            'Containment Wall slams two walls together to bunch enemies up and make them take extra damage — his main setup tool.',
+            'Disometric Guard surrounds him with plates that block status effects and rebuild as Radiation-status enemies die, keeping him sturdy.',
+            'His passive grants weapons +3 punch-through, helping shots tag the clustered groups he sets up.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'He has the second-highest base armor of any frame, so he plays as a tanky crowd-controller; build Strength and Range.',
+            'His signature Mandonel arch-gun empowers Chyrinka Pillar with charged shots.',
+            'Radiation also makes enemies fight each other, so his debuff is crowd control as well as a damage setup.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Built by Albrecht Entrati to protect an Operator from his lab’s hazards, in a brutalist concrete style.',
+            'The first Warframe whose name starts with Q, from the Whispers in the Walls update.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2038,11 +2078,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Mesmer Skin gives Revenant charges of full invulnerability — survival is about charge count, not shields or armor.',
-      points: [
-        'Each enemy that hits you spends one Mesmer Skin charge and gets stunned; when charges hit zero you are exposed, so recast before they run out.',
-        'More Ability Strength = more charges, which is why strength is his core survival stat rather than health or armor.',
-        'It is not perfect: damage-over-time already ticking on you, and some special attacks, can still get through.',
-        'Danse Macabre is his main damage; Mesmer Shield (augment) shares the invulnerability with allies.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Mesmer Skin grants charges of full invulnerability — each enemy that hits you spends one charge and gets stunned; at zero charges you are exposed, so recast before they run out.',
+            'More Ability Strength means more charges, which is why Strength is his core survival stat rather than health or armor.',
+            'Danse Macabre spins out beams that are his main damage, and you pick its elements through your energy color.',
+            'Enthrall mind-controls enemies into thralls, and their deaths spread the effect to more.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Mesmer Skin is not perfect: damage-over-time already ticking on you and a few special attacks can still get through.',
+            'Mesmer Shield (augment) shares the invulnerability with allies, and Reave is his Helminth-subsumable dash.',
+            'Because Mesmer Skin replaces tanking, he is one of the most beginner-friendly "unkillable" frames.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'The first Sentient-themed frame, codenamed "Vlad" — a nod to his vampire styling.',
+            'Revenant Prime carries some of the highest base shields in the game.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2056,11 +2116,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Iron Skin snapshots your armor and strength at the instant you cast it — so the order you buff in changes how tanky it is.',
-      points: [
-        'Iron Skin locks in its health from your armor and Ability Strength AT CAST. Apply armor buffs/arcanes first, then cast, for a much bigger shield.',
-        'There is a short window right after casting where extra hits add to the Iron Skin value before it locks — many players cast in a busy room on purpose.',
-        'Roar is a damage multiplier that also boosts status and damage-over-time, and it stacks multiplicatively with mods — a top-tier party buff.',
-        'A classic, beginner-friendly frame: simple kit, very hard to kill once Iron Skin is up.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Iron Skin locks in its health from your armor and Ability Strength AT THE MOMENT of cast — apply armor buffs and arcanes first, then cast, for a much bigger shield.',
+            'There is a short window right after casting where extra hits add to the Iron Skin value before it locks, so some players cast in a busy room on purpose.',
+            'Roar is a damage multiplier that also boosts status and damage-over-time and stacks multiplicatively with mods.',
+            'Rhino Stomp suspends and slows a whole crowd, and his passive sends out a shockwave on a heavy landing.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Roar is one of the best Helminth subsumes in the game for the multiplicative, party-wide damage boost.',
+            'The Iron Shrapnel augment lets him detonate and recast Iron Skin instead of waiting for it to break.',
+            'A classic beginner tank: simple kit, very hard to kill once Iron Skin is up.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'One of the oldest frames and the fifth to receive a Prime.',
+            'A go-to first "real" tank for new players climbing the early star chart.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2074,11 +2154,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Saryn is the queen of spreading status — Spores ramp up and jump from corpse to corpse to melt whole rooms.',
-      points: [
-        'Spores grow stronger over time and spread when an infected enemy dies or you pop them, so Range (to spread) and Strength (for spore damage) carry the build.',
-        'Her passive makes your status effects last longer, leaning her even harder into status-stacking weapons and Viral.',
-        'Toxic Lash boosts melee and helps re-pop Spores; Molt gives a decoy plus a speed buff (Regenerative Molt for healing).',
-        'If every infected enemy dies at once, Spores reset — keep at least one target alive to hold the ramp.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Spores infect a target with corrosive that ramps up over time and spreads when an infected enemy dies or is struck, so Range (to spread) and Strength (for spore damage) carry the build.',
+            'Toxic Lash coats your weapons (especially melee) with toxin and re-pops Spores when you hit infected enemies.',
+            'Miasma is a viral-and-corrosive nuke that also propagates Spores across the area.',
+            'Her passive makes status effects last longer, leaning her even harder into status weapons and Viral.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'If every infected enemy dies at once, Spores reset — keep at least one target alive to hold the ramp.',
+            'Molt gives a decoy and a speed burst; Regenerative Molt heals, while Venom Dose or Contagion Cloud add team or AoE damage.',
+            'Spores can be subsumed onto other frames for a spreading status engine.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'One of the oldest frames, named after the nerve agent sarin.',
+            'A status-spreading specialist that thrives most in big endless missions.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2092,11 +2192,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A two-in-one death frame — Sevagoth fights as himself, then bursts into a separate, claw-wielding Shadow when he falls.',
-      points: [
-        'Gloom slows nearby enemies and heals him off the damage he deals — it is one of the most-borrowed Helminth abilities in the game for survivability.',
-        'Sow plants damage-over-time seeds and Reap detonates them, a combo that pumps out big area burst.',
-        'His Exalted Shadow is a full second form with its own mods and claws; casting his other abilities charges the Death Well that powers it.',
-        'His passive turns death into the Shadow instead of a downed state — collect souls as the Shadow to rebuild and revive yourself.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Sow plants damage-over-time seeds and Reap detonates them, a combo that pumps out big area burst.',
+            'Gloom slows nearby enemies and heals him off the damage he deals.',
+            'His Exalted Shadow is a full second form with its own mods and claws; casting his other abilities charges the Death Well that powers it.',
+            'His passive turns death into the Shadow instead of a downed state — collect souls as the Shadow to rebuild and self-revive.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Gloom is one of the most-borrowed Helminth abilities in the game for its slow-and-lifesteal survivability.',
+            'The Shadow form is modded separately, so you can build him and his Shadow for different jobs.',
+            'Reap and Sow feed each other, so build Range and Strength to keep the detonations big.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A community-designed frame by the artist who also made Zephyr.',
+            'In lore he was the lost captain of the Tempestarii rescue Railjack, found in the Call of the Tempestarii quest.',
+          ],
+        },
       ],
       status: 'beta',
     },
