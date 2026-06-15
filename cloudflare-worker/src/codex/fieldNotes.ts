@@ -1060,11 +1060,23 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/PowersuitAbilities/Helminth'],
     note: {
       tldr: 'Not a Warframe you play — the Helminth is the Infested system in your ship that lets you swap one ability onto any frame. It is why so many of these notes mention a "Helminth pick".',
-      points: [
-        'Once unlocked (through the Heart of Deimos and Entrati path), you can "subsume" a Warframe to permanently learn one of its abilities — but doing so consumes that copy of the frame.',
-        'You then inject that learned ability onto another frame, replacing one of its four abilities; each frame can hold one subsumed ability at a time.',
-        'This is how players fix a frame’s weak slot, dropping in staples like Gloom, Dispensary, Nourish, Eclipse, Roar, or Pillage that show up across these notes.',
-        'Feeding the Helminth costs resources and it needs time to recover between uses, so decide which ability you want before sacrificing a frame.',
+      sections: [
+        {
+          heading: 'How it works',
+          points: [
+            'Once unlocked (through the Heart of Deimos and Entrati path), you can "subsume" a Warframe to permanently learn one of its abilities — but doing so consumes that copy of the frame.',
+            'You then inject that learned ability onto another frame, replacing one of its four abilities; each frame can hold one subsumed ability at a time.',
+            'Subsumed abilities are often slightly weaker than on their original frame, and not every ability can be subsumed.',
+          ],
+        },
+        {
+          heading: 'Why it matters',
+          points: [
+            'This is how players fix a frame’s weak slot, dropping in staples like Gloom, Dispensary, Nourish, Eclipse, Roar, or Pillage that show up across these notes.',
+            'Feeding the Helminth costs resources and it needs time to recover between uses, so decide which ability you want before sacrificing a frame.',
+            'It also offers Invigorations — rotating, temporary stat buffs you can apply to a chosen frame each week.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2449,11 +2461,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'The combat engineer — Vauban locks rooms down with traps, then yanks every enemy into a single pile to be deleted.',
-      points: [
-        'Bastille suspends enemies and strips their armor, handing that armor to you and your allies; recast it to collapse into a Vortex that sucks the whole crowd together.',
-        'That suspend-strip-and-group loop is his identity, and his passive adds bonus damage against the helpless enemies he has trapped.',
-        'Minelayer is a toolbox in one slot — pulling tethers, knockback-and-speed pads, and more — while Photon Strike calls in an orbital blast (extra effective on Overguard).',
-        'Build Strength and Range so Bastille covers a room and strips fully; he is a top-tier crowd-controller for Defense and survival.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Bastille suspends enemies and strips their armor, handing that armor to you and your allies; recast it to collapse into a Vortex that sucks the whole crowd together.',
+            'That suspend-strip-and-group loop is his identity, and his passive adds bonus damage against the helpless enemies he has trapped.',
+            'Minelayer is a toolbox in one slot — pulling tethers, knockback-and-speed pads, and more.',
+            'Photon Strike calls in an orbital blast that is extra effective against Overguard, and Tesla Nervos sends out stunning roller drones.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Build Strength and Range so Bastille covers a room and strips fully; the Repelling Bastille augment adds a knockback bubble.',
+            'The Vortex pile is a perfect setup for a squad nuke or your own area weapon.',
+            'He is a top-tier crowd-controller for Defense and survival — control IS his damage, through the passive.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Named after the 17th-century French siege engineer Sébastien de Vauban.',
+            'Affectionately nicknamed "Booben" by the community.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2464,11 +2496,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     keys: ['/Lotus/Powersuits/EntratiMech/NechroTech'],
     note: {
       tldr: 'A Necramech built for artillery — Voidrig plants itself and fires the Arquebex, one of the heaviest-hitting weapons in the game.',
-      points: [
-        'Guard Mode deploys the Arquebex twin mortars for enormous ranged damage, but roots the mech in place — you trade mobility for raw firepower.',
-        'It is the burst-DPS answer for Profit-Taker, Archon hunts, and Eidolons, where a parked Voidrig melts boss health bars.',
-        'Storm Shroud raises a damage-absorbing barrier; cast it before Guard Mode so you have a protection window while you sit still.',
-        'Necramechs use their OWN mods (not Warframe mods) and the shared Mausolon arch-gun — Voidrig is the ranged pick, Bonewidow the melee one.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Guard Mode deploys the Arquebex twin mortars for enormous ranged damage, but roots the mech in place — you trade mobility for raw firepower.',
+            'Storm Shroud raises a damage-absorbing, reflecting barrier; cast it before Guard Mode so you have a protection window while you sit still.',
+            'Necraweb throws a slowing canister and Gravemines scatter explosives around you.',
+            'Necramechs use their OWN mods (not Warframe mods) and the shared Mausolon arch-gun.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'It is the burst-DPS answer for Profit-Taker, Archon hunts, and Eidolons, where a parked Voidrig melts boss health bars.',
+            'Voidrig is the ranged pick, Bonewidow the melee one; mech mods and Arcanes carry between them.',
+            'Abilities lock during Guard Mode, so set up Storm Shroud and positioning before you commit.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A heavy-artillery Necramech from the Heart of Deimos update.',
+            'Earned from that quest or the Necraloid syndicate, then piloted in the open worlds and heavy missions.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2482,11 +2534,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A versatile starter — Volt speeds up the squad and plants Electric Shields that supercharge any shots fired through them.',
-      points: [
-        'Speed buffs the whole team’s movement, attack, and reload speed — a simple, beloved team buff for clearing missions fast.',
-        'Electric Shield blocks incoming fire and amplifies the damage and crit of allied shots passing through it, making him a staple support for Eidolon hunts.',
-        'Shock chains lightning for quick crowd control, and Discharge stuns and arcs across a group.',
-        'His passive builds electric damage as he moves, released on his next melee hit; low energy rewards casting often, and he is a strong, flexible first frame.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Speed buffs the whole team’s movement, attack, and reload speed — a simple, beloved team buff for clearing missions fast.',
+            'Electric Shield blocks incoming fire and amplifies the damage and crit of allied shots passing through it, and you can pick it up and carry it.',
+            'Shock chains lightning for quick crowd control, and Discharge stuns and arcs across a group.',
+            'His passive builds electric damage as he moves on the ground, released on his next melee hit.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Electric Shield’s crit-and-damage amp makes him a staple support for Eidolon hunts — fire your big shots through it.',
+            'Speed and Shock are both Helminth-subsumable, and the Capacitance augment turns Discharge into squad overshields.',
+            'Low energy rewards casting often, and he is a strong, flexible first frame.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'One of the three starter frames, named after the unit of electrical potential.',
+            'His Neuroptics are an ingredient in building Chroma.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2500,11 +2572,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A wolf-pack stalker — Voruna slips into invisibility, drowns enemies in status, and chains finishers with her claws.',
-      points: [
-        'Shroud of Dynar cloaks her and, when she strikes from stealth, buffs her melee crit and status — built for ambush melee.',
-        'Fangs of Raksh slaps several random status effects on a target that then spread when it dies, melting crowds in status; Lycath’s Hunt turns kills into health and headshots into energy.',
-        'Ulfrun’s Descent unleashes charged claw lunges whose kills stack damage and crit, her main burst tool.',
-        'Instead of a fixed passive, holding each ability grants a wolf buff (speed, status immunity, heavy-attack efficiency, or a death save) — pick the one the fight needs.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Shroud of Dynar cloaks her and, when she strikes from stealth, buffs her melee crit and status — built for ambush melee.',
+            'Fangs of Raksh slaps several random status effects on a target that then spread when it dies, melting crowds in status.',
+            'Lycath’s Hunt turns melee kills into health orbs and headshot kills into energy orbs, and Ulfrun’s Descent unleashes charged claw lunges whose kills stack damage and crit.',
+            'Instead of a fixed passive, holding each ability grants a wolf buff — speed, status immunity, heavy-attack efficiency, or a death save.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Hold the right ability for the wolf buff the fight needs — death prevention for a tough room, status immunity against heavy procs.',
+            'She is a stealth-melee status specialist; build crit and status to cash in the Shroud of Dynar bonus.',
+            'Her orb generation feeds an otherwise energy-hungry ability rotation.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'A wolf-goddess frame named after the Lithuanian huntress Žvorūna, designed by comic artist Joe Madureira.',
+            'Her name was chosen by a community vote during a charity fundraiser.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2518,11 +2610,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Wisp drops Reservoir motes that buff the whole squad — and the buff sticks for a while even after you walk away from them.',
-      points: [
-        'Place all three motes (Haste for speed/fire-rate, Vitality for health/regen, Shock for stun); allies pick them up by passing through, then keep the buff for a duration.',
-        'Her passive makes her invisible while airborne — bullet-jump or hover and enemies lose track of her, so positioning is her defense.',
-        'Range and Duration are the key stats: bigger aura to grab buffs, longer-lasting motes.',
-        'Breach Surge pairs with her teleport for blinds and chain damage; Sol Gate is her exalted beam.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Reservoirs places three motes — Haste (speed and fire rate), Vitality (health and regen), and Shock (a stun) — that allies pick up by passing through, then keep the buff for a while after leaving.',
+            'Her passive makes her invisible while airborne, so bullet-jumping or hovering is her defense.',
+            'Will-o-Wisp projects a decoy she can teleport to, and Breach Surge blinds enemies and sprays homing sparks when they die.',
+            'Sol Gate is her exalted solar beam for heavy single-target and line damage.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Range and Duration are her key stats — a bigger aura to grab buffs and longer-lasting motes.',
+            'Breach Surge plus the Will-o-Wisp teleport is a strong blind-and-reposition combo; Reservoirs is a coveted Helminth subsume for the team buffs.',
+            'Overlapping the same mote doesn’t stack — it just refreshes the active buff.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'The first Warframe with no feet, floating everywhere on unique animations.',
+            'Earned from the Ropalolyst boss on Jupiter; her signature Fulmin swaps fire modes faster in her hands.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2536,11 +2648,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Wukong brings a second him (Celestial Twin) and an invisible heal (Cloud Walker) — a famously forgiving, low-effort frame.',
-      points: [
-        'Celestial Twin fights alongside you with its own weapon, effectively adding a second gun to every mission.',
-        'Cloud Walker turns you invisible while moving and heals you, his main escape-and-reset button.',
-        'Defy still gives a window of heavy damage reduction and an armor buff, though it was toned down from the old "unkillable" version.',
-        'Primal Fury is his exalted Iron Staff — long reach and strong crit scaling for melee builds.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Celestial Twin spawns a clone that mirrors your weapons and fights alongside you, effectively a second gun every mission.',
+            'Cloud Walker turns him into a fast cloud that is invisible and heals him — his main escape-and-reset button.',
+            'Defy gives a window of heavy damage reduction and an armor buff (toned down from its old "unkillable" version).',
+            'His passive saves him from a few otherwise-fatal hits per mission, each time handing him a random buff; Primal Fury is his exalted Iron Staff.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Give the Celestial Twin its own strong weapon for a real second source of damage.',
+            'Cloud Walker is great for stealth and dodging, and Defy is his Helminth-subsumable ability.',
+            'His passive revives plus clone AI earned him an "AFK" reputation that DE has reined in over patches.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Named after Sun Wukong of Journey to the West, his Iron Staff is the Ruyi Jingu Bang.',
+            'He was China-exclusive at launch before a global release.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2554,11 +2686,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'Three broken frames in one — Xaku steals enemy guns, strips armor, and shrugs off most damage with a skeletal final form.',
-      points: [
-        'Grasp of Lohk disarms enemies and turns their stolen weapons into hovering guns that auto-fire around Xaku — free sustained damage that also removes enemy firepower.',
-        'Gaze (part of The Lost) strips a target’s shields and armor, the strip the rest of your guns want; Xata’s Whisper laces your weapons with Void damage.',
-        'The Vast Untime sheds them into a skeletal form with around 75% damage avoidance and even pauses their other ability timers while it is active.',
-        'Their passive adds area-damage reduction and a chance to dodge weapon hits — survival is about avoidance, not a health bar, so positioning still matters.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Grasp of Lohk disarms enemies and turns their stolen weapons into hovering guns that auto-fire around Xaku — free sustained damage that also removes enemy firepower.',
+            'Gaze (part of The Lost) strips a target’s shields and armor — the strip the rest of your guns want — and Xata’s Whisper laces your weapons with Void damage.',
+            'The Vast Untime sheds them into a skeletal form with around 75% damage avoidance that even pauses their other ability timers while it is active.',
+            'Their passive adds area-damage reduction and a chance to dodge weapon hits, so survival is about avoidance, not a health bar.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Gaze and Grasp of Lohk work together: strip armor while the stolen guns keep firing.',
+            'Their Void damage is neutral, but it does not bypass Eidolon invulnerability or trigger Kuva-Siphon destruction — plan around that.',
+            'The Lost cycles three picks (Accuse, Gaze, Deny), so you choose the tool the fight needs.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'The first non-binary Warframe, made of three broken frames fused by the Void, earned from the Heart of Deimos quest.',
+            'Their ability names — Xata, Lohk, and the rest — echo the Requiem mods.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2572,11 +2724,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'A surf’s-up frame — Yareli fights from a water-board mount and rewards staying in motion with a huge secondary-weapon crit boost.',
-      points: [
-        'Her passive grants a big secondary-weapon critical-chance bonus while she keeps moving (about a second and a half), so sidearms are her main weapon.',
-        'Merulina is a summonable water K-drive she rides into battle; it soaks a share of incoming damage, giving her mobile survivability (augments let it protect allies or free up ground play).',
-        'Sea Snares suspend and weaken a group, and Aquablades orbit her for steady damage (a decent Helminth pick).',
-        'The catch: leaning on Merulina locks out normal ground tactics, so she is a love-it-or-leave-it mobility playstyle.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Her passive grants a big secondary-weapon critical-chance bonus while she keeps moving for a second and a half or more, so sidearms are her main weapon.',
+            'Merulina is a summonable water K-drive she rides into battle; it soaks a share of incoming damage for mobile survivability.',
+            'Sea Snares conjure water globules that suspend and weaken a group, and Riptide pulls enemies into a cyclone and detonates.',
+            'Aquablades orbit her for steady passive damage.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'The catch: leaning on Merulina locks out normal ground tactics — the Merulina Guardian and Loyal Merulina augments soften that, letting it protect allies or free up dismounting.',
+            'Aquablades is a decent Helminth pick, and her signature Kompressa gains projectile speed in her hands.',
+            'Build for secondary crit and keep moving to stay inside the passive.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'Earned from the Waverider comic-quest, the first frame whose K-drive works in normal missions.',
+            'Her name comes from "lady of the water" — the first frame whose name starts with Y.',
+          ],
+        },
       ],
       status: 'beta',
     },
@@ -2590,11 +2762,31 @@ const WARFRAME_NOTES: SharedNote[] = [
     ],
     note: {
       tldr: 'An aerial frame — Zephyr rules the air, and Turbulence makes her nearly immune to enemy gunfire while it is up.',
-      points: [
-        'Turbulence deflects incoming projectiles around her, a strong bubble of bullet-immunity against ranged enemies — but it is active, so keep it refreshed.',
-        'Her passive lowers her gravity for long hovers and floaty jumps and boosts her weapon critical chance while airborne, rewarding a fly-and-shoot style.',
-        'Tail Wind launches and hovers her, and Airburst groups or shoves enemies (a useful Helminth pick).',
-        'Tornado scatters roaming twisters that ragdoll enemies and can absorb elemental damage; build for Duration and Strength to keep Turbulence and the tornadoes going.',
+      sections: [
+        {
+          heading: 'Mechanics',
+          points: [
+            'Turbulence deflects incoming projectiles around her, a strong bubble of bullet-immunity against ranged enemies — but it is active, so keep it refreshed.',
+            'Her passive lowers her gravity for long hovers and floaty jumps and boosts her weapon critical chance while airborne.',
+            'Tail Wind launches and hovers her, and Airburst shoves or groups enemies.',
+            'Tornado scatters roaming twisters that ragdoll enemies and can absorb and amplify an element.',
+          ],
+        },
+        {
+          heading: 'Interactions',
+          points: [
+            'Build Duration and Strength to keep Turbulence and the tornadoes going; the Funnel Clouds and Jet Stream augments reshape Tornado and Tail Wind.',
+            'Airburst is a useful Helminth subsume for grouping enemies.',
+            'She rewards a fly-and-shoot style — stay airborne for the crit passive and to dodge ground threats.',
+          ],
+        },
+        {
+          heading: 'Trivia',
+          points: [
+            'The first community-designed frame, and the frame that pioneered the passive-ability system.',
+            'Named for Zephyrus, the Greek god of the west wind; internally called "Tengu".',
+          ],
+        },
       ],
       status: 'beta',
     },
