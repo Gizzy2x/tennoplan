@@ -21,27 +21,7 @@ import type { FieldNotes, TennoplanItem } from '../types';
 
 /** uniqueName → authored Cephalon's Notes (single-variant entries). */
 const BASE_NOTES: Record<string, FieldNotes> = {
-  // ── Arcanes ──
-  '/Lotus/Upgrades/CosmeticEnhancers/Zariman/WarframeOnShieldUptimePowerDuration': {
-    tldr: 'While your shields are up, ability duration climbs over time — up to +36% at max rank. Strong on duration-hungry frames.',
-    points: [
-      'Only builds while you actually have shields. Drop to zero and the bonus resets, then climbs again as shields regenerate.',
-      'Does nothing on shieldless frames — Nidus, Inaros, and Kullervo see no benefit.',
-      'Stacks on top of your normal Ability Duration mods.',
-      'The bonus even ramps up during the mission-load cinematic, so you can start near max if you don’t skip it.',
-    ],
-    status: 'beta',
-  },
-  '/Lotus/Upgrades/CosmeticEnhancers/Utility/GolemArcaneRadialEnergyOnEnergyPickup': {
-    tldr: 'Arcane Energize: a chance, when you grab an Energy Orb, to restore energy to you and nearby allies.',
-    points: [
-      'The team-wide energy is the real draw — it’s a staple of support and group builds.',
-      'There’s a short cooldown between procs, so it won’t trigger on every orb in a rapid pickup.',
-      'Pairs well with anything that makes Energy Orbs (Equilibrium, Despoil, energy pizzas) to keep it firing.',
-    ],
-    status: 'beta',
-  },
-
+  // (Arcanes are authored in ARCANE_NOTES below, sectioned.)
   // ── Mods ──
   '/Lotus/Upgrades/Mods/Sets/Sacrifice/MeleeSacrificeModA': {
     tldr: 'A large melee damage boost, and half of the Sacrificial set (its partner, Sacrificial Steel, adds critical chance).',
@@ -2986,12 +2966,721 @@ const COMPANION_NOTES: SharedNote[] = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Arcanes — equippable enhancements. Notes cover what each does (the trigger +
+// effect, in our words) and when it's worth a slot. Authored from the codex
+// levelStats (game facts). Mechanics + Interactions, no Trivia.
+// This batch: Warframe Arcanes (the rest of the categories follow).
+// ---------------------------------------------------------------------------
+
+const ARCANE_NOTES: SharedNote[] = [
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/LongGunSpeedOnCrit'],
+    note: {
+      tldr: 'On a primary critical hit, a chance for a big fire-rate boost to rifles and bows.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a critical hit, a 30% chance for +90% Fire Rate to your primary weapon (shotguns excluded) for 9 seconds.'] },
+        { heading: 'Interactions', points: ['Best on high-crit, high-fire-rate primaries that can keep the buff refreshed; does nothing for shotguns.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/GolemArcaneShieldRegenOnDamage'],
+    note: {
+      tldr: 'A small chance, when your shields take a hit, to speed up shield recharge.',
+      sections: [
+        { heading: 'Mechanics', points: ['On taking shield damage, a 3% chance for +30% Shield Recharge for 12 seconds.'] },
+        { heading: 'Interactions', points: ['A niche shield-tank pick; the low chance makes it unreliable, and shield-gating usually does more.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/SpeedOnDamage'],
+    note: {
+      tldr: 'Take a hit and you’ll likely get a parkour-speed boost.',
+      sections: [
+        { heading: 'Mechanics', points: ['On taking damage, a 60% chance for +60% Parkour Velocity for 18 seconds.'] },
+        { heading: 'Interactions', points: ['A cheap mobility option, easily outclassed by dedicated speed buffs.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/GolemArcaneBonusDamageOnWallLatch'],
+    note: {
+      tldr: 'Latch onto a wall to load up a big weapon-damage buff.',
+      sections: [
+        { heading: 'Mechanics', points: ['Wall-latching grants +150% damage to your primary and secondary weapons for 30 seconds.'] },
+        { heading: 'Interactions', points: ['Strong flat damage if you can tap a wall every 30s; suits frames that fight from elevation.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/CritChanceOnDamage'],
+    note: {
+      tldr: 'Getting hit has a chance to boost ALL your weapons’ critical chance.',
+      sections: [
+        { heading: 'Mechanics', points: ['On taking damage, a 21% chance for +45% Critical Chance for 12 seconds; it adds to base crit before mods, so it can push a weapon over the next crit tier.'] },
+        { heading: 'Interactions', points: ['A favourite on red-crit builds and weapons sitting just under a crit breakpoint; you need to be taking hits to keep it up.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/PistolDamageOnReload'],
+    note: {
+      tldr: 'Reload your secondary for a good chance at a big pistol-damage buff.',
+      sections: [
+        { heading: 'Mechanics', points: ['On reloading, a 60% chance for +150% damage to pistols for 24 seconds.'] },
+        { heading: 'Interactions', points: ['Reliable, long-lasting secondary damage; great on pistols you reload often.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/InstantShieldOnDamage'],
+    note: {
+      tldr: 'A chance, when your shields break, to instantly refill them.',
+      sections: [
+        { heading: 'Mechanics', points: ['On taking shield damage, a 6% chance to instantly restore all shields (6-second cooldown).'] },
+        { heading: 'Interactions', points: ['A survivability pick for shield-gating frames — an instant full refill re-arms your shield gate.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/MaxEnergyForArmor'],
+    note: {
+      tldr: 'Converts armor into a bigger energy pool.',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +0.30 maximum Energy per point of Armor, up to +1000 Energy.'] },
+        { heading: 'Interactions', points: ['Great on high-armor frames that want a huge energy pool; pairs with armor stacking (Steel Fiber, Archon Shards).'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/AbilityStrengthForMaxHealth'],
+    note: {
+      tldr: 'Turns a big health pool into Ability Strength.',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +6% Ability Strength for every 250 Max Health, up to +72%.'] },
+        { heading: 'Interactions', points: ['Excellent on high-health frames (Inaros, Grendel) and health-stacking builds — free strength without a strength mod.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/MeleeDmgOnRifleKill'],
+    note: {
+      tldr: 'Kill with your primary to charge up a huge melee-damage buff.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a primary-weapon kill, a 30% chance for +300% Melee Damage for 12 seconds.'] },
+        { heading: 'Interactions', points: ['For gun-and-melee hybrids — soften crowds with your rifle, then swing with the buff up.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/IncreaseMaxHealthOnHealthPickup'],
+    note: {
+      tldr: 'Picking up Health Orbs permanently grows your health bar for the mission.',
+      sections: [
+        { heading: 'Mechanics', points: ['Each Health Orb pickup adds +24 Max Health, stacking up to 50 times (+1,200 health).'] },
+        { heading: 'Interactions', points: ['Snowballs into a huge health pool over a mission; pairs with orb generation (Equilibrium, Health Conversion).'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/HealCompanionOnSixMeleeKills'],
+    note: {
+      tldr: 'Rack up melee kills to heal your pet.',
+      sections: [
+        { heading: 'Mechanics', points: ['Landing 6 melee kills within 30 seconds heals your companion for 900.'] },
+        { heading: 'Interactions', points: ['Keeps a squishy pet alive on melee builds; less needed with the self-reviving infested pets.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/AbilityStrengthOnSummonAttack'],
+    note: {
+      tldr: 'Minion-summoning frames bank Ability Strength as their summons attack.',
+      sections: [
+        { heading: 'Mechanics', points: ['Each attack by your summoned minions adds +6% Ability Strength (up to +60%) to your next ability cast, and your summons move 20% faster.'] },
+        { heading: 'Interactions', points: ['Made for summoners (Nekros, Revenant, Wukong’s twin, Sevagoth’s Shadow) — pour the banked strength into a big cast.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/StealDefensiveStatsOnRoll'],
+    note: {
+      tldr: 'Roll through enemies to strip and steal their defenses.',
+      sections: [
+        { heading: 'Mechanics', points: ['Rolling through enemies steals 50% of their defensive stats for yourself; stolen Armor lasts 15 seconds.'] },
+        { heading: 'Interactions', points: ['A mobile armor-strip-and-tank tool that rewards aggressive rolling into crowds.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/AbilityDurationOnCast'],
+    note: {
+      tldr: 'Briefly boosts ability duration right after you cast.',
+      sections: [
+        { heading: 'Mechanics', points: ['On casting an ability, +60% Ability Duration for 3 seconds — long enough to extend the duration snapshot of the next cast.'] },
+        { heading: 'Interactions', points: ['Niche; useful for chaining a duration-snapshot ability right after another cast.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/GolemArcaneAimGlideOnHeadshot'],
+    note: {
+      tldr: 'Land a headshot for a parkour-speed boost.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a headshot, +60% Parkour Velocity for 18 seconds.'] },
+        { heading: 'Interactions', points: ['A mobility pick for headshot-heavy play; mostly movement flavour.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/AbilityStrengthAndCritDamageWhenInvisible'],
+    note: {
+      tldr: 'Rewards invisibility with huge Ability Strength and critical damage.',
+      sections: [
+        { heading: 'Mechanics', points: ['While invisible, gain +30% Ability Strength and a massive +3x final Critical Damage.'] },
+        { heading: 'Interactions', points: ['Build-defining on stealth frames (Loki, Ivara, Octavia, Voruna) — the crit-damage multiplier is enormous.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/SlashProcResist'],
+    note: {
+      tldr: 'Makes you effectively immune to Slash bleed procs.',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +102% chance to resist a Slash status effect — full bleed-proc immunity.'] },
+        { heading: 'Interactions', points: ['Targeted defense against bleed-heavy enemies; one of a family of status-resist arcanes.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/DamageResistanceStacksOverTime'],
+    note: {
+      tldr: 'Keep moving — dodges and jumps stack up damage resistance.',
+      sections: [
+        { heading: 'Mechanics', points: ['Each Dodge, Double Jump, or Bullet Jump grants +25% damage resistance for 4 seconds, stacking up to 3 times (+75%).'] },
+        { heading: 'Interactions', points: ['A mobility-tank pick with naturally high uptime on parkour-heavy play.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/GolemArcaneRadialEnergyOnEnergyPickup'],
+    note: {
+      tldr: 'A chance, when you grab an Energy Orb, to refill energy for you AND nearby allies.',
+      sections: [
+        { heading: 'Mechanics', points: ['On an Energy Orb pickup, a 60% chance to restore 150 Energy to you and allies within 15m (15-second cooldown).'] },
+        { heading: 'Interactions', points: ['The staple support energy arcane; pairs with orb generators (Equilibrium, Despoil, energy pizzas). Does nothing for energy-less frames like Hildryn and Lavos.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/RadialKnockdownOnEnergyPickup'],
+    note: {
+      tldr: 'Grabbing an Energy Orb knocks down nearby enemies.',
+      sections: [
+        { heading: 'Mechanics', points: ['On an Energy Orb pickup, guaranteed knockdown of nearby enemies.'] },
+        { heading: 'Interactions', points: ['A free panic-CC if you pick up orbs mid-fight; mostly a budget defensive pick.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/InvulnerabilityOnDeathOnMercyKill'],
+    note: {
+      tldr: 'Mercy-kills bank cheat-death charges that save you from a lethal hit.',
+      sections: [
+        { heading: 'Mechanics', points: ['Each Mercy kill grants a stack (up to 9); taking fatal damage consumes 3 stacks to survive and become invulnerable for 12 seconds.'] },
+        { heading: 'Interactions', points: ['A cheat-death pick for builds that can reliably set up Mercy kills (status/finisher setups).'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/ShieldMaxForAbilityStrength'],
+    note: {
+      tldr: 'Your Ability Strength bonuses also inflate your max shields.',
+      sections: [
+        { heading: 'Mechanics', points: ['All Ability Strength modifiers are also applied to your Max Shields.'] },
+        { heading: 'Interactions', points: ['Turns a high-strength shield frame into a shield tank (great on Hildryn and shield-gating builds).'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/GolemArcaneMeleeDamageOnCrit'],
+    note: {
+      tldr: 'Critting builds a strong, long melee-damage buff.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a critical hit, a 60% chance for +180% Melee Damage for 18 seconds.'] },
+        { heading: 'Interactions', points: ['A staple flat melee-damage arcane with high uptime on crit melee.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/HealthRegenOnDamage'],
+    note: {
+      tldr: 'Taking health damage can trigger strong health regeneration.',
+      sections: [
+        { heading: 'Mechanics', points: ['On taking health damage, a 9% chance for +6% Health Regeneration per second for 9 seconds.'] },
+        { heading: 'Interactions', points: ['The premier health-tank sustain arcane; pairs with high health and Adaptation. The low chance means it shines in sustained fights, not burst.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/ArmourOnDamage'],
+    note: {
+      tldr: 'Getting hit can grant a big chunk of armor.',
+      sections: [
+        { heading: 'Mechanics', points: ['On taking damage, a 15% chance for +900 Armor for 20 seconds.'] },
+        { heading: 'Interactions', points: ['A core survivability arcane on armor-tank frames, with high uptime once you are in the thick of it.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/RadiationProcResist'],
+    note: {
+      tldr: 'Makes you immune to Radiation status (the friendly-fire confusion).',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +102% chance to resist a Radiation status effect.'] },
+        { heading: 'Interactions', points: ['Targeted defense against Radiation enemies; a status-resist family arcane.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/AbilityHeatProcsGiveCritChance'],
+    note: {
+      tldr: 'Frames that spread Heat status stack big weapon critical chance.',
+      sections: [
+        { heading: 'Mechanics', points: ['When your abilities inflict Heat status, gain +6% weapon Critical Chance for 10 seconds, stacking up to 50 times.'] },
+        { heading: 'Interactions', points: ['Built for Heat-ability frames (Ember, Heat-Chroma, Temple) feeding crit-weapon builds.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/FireProcResist'],
+    note: {
+      tldr: 'Makes you immune to Heat status burns.',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +102% chance to resist a Heat status effect.'] },
+        { heading: 'Interactions', points: ['Targeted defense against fire-heavy enemies; status-resist family.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/AbilityPowerOnFreeze'],
+    note: {
+      tldr: 'Freezing enemies stacks Ability Strength and Duration.',
+      sections: [
+        { heading: 'Mechanics', points: ['Each enemy you Freeze grants +2% Ability Strength and +2% Ability Duration for 15 seconds, stacking up to 20 times (+40% each).'] },
+        { heading: 'Interactions', points: ['For Cold/Freeze frames (Frost, Cold-ability builds); strong on crowds you can chill en masse.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/AbilityStatusProcsGiveAbilityStrengthAndEfficiency'],
+    note: {
+      tldr: 'Spreading varied status with abilities buffs your strength and efficiency.',
+      sections: [
+        { heading: 'Mechanics', points: ['Each unique status effect your abilities inflict grants +6% Ability Strength and +3% Ability Efficiency for 20 seconds.'] },
+        { heading: 'Interactions', points: ['For multi-element ability frames; rewards spreading several different status types.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/HealthWhileUsingChanneledAbilities'],
+    note: {
+      tldr: 'Running channeled (toggle) abilities boosts your max health.',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +250 Max Health for each active channeled ability.'] },
+        { heading: 'Interactions', points: ['A survivability pick for channel-heavy frames; stack multiple toggles for a bigger pool.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/GolemArcaneSniperSpeedOnCrit'],
+    note: {
+      tldr: 'Critting with a sniper greatly speeds its reload.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a critical hit, a 60% chance for +150% Reload Speed to Sniper Rifles for 12 seconds.'] },
+        { heading: 'Interactions', points: ['For sniper builds (Eidolon hunts, Rubico/Lanka) where slow reloads hurt.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/MagneticProcResist'],
+    note: {
+      tldr: 'Makes you immune to Magnetic status (the energy-drain/HUD scramble).',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +102% chance to resist a Magnetic status effect.'] },
+        { heading: 'Interactions', points: ['Targeted defense against Magnetic enemies; especially valuable for energy frames, since Magnetic drains energy.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/MaxDPSTakenForArmour'],
+    note: {
+      tldr: 'Trades your shields for a hard cap on how much damage you can take per second.',
+      sections: [
+        { heading: 'Mechanics', points: ['Removes all shields, but while Armor is above 700 you can’t take more than 500 damage per second; Magnetic status and ability-nullifying effects switch the protection off.'] },
+        { heading: 'Interactions', points: ['A heavy armor-tank pick — the damage cap trivializes chip damage but leaves you exposed to Magnetic and nullifiers.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/SpeedOnParry'],
+    note: {
+      tldr: 'Blocking can grant a movement-speed boost.',
+      sections: [
+        { heading: 'Mechanics', points: ['On blocking, a 45% chance for +60% Speed for 18 seconds.'] },
+        { heading: 'Interactions', points: ['A niche mobility pick for melee-block playstyles.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/AmmoEfficiencyOnPistolHeadshot'],
+    note: {
+      tldr: 'Pistol headshot kills can grant near-infinite ammo briefly.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a pistol headshot kill, a 60% chance for +102% Ammo Efficiency for 12 seconds (shots effectively cost no ammo).'] },
+        { heading: 'Interactions', points: ['For ammo-hungry secondaries; keep landing headshots to sustain the no-ammo window.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/AbilityStrengthOnCast'],
+    note: {
+      tldr: 'Casting different abilities ramps up your Ability Strength.',
+      sections: [
+        { heading: 'Mechanics', points: ['Each ability cast grants +9% Ability Strength to your next cast, stacking up to 4 times (+36%); recasting the SAME ability twice in a row resets it.'] },
+        { heading: 'Interactions', points: ['Rewards rotating through your kit — weave several abilities before the one you want empowered.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/GolemArcanePistolDamageOnHeadshot'],
+    note: {
+      tldr: 'Headshots grant a huge secondary-weapon damage buff.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a headshot, +300% damage to your secondary weapon for 18 seconds.'] },
+        { heading: 'Interactions', points: ['A top damage arcane for pistol builds, with near-100% uptime if you aim for heads.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/PrimaryDmgOnMeleeKill'],
+    note: {
+      tldr: 'Melee kills charge up a big primary-weapon damage buff.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a melee kill, a 30% chance for +300% Primary Weapon damage for 12 seconds.'] },
+        { heading: 'Interactions', points: ['The flip side of Arcane Blade Charger — for melee-then-gun hybrids.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/RadialHealOnHealthPickup'],
+    note: {
+      tldr: 'Grabbing a Health Orb can heal your whole squad.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a Health Orb pickup, a 60% chance to restore 500 Health to allies within 25m (15-second cooldown).'] },
+        { heading: 'Interactions', points: ['A support heal arcane — the health-orb twin of Arcane Energize; pairs with orb generation.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/LongGunDamageOnHeadshot'],
+    note: {
+      tldr: 'Headshots can grant a long-lasting primary-damage buff.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a headshot, a 15% chance for +180% damage to primary weapons for 24 seconds.'] },
+        { heading: 'Interactions', points: ['Solid primary damage; the long duration smooths over the lower trigger chance.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/OperatorArmour/HealthRegenAndArmorOnMeleeKill'],
+    note: {
+      tldr: 'Melee kills grant strong health regen and bonus armor.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a melee kill, gain +24 Health Regen per second and +660 Armor for 10 seconds.'] },
+        { heading: 'Interactions', points: ['A melee-tank sustain arcane with high uptime when you are actively killing in melee.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/ElectricityProcResist'],
+    note: {
+      tldr: 'Makes you immune to Toxin status (the poison that bypasses shields).',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +102% chance to resist a Toxin status effect.'] },
+        { heading: 'Interactions', points: ['Valuable defense against Toxin (which ignores shields), so handy for shield-gating frames; status-resist family.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/LongGunDamageOnReload'],
+    note: {
+      tldr: 'Reloading your primary has a good chance at a big damage buff.',
+      sections: [
+        { heading: 'Mechanics', points: ['On reloading, a 60% chance for +150% damage to primary weapons for 24 seconds.'] },
+        { heading: 'Interactions', points: ['Reliable primary damage; great on weapons you reload often.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Upgrades/CosmeticEnhancers/Utility/NoCostCastChanceOnCast',
+      '/Lotus/Upgrades/CosmeticEnhancers/Utility/NoCostCastChanceAbility1Listener',
+      '/Lotus/Upgrades/CosmeticEnhancers/Utility/NoCostCastChanceAbility2Listener',
+      '/Lotus/Upgrades/CosmeticEnhancers/Utility/NoCostCastChanceAbility3Listener',
+      '/Lotus/Upgrades/CosmeticEnhancers/Utility/NoCostCastChanceAbility4Listener',
+    ],
+    note: {
+      tldr: 'Casting an ability has a chance to make your next few casts free.',
+      sections: [
+        { heading: 'Mechanics', points: ['On an ability cast, a 20% chance that your next three abilities cost no Energy.'] },
+        { heading: 'Interactions', points: ['A budget efficiency pick — nice on cast-heavy frames, but unreliable.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/MeleeSpeedOnHit'],
+    note: {
+      tldr: 'Hitting enemies can speed up your melee swings.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a melee hit, a 15% chance for +60% Attack Speed for 18 seconds.'] },
+        { heading: 'Interactions', points: ['A cheap attack-speed boost with high uptime on fast melee.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/ArmorOnHeavyGunEquipped'],
+    note: {
+      tldr: 'Pulling out your Archgun grants a huge armor buff.',
+      sections: [
+        { heading: 'Mechanics', points: ['On equipping a heavy (Arch-)Gun, +1,200 Armor for 60 seconds.'] },
+        { heading: 'Interactions', points: ['A tank pick for builds that carry a Heavy Weapon — equip it to top up armor, then swap back.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/GolemArcaneShotgunSpeedOnCrit'],
+    note: {
+      tldr: 'Critting with a shotgun can boost its fire rate.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a critical hit, a 15% chance for +90% Fire Rate to Shotguns for 12 seconds.'] },
+        { heading: 'Interactions', points: ['For crit shotguns; pairs with high crit chance to keep it active.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/InvisibilityOnFinisher'],
+    note: {
+      tldr: 'Finisher kills can turn you invisible.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a finisher kill, a 15% chance to become invisible for 30 seconds.'] },
+        { heading: 'Interactions', points: ['Free stealth for finisher-heavy builds (Ash, covert melee); chains nicely with Arcane Crepuscular.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/RadialViralAttackOnOverguardGain'],
+    note: {
+      tldr: 'Gaining Overguard blasts nearby enemies with full Viral status.',
+      sections: [
+        { heading: 'Mechanics', points: ['When you gain 3,000+ Overguard at once, release a 30m attack applying maximum Viral status stacks.'] },
+        { heading: 'Interactions', points: ['For Overguard frames (Dante, Styanax, Kullervo, Rhino) — turns a defensive cast into a Viral damage-amp prime.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/GolemArcaneArmorOnFinisher'],
+    note: {
+      tldr: 'Finisher kills grant a big, long armor buff.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a finisher kill, +1,200 Armor for 45 seconds.'] },
+        { heading: 'Interactions', points: ['A tank pick for finisher builds, with long uptime once you land one.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/AbilityRadiationProcsCreateUniversalOrbsOnKill'],
+    note: {
+      tldr: 'Frames that spread Radiation can make enemies drop universal (health-or-energy) orbs.',
+      sections: [
+        { heading: 'Mechanics', points: ['Each Radiation status your abilities inflict gives a 6% chance to drop a Universal Orb when that enemy dies.'] },
+        { heading: 'Interactions', points: ['Sustain for Radiation-ability frames (Nyx, Oberon, Qorvex); Universal Orbs fill whichever of health or energy you are missing.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/GolemArcanePistolSpeedOnCrit'],
+    note: {
+      tldr: 'Critting with a pistol very likely boosts its fire rate.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a critical hit, a 90% chance for +120% Fire Rate to pistols for 9 seconds.'] },
+        { heading: 'Interactions', points: ['Near-guaranteed on crit secondaries; a strong DPS arcane for pistols.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/HealthRegenOnHeadshot'],
+    note: {
+      tldr: 'Headshot kills can grant health regeneration.',
+      sections: [
+        { heading: 'Mechanics', points: ['On a headshot kill, a 75% chance for +3% Health Regeneration per second for 9 seconds.'] },
+        { heading: 'Interactions', points: ['A sustain pick for headshot-heavy gunplay.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Defensive/FreezeProcResist'],
+    note: {
+      tldr: 'Makes you immune to Cold status (the slow).',
+      sections: [
+        { heading: 'Mechanics', points: ['Grants +102% chance to resist a Cold status effect.'] },
+        { heading: 'Interactions', points: ['Targeted defense against Cold enemies; status-resist family.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/PowerStrengthOnKill'],
+    note: {
+      tldr: 'Kills slowly stack a large Ability Strength buff over a mission.',
+      sections: [
+        { heading: 'Mechanics', points: ['Each kill grants +0.24% Ability Strength, stacking up to 250 times (+60%) and persisting for the mission.'] },
+        { heading: 'Interactions', points: ['A top strength arcane for endless missions — give it a few minutes for +60% free strength. Slow to ramp in short runs.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Zariman/WarframeOnShieldUptimePowerDuration'],
+    note: {
+      tldr: 'While your shields are up, Ability Duration climbs over time — up to +36%.',
+      sections: [
+        { heading: 'Mechanics', points: ['While shields are active, gain +6% Ability Duration per second up to +36%; drop to zero shields and it resets, then rebuilds as shields recharge.'] },
+        { heading: 'Interactions', points: ['Strong on duration-hungry frames that keep shields up; useless on shieldless frames (Inaros, Nidus, Kullervo).'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Utility/HealAlliesOnEnergySpent'],
+    note: {
+      tldr: 'Casting abilities heals you and your squad based on the energy spent.',
+      sections: [
+        { heading: 'Mechanics', points: ['Heals you and allies in Affinity range for 6 Health per point of Energy spent on an ability’s initial cast cost.'] },
+        { heading: 'Interactions', points: ['Squad sustain for expensive-ability casters — bigger casts heal more.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Zariman/WarframeOnOperatorAbilityPowerStrength'],
+    note: {
+      tldr: 'Use an Operator ability to empower your next Warframe cast with Ability Strength.',
+      sections: [
+        { heading: 'Mechanics', points: ['After using an Operator ability, your next Warframe ability cast gains +45% Ability Strength.'] },
+        { heading: 'Interactions', points: ['For Operator-weaving playstyles — pop an Operator ability, then dump the buffed cast.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/OrbsOnResidualContact'],
+    note: {
+      tldr: 'Part of the Theorem/Residual combo — a Residual zone spawns damage globes that raise enemy vulnerability.',
+      sections: [
+        { heading: 'Mechanics', points: ['While standing in a zone left by a Residual arcane, every 2s a globe spawns that strikes the nearest enemy within 15m and raises their vulnerability to that damage type by 200% for 6s; globes persist 30s after you leave the zone.'] },
+        { heading: 'Interactions', points: ['Pairs with a Residual arcane on your secondary — the Residual lays the zone, this turns it into damage and a vulnerability debuff.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/WeaponDamageOnResidualContact'],
+    note: {
+      tldr: 'Standing in a Residual zone ramps your weapon damage hard.',
+      sections: [
+        { heading: 'Mechanics', points: ['While in a zone left by a Residual arcane, weapon damage climbs +12% per second up to 15 stacks (+180%), lingering 20s after you leave.'] },
+        { heading: 'Interactions', points: ['The damage half of the Theorem/Residual combo — drop a Residual zone and stand in it to stack the buff.'] },
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Upgrades/CosmeticEnhancers/Offensive/CompanionDamageOnResidualContact'],
+    note: {
+      tldr: 'Standing in a Residual zone massively buffs your companion and summons.',
+      sections: [
+        { heading: 'Mechanics', points: ['While in a zone left by a Residual arcane, the damage of companions and summoned allies within 90m climbs +24% per second up to 15 stacks, lingering 20s after you leave.'] },
+        { heading: 'Interactions', points: ['The pet/summon half of the Theorem/Residual combo — for pet or minion builds that hold a Residual zone.'] },
+      ],
+      status: 'beta',
+    },
+  },
+];
+
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
 export const FIELD_NOTES: Record<string, FieldNotes> = {
   ...BASE_NOTES,
   ...Object.fromEntries(
-    [...WARFRAME_NOTES, ...SENTINEL_NOTES, ...COMPANION_NOTES].flatMap(({ keys, note }) =>
-      keys.map((k) => [k, note] as const),
+    [...WARFRAME_NOTES, ...SENTINEL_NOTES, ...COMPANION_NOTES, ...ARCANE_NOTES].flatMap(
+      ({ keys, note }) => keys.map((k) => [k, note] as const),
     ),
   ),
 };
