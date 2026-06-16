@@ -6701,6 +6701,327 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
 
+
+  // ── Rifles — beam / continuous ─────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/LongGuns/ElecRifle/ElecRifle',
+      '/Lotus/Weapons/Corpus/LongGuns/CrpBatteryRifle2/CrpBatteryRifle2',
+    ],
+    note: {
+      tldr: 'The Amprex — a continuous Electric arc that chains to nearby enemies; extremely high status (35%) makes it a premier group-crowd proc weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a continuous Electric arc that chains automatically to enemies within a short radius of the primary target.',
+          'Status is calculated per arc chain; hitting multiple chained enemies means multiple independent status rolls per second.',
+          '26% crit and 35% status — both sides strong enough to support a hybrid build.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Viral on the Amprex combined with the arc-chain means an entire room can be Viral-primed within seconds.',
+          'Ammo drain is very fast at sustained fire; bring Ammo Mutation for anything beyond short bursts.',
+          'Syndicate version (CrpBatteryRifle2 = Secura Amprex?) adds Syndicate proc; core arc mechanic is identical.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/LongGuns/InfArkveld/InfArkveldsGun',
+      '/Lotus/Weapons/Infested/InfestedLich/LongGuns/CodaSynapse/CodaSynapse',
+    ],
+    note: {
+      tldr: 'The Synapse — a continuous Infested beam that deals primarily Corrosive damage and has innate armor-stripping ability.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Continuous hitscan beam with a tight spread; damage is applied per-tick at the rate of the beam.',
+          'Innate Corrosive damage means every tick has a chance to apply a Corrosion proc, progressively stripping armor.',
+          '15% crit, 35% status — status-dominant; the armor-strip scales with proc count rather than crit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'In missions where armored enemies are the primary threat (Steel Path Grineer), sustained Synapse fire can fully strip armor over several seconds.',
+          'Coda Synapse is the Infested Lich variant — same beam identity with a Lich bonus element added.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/LongGuns/GrineerFlameThrower/GrineerFlameThrower',
+      '/Lotus/Weapons/Grineer/LongGuns/WraithIgnis/WraithIgnis',
+    ],
+    note: {
+      tldr: 'The Ignis — a continuous flamethrower; wide cone coverage at close-to-medium range with very high Heat status (35%).',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a sustained cone of flame that hits all enemies in its area; the spread is horizontal, covering a wide arc.',
+          'Very low crit (5%/7%), very high status (35%) — pure status weapon; every tick rolls status against the whole cone.',
+          'Ignis Wraith raises crit to 7% and retains 35% status; also has a tighter spread for slightly more range.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Heat procs from the Ignis strip armor (via the Heat proc armor-reduction) independently of Corrosive; a pure Heat build is effective against armored Grineer.',
+          'The wide cone makes it ideal for corridor defense or any mission where enemies funnel toward you.',
+          'Ignis Wraith is the significantly superior version — the base Ignis is mostly a mastery step.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/LongGuns/CrpFreezeRayRifle/CrpFreezeRayRifle',
+      '/Lotus/Weapons/Corpus/LongGuns/VandalGlaxion/GlaxionVandal',
+    ],
+    note: {
+      tldr: 'The Glaxion — a continuous Cold beam; applies Freeze status on every tick, instantly stopping enemies who proc it.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Continuous Cold damage beam; each damage tick rolls status, and Cold procs slow then freeze enemies.',
+          'Very low crit (5%/10%), high status (35%/40%) — a pure status platform for crowd-control and combo setup.',
+          'Glaxion Vandal raises crit to 10% and status to 40%; more proc consistency.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Frozen enemies take 50% increased melee finisher damage — pair with a melee Warframe or weapon for a significant burst window.',
+          'Tenet Glaxion (Sister variant) adds innate Radiation and a Sister bonus element for a two-element Cold-combo weapon.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEBeam/CrpBEBeamWeapon'],
+    note: {
+      tldr: 'The Tenet Glaxion — a Sister of Parvos beam variant; innate Cold + Radiation and a Sister bonus element, high status (40%).',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Same continuous Cold beam as the Glaxion family but with innate Radiation and a Sister progenitor element baked in.',
+          '40% status and three innate elements make elemental combination builds particularly powerful.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Radiation causes enemies to fight each other; combined with Cold freeze, you can lock a group and have them self-destruct.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/LongGuns/CrpBFGBeamRifle/CrpBFGBeamRifle',
+    ],
+    note: {
+      tldr: 'The Flux Rifle — a continuous Corpus laser beam; precise hitscan with very high status (35%).',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Single continuous laser at maximum accuracy — every tick hits the same target point exactly.',
+          '5% crit, 35% status — a pure status platform; the precision makes it effective even on fast-moving small targets.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Tenet Flux Rifle is the Sister variant with significantly improved crit (20%), status (35%), and a bonus element.',
+          'The base Flux Rifle has very low damage numbers by modern standards; the Tenet version is the competitive choice.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEBeam2/CrpBEBeam2Weapon'],
+    note: {
+      tldr: 'The Tenet Flux Rifle — a Sister of Parvos beam; 20% crit, 35% status, Sister bonus element.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Same pinpoint continuous laser as the Flux Rifle but with dramatically improved crit (20%) and a baked-in Sister element.',
+          'Both crit and status lines are high enough for a hybrid build — unusual for a beam weapon.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions at 20% crit gives the beam a reliable bleed-stack mechanism while the 35% status applies elemental procs simultaneously.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/LongGuns/CrpSatiBeamRifle/CrpSatiBeamRifle',
+      '/Lotus/Weapons/Corpus/LongGuns/CrpSatiBeamRifleVandal/CrpSatiBeamRifleVandal',
+    ],
+    note: {
+      tldr: 'The Quanta — a Corpus cube-launcher beam rifle; alt-fire fires floating cubes that the beam can detonate for AoE Electricity.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: continuous Electric beam, low crit (5%) and high status (25% / Vandal: 35%).',
+          'Alt-fire deploys a hovering Quanta cube at the cursor. Shooting a cube with the primary beam triggers a large Electricity AoE centered on it.',
+          'Cubes persist in the world and can be pre-placed at choke points before enemies arrive.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The cube-detonation AoE has good range — place cubes in enemy movement paths for a one-shot cluster clear.',
+          'Quanta Vandal raises status to 35%; Tenet Quanta (Sister variant) adds a bonus element and significantly improved stats.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEBeam3/CrpBEBeam3Weapon'],
+    note: {
+      tldr: 'The Tenet Quanta — Sister variant of the Quanta; same cube-detonation mechanic with 25% crit, 35% status, and a Sister element.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Identical cube-deploy-and-detonate mechanic, but the stat line is fully competitive (25% crit, 35% status).',
+          'Sister progenitor element affects the detonation AoE as well as the beam itself.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The cube AoE inherits mods — high-damage detonations make it one of the more fun AoE setups available on a primary.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Rifles — charge / single-shot ──────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/LongGuns/CrpBFG/CrpBFGRifle',
+      '/Lotus/Weapons/Corpus/LongGuns/CrpOpticorVandal/CrpOpticorVandal',
+    ],
+    note: {
+      tldr: 'The Opticor — a charge-to-fire Corpus laser cannon; holds charge and fires a single high-damage piercing beam.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Requires holding the trigger to charge before releasing a high-velocity laser beam that punches through multiple enemies in a line.',
+          'Full charge time is roughly 1.5 seconds; a partial charge fires a weaker shot.',
+          '30%/34% crit, 14%/20% status — crit-focused; the beam deals one large burst of damage per charge cycle.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The piercing beam means positioning matters — lining up enemies in a corridor maximises targets hit per shot.',
+          'Opticor Vandal adds significant crit (34%) and status (20%) improvements; a major upgrade worth the Baro Ducats.',
+          'Beam damage is very high but cadence is slow — better for burst damage on priority targets than sustained output.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/LongGuns/GrnAntiGravRifle/GrnAntiGravRifle',
+      '/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEFerrox/CrpBEFerroxWeapon',
+    ],
+    note: {
+      tldr: 'The Ferrox — a Grineer charge rifle that fires a javelin which tethers to a surface and creates a Gravity Pull zone, dragging nearby enemies toward it.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Charge and release fires a spear-like projectile; when it embeds in a wall or surface it activates a gravity well pulling enemies toward it.',
+          '24%/28% crit and 20%/24% status — solid hybrid stats that work in any build direction.',
+          'The gravity zone lasts several seconds, keeping a group clustered for follow-up AoE.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Pair with AoE weapons or abilities: place the tether, then detonate the clustered group.',
+          'Tenet Ferrox (Sister variant) adds a Sister progenitor element and improved stats — the same tethering mechanic on a better stat line.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnJavlokRifle/GrnJavlokRifle'],
+    note: {
+      tldr: 'The Javlok — a Grineer throwable charge rifle; alt-fire throws the weapon itself as a flaming javelin that explodes on impact.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: standard charged Blast shot. Alt-fire: throws the Javlok as a physical projectile that sticks in enemies or surfaces and detonates.',
+          'After throwing, the weapon must be retrieved (it lands on the ground) or times out and returns.',
+          'Low crit (7.5%) and very low status (5%) — the thrown-weapon mechanic is the identity, not the stat line.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The thrown javelin deals more damage than the primary fire; use it on groups or bosses when you can retrieve it quickly.',
+          'Primarily a mastery weapon — the mechanic is memorable but the stats do not support endgame use.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Rifle/Miter'],
+    note: {
+      tldr: 'The Miter — a throwable disc launcher; large circular sawblades travel in an arc and pierce multiple enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires large spinning discs as projectiles; each disc has significant travel time and an arcing trajectory.',
+          'Discs pierce through enemies in a line — one disc can hit multiple targets if aimed correctly.',
+          '10% crit, 10% status — low stats; the Miter is a mastery weapon and Jat Kittag precursor component.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The disc arc makes it unintuitive at range; effective primarily at close-medium range where the arc is flat.',
+          'Primarily used as a crafting ingredient (Jat Kittag) rather than a primary weapon in most builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Infested/LongGuns/InfCrpBow/InfCrpBow'],
+    note: {
+      tldr: 'The Mutalist Cernos — an Infested bow; arrows release a gas cloud of Toxin on impact instead of dealing direct damage.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires arrows that create a persistent Toxin cloud at the impact point; the cloud deals damage over time to enemies in it.',
+          'Very low crit (5%), low status (10%) on the arrow itself — the cloud is the primary damage vector, not the projectile.',
+          'Classified as a Bow but the cloud mechanic makes it behave more like a terrain-denial weapon.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Toxin cloud bypasses shields entirely — any enemy in the cloud loses health directly.',
+          'Mostly used in specific niche setups; general damage output is well below current meta bows.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Rifles — crossbow / silent ──────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/Attica/Attica',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeAttica/PrimeAttica',
+    ],
+    note: {
+      tldr: 'The Attica — a rapid-fire crossbow; fires physical bolts quickly and silently with 25%/30% crit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto-fire crossbow shooting physical bolts — faster fire rate than most crossbows, below-average versus auto rifles.',
+          'Silent — does not alert unaware enemies.',
+          '25%/30% crit and 10%/14% status — crit-focused; Hunter Munitions builds work well.',
+          'Bolt travel time applies; not hitscan.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A solid silent auto-crossbow for stealth builds; the Prime raises crit to 30%, making Hunter Munitions bleed-stacking very consistent.',
+          'Less effective at long range as bolts travel and spread slightly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/TnCrossbow3/TnCrossbow3',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeZhuge/PrimeZhuge',
+    ],
+    note: {
+      tldr: 'The Zhuge — a rapid-fire silent crossbow with a large magazine; Prime version jumps to 30% crit and 40% status for a strong hybrid.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Full-auto crossbow, silent, large magazine — extended sustained fire before reload.',
+          'Zhuge: 15% crit, 15% status — below average base. Zhuge Prime: 30% crit, 40% status — a legitimate high-end hybrid.',
+          'Bolt travel time, not hitscan.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Zhuge Prime is one of the better silent primaries in the game; 40% status with 30% crit supports multiple build directions simultaneously.',
+          'Use for stealth, spy missions, or any context where silence is needed without sacrificing damage output.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
