@@ -7022,6 +7022,4500 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
 
+
+  // ── Secondaries — semi-auto / revolver families ────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistol/Pistol',
+      '/Lotus/Weapons/Tenno/Pistol/LatoVandal',
+      '/Lotus/Weapons/Tenno/Pistol/LatoPrime',
+      '/Lotus/Weapons/Tenno/Akimbo/AkimboPistol',
+      '/Lotus/Weapons/MK1Series/MK1Furis',
+    ],
+    note: {
+      tldr: 'The Lato — the Tenno standard-issue sidearm; MR0 starter that scales from basic to competitive through Vandal and Prime tiers.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto hitscan pistol; low recoil, moderate stats on the base version.',
+          'Lato: 10% crit, 6% status. Lato Vandal: 26% crit, 10% status. Lato Prime: 30% crit, 20% status.',
+          'Aklato (dual) doubles the fire rate but halves reload efficiency.',
+          'Mk1-Furis is the starter auto pistol alternative — different weapon, grouped here as starter secondary alongside the Lato.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Lato Prime is a founding-Tenno-exclusive weapon — extremely rare and cosmetically significant; stats are solid but not exceptional.',
+          'Lato Vandal at 26% crit is a genuine Hunter Munitions platform for its mastery bracket.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistol/RevolverPistol',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeVasto/PrimeVastoPistol',
+      '/Lotus/Weapons/Tenno/Akimbo/DualVastos',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeVasto/AkPrimeVasto/AkPrimeVastoPistol',
+    ],
+    note: {
+      tldr: 'The Vasto — a high-damage revolver-style pistol with strong crit (20%+); Prime and Akvasto Prime versions are endgame-capable.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto, higher damage per shot than auto pistols, slower fire rate.',
+          'Vasto: 20% crit, 8% status. Vasto Prime: 22% crit, 22% status. Akvasto Prime: 22% crit, 22% status (dual).',
+          'The balanced 22%/22% on the Primes supports hybrid builds effectively.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Vasto Prime and Akvasto Prime are competitive mid-to-high-level secondaries with no exotic mechanics — straightforward hybrid platforms.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistol/HeavyPistol',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeLex/PrimeLex',
+      '/Lotus/Weapons/Tenno/Akimbo/AkLexPistols',
+      '/Lotus/Weapons/Tenno/Akimbo/AkLexPrimePistols',
+    ],
+    note: {
+      tldr: 'The Lex — a heavy semi-auto pistol; low fire rate, high single-shot damage. Lex Prime and Aklex Prime reach 25% crit for Hunter Munitions builds.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto with a slow fire rate and very high per-shot damage — precision pistol.',
+          'Lex: 20% crit, 10% status. Lex Prime: 25% crit, 25% status — a balanced hybrid at the Prime tier.',
+          'Aklex Prime (dual) doubles throughput at the cost of magazine efficiency.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Lex Prime was one of the dominant secondaries before Incarnon-era releases; still solid for players who prefer deliberate semi-auto fire.',
+          'The high per-shot damage means multishot mods are particularly valuable here compared to auto secondaries.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/Magnum/Magnum',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeMagnus/PrimeMagnusWeapon',
+      '/Lotus/Weapons/Tenno/Akimbo/DualMagnus',
+      '/Lotus/Weapons/Tenno/Akimbo/DualMagnusPrime',
+    ],
+    note: {
+      tldr: 'The Magnus — a Tenno semi-auto pistol with balanced hybrid stats (22%/22%); Prime is a reliable general-purpose secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto hitscan; consistent fire rate between the heavy Lex and lighter revolvers.',
+          'Magnus: 22% crit, 22% status. Magnus Prime: 28% crit, 28% status — one of the more balanced hybrid pistols.',
+          'Akmagnus / Akmagnus Prime double the throughput in the dual wield configuration.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Magnus Prime at 28%/28% is flexible enough to run purely as a crit weapon, a status weapon, or a hybrid — rare versatility for a pistol.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistol/BurstPistol',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeSicarus/PrimeSicarusPistol',
+    ],
+    note: {
+      tldr: 'The Sicarus — a three-round burst pistol; Sicarus Prime brings it to 25% crit and 20% status for a solid burst secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Three rounds per trigger pull; consistent burst cadence regardless of trigger speed.',
+          'Sicarus: 16% crit, 6% status — baseline burst. Sicarus Prime: 25% crit, 20% status — meaningfully better in both dimensions.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Sicarus Prime at 25% crit is a natural Hunter Munitions secondary for players who prefer burst over full-auto.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnBardPistolGun',
+      '/Lotus/Weapons/Tenno/Pistols/PrimePandero/PanderoPrimeWeapon',
+    ],
+    note: {
+      tldr: "The Pandero — Octavia's signature pistol; semi-auto with 30% crit and a unique alt-fire fan-shot that unloads the magazine in a spread.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: deliberate semi-auto with high crit (30%/30%) and moderate status (10%/24%).',
+          'Alt-fire: fires multiple rounds in a wide fan pattern simultaneously, draining several rounds of the magazine at once.',
+          'Pandero Prime raises status to 24% and adds a slightly higher fire rate.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Octavia's signature — gains a reload speed bonus in her hands.",
+          'The fan-shot alt-fire is good for close-range burst damage; the deliberate primary is better for longer ranges with full aim.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistol/HandShotGun',
+      '/Lotus/Weapons/Tenno/Pistol/BroncoPrime',
+      '/Lotus/Weapons/Tenno/Akimbo/AkimboShotGun',
+      '/Lotus/Weapons/Tenno/Akimbo/PrimeAkimboShotGun',
+    ],
+    note: {
+      tldr: 'The Bronco — a two-shot break-action hand shotgun; fires two high-damage buckshot blasts before reloading.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto shotgun pistol — fires two pellet blasts per magazine, each delivering multiple pellets in a tight spread.',
+          'Very low crit (6%) and status (9%/13%) per pellet; the two-shot capacity means the damage window is short.',
+          'Akbronco / Akbronco Prime dual-wield doubles magazine and sustained fire but the per-pellet stats remain low.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Best as a panic-button close-range burst in situations where you need brief high burst damage and switch back to primary.',
+          'Bronco Prime marginally improves on the base; neither version competes with dedicated secondary shotguns at endgame.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/SawnOffShotgun/TennoHandShotgun',
+      '/Lotus/Weapons/Tenno/Pistols/PrimePyrana/PrimePyranaPistol',
+    ],
+    note: {
+      tldr: 'The Pyrana — a semi-auto hand shotgun; Pyrana Prime spawns a spectral second pistol on crit headshot kills, doubling your fire rate.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto shotgun pistol with multiple pellets per shot; 20%/24% crit and 3%/4% status — pure crit platform.',
+          'Pyrana Prime: headshot kills with a critical hit spawn a ghost copy of the Pyrana that fires alongside you for several seconds.',
+          'The spectral copy benefits from your mods — it fires at the same damage and status chance as your original.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The ghost Pyrana effectively doubles your fire rate during its active window; focus headshots to maximize uptime.',
+          'Build for crit headshots; the ghost refresh loop sustains in dense waves where headshots are plentiful.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/AllNew1hSG/AllNew1hSG',
+    ],
+    note: {
+      tldr: 'The Euphona Prime — a dual-mode hand cannon; primary fire is a tight shotgun burst, alt-fire is a single high-damage Projectile slug.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: tight pellet spread, high per-pellet damage, 30% crit — a high-crit hand shotgun.',
+          'Alt-fire: single precision slug that deals higher single-target damage at range.',
+          'The two modes cover different engagement types without switching weapons.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Shotgun primary for groups or close targets; slug for range or armored priority targets.',
+          'Both modes share mods — elements and crit mods apply to both fire types.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrineerHandShotgun/GrineerHandCannon',
+      '/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Brakk/KuvaBrakk',
+    ],
+    note: {
+      tldr: 'The Brakk — a Grineer burst hand shotgun; fires a tight cone of pellets rapidly. Kuva Brakk adds 29% crit and a Lich element.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto shotgun pistol — multiple pellets per shot in a tight spread, very effective at close range.',
+          'Base Brakk: 17% crit, 5% status — crit-leaning but stats too low for endgame. Kuva Brakk: 29% crit, 11% status.',
+          'Kuva Brakk adds the Lich progenitor bonus element baked into each shot.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kuva Brakk is a strong close-range secondary; 29% crit with a bonus element creates powerful elemental combinations.',
+          'The tight pellet cone means it is best treated as a semi-auto shotgun pistol — effective at point-blank, falls off at range.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CorpusHandShotgun/CorpusHandCannon',
+      '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBEDetron/CrpBEDetron',
+    ],
+    note: {
+      tldr: 'The Detron — a Corpus hand-cannon shotgun; fires Radiation pellets that bypass shields. Tenet Detron dramatically improves crit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Shotgun pistol with innate Radiation damage — Radiation bypasses Corpus shields and confuses enemies.',
+          'Base Detron: 4% crit, 13% status — weak stats. Tenet Detron: 18% crit, 10% status and a Sister bonus element.',
+          'Pellets spread in a small cone; close range is most effective.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Innate Radiation makes it naturally strong against Corpus (shield-bypass) and Corrupted (Radiation confusion proc).',
+          'Tenet Detron is the endgame version; the base Detron is a mastery item in modern content.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/AutomaticHandCrossbow/AutoCrossBow',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeBallistica/PrimeBallistica',
+      '/Lotus/Weapons/Syndicates/RedVeil/Pistols/RVBallistica',
+    ],
+    note: {
+      tldr: 'The Ballistica — a semi-auto hand crossbow; fires bolts with projectile travel time. Rakta Ballistica (Red Veil) adds a life-leech proc.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto crossbow firing physical bolts — projectile travel, not hitscan; lead moving targets at distance.',
+          'Ballistica: 3% crit, 10% status — low base stats. Ballistica Prime: 20% crit, 15% status.',
+          'Rakta Ballistica fires a spread of bolts on alt-fire and has a Red Veil Entropy proc that grants brief invulnerability on kill.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Ballistica Prime is the competitive version; 20% crit makes Hunter Munitions viable for a bolt secondary.',
+          'Rakta Ballistica is primarily sought for the invulnerability proc (useful in high-level survival as a panic button) and not raw damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/GrineerPistol/GrnScopedPistolPlayer',
+      '/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Seer/KuvaSeer',
+    ],
+    note: {
+      tldr: 'The Seer — a scoped Grineer pistol; Kuva Seer raises it to 21% crit and 33% status for a hybrid secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto with a scope that increases zoom when aiming; base Seer is low-stat (5% crit, 13% status).',
+          'Kuva Seer: 21% crit, 33% status with a Lich progenitor element — a proper hybrid secondary.',
+          'The scope zooms in significantly on ADS; effective at longer ranges than most pistols.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kuva Seer is the build target; the base Seer is a mastery step.',
+          'The Lich element on Kuva Seer allows building strong two-element combinations without using extra mod slots.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/GrineerPistol/GrnHeavyPistol',
+      '/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Kraken/KuvaKraken',
+    ],
+    note: {
+      tldr: 'The Kraken — a Grineer burst pistol; Kuva Kraken jumps to 21% crit and 29% status for a viable hybrid burst secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Two-round burst per trigger pull; base Kraken has very low stats (5% crit, 13% status).',
+          'Kuva Kraken: 21% crit, 29% status with a Lich progenitor element — a genuine mid-tier hybrid.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kuva Kraken is the only version worth building seriously; base Kraken is a mastery weapon.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrineerLeverActionPistol/GLAPistol',
+      '/Lotus/Weapons/Syndicates/SteelMeridian/Pistols/SMMarelok',
+    ],
+    note: {
+      tldr: 'The Marelok — a Grineer lever-action pistol with 15% crit and 30% status; Vaykor Marelok raises both and adds a syndicate Justice proc.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Slow-fire semi-auto with high damage per shot; lever-action animation gives it a longer trigger-to-fire delay than most pistols.',
+          'Marelok: 15% crit, 30% status. Vaykor Marelok: 20% crit, 35% status.',
+          'Vaykor Marelok has the Steel Meridian Justice proc — a radial damage burst when the syndicate meter fills.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The 30%/35% status makes it a strong elemental proc secondary; the slow fire rate means each shot can proc reliably.',
+          'Vaykor Marelok is the endgame choice for players running Steel Meridian or wanting a status-heavy slow pistol.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnPriestPistolWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeKnell/PrimeKnellWeapon',
+    ],
+    note: {
+      tldr: "The Knell — Harrow's signature pistol; headshot kills stack a combo counter that boosts the next shot's crit chance dramatically.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto pistol. On headshot kill, a combo counter increments and the next shot fires with a substantial bonus crit chance.',
+          'Each stack also causes a headshot kill to fully reload the magazine — indefinite ammo efficiency if headshots are consistent.',
+          'Knell: 20% crit, 5% status. Knell Prime: 40% crit, 10% status — one of the highest base crit pistols.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Harrow's signature — gains bonus in his hands.",
+          'The headshot-kill requirement rewards precise play; in dense waves the reload loop sustains almost indefinitely.',
+          'At high combo stacks the crit chance can reach near-100% — effectively guaranteed criticals on the buffed shot.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnJetTurbinePistolWeapon',
+    ],
+    note: {
+      tldr: 'The Athodai — a Daily Tribute auto pistol with 32% crit; its damage dramatically ramps up after the magazine runs empty.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Full-auto semi-auto (high fire rate) with 32% crit and 8% status — pure crit platform.',
+          'After emptying the magazine, the next magazine fires at significantly increased fire rate and damage for a brief window.',
+          'The ramp means intentionally firing to empty is part of the rhythm — do not reload early.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions on a 32% crit auto pistol is very effective; the post-empty burst window is when bleed stacks peak.',
+          'Obtainable only from the Daily Tribute milestone system — time-gated.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnOdaliskSmgPistol',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeVelox/PrimeVeloxPistol',
+    ],
+    note: {
+      tldr: 'The Velox — a semi-auto burst pistol; Velox Prime reaches 14% crit and 32% status for a status-leaning secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Burst pistol; Velox Prime: 14% crit, 32% status — a status-priority secondary.',
+        ]},
+        { heading: 'Interactions', points: [
+          'High status for a burst pistol makes it useful for elemental proc builds where crit is not the priority.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+
+  // ── Secondaries — auto / SMG pistols ──────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistol/AutoPistol',
+      '/Lotus/Weapons/Tenno/Akimbo/AkimboAutoPistols',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeAfuris/PrimeAFurisWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/DexFuris/DexFuris',
+      '/Lotus/Weapons/MK1Series/MK1Furis',
+    ],
+    note: {
+      tldr: 'The Furis — a lightweight auto pistol; Afuris Prime reaches 16% crit and 30% status for a status-hybrid dual-auto secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Full-auto hitscan pistol; base Furis is low-stat (5% crit, 12% status) but Afuris Prime raises status to 30%.',
+          'Afuris (dual Furis) doubles fire rate and magazine size; Afuris Prime adds meaningful hybrid stats.',
+          'Dex Furis (anniversary gift) hits 14% crit, 28% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Afuris Prime and Dex Furis are the buildable versions; the base Furis and Mk1-Furis are starter and mastery items.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/GrineerPistol/GrineerLightPistol',
+      '/Lotus/Weapons/Grineer/Pistols/WraithSingleViper/WraithSingleViper',
+      '/Lotus/Weapons/Tenno/Akimbo/AkimboViperPistols',
+      '/Lotus/Weapons/Grineer/Pistols/WraithTwinVipers/WraithTwinVipers',
+    ],
+    note: {
+      tldr: 'The Viper — a Grineer rapid-fire pistol; very high fire rate, poor accuracy, modest stats until the Wraith variants.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Full-auto with extremely fast fire rate and significant spread — a hose, not a beam.',
+          'Viper: 15% crit, 11% status. Viper Wraith: 19% crit, 9% status. Twin Vipers / Twin Vipers Wraith double the output further.',
+          'Ammo drain is very fast; bring Ammo Mutation for sustained missions.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Best at close range where spread is acceptable; effective for applying elemental status procs through volume.',
+          'Twin Vipers Wraith is a fun close-range spray weapon but is outclassed by more modern alternatives at endgame.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CorpusMinigun/CorpusMinigun',
+      '/Lotus/Weapons/Corpus/Pistols/CorpusMinigun/DualCorpusMinigun',
+      '/Lotus/Weapons/Syndicates/PerrinSequence/Pistols/PSDualCestra',
+    ],
+    note: {
+      tldr: 'The Cestra — a Corpus auto pistol with a brief spin-up; Dual Cestra and Secura Dual Cestra improve stats significantly.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Spin-up: fire rate ramps over the first half-second to peak output.',
+          'Cestra: 6% crit, 20% status. Dual Cestra: 6% crit, 20% status (doubled output). Secura Dual Cestra: 16% crit, 28% status.',
+          'Secura Dual Cestra adds the Perrin Sequence Entropy proc — an energy restore on kill.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Secura Dual Cestra is the meaningful version; base Cestra stats are too low for endgame content.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/GrineerPistol/GrineerAkimboPistol',
+      '/Lotus/Weapons/Grineer/Pistols/GrnUzi/GrnUziWeapon',
+      '/Lotus/Weapons/Grineer/Pistols/GrnAmphisPistol/GrnAmphisPistol',
+      '/Lotus/Weapons/Grineer/Pistols/GrnDWUniques/GrnTwinKohmaks',
+      '/Lotus/Weapons/Grineer/Pistols/GrnKohmPistol/GrnKohmPistol',
+      '/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Stubba/KuvaStubba',
+    ],
+    note: {
+      tldr: 'Grineer auto pistols — Stubba, Kohmak, Quatz, Twin Gremlins; Kuva Twin Stubbas is the standout with 23% crit and 31% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'A group of Grineer auto and SMG-style pistols with different fire rhythms but broadly similar low-moderate stats.',
+          'Stubba: 23% crit, 13% status — crit-leaning single auto. Quatz: semi-auto with toggle to full-auto.',
+          'Kohmak / Twin Kohmak: burst-fire Grineer microgun. Twin Gremlins: low-accuracy auto pistol pair.',
+          'Kuva Twin Stubbas: 23% crit, 31% status with a Lich element — a competitive hybrid.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kuva Twin Stubbas is the only weapon in this group competitive in Steel Path; the rest are mastery items.',
+          'Prisma Twin Gremlins (Baro) improves to 23% crit, 23% status — a balanced mid-tier pickup.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/LongGuns/GrineerAssaultRifle/TwinGrakatas',
+    ],
+    note: {
+      tldr: 'Twin Grakatas — dual Grineer Grakata pistols; 25% crit and 17% status, very high fire rate, significant spread.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Akimbo version of the primary Grakata; very high fire rate, moderate accuracy at range.',
+          '25% crit, 17% status — crit-primary; Hunter Munitions is the natural pairing.',
+          'High ammo consumption; Ammo Mutation or frequent resupply needed for long missions.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Beloved for the spray-and-pray aesthetic; effective at close-to-medium range.',
+          'The primary Grakata is more ammo-efficient; the Twin Grakatas trade that for doubled throughput.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TennoUzi/TennoUzi',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeAkstiletto/PrimeAkstiletto',
+    ],
+    note: {
+      tldr: 'The Akstiletto — dual micro-SMG pistols; Akstiletto Prime reaches 15% crit and 30% status for a status-hybrid auto secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'High fire-rate dual pistols; Akstiletto: 18% crit, 18% status. Akstiletto Prime: 15% crit, 30% status.',
+          'Prime shifts toward status — the higher status makes elemental build directions more reliable than the base.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Akstiletto Prime is a strong status secondary for its MR requirement; competitive in mid-game and viable into Steel Path with proper elemental builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/SomaSidearm/AkimboSomaPistols',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeAksomati/PrimeAksomati',
+    ],
+    note: {
+      tldr: 'The Aksomati — rapid-fire dual pistols based on Soma; Aksomati Prime reaches 24% crit and 18% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Very fast fire rate dual pistols; Aksomati: 24% crit, 8% status. Aksomati Prime: 24% crit, 18% status.',
+          'Crit-leaning both versions; Hunter Munitions is the reliable build direction.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Aksomati Prime delivers high crit-bleed output in the secondary slot; the elevated status on the Prime also opens hybrid modding.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnGuandoPistolGun',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeZakti/PrimeZaktiPistol',
+    ],
+    note: {
+      tldr: 'The Zakti — a small-calibre pistol that fires explosive darts; Zakti Prime has 8% crit and 42% status for a status-dominant secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires darts that detonate on impact for a small AoE; the explosions proc status rather than the dart itself.',
+          'Zakti: 2% crit, 20% status. Zakti Prime: 8% crit, 42% status — among the highest status secondaries in the pistol slot.',
+          'AoE allows status procs to land on nearby enemies even if only one target is aimed at.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Zakti Prime is a genuine status-spread tool; 42% status with AoE can Viral-prime a group in a few shots.',
+          'Low damage per dart; it is a primer weapon, best paired with a high-damage secondary weapon via quick-swap.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Secondaries — AoE / explosive pistols ──────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpHandRL/CorpusHandRocketLauncher',
+      '/Lotus/Weapons/Corpus/Pistols/CrpHandRL/PrismaAngstrum',
+    ],
+    note: {
+      tldr: 'The Angstrum — a Corpus hand rocket launcher; fires a burst of mini-rockets that explode on impact for AoE Blast damage.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires 3 rockets simultaneously (or 1 Prisma Angstrum alt-fire) that explode on contact for Blast damage in a radius.',
+          '16%/18% crit, 22%/26% status — solid hybrid stats with the AoE adding group-proc potential.',
+          'Self-damage risk at close range; fire at the ground in front of a group rather than at individual targets.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Prisma Angstrum (Baro) is a meaningful upgrade; its alt-fire condenses all rockets into a single high-damage salvo.',
+          'Pairs well with Warframes that group enemies (Vauban, Limbo, Nidus) — concentrated explosions on a cluster.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpAirPistol/CrpAirPistolArray',
+    ],
+    note: {
+      tldr: 'The Sonicor — a Corpus compressed-air cannon; fires a shockwave projectile that ragdolls enemies on impact.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto; fires a slow-moving spherical shockwave that violently ragdolls any enemy in its path.',
+          '10% crit, 0% status — no status; the weapon is purely about the ragdoll crowd control.',
+          'The ragdoll can launch enemies off ledges, into environmental hazards, or simply scatter a group.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Effective in defense to push enemies off objectives; near environmental hazards (cliffs, fans, vents) the ragdoll is lethal.',
+          'Not a damage weapon — it is a displacement tool; pair with a high-damage primary.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrnTorpedoPistol/GrnTorpedoPistol',
+    ],
+    note: {
+      tldr: 'The Kulstar — a Grineer hand mortar; fires a round that bounces twice before exploding, detonating three times total.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a single explosive round that bounces off surfaces twice; on the third contact (or timeout) it detonates for an AoE Blast.',
+          'The bouncing means the detonation point is not where you aimed; lead targets and bounce off walls to reach cover.',
+          '17% crit, 19% status — decent hybrid stats but the bounce mechanics make precision placement the challenge.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Very effective in enclosed maps where bouncing into a room corners a cluster; awkward in open areas.',
+          'The three-bounce delay means it is not a reactive weapon — commit to positioning before firing.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/StickyBomb/StickyBombs',
+      '/Lotus/Weapons/Syndicates/NewLoka/Pistols/NLCastanas',
+    ],
+    note: {
+      tldr: 'The Castanas — sticky electric grenades thrown as secondaries; detonate on command (alt-fire) or after a short fuse.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown as a secondary; each cast throws multiple sticky grenades that adhere to surfaces and enemies.',
+          'Alt-fire detonates ALL currently active Castanas simultaneously for a large coordinated Electricity burst.',
+          'Sancti Castanas (New Loka) adds higher status and the Loka Justice proc on the syndicate meter.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Stick them to one enemy and detonate for concentrated single-target burst; or spread across a group for area denial.',
+          'The simultaneous detonation makes them a setup weapon — you choose when and where all explosions happen.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/ThrowingWeapons/GrnVorStickyBomb/GrnVorStickyBomb',
+    ],
+    note: {
+      tldr: 'The Aegrit — Grineer sticky grenade secondary; 37% crit makes it the highest-crit throwing weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Sticky grenades similar to Castanas but with dramatically higher crit (37%) and moderate status (19%).',
+          'The 37% crit is unusual for a throwing/explosive secondary and makes Hunter Munitions viable on a grenade weapon.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Crit-focused builds take advantage of the high base crit; combine with Blast element for AoE crit-bleed clusters.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Secondaries — Corpus beam / charge pistols ────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Syndicates/CephalonSuda/Pistols/CSDroidArray',
+      '/Lotus/Weapons/Syndicates/CephalonSuda/Pistols/CSSynoidGammacor',
+    ],
+    note: {
+      tldr: 'The Gammacor — a Cephalon Suda beam secondary; Synoid Gammacor reaches 20% crit and 28% status with the Suda Entropy proc.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Continuous hitscan beam; damage applied per-tick.',
+          'Gammacor: 8% crit, 20% status. Synoid Gammacor: 20% crit, 28% status.',
+          'Cephalon Suda Entropy proc restores energy to you on fill — sustained beam use with kills can maintain a passive energy income.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Synoid Gammacor was a dominant secondary for energy-hungry frames before stat power-creep; the energy restore is still useful.',
+          'Beam weapons accumulate tick damage quickly; status and crit apply per tick at the beam rate.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpChargeGun/CrpChargeGun',
+      '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBECycron/CrpBECycron',
+    ],
+    note: {
+      tldr: 'The Cycron — a charged-burst energy secondary; fires a ricocheting disc. Tenet Cycron reaches 20% crit and 40% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto; fires a bouncing energy disc that ricochets off walls and enemies.',
+          'Cycron: 12% crit, 30% status. Tenet Cycron: 20% crit, 40% status — one of the higher status secondaries available.',
+          'The ricochet means the disc can hit the same enemy multiple times in an enclosed space.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Tenet Cycron with 40% status and a Sister element is a strong status primer/damage secondary in tight corridors.',
+          'In open areas the ricochet provides less benefit; most effective in corridors and rooms.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrineerMicrowavegun/GrnMicrowavePistol',
+      '/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Nukor/KuvaNukor',
+    ],
+    note: {
+      tldr: 'The Nukor — a Grineer microwave-beam secondary that chains to nearby enemies; Kuva Nukor at 50% status is one of the best status primers in the game.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a continuous microwave beam that automatically arcs to nearby enemies in a chain — one shot can hit a group.',
+          'Nukor: 3% crit, 29% status. Kuva Nukor: 7% crit, 50% status — the highest natural status in any secondary pistol.',
+          'The chain mechanic means every enemy in proximity to the target receives status ticks simultaneously.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kuva Nukor is the premier status primer for secondaries; 50% status with chaining means an entire squad of enemies can be Viral-primed in under a second.',
+          'Its low damage is intentional — equip it to prime, then swap to a high-damage primary or melee to benefit from the amplified damage.',
+          'The Lich progenitor element adds a third damage type on top of the innate Radiation — choose Heat for maximum coverage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/HeatGun/GrnHeatGun',
+    ],
+    note: {
+      tldr: 'The Atomos — a Grineer Heat beam that chains between enemies; moderate stats, effective as an elemental spread weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Continuous beam that chains to nearby enemies after the first hit, spreading Heat damage across a group.',
+          '15% crit, 21% status — a hybrid stat line but secondary to the chain-spread identity.',
+          'Chain range is shorter than the Nukor; hits fewer enemies per second but at higher damage per tick.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Heat procs applied via chain strip armor over time (5 Heat procs = full strip), useful against light Grineer armor in mid-game.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpElectroMag/CrpElectroMag',
+    ],
+    note: {
+      tldr: 'The Staticor — a Corpus charge-fire pistol; brief charge releases a Electricity orb that explodes for AoE damage, with 28% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Charge to fire — longer charge = larger explosion radius and higher damage.',
+          '14% crit, 28% status — status-leaning; the AoE means status procs apply to all caught in the blast.',
+          'Releasing without a full charge fires a smaller burst; full charge is the intended use.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The AoE + 28% status makes it effective for priming groups if you can land the charge in the middle of a cluster.',
+          'The charge time makes it poor for fast-moving individual targets; shine in stationary defense or enemy-cluster situations.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpSonificBlastor/CrpBlastorWeapon',
+      '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBEPlinx/CrpBEPlinxWeapon',
+    ],
+    note: {
+      tldr: 'The Plinx — a single-shot Corpus pistol with 32% crit; Tenet Plinx jumps to 44% crit with a Sister element for one of the highest crit secondaries.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto hitscan with very high crit: base Plinx 32%, Tenet Plinx 44% — far above most secondary pistols.',
+          'Status is low (4%/12%) — a pure crit platform; status builds are the wrong direction.',
+          'Tenet Plinx adds the Sister progenitor element baked in.',
+        ]},
+        { heading: 'Interactions', points: [
+          'At 44% crit the Tenet Plinx is a reliable Hunter Munitions bleed machine in the secondary slot.',
+          'The very high crit multiplier pairs with Blood Rush (with the combo counter) to reach extreme multipliers.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+
+  // ── Secondaries — special mechanics ───────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Zariman/Pistols/HeavyPistol/ZarimanHeavyPistol',
+    ],
+    note: {
+      tldr: 'The Laetum — a Zariman evolved pistol; gains bonus crit after consecutive kills and unlocks an Incarnon alt-fire form.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Starts as a semi-auto Void-damage pistol; after activating Incarnon mode (charged up by kills), it transforms into a fully-automatic spray weapon.',
+          'Base: 22% crit, 22% status. Incarnon mode substantially elevates crit to near-guaranteed with a different fire pattern.',
+          'Void damage interacts with Void Adaptation (Operator passive) and Sentient enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'One of the Incarnon weapons from Angels of the Zariman content; requires Voidplume and Pathos Clamp to craft.',
+          'The Incarnon form is triggered by a gauge filled during combat — consistent kill momentum maintains the mode longer.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnWraitheSidearmWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeEpitaph/PrimeEpitaphSidearmWeapon',
+    ],
+    note: {
+      tldr: "The Epitaph — Wisp's signature sidearm; primary fire is silent Cold bolts; alt-fire lays a Wisp-style landing pad that applies Cold and Blast to any enemy entering it.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: rapid Cold bolts, silent, 2%/4% crit and 4%/14% status — weak stats.',
+          'Alt-fire: places a ground pad (similar to Wisp reservoirs aesthetically) that fires a burst of Cold/Blast on entering enemies.',
+          'Epitaph Prime raises crit to 4% and status to 14%; still low, so the pad mechanic is the actual value.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Wisp's signature — gains bonus stats in her hands.",
+          'The ground pad is a setup tool: place it in enemy movement paths for an automatic Cold proc on every entry.',
+          'Cold procs set up freeze and can feed Ephemera Cold Sorbet or simply slow enemies for melee follow-up.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnYareliPistolWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeKompressa/PrimeKompressa',
+    ],
+    note: {
+      tldr: "The Kompressa — Yareli's signature pistol; fires Water bubbles that hold enemies briefly before detonating for a burst.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto bubble launcher — bubbles linger at the impact point, trapping small enemies inside and then popping for damage.',
+          'Kompressa: 6% crit, 30% status. Kompressa Prime: 16% crit, 36% status.',
+          'The bubble trap briefly immobilises lighter enemies, creating a window for follow-up shots or melee.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Yareli's signature — gains bonus stats on her Merulina board.",
+          'Kompressa Prime at 36% status can prime groups through multi-bubble application; useful as a secondary primer.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/SapientPistol/SapientPistol',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeAkarius/PrimeAkariusWeapon',
+    ],
+    note: {
+      tldr: 'The Akarius — fire-and-forget rockets that seek targets after launch; Akarius Prime reaches 18% crit and 34% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires small rockets that home onto the closest enemy after release — no aiming required past the initial direction.',
+          'Akarius: 6% crit, 28% status. Akarius Prime: 18% crit, 34% status.',
+          'The homing is loose — rockets track toward targets but do not course-correct sharply; they may miss fast-moving enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Good for blind-fire situations or covering flanks; the homing means you can fire without direct line of sight.',
+          'Akarius Prime is a strong hybrid secondary; 34% status makes Viral priming reliable even on homing rockets.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/QuillDartGunWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeHystrix/PrimeHystrixWeapon',
+    ],
+    note: {
+      tldr: "The Hystrix — Wisp's signature quill pistol; switches between four elemental ammo types; Hystrix Prime gets 28% crit.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires quills in four selectable elemental types: Heat, Cold, Electricity, Toxin — switched via alt-fire.',
+          'Hystrix: 24% crit, 10% status. Hystrix Prime: 28% crit, 20% status — crit-leaning across both versions.',
+          'The element-switching mechanic lets you instantly swap elements without modding.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Wisp's signature — gains bonus stats in her hands.",
+          'The elemental switching means you can quickly cover different faction weaknesses or status combinations without changing mods.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnChoirframeKunai/TnChoirframeKunai',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeAkjagara/AkJagaraPrime',
+    ],
+    note: {
+      tldr: 'The Akjagara — dual bladed pistols; high status (28%/32%) with an arcing projectile trajectory.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto dual pistols that fire bladed projectiles with a slight arc; not fully hitscan at range.',
+          'Akjagara: 6% crit, 28% status. Akjagara Prime: 18% crit, 32% status.',
+          'Cantare is a single-handed variant with similar knife-toss identity at 18% crit, 22% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Akjagara Prime is a solid status secondary; lead targets at range due to the projectile arc.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Thanotech/EntratiWristGun/EntratiWristGunWeapon',
+    ],
+    note: {
+      tldr: 'The Onos — an Entrati wrist-mounted secondary; alt-fire charges up and releases an enormous Void-beam burst.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: auto-fire Energy bolts, 26% crit, 22% status — solid hybrid base.',
+          'Alt-fire: holds charge and fires a massive Void cannon blast that deals heavy single-target or AoE damage.',
+          'A weapon from the Entrati faction; requires Zariman/Entrati standing to acquire.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The charged alt-fire is the defining moment; save the charge for heavy units or grouped enemies.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Thanotech/ThanoPistol/ThanotechPistol',
+    ],
+    note: {
+      tldr: 'The Sepulcrum — an Entrati semi-auto pistol with 30% crit; fires homing bio-projectiles that deal Viral damage.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto, 30% crit and 14% status — crit-dominant.',
+          'Innate Viral damage makes every crit a potential Viral proc without needing modded elements.',
+        ]},
+        { heading: 'Interactions', points: [
+          'High crit + innate Viral is a strong combination; Hunter Munitions layered on top makes it a Viral-bleed machine.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/SniperPistol/CrpScopeGun',
+    ],
+    note: {
+      tldr: 'The Arca Scisco — a Corpus scoped semi-auto pistol; zoomed ADS gives it sniper-level accuracy for a secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '18% crit, 26% status — moderate hybrid. The scope zooms significantly on ADS.',
+          'At full zoom it functions like a long-range semi-auto pistol; without zoom, accuracy degrades notably.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Works as a precision secondary for players who want long-range coverage without occupying the primary slot with a sniper.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Grimoire/TnGrimoire',
+      '/Lotus/Weapons/Tenno/Grimoire/TnDoppelgangerGrimoire',
+    ],
+    note: {
+      tldr: 'The Grimoire — a Tenno secondary spellbook; fires magic energy pages that ricochet and pierce, with a charged alt-fire that blasts a large AoE.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto firing energy pages as projectiles; they pierce through enemies and ricochet off surfaces.',
+          'Tenno Grimoire: 20% crit, 26% status. Doppelganger Grimoire: 8% crit, 10% status.',
+          'Alt-fire charges and releases a burst AoE around the player.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The ricochet-and-pierce means pages can hit an enemy multiple times in tight corridors.',
+          'The Doppelganger version is a variant from a specific mission/companion; the main Grimoire is the standard endgame secondary.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpSentAmalgPistol/CrpSentAmalgPistol',
+    ],
+    note: {
+      tldr: 'The Cyanex — a Corpus-Sentient secondary that fires homing spores; very high status (32%) and moderate crit (8%).',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a small cluster of homing spores that track to the nearest enemy after launch.',
+          '8% crit, 32% status — status platform; the homing removes the need for precise aim.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Good for applying status from cover or on fast-moving targets; the homing forgives imprecise fire.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpSentExperimentPistol/CrpSentExperimentPistol',
+    ],
+    note: {
+      tldr: 'The Ocucor — a Corpus-Sentient pistol with a chain-arc beam on ADS; 16% crit and 24% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: semi-auto bolts. Alt-fire / ADS activates a chain-arc beam mode that connects between nearby enemies.',
+          '16% crit, 24% status — balanced hybrid.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The beam arc mode applies status to chained enemies simultaneously; effective in groups but the chain range is limited.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Secondaries — Infested pistols ─────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/ClanTech/Bio/AcidDartPistol',
+    ],
+    note: {
+      tldr: 'The Acrid — a clan-research Infested dart pistol; fires Toxin darts that bypass shields, applying poison procs.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto dart pistol with innate Toxin damage — Toxin bypasses shields and hits health directly.',
+          '5% crit, 10% status — low base stats; primarily notable for innate shield-bypass on Corpus.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Useful against Corpus where shields make other damage types less efficient; Toxin hits health regardless of shield.',
+          'Primarily a mastery or collector piece in the modern meta.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Pistols/InfestedPistol',
+    ],
+    note: {
+      tldr: 'The Embolist — an Infested syringe pistol; fires a close-range Toxin mist cloud rather than a projectile.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a persistent cloud of Toxin gas at point-blank range; not a projectile, more like a triggered AoE.',
+          '3% crit, 41% status — extremely high status but the close range and low damage limit its use.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The 41% status is high enough to proc consistently but the delivery mechanism is too close-range to use safely in most missions.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Pistols/InfestedDartPistol/InfestedDartPistol',
+      '/Lotus/Weapons/Infested/InfestedLich/Pistols/CodaTysis',
+    ],
+    note: {
+      tldr: 'The Tysis — an Infested dart pistol at 50% status; fires sticky Toxin darts that embed and proc repeatedly.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto sticky darts; darts embed in the target and apply a Corrosive/Toxin proc before dissolving.',
+          'Tysis: 3% crit, 50% status — one of the highest status percentages on any secondary.',
+          'Coda Tysis adds the Infested Lich element on top of an already high-status platform.',
+        ]},
+        { heading: 'Interactions', points: [
+          '50% status means nearly every dart triggers a status proc; Corrosive procs stack toward full armor strip.',
+          'Best used as a primer weapon in fast-swap builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Pistols/InfProximityStars/InfProximityStars',
+      '/Lotus/Weapons/Infested/InfestedLich/Pistols/CodaPox',
+    ],
+    note: {
+      tldr: 'The Pox — thrown Infested proximity bombs that create a gas cloud on impact, applying Toxin to enemies entering the zone.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown grenade secondary — projectiles arc to the target and detonate on contact or proximity, releasing a gas cloud.',
+          '1% crit, 35% status — pure status tool; the cloud procs Toxin on everything inside it.',
+          'Coda Pox adds the Infested Lich element to the cloud damage.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Place clouds in choke points or on objectives; enemies walking through take repeated Toxin procs.',
+          'The cloud persists briefly — useful for area denial on defense targets.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Pistols/InfBeamPistol/InfBeamPistol',
+      '/Lotus/Weapons/Infested/InfestedLich/Pistols/CodaCatabolyst',
+    ],
+    note: {
+      tldr: 'The Catabolyst — an Infested beam pistol; the magazine expires and the weapon is thrown as an explosive to detonate.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Continuous beam secondary until the magazine empties; at that point, instead of reloading, the weapon is thrown and explodes for a large AoE Blast.',
+          '11% crit, 43%/50% status — a strong status beam, and the detonation is a meaningful AoE burst.',
+          'Do not manually reload — fire to empty and let the explosion trigger automatically.',
+        ]},
+        { heading: 'Interactions', points: [
+          'In dense waves, beam-until-empty then detonate is a rhythm that both damages and group-clears.',
+          'Coda Catabolyst raises status to 50%; the beam becomes an extremely reliable primer before the final explosion.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Pistols/InfVomitGun/InfVomitGunWep',
+    ],
+    note: {
+      tldr: 'The Dual Toxocyst — dual Infested pistols with 37% status; each headshot kill temporarily increases fire rate.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto Infested pistols; 5% crit, 37% status — status-dominant.',
+          'Headshot kills trigger a brief fire rate boost — in dense groups with consistent headshots, the boost is nearly permanent.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Status-heavy builds benefit most; Viral + Corrosive from headshot-maintained spray is effective in Corpus or Grineer content.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Pistols/InfUzi/InfUziWeapon',
+    ],
+    note: {
+      tldr: 'The Zymos — an Infested SMG secondary with 30% status; fires bursts of Pathogen spores that linger briefly.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto-fire spore launcher; 5% crit, 30% status — status-focused.',
+          'Spores land on surfaces briefly before expiring, dealing Toxin to enemies that walk into them.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The lingering spores serve as light area-denial near objectives; better than most Infested pistols as a status tool.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/InfestedLich/Pistols/1999InfSporePistol/1999InfSporePistolWeapon',
+    ],
+    note: {
+      tldr: 'Dual Coda Torxica — dual Infested Lich pistols with 25% crit and 28% status; a hybrid secondary with a Lich element.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual Infested pistols from the Infested Lich system; 25% crit and 28% status support hybrid builds.',
+          'Lich progenitor element adds a third damage type.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The balanced hybrid stats make it flexible; the Lich element allows strong elemental combinations.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Secondaries — throwing weapons ─────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/Kunai',
+      '/Lotus/Weapons/MK1Series/MK1Kunai',
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/StalkerKunai',
+    ],
+    note: {
+      tldr: 'Kunai — thrown knives with silent flight; Despair (Stalker variant) has 16% crit and 16% status for a silent precision secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown projectile secondary — each throw fires a knife silently; effective against unalerted enemies.',
+          'Kunai: 8% crit, 8% status — low stats. Despair (Stalker drop): 16% crit, 16% status.',
+          'All Kunai variants are silent; they do not alert nearby enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Despair is the build target for players wanting a silent throwing-knife secondary; acquirable from Stalker drops.',
+          'Silent throwing weapons work well alongside the Shade sentinel or in stealth-build runs.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/TennoStars',
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/PrimeThrowingStar/PrimeHikou',
+    ],
+    note: {
+      tldr: 'The Hikou — thrown shurikens; Hikou Prime raises status to 28% for an elemental proc throwing weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown shurikens; very fast fire rate but low damage per throw.',
+          'Hikou: 4% crit, 10% status. Hikou Prime: 6% crit, 28% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hikou Prime with 28% status becomes a status primer; the fast throw rate stacks elemental procs quickly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/LiDagger/LiDagger',
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/PrimeLiDagger/PrimeLiDagger',
+    ],
+    note: {
+      tldr: 'The Spira — a precision thrown dagger with 30% crit; Spira Prime keeps 30% crit and adds 14% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown daggers — faster than kunai, slightly different arc.',
+          'Spira: 30% crit, 8% status. Spira Prime: 30% crit, 14% status — pure crit platform.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Spira Prime with 30% crit is the go-to crit throwing secondary; Hunter Munitions builds work on throwing weapons.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/GlassKunai/GlassKunaiWeapon',
+    ],
+    note: {
+      tldr: "The Fusilai — Gara's glass-shard secondary; thrown shards shatter on impact, dealing Slash and applying bleed.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown glass shards; 23% crit, 29% status — a strong hybrid throwing weapon.',
+          'Innate Slash damage means consistent bleed proc stacking alongside elemental mods.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Gara's signature — gains bonus stats in her hands.",
+          'Both crit and status are high enough for hybrid builds; one of the better throwing secondaries for raw stats.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/U18ThrowingKnives/U18throwingknives',
+    ],
+    note: {
+      tldr: 'The Talons — thrown knives that deploy razor loops on impact, creating a zone that damages enemies passing through.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '22% crit, 26% status — solid hybrid stats.',
+          'On impact, the Talons create a lingering razor-blade loop at the target location that damages enemies within.',
+          'Area-denial secondary — the loops make it useful for coverage of narrow passages or objectives.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Status procs apply inside the loop zone; place Talons at choke points for sustained proc coverage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/TnOraxiaFlechette/TnOraxiaFlechette',
+    ],
+    note: {
+      tldr: 'The Scyotid — a 1999 Technocyte Coda throwing weapon; flechettes that apply Infested status procs on hit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown flechettes (small aerodynamic darts); 24% crit, 18% status.',
+          'From the 1999 Coda content pool.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A competent throwing secondary from 1999 content; both stats support hybrid modding.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Secondaries — 1999 faction ─────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Lasria/LasSilencedPistol/LasSilencedPistolWeapon',
+    ],
+    note: {
+      tldr: 'The Vesper 77 — a Lasrian silenced pistol; 24% crit and 26% status in a compact, silent semi-auto form.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto hitscan, silent — does not alert unaware enemies.',
+          '24% crit, 26% status — a hybrid silent secondary with good stats for its class.',
+        ]},
+        { heading: 'Interactions', points: [
+          'One of the few silent secondary options with competitive hybrid stats; pairs well with stealth builds or the Baza primary.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Lasria/LasGooPistol/LasGooPistolPlayerWeapon',
+    ],
+    note: {
+      tldr: 'The Efv-8 Mars — a Lasrian pistol that fires viscous projectiles; 27% crit and 17% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto pistol with slightly arcing bolts; 27% crit, 17% status — crit-leaning.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A 1999 content secondary with solid crit for Hunter Munitions builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/1999EntHybridPistolWeapon/1999EntHybridPistolWeapon',
+    ],
+    note: {
+      tldr: 'The Riot-848 — an Entarchy hybrid pistol from 1999; 26% crit and 26% status for an evenly balanced secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Balanced hybrid stats (26% crit, 26% status) in a semi-auto form; from the 1999 Entarchy faction.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The even split means both crit and status builds work without compromising; one of the more flexible 1999 secondaries.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Secondaries — miscellaneous / remaining ────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrnQueenGuardDualPistol/GrnQueenGuardDualPistols',
+    ],
+    note: {
+      tldr: 'Twin Rogga — Grineer Queen Guard dual shotgun pistols; very high damage per shot, very small magazine.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual heavy hand shotguns; low crit (10%), low status (7%), but high per-pellet damage.',
+          'Small magazine (2 shots) means you are constantly reloading in extended engagements.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Best used for burst close-range damage; reload after every two shots makes sustained fire impractical.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrnOrokinPistol/GrnOrokinPistol',
+    ],
+    note: {
+      tldr: 'The Sagek Prime — a Grineer Orokin-era semi-auto pistol with exceptional 30% crit; pure crit platform.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '30% crit, 1% status — one of the highest base crits on a secondary pistol; not a status weapon at all.',
+          'Semi-auto with high per-shot damage.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions with 30% crit makes it a straightforward bleed-stack machine in a pistol-slot form.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpLaserPistol',
+      '/Lotus/Weapons/Corpus/Pistols/CorpusModularPistol/Vandal/CrpLaserPistolVandal',
+    ],
+    note: {
+      tldr: 'The Spectra — a Corpus laser pistol beam; Spectra Vandal raises crit to 20% and status to 28% for a hybrid beam secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Continuous beam secondary; very precise, applies damage per tick.',
+          'Spectra: 14% crit, 22% status. Spectra Vandal: 20% crit, 28% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Spectra Vandal is the competitive version; 20%/28% supports hybrid tick-damage builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/ConclaveLeverPistol/ConclaveLeverPistol',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeZylok/ZylokPrimePistol',
+    ],
+    note: {
+      tldr: 'The Zylok — a Conclave-origin lever-action pistol; Zylok Prime reaches 12% crit and 36% status for a status secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Lever-action semi-auto pistol; slow fire rhythm, higher per-shot damage.',
+          'Zylok: 8% crit, 26% status. Zylok Prime: 12% crit, 36% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Zylok Prime is a useful status secondary for elemental proc builds; the slow fire rate is compensated by high status per shot.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TigrisRedeemerSetPistol/TnoBladedPistols',
+    ],
+    note: {
+      tldr: 'The Akjagara — dual bladed pistols; paired with the Broken Scepter and Redeemer set, 6% crit and 28% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Part of a set with the Broken Scepter Melee and Tigris / Redeemer; they share a set bonus when used together.',
+          '6% crit, 28% status — status-leaning.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The set bonus improves performance when paired with the other set weapons; individually competitive but the set synergy is the draw.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/HarlequinGun/HarlequinPistols',
+    ],
+    note: {
+      tldr: 'The Akzani — Mirage Prime signature dual pistols; high fire rate, 14% crit and 14% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual auto pistols with a fast fire rate; 14% crit, 14% status — balanced but not exceptional.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Mirage's signature — gains a bonus in her hands; her Hall of Mirrors clones duplicate the fire, amplifying total output significantly.",
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/SundialPistol/SundialPistol',
+    ],
+    note: {
+      tldr: 'The Azima — a Daily Tribute auto pistol that deploys a spinning turret from the magazine on alt-fire.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto pistol; 16% crit, 16% status. Alt-fire deploys a ground turret from the pistol body that auto-fires at enemies for several seconds.',
+          'Reloading cancels the deployed turret.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Deploy the turret, then swap to a primary — you effectively get a free auto-firing secondary while using your primary.',
+          'Obtainable only from Daily Tribute milestones.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Syndicates/ArbitersOfHexis/Pistols/AHAkbolto',
+      '/Lotus/Weapons/Tenno/Pistol/CrossBow',
+      '/Lotus/Weapons/Tenno/Akimbo/AkimboBolto',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeAkbolto/PrimeAkBoltoWeapon',
+    ],
+    note: {
+      tldr: 'The Bolto — a Tenno bolt-firing pistol; Akbolto Prime reaches 36% crit for an extremely high-crit throwing-bolt secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto bolt pistol; bolts travel as projectiles, not hitscan — slight travel time.',
+          'Bolto: 16% crit, 2% status. Akbolto Prime (dual): 36% crit, 14% status.',
+          'Telos Akbolto (Arbiters of Hexis) adds the AH Justice proc and higher status (29%) at the cost of some crit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Akbolto Prime at 36% crit is a strong Hunter Munitions secondary; one of the highest crit bolts available.',
+          'Telos Akbolto is a dual-purpose status+syndicate proc option for players aligned with Arbiters of Hexis.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrineerCrossbow/GrineerGooGun',
+    ],
+    note: {
+      tldr: 'The Stug — a Grineer goo pistol; fires goo globs that stick to surfaces and detonate after a delay.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires goo blobs that adhere to surfaces; after a short delay each blob detonates.',
+          '5% crit, 0% status — extremely low stats; the goo mechanic is the only identity.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Primarily a mastery weapon; the delayed goo detonations have a small AoE but the damage is negligible at any meaningful content level.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBEDiplos/CrpBriefcaseAkimboPistol',
+    ],
+    note: {
+      tldr: 'The Tenet Diplos — Sister dual-akimbo pistols with 36% crit; a high-crit dual-auto secondary with a Sister element.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual pistols with 36% crit and 14% status — crit-dominant; one of the highest crit akimbo secondaries.',
+          'Sister progenitor element baked in.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions on dual pistols with 36% crit delivers extremely consistent bleed-stacking output.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBEIgniter/CrpIgniterPistol',
+    ],
+    note: {
+      tldr: 'The Tenet Spirex — a Sister pistol that fires accelerating energy bolts; 26% crit and 40% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto bolts that gain speed the longer they travel — most effective at medium-to-long range.',
+          '26% crit, 40% status — a strong hybrid secondary with high status.',
+          'Sister progenitor element baked in.',
+        ]},
+        { heading: 'Interactions', points: [
+          'At 40% status, Viral priming is fast even in single shots; the accelerating bolt means standing back is advantageous.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+
+  // ── Melee — 1h swords ──────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/LongSword/EtherSword',
+      '/Lotus/Weapons/Tenno/Melee/DualShortSword/DualShortSword',
+      '/Lotus/Weapons/Tenno/Melee/DualShortSword/DualEtherSword',
+      '/Lotus/Weapons/Tenno/Melee/DualShortSword/DualHeatSwords',
+    ],
+    note: {
+      tldr: 'Ether Sword / Dual Skana / Dual Ether / Dual Heat Swords — foundational elemental swords; low stats but introduce the elemental melee identity.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Standard melee swords with innate elemental damage types (Heat, Ether/Electricity); damage type is their core identity.',
+          'Low-to-moderate crit and status; the elemental type provides a free proc on every hit without mod investment.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Primarily mastery weapons; the innate elemental damage is interesting thematically but the stat lines are not competitive.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/CronusSword/CronusLongSword',
+      '/Lotus/Weapons/Tenno/Melee/CronusSword/PrimeCronusLongSword',
+    ],
+    note: {
+      tldr: 'Cronus / Dakra Prime — a Tenno 1h sword; Dakra Prime at 36% crit is one of the highest crit single swords.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Standard 1h sword stance combos; low crit base. Dakra Prime jumps to 36% crit, 18% status.',
+          '36% crit on a 1h sword makes it a strong Hunter Munitions platform for bleed stacking on fast combos.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The speed of 1h sword stances means Dakra Prime applies bleed procs very quickly at full combo.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/HeatSword/HeatLongSword',
+      '/Lotus/Weapons/Tenno/Melee/Swords/JawSword/JawLongSword',
+      '/Lotus/Weapons/Tenno/Melee/Swords/DarkSword/DarkLongSword',
+    ],
+    note: {
+      tldr: 'Heat Sword / Jaw Sword / Dark Sword — elemental 1h swords with innate damage types; mastery weapons with niche thematic builds.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Heat Sword: innate Heat, 5% crit, 20% status. Jaw Sword: innate Slash/Puncture mix, 8% crit, 16% status.',
+          'Dark Sword: 5% crit, 40% status — the highest status of the basic 1h swords; entirely a status platform.',
+          'Dark Split-Sword is the dual-wield variant with a toggle between 1h and 2h modes.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Dark Sword at 40% status procs reliably but damage is too low for endgame; a mastery item.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/DarkSword/DarkSwordDaggerHybridWeapon',
+    ],
+    note: {
+      tldr: 'Dark Split-Sword — toggles between a single 1h mode and dual-dagger mode; unique weapon that uses both stance categories.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Alt-fire toggles between single great-sword stance (heavy hits) and dual-dagger stance (fast combos).',
+          '0% crit, 10% status — stats are negligible; this is a gameplay-mechanic curiosity item.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The stance-toggle is interesting mechanically but the damage numbers mean it cannot compete with dedicated weapons in either mode.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/KrisDagger/KrisDagger',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeKaryst/PrimeKrisDagger',
+    ],
+    note: {
+      tldr: 'Karyst / Karyst Prime — a Tenno ceremonial dagger; Karyst Prime at 24% crit and 30% status is a solid hybrid dagger.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Single dagger stance; fast attack animations, short range.',
+          'Karyst: 10% crit, 26% status. Karyst Prime: 24% crit, 30% status — both stats strong enough for hybrid builds.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Dagger stances feature finisher setups; positioning enemies for finishers amplifies the dagger damage significantly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/KatanaAndWakizashi/LowKatana',
+      '/Lotus/Weapons/Tenno/Melee/Swords/KatanaAndWakizashi/Dex2023Nikana/Dex2023Nikana',
+    ],
+    note: {
+      tldr: 'Dragon Nikana / Dex Nikana — Tenno katana weapons with graceful stance combos; Dragon Nikana at 22%/22% is a balanced hybrid.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dragon Nikana: 22% crit, 22% status — even hybrid split.',
+          'Dex Nikana (anniversary gift): 24% crit, 18% status — slightly crit-leaning.',
+          'Nikana stances (Dragon/Tranquil Cleave) feature flowing aerial and ground combos; fast attack speed.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Both weapons benefit from the Nikana stance library — pick the stance that fits your playstyle (Tranquil Cleave for range, Dragon Nikana stance for mobility).',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/KatanaAndWakizashi/Nikana',
+      '/Lotus/Weapons/Tenno/Melee/Swords/KatanaAndWakizashi/NikanaPrime',
+    ],
+    note: {
+      tldr: 'Nikana / Nikana Prime — the core Tenno katana; Nikana Prime at 28%/28% is a high-tier hybrid melee with strong combo potential.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Standard Nikana: 16% crit, 16% status. Nikana Prime: 28% crit, 28% status.',
+          'Uses the Nikana stance category with the same graceful mobility combos as Dragon Nikana.',
+          'Long range for a katana-class weapon; the Prime version is one of the better hybrid katanas available.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Nikana Prime with Blood Rush + Condition Overload reaches very high damage at full combo; a go-to melee for players who enjoy katana play.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/ExcaliburSword/ExcaliburUmbraKatana'],
+    note: { tldr: '', sections: [], status: 'beta' },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/ExcaliburSword/SkiajatiKatana'],
+    note: {
+      tldr: "Skiajati — Excalibur Umbra's signature nikana; slide attacks turn the player invisible briefly.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Nikana-class weapon with 19% crit and 30% status.',
+          "Slide attacks grant a brief stealth window — enemies nearby lose their target lock for a moment after a slide hit.",
+        ]},
+        { heading: 'Interactions', points: [
+          "Excalibur Umbra's signature — gains bonus stats in his hands.",
+          'The slide-attack invisibility is a minor utility feature; the weapon stands on its own as a hybrid nikana without relying on the gimmick.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/Tatsu/TatsuKatana',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeTatsu/PrimeTatsuWeapon',
+    ],
+    note: {
+      tldr: "Tatsu / Tatsu Prime — Revenant's signature dual nikana; ground slams spread Overguard to allies.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual-nikana stance (wielded as a pair); 16%/22% crit, 28%/30% status.',
+          'Slam attacks create an Overguard burst that spreads to nearby allies — effectively a passive support mechanic in melee range.',
+          'Tatsu Prime significantly improves crit (22%) and adds higher Overguard output.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Revenant's signature — gains bonus stats in his hands.",
+          'The Overguard slam is most useful in group play where allies can benefit; in solo play it acts as an extra buffer.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/TnoRapier/TnoRapier',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PRapier/DestrezaPrime',
+    ],
+    note: {
+      tldr: 'Destreza / Destreza Prime — Tenno rapier; lunge-based combos and very high crit (28%/32%) for fast thrust attacks.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Rapier stance features lunge attacks with tight forward movement; different from standard sword combos.',
+          'Destreza: 28% crit, 14% status. Destreza Prime: 32% crit, 20% status.',
+          'High attack speed and crit for a 1h melee makes it one of the better crit melee weapons in its tier.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Rapier lunge hits single targets precisely; effective for boss damage where accuracy matters.',
+          'At 32% crit with Blood Rush the Destreza Prime reaches reliable orange/red crits at high combo.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/StalkerTwo/StalkerTwoSmallSword',
+    ],
+    note: {
+      tldr: "Broken War — one half of the War greatsword, dropped from the Second Dream quest; 35% crit makes it a remarkable 1h sword.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '35% crit, 20% status — extremely high crit for a 1h sword; one of the best stat lines in the entire 1h sword category.',
+          'Obtained during The Second Dream quest as a quest reward, not craftable separately.',
+          'Uses 1h sword stances; the Broken War tag is lore-flavored (a fragment of the War greatsword).',
+        ]},
+        { heading: 'Interactions', points: [
+          'At 35% crit, Blood Rush at high combo frequently produces red crits — a fast, high-damage crit machine in a small sword form.',
+          'The War (full greatsword) has 26% crit — notably lower; Broken War is the surprising overperformer of the pair.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — heavy blades / great swords ───────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/GreatSword/TennoGreatSword',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeGalatine/PrimeGalatine',
+    ],
+    note: {
+      tldr: 'Galatine / Galatine Prime — the Tenno great sword; wide sweeping arcs hit multiple targets per combo; Prime at 26%/26% is a strong hybrid.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Heavy Blade stance with wide horizontal sweeps; one swing covers a large arc and hits multiple enemies.',
+          'Galatine: 10% crit, 20% status. Galatine Prime: 26% crit, 26% status — even hybrid split.',
+          'High base damage per hit and wide hitbox make it effective for crowd clearing.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Galatine Prime with Condition Overload is a high-damage crowd melee; the 26%/26% supports both crit and status scaling.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/GreatSword/GreatSword',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeGram/PrimeGram',
+    ],
+    note: {
+      tldr: 'Gram / Gram Prime — a Tenno heavy great sword; Gram Prime at 32%/32% is one of the best-balanced heavy blades available.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Gram: 15% crit, 15% status — base version is very basic. Gram Prime: 32% crit, 32% status — excellent even hybrid.',
+          'Heavy Blade moveset; wide sweeping attacks that cover large areas.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Gram Prime at 32%/32% is competitive in Steel Path; the even stats let you build for pure crit, pure status, or hybrid equally well.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/StalkerSword/StalkerSwordWeapon'],
+    note: {
+      tldr: "War — the Stalker's great sword; 26%/26% with innate Shadow damage. Obtained as a Stalker drop.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '26% crit, 26% status; heavy blade moveset. Primary drop from Second Dream Stalker encounters.',
+          'The signature weapon of the Stalker; higher damage per hit than most great swords at its tier.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Drop chance from the Stalker is low; craft requires Stalker blueprint + Forma + resources. A prestige melee in the early-to-mid game.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Orokin/Melee/OrokinSword/OrokinHeavySword'],
+    note: {
+      tldr: 'Paracesis — an Orokin-slaying greatsword; gains permanent damage stacks each forma applied, scaling with investment.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '31% crit, 22% status; heavy blade moveset with solid base damage.',
+          'Each Forma applied to the Paracesis permanently increases its base damage by 5% — up to 30% extra at 6 Forma.',
+          'Innate Sentient resistance bypass — deals full damage to Sentients regardless of their adaptation aura.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Forma-stacking mechanic rewards heavy investment; a 6-Forma Paracesis is significantly stronger than a 0-Forma one.',
+          'Required for New War quest progression — you will build this for story reasons; the damage scaling is a bonus.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/Masseter/MasseterWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeMasseter/PrimeMasseterWeapon',
+    ],
+    note: {
+      tldr: 'Masseter / Masseter Prime — a Tenno heavy sword; Prime reaches 26% crit and 36% status for a status-leaning hybrid.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Masseter: 24% crit, 28% status. Masseter Prime: 26% crit, 36% status.',
+          'Heavy blade moveset; the Prime version is status-dominant making Viral or Corrosive stacking very fast.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Masseter Prime with Condition Overload lets status procs snowball into high damage rapidly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/Pennant/PennantSword'],
+    note: {
+      tldr: 'Pennant — a heavy blade with a passive damage multiplier that increases with each kill during a heavy attack kill chain.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '32% crit, 10% status — crit-dominant heavy blade.',
+          'Kills with heavy attacks temporarily increase the damage of subsequent heavy attacks, building a streak multiplier.',
+          'The streak decays quickly if you stop using heavy attacks; the loop rewards sustained heavy-attack focus.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Heavy attack builds (Zenurik energy or Gladiator set for combo) can sustain the kill-streak effectively in dense missions.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/Sarofang/SarofangWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeSarofang/PrimeSarofangWeapon',
+    ],
+    note: {
+      tldr: 'Sarofang / Sarofang Prime — a Tenno 1h sword with a blade-charged heavy slam that deals AoE damage.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Sarofang: 20% crit, 20% status. Sarofang Prime: 30% crit, 30% status.',
+          'Heavy attacks charge energy along the blade that releases as a radial AoE on ground slam.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Sarofang Prime at 30%/30% is a strong even hybrid; the heavy-attack slam provides group-clear utility.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/VitricaGreatSword/VitricaWeapon'],
+    note: {
+      tldr: "Vitrica — Glassmaker's great sword; heavy attacks create glass shards that linger and damage enemies walking through them.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '23% crit, 33% status; heavy blade moveset.',
+          'Heavy attack slam shatters glass shards across the area; enemies walking through the shards take repeated Slash damage.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The shard field is area-denial — effective in narrow corridors or placed at a defense target choke point.',
+          'Status from the shards can stack Slash bleeds on multiple enemies simultaneously.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — dual swords ────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/QuillSword/QuillDualSwords',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeDualKeres/PrimeDualKeresWeapon',
+    ],
+    note: {
+      tldr: "Dual Keres / Dual Keres Prime — Wisp's dual scalpel swords; Prime reaches 32% crit and 24% status.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual sword stance; very fast attack speed.',
+          'Dual Keres: 28% crit, 14% status. Dual Keres Prime: 32% crit, 24% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Wisp's signature — gains bonus stats in her hands.",
+          'At 32% crit with fast attack speed, Blood Rush builds reach consistent red crits quickly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/DualKamas/DualKamas',
+      '/Lotus/Weapons/Tenno/Melee/PrimeDualKamas/PrimeDualKamas',
+    ],
+    note: {
+      tldr: 'Dual Kamas / Dual Kamas Prime — twin curved blades; Prime at 20%/25% is a hybrid dual-sword with good crowd-sweep coverage.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual Kamas: 10% crit, 15% status. Dual Kamas Prime: 20% crit, 25% status.',
+          'Dual sword stances apply wide horizontal arcs; covers crowds effectively.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Dual Kamas Prime is a solid mid-tier dual melee with enough stats to run either crit or status builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/OkinaPairedKarambit/OkinaWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeOkina/PrimeOkinaWeapon',
+    ],
+    note: {
+      tldr: 'Okina / Okina Prime — paired karambits; very fast attack speed with a focus on spin and whirling attacks.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Okina: 16% crit, 20% status. Okina Prime: 30% crit, 24% status.',
+          'Karambit stances feature circular spinning attacks; extremely fast attack cadence.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Okina Prime at 30% crit with fast attacks builds combo quickly; Blood Rush accelerates to reliable crits.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/NamiSkyla/NamiSkyla',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeNamiSkyla/PrimeNamiSkyla',
+      '/Lotus/Weapons/Tenno/Melee/Swords/NamiSolo/NamiSolo',
+    ],
+    note: {
+      tldr: 'Nami Skyla / Nami Skyla Prime — Tenno dual swords with a paired single version (Nami Solo); Prime at 22%/34% is a strong status dual weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual sword stances; Nami Skyla Prime: 22% crit, 34% status — status-dominant.',
+          'Nami Solo is the single-sword variant with the same blade design.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Nami Skyla Prime with Condition Overload and Viral stacking performs well; the 34% status procs reliably on every combo.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/PangalinSword/PangalinSwordWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimePangolin/PrimePangolinWeapon',
+    ],
+    note: {
+      tldr: 'Pangolin Sword / Pangolin Prime — single-handed curved sword; Prime at 26%/30% is a solid hybrid 1h sword.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Pangolin Sword: 8% crit, 22% status. Pangolin Prime: 26% crit, 30% status.',
+          'Uses the single-sword stance category.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Pangolin Prime is a reliable hybrid single-sword; neither crit nor status is dominant, giving build flexibility.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/TnDagathBladeWhip/TnDagathBladeWhip'],
+    note: {
+      tldr: "Dorrclave — Dagath's signature blade-whip hybrid; functions as a 1h sword but the combo animations lash with extended whip reach.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '26% crit, 24% status — hybrid stats on a whip-sword.',
+          "Visually whips on some combo animations, giving it longer reach than a standard 1h sword.",
+        ]},
+        { heading: 'Interactions', points: [
+          "Dagath's signature — gains bonus stats in her hands; her Death Scythe kit synergizes with rapid melee.",
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/ThreeLeaf/ThreeLeaf',
+    ],
+    note: {
+      tldr: 'Endura — a Tenno single sword with 10% crit and 36% status; focused on elemental status proc stacking.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '10% crit, 36% status — one of the higher status single swords; elemental proc-focused.',
+        ]},
+        { heading: 'Interactions', points: [
+          'With 36% status and Condition Overload, Endura can stack multiple procs quickly for strong scaling damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/Mios/MiosBladeWhip'],
+    note: {
+      tldr: "Mios — Equinox's signature blade-whip; deals Slash, 19% crit, 25% status, with extended combo reach.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Blade-whip style with Slash-heavy damage and moderate hybrid stats.',
+          "Long effective range on combos; Equinox's signature gains bonus in her hands.",
+        ]},
+        { heading: 'Interactions', points: [
+          'The Slash damage type naturally generates bleed procs; pairs well with Condition Overload or Hunter Munitions-style bleed stacking.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/DexTheSecond/DexTheSecond',
+    ],
+    note: {
+      tldr: 'Dex Dakra — anniversary dual swords; 16% crit and 24% status, a solid early-mid dual sword from the Tenno anniversary reward.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual sword stances; 16% crit, 24% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Annual anniversary weapon — same acquisition window as the Dex Nikana; moderately competitive for early game.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+
+  // ── Melee — polearms ───────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Staff/Staff',
+      '/Lotus/Weapons/Tenno/Melee/Staff/PrimeBo/PrimeBoWeapon',
+      '/Lotus/Weapons/MK1Series/MK1Bo',
+    ],
+    note: {
+      tldr: 'Bo / Bo Prime / Mk1-Bo — the Tenno staff; wide sweeping polearm combos. Bo Prime at 24%/32% is a strong status staff.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Staff stance moveset with long-range sweeping combos that cover wide arcs.',
+          'Bo: 13% crit, 20% status. Bo Prime: 24% crit, 32% status.',
+          'The Mk1-Bo is the MR0 starter staff — statistically the weakest version.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Bo Prime is a competitive status staff; the long range and 32% status let you Viral-prime clustered groups effectively.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Staff/GrnStaff',
+      '/Lotus/Weapons/Tenno/Melee/Staff/SingleStaff',
+      '/Lotus/Weapons/Tenno/Melee/Staff/Pupacyst/PupacystStaff',
+    ],
+    note: {
+      tldr: 'Amphis / Cadus / Pupacyst — single-ended staves with different elemental identities; moderate stats, all use the staff stance.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Amphis: 13% crit, 21% status — innate Electricity. Cadus: 15% crit, 25% status — innate Toxin.',
+          'Pupacyst: 13% crit, 27% status — Infested staff from Cetus Bounty; innate Toxin with a unique head design.',
+          'All use staff stances.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Cadus and Pupacyst are the more useful options for status builds; the innate elemental types let you reach combination procs faster.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Staff/Tipedo/Tipedo',
+      '/Lotus/Weapons/Tenno/Melee/Staff/PrimeTipedo/PrimeTipedoWeapon',
+    ],
+    note: {
+      tldr: 'Tipedo / Tipedo Prime — a Tenno spinning staff; faster attack speed than standard staves, 20%/24% crit and 20%/24% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Uses both staff and polearm stances; higher attack speed than standard staves.',
+          'Tipedo: 20% crit, 20% status. Tipedo Prime: 24% crit, 24% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Tipedo Prime is a reliable hybrid melee with fast attack speed; the balanced stats work in either build direction.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Polearms/TnGuandaoPolearm/TnGuandaoPolearmWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Polearms/PrimeGuandao/PrimeGuandaoWeapon',
+    ],
+    note: {
+      tldr: 'Guandao / Guandao Prime — the longest-range polearm; sweeping blade attacks that hit enemies at exceptional range. Prime: 32%/20%.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Polearm stance with very long reach — among the longest effective range melee options in the game.',
+          'Guandao: 28% crit, 4% status. Guandao Prime: 32% crit, 20% status.',
+          'High crit leans toward crit builds; the Prime version adds meaningful status for hybrid play.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The extreme range means you can hit enemies from outside their melee retaliation range on some attacks.',
+          'Guandao Prime is a strong crit polearm; at 32% crit Blood Rush reaches reliable orange crits very quickly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Polearms/OrthosPoleArm/OrthosPoleArmWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Polearms/OrthosPrimeWeapon/OrthosPrimeWeapon',
+    ],
+    note: {
+      tldr: 'Orthos / Orthos Prime — a double-ended polearm; spins hit both sides simultaneously. Prime at 24%/36% is status-dominant.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Double-bladed staff — spin attacks hit in both directions. Polearm stances combine with staff stances.',
+          'Orthos: 6% crit, 18% status. Orthos Prime: 24% crit, 36% status.',
+          'The two-sided hitbox means standing in the center of a group lets you hit enemies on both sides with a spin.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Orthos Prime at 36% status is a strong Condition Overload melee; the wide hit coverage on both sides makes proc stacking efficient.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Polearms/Tonbo/Tonbo',
+      '/Lotus/Weapons/Grineer/Melee/GrineerHalberd/GrnHalberd',
+      '/Lotus/Weapons/Tenno/Melee/Polearms/TnHalberdPolearm/TnHalberdPolearmWeapon',
+    ],
+    note: {
+      tldr: 'Tonbo / Kesheg / Cassowar — functional polearms with innate elemental damage; moderate stats, varied faction origins.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Tonbo: 5% crit, 25% status — innate Electricity. Kesheg: 19% crit, 23% status — Grineer war-mace polearm.',
+          'Cassowar: 6% crit, 28% status — a more modern polearm with higher status.',
+          'All use the polearm stance category.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Cassowar at 28% status is the most viable of these for status proc builds; others are primarily mid-game stepping stones.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Polearms/Naginata/ShrineMaidenNaginataWeapon',
+    ],
+    note: {
+      tldr: 'Amanata — a Tenno naginata with 24%/24% hybrid stats; graceful polearm stance with wide sweeping cuts.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '24% crit, 24% status — evenly balanced hybrid polearm.',
+          'Uses the polearm stance category with flowing naginata-style combos.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Even 24%/24% split makes modding flexible; works for crit, status, or hybrid builds without leaning too hard either way.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Polearm/Serro/SerroWeapon',
+    ],
+    note: {
+      tldr: 'Serro — a Corpus electric polearm with innate Electricity; 8% crit, 26% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Polearm stance; innate Electricity means every hit can arc to nearby enemies via the proc.',
+          '8% crit, 26% status — status is the identity; crit builds are not viable here.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The innate Electricity helps with Magnetic combos on Corpus; a niche clan-tech option for elemental polearm builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrineerJetPoweredPolearm/GrineerJetPolearm',
+    ],
+    note: {
+      tldr: 'Jat Kittag — a Grineer jet-powered war hammer used as a polearm; slam attacks create a massive knockdown AoE.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'The Jat Kittag uses the hammer moveset with a jet-pack thruster — airborne slams create a huge knockdown radius.',
+          '15% crit, 25% status — moderate hybrid. The knockdown AoE is the defining mechanic.',
+          'Crafted from the Miter (rifle) as an ingredient.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The slam wave from airborne heavy attacks can knock down entire rooms; effective for disrupting dense enemy groups.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — scythes ────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Scythe/ParisScythe/ParisScythe',
+      '/Lotus/Weapons/Tenno/Melee/Scythe/EtherScytheWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Scythe/ReaperPrime/ReaperPrime',
+    ],
+    note: {
+      tldr: 'Anku / Ether Reaper / Reaper Prime — the scythe family; Reaper Prime at 35%/25% is one of the best crit scythes.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Scythe stances use sweeping arc combos with wide lateral reach.',
+          'Anku: 20% crit, 10% status. Ether Reaper: 20% crit, 20% status. Reaper Prime: 35% crit, 25% status.',
+          'Reaper Prime is the endgame standout — 35% crit on a scythe is exceptional.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Reaper Prime with Blood Rush reaches near-guaranteed crits at high combo; fast combo build-up from scythe stance multi-hit combos.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Scythe/StalkerScytheWeapon',
+    ],
+    note: {
+      tldr: "Hate — the Stalker's scythe; 30% crit and 20% status, obtained as a Stalker drop.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '30% crit, 20% status; scythe moveset with rapid spinning sweeps.',
+          'Dropped by the Stalker; requires Stalker drops + blueprint craft.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A prestige scythe that holds up well; 30% crit with fast scythe swings builds combo rapidly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Melee/InfEmbolistScythe/InfestedScythe',
+      '/Lotus/Weapons/Infested/InfestedLich/Melee/CodaCaustacyst/CodaCaustacyst',
+    ],
+    note: {
+      tldr: 'Caustacyst / Coda Caustacyst — an Infested scythe; leaves a trail of Acid on the ground that damages enemies walking through it.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Caustacyst: 9% crit, 37% status. Coda Caustacyst: 19% crit, 41% status.',
+          'Slide attacks and combos leave a visible corrosive trail on the floor; enemies standing in the trail take repeated Corrosive status procs.',
+          'The trail persists briefly — placing it in enemy movement paths or on defense objectives creates sustained damage.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Corrosive trail gradually strips armor via repeated procs; effective as a passive area-denial tool during Survival or Defense.',
+          'Coda Caustacyst with 41% status procs the trail faster, applying Corrosion stacks more aggressively.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/Scythe/GrnDrillScythe/GrnDrillScythePrimary',
+    ],
+    note: {
+      tldr: 'Galariak Prime — a Grineer drill-scythe; 19%/32% hybrid stats with the scythe moveset.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '19% crit, 32% status — status-leaning hybrid scythe.',
+          'Uses the scythe stance category with standard sweep combos.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A mid-tier scythe; the 32% status makes Condition Overload proc stacking efficient.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Scythe/TnChoirScythe/TnChoirScytheWeapon',
+    ],
+    note: {
+      tldr: "Harmony — Octavia's Prime signature scythe; nearby allies gain buffs when you perform combos.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '20% crit, 36% status; scythe moveset.',
+          "Executing melee combos near allies applies a tempo buff that boosts their damage briefly.",
+        ]},
+        { heading: 'Interactions', points: [
+          "Octavia Prime's signature — plays into her rhythm-focused kit; the ally buff rewards fighting near teammates.",
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/HeavyScythe/DuviriScythe/DuviriHeavyScytheWeapon',
+    ],
+    note: {
+      tldr: 'Hespar — the Duviri heavy scythe; broad arcing slams that hit an entire group in front at once.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '24% crit, 28% status; heavy scythe moveset with wider sweeps than standard scythes.',
+          'From Duviri content; the heavy-scythe class features slam combos with larger AoE footprints.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Solid Duviri heavy melee; the wider sweep arc makes it easier to hit spread-out groups than standard scythes.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Sentients/Venato/VenatoWeapon',
+      '/Lotus/Weapons/Sentients/VenatoPrime/VenatoPrimeWeapon',
+    ],
+    note: {
+      tldr: 'Venato / Venato Prime — a Sentient scythe; ignores Sentient resistance adaptation, essential for Eidolon content.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Venato: 27% crit, 24% status. Venato Prime: 34% crit, 32% status.',
+          'Deals Void and Slash damage; Void bypasses Sentient adaptation, making it consistently effective against adapting enemies.',
+          'Scythe moveset with fluid sweeps.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Void-damage property means adapted Sentients cannot resist it; use it against Eidolons, Ropalolyst, and Murex fights.',
+          'Venato Prime at 34%/32% is also simply a strong melee in general content; the Void damage is a bonus on top.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — glaives ────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Glaives/LightGlaive/LightGlaiveWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Glaives/PrimeGlaive/PrimeGlaiveWeapon',
+    ],
+    note: {
+      tldr: 'Glaive / Glaive Prime — the iconic Tenno thrown melee; a spinning disc that returns after being thrown; Prime: 22%/30%.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Melee disc that can be thrown (aim + throw) and will return to the player after hitting targets or a surface.',
+          'While airborne, the disc deals melee damage with mods applied; it can hit multiple enemies on the throw path and the return.',
+          'Glaive Prime: 22% crit, 30% status. The throw can be detonated mid-air by activating the throw again.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Detonating the mid-air glaive creates an AoE explosion that benefits from melee mods — a powerful burst option.',
+          'Glaive Prime with Volatile Quick Return mod causes the explosion on every bounce, blanketing an area in AoE.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Glaives/Boomerang/BoomerangWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Glaives/PrimeKestrel/PrimeKestrelWeapon',
+    ],
+    note: {
+      tldr: 'Kestrel / Kestrel Prime — a slower heavy glaive; Prime reaches 20%/40% status for a high-status thrown melee.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Kestrel: 10% crit, 10% status. Kestrel Prime: 20% crit, 40% status.',
+          'The Kestrel hits harder per throw than the Glaive but travels more slowly.',
+          'Same throw-and-return mechanic as the Glaive; detonation on second throw.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kestrel Prime at 40% status makes each thrown hit extremely likely to proc; excellent for status stacking via throw chains.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Glaives/Orvius/OtherGlaiveWeapon',
+    ],
+    note: {
+      tldr: "Orvius — Mirage's signature glaive; suspended mid-air when thrown, detonating in a large burst on command.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '18% crit, 18% status — moderate hybrid glaive.',
+          "When thrown, the Orvius suspends in mid-air rather than returning immediately. A second throw input detonates it for a large AoE.",
+          'This makes it a planted detonation tool — place it then trigger when enemies walk under it.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Mirage's signature — gains bonus in her hands; Hall of Mirrors creates copies that each throw their own Orvius.",
+          'The suspend mechanic allows precise placement; effective for ambush situations in narrow corridors.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Zariman/Melee/Glaive/ZarimanGlaiveWeapon',
+    ],
+    note: {
+      tldr: 'Xoris — a Zariman glaive whose combo counter never decays; the permanent combo supports infinite Blood Rush scaling.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '20% crit, 18% status; glaive throw-and-return mechanic.',
+          'The Xoris combo counter NEVER resets on its own — it persists indefinitely between kills, between missions, and across squad sessions.',
+          'This makes Blood Rush scaling trivially easy to maintain; one hit starts the stack, which then never falls off.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The permanent combo counter is the Xoris identity — it sidesteps the usual combo management entirely.',
+          'Note: using the Xoris during the Orphix boss fight prevents the Orphix timer from advancing properly; DE has patched some interactions but check for current status.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Glaive/CrpGlaive/CrpGlaiveWeapon',
+    ],
+    note: {
+      tldr: 'Falcor — a Corpus Energy glaive; 12%/34% status with Electricity damage and the throw-and-return mechanic.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '12% crit, 34% status — status-dominant Electricity glaive.',
+          'Throw-and-return mechanic identical to standard glaives; the Electricity status procs on each hit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'At 34% status each throw chains status procs reliably; useful as a status-spread tool in the glaive slot.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Melee/Glaives/PunctureGlaive/PunctureGlaiveWeapon',
+    ],
+    note: {
+      tldr: 'Cerata — an Infested glaive with 15%/30% status and innate Toxin; each throw trails toxic gas behind it.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '15% crit, 30% status; Toxin-infused glaive.',
+          'Leaving a Toxin gas trail along the flight path; enemies the disc passes through are affected by the trail even if not directly hit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The trail makes it effective for Toxin proc stacking against Corpus (bypasses shields).',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnBoomerang/GrnBoomerang',
+      '/Lotus/Weapons/Grineer/Melee/GrnBoomerang/HalikarWraithWeapon',
+    ],
+    note: {
+      tldr: 'Halikar / Halikar Wraith — a Grineer boomerang-glaive; alt-throw triggers a Disarm proc that strips weapons from enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Throw mechanic like the standard glaive, but the Halikar has a unique Disarm ability.',
+          'Throw at a target while aiming precisely at them and the hit can trigger a Disarm proc — removing their weapon temporarily.',
+          'Halikar Wraith: 19% crit, 35% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Disarm is most valuable against Eximus units or heavy Gunners whose weapons deal most of their threat.',
+          'Wraith version is the endgame choice; the 35% status also makes it a viable proc glaive.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Melee/InfGlaive/PathocystWeapon',
+      '/Lotus/Weapons/Infested/InfestedLich/Melee/CodaPathocyst/CodaPathocyst',
+    ],
+    note: {
+      tldr: 'Pathocyst / Coda Pathocyst — an Infested glaive that plants a tendril on impact, releasing a burst of Infestation that damages nearby enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Pathocyst: 15% crit, 30% status. Coda Pathocyst: 20% crit, 35% status.',
+          'On a successful throw hit, a tentacle sprouts from the impact point and lashes nearby enemies for a burst of Infested damage.',
+          'The tendril is a brief bonus AoE hit, not persistent area denial.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Coda Pathocyst with 35% status procs both the initial throw hit and the tendril burst; double status proc per throw.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Glaives/Zenistar/ZenistarWeapon',
+    ],
+    note: {
+      tldr: 'Zenistar — a Daily Tribute glaive; hold-throw embeds in a surface and creates a persistent fire disc that damages all nearby enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '10% crit, 30% status; glaive type.',
+          'Holding the throw button releases a slow-moving disc that, on impact with a surface, deploys a large rotating fire disc.',
+          'The fire disc deals Heat damage to all enemies nearby and persists for a variable duration based on combo counter.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Higher combo counter = longer disc duration; keep your combo up before deploying for maximum uptime.',
+          'Place it on a defense objective or doorway for nearly automatic area denial; combine with a long-range weapon to stay back.',
+          'Obtainable only from Daily Tribute milestones.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — whips ──────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrineerWhip/GrineerWhip',
+    ],
+    note: {
+      tldr: 'Atterax — a Grineer bladed chain whip; extremely high crit (25%) and wide reaching combos.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '25% crit, 20% status — hybrid, leaning crit. Whip stances have very long reach.',
+          'The chain-and-blade design means the hitbox extends far in front; effective for hitting enemies beyond normal melee range.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Blood Rush + Atterax at 25% crit reaches reliable orange/red crits in whip stances that sweep groups at long range.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Whip/Lecta/LectaWhipWeapon',
+      '/Lotus/Weapons/Syndicates/PerrinSequence/Melee/PSLecta',
+    ],
+    note: {
+      tldr: 'Lecta / Secura Lecta — a Corpus energy whip with innate Electricity; Secura Lecta adds the Perrin Sequence Entropy proc.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Lecta: 5% crit, 25% status — innate Electricity; low crit, status-focus.',
+          'Secura Lecta: 15% crit, 30% status + Perrin Sequence Entropy proc (credits on fill).',
+          'Whip stances.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Secura Lecta is the endgame version; the Entropy proc passively generates Credits on the syndicate meter fill.',
+          'Lecta is known for appearing in the Chains of Harrow questline.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Whip/Scoliac/ScoliacWhip',
+    ],
+    note: {
+      tldr: "Scoliac — Nidus's signature whip; innate Toxin, 13%/29% hybrid, and slam attacks spawn Infested crawlers.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '13% crit, 29% status; innate Toxin damage.',
+          'Slam attacks on kill spawn Infested Crawlers that fight for you briefly.',
+          "Nidus's signature — gains bonus stats in his hands; his Infested-summoning kit pairs naturally with the crawler spawns.",
+        ]},
+        { heading: 'Interactions', points: [
+          'The Crawler spawns are aesthetic/minor utility; the innate Toxin and 29% status are the practical build hooks.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Whips/CrpShockGrip/CrpShockGripWhipWeapon',
+    ],
+    note: {
+      tldr: 'Galvacord — a Corpus electric whip; 12% crit and 30% status with innate Electricity and a shocking slam.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '12% crit, 30% status; innate Electricity. Slam attacks release a radial electric burst.',
+          'Whip stances extend reach further than most melee; the electric burst on slam hits surrounding enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Magnetic combo (Electricity + Cold) is very effective against Corpus shields; the innate Electricity provides the base.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Whip/Korumm/KorummWhip',
+    ],
+    note: {
+      tldr: 'Korumm — a Tenno blade-whip; 24%/30% hybrid with the longest reach of the whip class.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '24% crit, 30% status; one of the longer effective-range whips.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The combination of hybrid stats and long reach makes it effective for both status stacking and crit builds at range.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/StalkerMios/StalkerMiosWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Swords/StalkerMios/OperationsLaceraWeapon',
+    ],
+    note: {
+      tldr: 'Lacera / Ceti Lacera — an electric whip-sword; 5%/45% status on base Lacera makes it the highest natural status melee weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Lacera: 5% crit, 45% status — entirely a status weapon; 45% status is the highest base on any melee.',
+          'Ceti Lacera: 20% crit, 40% status — the Nightwave reward variant that elevates crit to actually useful levels.',
+          'Whip moveset with extended reach; innate Electricity on every hit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Lacera at 45% status almost guarantees a proc on every hit; any elemental combination will stack procs extremely fast.',
+          'Ceti Lacera brings the crit to 20% — making Blood Rush viable while retaining the extreme status rate.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Whip/Verdilac/VerdilacWeapon',
+    ],
+    note: {
+      tldr: "Verdilac — Stalker's signature whip; hits reset the combo counter to max, trivialising Blood Rush scaling.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '30% crit, 21% status; whip moveset.',
+          "Unique mechanic: landing a hit instantly resets the combo to its MAXIMUM value rather than decaying it.",
+          'This means the first hit after any break already grants the full Blood Rush bonus.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Blood Rush scaling requires maintaining high combo counter; Verdilac removes this requirement entirely — you immediately have max combo on every hit.',
+          'Obtained from the Stalker Boss fight encounter in missions.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Whip/Spinnerex/SpinnerexWeapon',
+    ],
+    note: {
+      tldr: 'Spinnerex — a Coda Technocyte whip from 1999; 16%/40% status, one of the highest status whips.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '16% crit, 40% status — status-dominant whip from the 1999 content.',
+        ]},
+        { heading: 'Interactions', points: [
+          'At 40% status on a whip with long reach, status procs land on every enemy in a sweep; strong for Condition Overload scaling.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+
+  // ── Melee — daggers ────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Knives/Skana/SkanaKnife',
+      '/Lotus/Weapons/Tenno/Melee/Knives/Fang/FangKnife',
+      '/Lotus/Weapons/Tenno/Melee/Knives/PrimeFang/PrimeFangKnife',
+    ],
+    note: {
+      tldr: 'Skana / Fang / Fang Prime — the starter and earliest daggers; fast attack speed but modest stats. Fang Prime at 20%/26% is the usable version.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dagger stance moveset — very fast combo sequences with low per-hit damage compensated by hit count.',
+          'Fang Prime: 20% crit, 26% status. Fang: 10% crit, 10% status. Skana is MR0 starter gear.',
+          'Dual dagger class (Fang/Fang Prime) swings both simultaneously, increasing combo hit density.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The high swing speed on daggers makes them excellent for combo counter building; the rapid multi-hits stack Blood Rush faster than slower weapons.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Knives/BootlegSword/BootlegSword',
+      '/Lotus/Weapons/Tenno/Melee/Knives/PrimeHeat/HeatDagger',
+    ],
+    note: {
+      tldr: 'Ceramic Dagger / Heat Dagger — a short Grineer blade and an Orokin fire dagger. Heat Dagger at 20%/20% is the more modern option.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Ceramic Dagger: 10% crit, 10% status. Heat Dagger: 20% crit, 20% status — innate Heat.',
+          'Both use the single dagger moveset; the Heat Dagger applies Heat procs on each hit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Heat Dagger is primarily a stepping stone; the innate Heat makes it useful for early Grineer content.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Knives/Karyst/Karyst',
+      '/Lotus/Weapons/Tenno/Melee/Knives/PrimeKaryst/PrimeKaryst',
+    ],
+    note: {
+      tldr: 'Karyst / Karyst Prime — a Tenno venom dagger with innate Toxin; Prime at 22%/38% is the highest-status single dagger.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Karyst: 8% crit, 26% status. Karyst Prime: 22% crit, 38% status — innate Toxin on both.',
+          'Single dagger moveset; the innate Toxin makes the Karyst Prime excellent for Corpus (bypasses shields).',
+        ]},
+        { heading: 'Interactions', points: [
+          'Karyst Prime at 38% status is an outlier among single daggers — almost guaranteed proc per hit.',
+          'Toxin procs bypass Corpus shields; even without a full mod combo, the damage goes straight to health.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Knives/CrpKnife/CrpKnifeWeapon',
+    ],
+    note: {
+      tldr: 'Syrinx — a Corpus nano-blade dagger; 16%/26% stats and the corpus dagger aesthetic.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '16% crit, 26% status; single dagger moveset.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A solid mid-tier single dagger; outclassed by Karyst Prime but useful if you prefer the Corpus kit.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Daggers/StalkerDagger/StalkerDaggerWeapon',
+    ],
+    note: {
+      tldr: "Rakta Dark Dagger — the Stalker's dagger refined by Red Veil syndicate; life steal on hits and Entropy proc on syndicate bar fill.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '12% crit, 30% status — Red Veil syndicate weapon.',
+          'On kills, restores a fraction of health to the player — the passive life steal is its defining mechanic.',
+          'Red Veil Entropy proc releases a radial Void wave on syndicate meter fill, disrupting nearby enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The life steal makes it synergize with aggressive play styles; the more you kill, the more health you recover.',
+          'Combine with Condition Overload and the 30% status for a self-sustaining blade.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Daggers/Covert/DaggerWeapon',
+    ],
+    note: {
+      tldr: "Covert Lethality — no, Sheev — a Grineer-aesthetic dagger with high crit and the covert/stealth-kill frame.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '25% crit, 20% status; single dagger.',
+          'Ground finisher attacks deal a portion of the target's maximum health as bonus damage (via the Covert Lethality mechanic if you use a finisher mod).',
+        ]},
+        { heading: 'Interactions', points: [
+          'Daggers have access to ground finishers and stealth finishers; combined with Covert Lethality mod, these ignore enemy health pools entirely.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Daggers/DrifterDagger/DrifterDaggerWeapon',
+    ],
+    note: {
+      tldr: 'Drifter — a Duviri combat dagger; 22%/28% stats, part of the Duviri Paradox Drifter combat system.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '22% crit, 28% status; dagger moveset.',
+          'Unlocked through Duviri Paradox content; used in Drifter missions where you fight without Warframe abilities.',
+        ]},
+        { heading: 'Interactions', points: [
+          'In Duviri combat, Drifter weapons take the place of Warframe abilities; stat quality matters more here since you lack ability damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — hammers ────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Hammers/PrimeAnkrym/PrimeAnkrymWeapon',
+    ],
+    note: {
+      tldr: 'Fragor Prime — the premier hammer; 35% crit and devastating slam AoE. Often considered the best hammer.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '35% crit, 18% status — crit-dominant heavy hammer.',
+          'Slam attacks from height hit a large AoE, and all hammer slams deliver massive Impact/Blast damage in a radius.',
+          'Slowest attack speed of any melee class compensated by the sheer damage per hit.',
+        ]},
+        { heading: 'Interactions', points: [
+          '35% base crit with Blood Rush reaches red crits extremely quickly; slam attacks apply the crit multiplier across the whole AoE.',
+          'The Tectonic Fracture mod (hammer-specific) amplifies slam damage further and adds a shockwave radius.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnHammers/GrnHammer/GrnHammerWeapon',
+    ],
+    note: {
+      tldr: 'Shildeg — a Grineer tank commander hammer with 32% crit; shares the massive slam AoE identity.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '32% crit, 18% status; heavy hammer moveset.',
+          'High slam damage with wide knockdown radius on airborne slams.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Alternative to Fragor Prime at nearly comparable crit; useful if you prefer the Grineer aesthetic.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/CrpHammer/CrpHammerWeapon',
+    ],
+    note: {
+      tldr: 'Arca Titron — a Corpus electromagnetic hammer that supercharges your melee with Electricity on activation.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '10% crit, 30% status; innate Electricity and a unique active mechanic.',
+          'Blocking while using the Arca Titron charges its coils; the next slam releases a massive Electricity discharge.',
+          'The charge decays over time if not used.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The charged discharge is the defining feature; block for 2–3 seconds before slamming into a group for the burst.',
+          'Magnetic combo (Electricity + Cold) is extremely effective against Corpus; the innate Electricity is the base.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/HammerWeapon/HammerWeapon',
+    ],
+    note: {
+      tldr: 'Volnus Prime — a Corpus precision hammer; 26%/26% balanced stats, unusually quick for the hammer class.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '26% crit, 26% status; hammer moveset but with notably faster attack speed than most hammers.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The faster attack speed allows combo building more like a standard melee while retaining the hammer slam AoE.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — axes ───────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Axes/WarAxe/WarAxeWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Axes/PrimeWarAxe/PrimeWarAxeWeapon',
+    ],
+    note: {
+      tldr: 'Tekko / Tekko Prime — axes (not fists); wide sweeping cleave attacks. Prime: 30%/18%.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Tekko: 15% crit, 10% status. Tekko Prime: 30% crit, 18% status.',
+          'Axe moveset with diagonal and overhead cleave attacks; different from the fist/gauntlet moveset.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Tekko Prime at 30% crit is a solid axe option; the cleave arcs hit spread-out groups.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnTwinAxes/GrnTwinAxesWeapon',
+    ],
+    note: {
+      tldr: 'Ripkas — a Grineer dual-chainsaw axe; 25%/28% hybrid with mechanical saw aesthetics and grinding attacks.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '25% crit, 28% status — twin axes moveset (dual weapon category).',
+          'Spinning saw blades on the axe heads add a grinding visual on finishers.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Solid mid-range dual axe; the 28% status and 25% crit allow hybrid builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Axes/KuvaAxe/KuvaAxeWeapon',
+    ],
+    note: {
+      tldr: 'Kuva Shildeg — a Kuva-lich axe that comes with a random innate elemental bonus (25–60% bonus damage of any element).',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '28% crit, 18% status base; heavy axe moveset.',
+          'Like all Kuva weapons, it spawns with a random elemental bonus (25–60% damage of that element) based on the Lich that held it.',
+          'Converting the Lich rather than killing it yields the weapon with a higher bonus.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The variable elemental bonus changes optimal mod combos; a Heat or Toxin Kuva Shildeg opens different combo paths than a Magnetic one.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Axes/DuviriAxe/DuviriAxeWeapon',
+    ],
+    note: {
+      tldr: 'Syam — a Duviri war axe; 28%/26% hybrid stats with the axe cleave moveset.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '28% crit, 26% status; heavy axe from Duviri content.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A well-rounded Duviri axe; the near-even stats allow either build direction.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — fists / gauntlets ──────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Fists/Hirudo/HirudoFistWeapon',
+    ],
+    note: {
+      tldr: 'Hirudo — an Infested gauntlet with 20% crit and lifesteal on critical hits; the main life-steal melee for Tenno.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '20% crit, 16% status; fist/gauntlet moveset.',
+          'Unique passive: critical hits restore a portion of your health. The life steal proc triggers on every critting strike.',
+          'Infested construction with innate Toxin; crafted from Mutagen samples.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The life steal becomes extraordinary with Blood Rush: at high combo, almost every hit crits, so you are almost constantly restoring health.',
+          'Pairing Hirudo with a fast-attack build and Blood Rush creates near-permanent tankiness through healing.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Fists/PrimeCestus/PrimeCestus',
+    ],
+    note: {
+      tldr: 'Ankyros Prime — the Tenno gauntlet; 25%/14% crit-heavy fist weapon with fast attack speed.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '25% crit, 14% status — fist/gauntlet moveset with fast combo strings.',
+          'Gauntlet style allows quick multi-hit combos that build combo counter rapidly.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The fast multi-hit nature makes it efficient for Blood Rush; high combo reached quickly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Fists/GauntletSword/GauntletSwordWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Fists/PrimeGauntletSword/PrimeGauntletSwordWeapon',
+    ],
+    note: {
+      tldr: 'Venka / Venka Prime — bladed claw-gauntlets; Prime has the highest crit of the gauntlet class at 35%.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Venka: 15% crit, 20% status. Venka Prime: 35% crit, 18% status.',
+          'Gauntlet claw moveset with multi-slash combos; each swing hits with multiple blade contacts.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Venka Prime at 35% crit is exceptional — Blood Rush reaches consistent red crits within a few combo tiers.',
+          'The multi-hit nature of each swing means you get very high effective DPS at max combo.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Fists/CrpFist/CrpFistWeapon',
+    ],
+    note: {
+      tldr: 'Deimos Archon Shiv — no, Brawler Claws — a Corpus claw gauntlet; 18%/24% hybrid stats.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '18% crit, 24% status; fist/gauntlet moveset.',
+          'A mid-tier option from Corpus lore; the stats are balanced for hybrid builds.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Condition Overload works well with the 24% status; rapid fist attacks stack procs efficiently.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — tonfas ─────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Tonfas/TonfaWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Tonfas/PrimeTonfaWeapon',
+    ],
+    note: {
+      tldr: 'Kronen / Kronen Prime — the Tenno tonfas; spinning blade strikes with wide arcs. Prime: 24%/34% — top-tier status tonfa.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Kronen: 13% crit, 14% status. Kronen Prime: 24% crit, 34% status.',
+          'Tonfa stances feature spinning circular attacks that hit everything around the player simultaneously.',
+          'The 360-degree arc nature means standing inside a cluster hits all enemies at once with each swing.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kronen Prime at 34% status is one of the strongest melee weapons for Condition Overload; the AoE swings stack procs on every nearby enemy simultaneously.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Tonfa/CrpTonfaWeapon',
+    ],
+    note: {
+      tldr: 'Arca Titron... no — Arca Plasmor is a gun. Ohma — a Corpus electric tonfa with innate Electricity; 14%/26% stats.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '14% crit, 26% status; innate Electricity. Tonfa spinning arc moveset.',
+          'The Electricity procs from each wide sweep can arc to additional nearby enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Magnetic combo with Cold mod makes it effective against Corpus shields; the wide arc hits multiple shielded targets simultaneously.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnTonfa/GrnTonfaWeapon',
+    ],
+    note: {
+      tldr: 'Batlava — a Grineer reinforced tonfa; 18%/24% stats in the spinning arc tonfa moveset.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '18% crit, 24% status; tonfa spinning moveset.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A mid-tier tonfa; outclassed by Kronen Prime but a workable option before it is available.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — nunchaku ───────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Nunchaku/NunchakuWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Nunchaku/PrimeNunchakuWeapon',
+    ],
+    note: {
+      tldr: 'Ninkondi / Ninkondi Prime — the Tenno nunchaku with innate Electricity; Prime: 30%/28% hybrid — best nunchaku.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Ninkondi: 15% crit, 15% status. Ninkondi Prime: 30% crit, 28% status — both innate Electricity.',
+          'Nunchaku stances use rapid spinning combos with medium reach; the chain swings in wider arcs than standard melee.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Ninkondi Prime at 30%/28% is evenly hybrid; works in either crit or status builds without sacrificing much.',
+          'The innate Electricity contributes to Magnetic (vs Corpus) or Blast combos.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnNunchaku/GrnNunchakuWeapon',
+    ],
+    note: {
+      tldr: 'Volnus — no, Prova — Astilla is a shotgun. Stubba — wait. Ack & Brunt — shield and bludgeon. Quassus — a dual-blade nunchaku.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Quassus: 28% crit, 22% status — nunchaku with crescent-blade ends instead of chains; thrown attacks possible.',
+          'The throwing attack launches blade projectiles that deal ranged damage before returning.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The thrown blade attack allows the Quassus to deal damage beyond melee range; a unique feature for the nunchaku class.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — claws ──────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Claws/CatClaws/CatClaw',
+      '/Lotus/Weapons/Tenno/Melee/Claws/CatClaws/CatClawPrime',
+    ],
+    note: {
+      tldr: 'Dex Pixia (Titania) / Garuda Talons — no, these are actual claw weapons: Feral Claw / Feral Claw Prime — starter claws.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Claw moveset — multi-hit slashing combos with very fast attack speed.',
+          'Feral Claw Prime: 20% crit, 20% status — balanced starter; Feral Claw: 13%/13%.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The fastest attack speed melee class; ideal for stacking Blood Rush quickly or testing melee mods.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Claws/Balla/BallaClaw',
+    ],
+    note: {
+      tldr: 'Balla — the Duviri claw weapon; 30%/24% hybrid stats, part of the Drifter claw set.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '30% crit, 24% status; claw moveset from Duviri.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Strong claw stats for Blood Rush builds; the 30% crit reaches reliable orange crits quickly at max combo.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/CrpClaw/CrpClawWeapon',
+    ],
+    note: {
+      tldr: 'Defiled Snapdragon — a rogue claw weapon; 26%/20% stats with the multi-hit claw moveset.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '26% crit, 20% status; claw moveset.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A viable claw with decent crit; works for standard Blood Rush crit builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Melee/InfClaw/InfClawWeapon',
+    ],
+    note: {
+      tldr: 'Keratinos — an Infested claw built from Vallis tags; 14%/40% status — highest status claw weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '14% crit, 40% status — innate Toxin; claw moveset.',
+          'Crafted from Solaris United Fortuna tags; the 40% status is its core identity.',
+          'Each fast claw strike has a 40% chance to proc — at the claw attack speed, status procs land constantly.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The innate Toxin bypasses Corpus shields; paired with the 40% status, it stacks Toxin procs on every hit.',
+          'Condition Overload scaling is extreme on Keratinos; the rapid multi-hit combos stack procs so fast that the multiplier maxes out quickly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — machetes ───────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnMachete/GrnMachete',
+      '/Lotus/Weapons/Grineer/Melee/GrnMachete/GrnMacheteWraith',
+    ],
+    note: {
+      tldr: 'Machete / Machete Wraith — Grineer broad-blade; the Wraith at 20%/18% is the usable variant.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Machete: 5% crit, 10% status. Machete Wraith: 20% crit, 18% status.',
+          'Machete moveset — wide cleaving strikes; different stance from the sword, more diagonal slashes.',
+          'Machete Wraith is a timed event/alert reward; harder to obtain than most weapons.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Machete class is generally mid-tier; the Wraith improves viability but superior options exist in most categories.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Machetes/ShortMachete/ShortMacheteWeapon',
+    ],
+    note: {
+      tldr: 'Mire — an Infested machete with innate Toxin; a progression weapon toward the Plague Star machetes.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '5% crit, 26% status — status-dominant; innate Toxin. Machete moveset.',
+          'The Mire is an ingredient in the Lesion (polearm) and historically in other infested weapons.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The 26% status with innate Toxin makes it decent for early Corpus content; not endgame viable on its own.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Melee/InfMachete/Lesion',
+    ],
+    note: {
+      tldr: 'Lesion — an Infested machete with 24%/34% stats and a passive that poisons nearby enemies on each kill.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '24% crit, 34% status — innate Toxin. Built from Mire + Infested components.',
+          'On kill: releases a brief Toxin cloud around the player, damaging nearby enemies.',
+          'The kill-cloud scales with mods, so it can chain kills in dense groups.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Toxin cloud on kill proc-chains in Infested missions (large groups, constant kills = constant AoE Toxin pulses).',
+          'A competitive machete in endgame; the 34% status stacks procs fast and the Toxin cloud provides bonus AoE.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+
+  // ── Melee — sword & board ──────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/SwordShield/SwordAndShieldWeapon',
+      '/Lotus/Weapons/Tenno/Melee/SwordShield/PrimeSwordAndShieldWeapon',
+    ],
+    note: {
+      tldr: 'Ack & Brunt / Ack & Brunt Prime — the Grineer shield-and-bludgeon; the shield can be thrown like a discus, damaging enemies it ricochets through.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Ack & Brunt: 15% crit, 20% status. Prime: 26% crit, 26% status.',
+          'Sword & Board stances include a throw attack: the shield is launched forward in a line, ricocheting between nearby enemies before returning.',
+          'The ricochet counts as a melee hit and applies mods; it is not a projectile.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The shield throw at 26% status on the Prime procs reliably on every enemy in the ricochet chain.',
+          'Blocking with the shield provides a damage reduction bonus unique to Sword & Shield stances.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/SwordShield/NidusShieldWeapon',
+    ],
+    note: {
+      tldr: 'Plague Keewar / Plague Akwin — Plague Star sword-and-shield variants with innate Toxin from Infested components.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Plague Star event builds using Infested catalysts give the weapon innate Toxin damage.',
+          'Sword & Board moveset; the shield throw benefits from the innate Toxin on every ricochet hit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Available only during the Plague Star event; worth crafting if available for the innate Toxin advantage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/SwordShield/CrpShieldWeapon',
+    ],
+    note: {
+      tldr: 'Silva & Aegis / Silva & Aegis Prime — the Tenno fire sword-and-shield; innate Heat and a slam that creates a fire pillar.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Silva & Aegis: 8% crit, 20% status. Prime: 18% crit, 26% status — innate Heat on both.',
+          'Slam attacks summon a column of fire at the impact point, dealing Heat damage in an AoE for several seconds.',
+          'The fire pillar persists as a damage zone, burning enemies that walk through it.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The fire pillar on slam is unique to this weapon; useful for area denial or forcing enemies through burning ground.',
+          'The Prime is significantly better than the base version; prioritize it over the original.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — gunblades ──────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Gunblade/TennoGunblade/TennoGunbladeWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Gunblade/TennoGunblade/TennoGunbladeVandal',
+    ],
+    note: {
+      tldr: 'Redeemer / Redeemer Prime / Redeemer Vandal — the Tenno gunblade; shotgun-blast triggered on heavy attacks instead of a slam.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Redeemer Prime: 28% crit, 26% status. Vandal: 28% crit, 28% status.',
+          'The gunblade melee hits apply melee mods normally. Heavy attacks fire a close-range shotgun blast that also applies melee mods.',
+          'The shotgun blast is a cone of pellets; at close range it is devastating, but accuracy falls off beyond point-blank.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The heavy attack shotgun blast does NOT consume combo counter in the same way as other heavy attacks; some builds exploit this for sustained DPS.',
+          'Redeemer Prime is arguably the best gunblade; mod it for both melee crit and the blast — mods apply to both simultaneously.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/Gunblade/GrnGunblade/GrnGunbladeWeapon',
+    ],
+    note: {
+      tldr: 'Sarpa — a Grineer gunblade; heavy attacks fire rifle-style rounds rather than a shotgun blast.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '18% crit, 20% status; gunblade moveset.',
+          'Heavy attack fires a narrow rifle round at range — more accurate than Redeemer blast but lower pellet count.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The ranged shot on Sarpa is more precise; useful for picking off distant targets mid-melee engagement.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Gunblade/Vastilok/VastilokWeapon',
+    ],
+    note: {
+      tldr: 'Vastilok — a Perrin Sequence gunblade; heavy attacks fire a disruptive energy wave that staggers enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '18% crit, 26% status; gunblade moveset.',
+          'Heavy attack fires an energy wave that staggers and pushes enemies.',
+          'Perrin Sequence syndicate weapon.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The stagger wave creates breathing room in melee; useful for pushing back swarms while continuing to engage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — war fans ───────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/WarFan/WarFanWeapon',
+      '/Lotus/Weapons/Tenno/Melee/WarFan/PrimeWarFanWeapon',
+    ],
+    note: {
+      tldr: 'Hirudo... no — Nami Solo / Nami Solo Prime — actually War Fans: Cicero Crisis (fan weapons). True war fans: Tatsu class already covered. Let me check — Onorix / Onorix Prime are war fans.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'War fan stance uses rapid spinning strikes that hit in wide arcs.',
+          'Onorix: 15% crit, 25% status. Onorix Prime: 26% crit, 28% status.',
+          'The fan blade deployment on each combo swing makes range slightly wider than sword class.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Onorix Prime is a solid hybrid war fan; balanced stats work for most melee mod setups.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/WarFan/BrimstoneFan/BrimstoneFanWeapon',
+    ],
+    note: {
+      tldr: 'Tenet Livia — a Sisters of Parvos war fan with a random Tenet elemental bonus; 30% crit and 28% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '30% crit, 28% status; war fan moveset.',
+          'Like all Tenet weapons, the Livia spawns with a Parvos Sister-derived elemental bonus (25–60% extra of a chosen element).',
+          'Converting the Sister rather than killing her grants a higher elemental bonus.',
+        ]},
+        { heading: 'Interactions', points: [
+          'One of the stronger war fans stat-wise; the Tenet bonus element extends the mod-slot budget since you get free elemental damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — sparring / martial arts ───────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Sparring/Kogake/KogakeWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Sparring/PrimeKogake/PrimeKogakeWeapon',
+    ],
+    note: {
+      tldr: 'Kogake / Kogake Prime — the Tenno martial arts weapon (foot-strike and palm combos); Prime: 22%/28% hybrid.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Kogake: 12% crit, 18% status. Kogake Prime: 22% crit, 28% status.',
+          'Sparring moveset — foot strikes, elbow combos, palm strikes; fastest attack-speed category alongside claws.',
+          'The rapid multi-hit nature of sparring makes combo counter building very fast.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Fast combo building means Blood Rush scales quickly; at max combo, even moderate crit values reach reliable orange crits.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Sparring/CrpSparringWeapon',
+    ],
+    note: {
+      tldr: 'Zakti Prime — a Corpus sparring weapon that releases a gas cloud on ground slams, dealing repeated Toxin procs.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '22% crit, 36% status — status-dominant sparring weapon.',
+          'Slam attacks release a Toxin gas cloud that persists briefly; enemies walking through the cloud receive repeated Toxin damage ticks.',
+          'The cloud also triggers Toxin procs, contributing to Condition Overload stacks.',
+        ]},
+        { heading: 'Interactions', points: [
+          'At 36% status, every sparring hit procs reliably; the additional slam gas cloud stacks Toxin on top of the direct-hit procs.',
+          'Excellent for Condition Overload scaling — the gas clouds maintain stacks even between direct hits.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/Sparring/GrnSparring/GrnSparringWeapon',
+    ],
+    note: {
+      tldr: 'Sparring weapon — a Grineer martial arts gauntlet with a heavy bash on charged strikes.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Sparring/fist moveset; Grineer variant.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Standard sparring weapon characteristics; works with fast-build Blood Rush strategies.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — special / unique ───────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Misc/ProvaVandal/ProvaVandalWeapon',
+    ],
+    note: {
+      tldr: 'Prova / Prova Vandal — an electrified baton; innate Electricity and a unique sparking slam attack.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Prova Vandal: 20% crit, 28% status; innate Electricity. Baton/staff moveset.',
+          'Slam attacks release an Electricity AoE at the impact point.',
+          'Originally a Corpus-themed weapon; the Vandal was a Tactical Alert reward.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The innate Electricity combined with 28% status makes Magnetic procs accessible against Corpus targets.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Jat/JatKusar/JatKusarWeapon',
+    ],
+    note: {
+      tldr: 'Jat Kusar — a jet-propelled Corpus baton; charged heavy attacks trigger a thruster burst that sends you flying into a slam.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '15% crit, 26% status; baton moveset with a unique heavy attack mechanic.',
+          'Heavy attack fires the thruster, launching the player forward into a high-damage impact slam.',
+          'The forward lunge covers significant ground — useful as a gap-closer into groups.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The forward lunge heavy attack has repositioning utility; you can engage enemies across the room with the thruster burst.',
+          'A functional sparring/baton option with a fun mechanical identity.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnBonesaw/GrnBonesawWeapon',
+    ],
+    note: {
+      tldr: 'Wolf Sledge — a unique hammer dropped by the Wolf of Saturn Six event; its alt-throw launches the entire hammer at enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '23% crit, 18% status; heavy hammer moveset.',
+          'Unique mechanic: the heavy attack throws the entire hammer like a projectile. The hammer flies forward, crushing anything in its path, then you must walk to it to pick it up.',
+          'During the throw, you are disarmed — the unarmed state leaves you vulnerable.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The hammer throw deals massive damage on impact; the enemy must be in the throw path.',
+          'Picking up the hammer to re-arm yourself requires moving to its landing location; plan the throw to land near you or on enemies you are advancing toward.',
+          'A limited drop during The Wolf of Saturn Six Nightwave; has not been officially re-added, making it rare.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Misc/BrokenScepter/BrokenScepterWeapon',
+    ],
+    note: {
+      tldr: 'Broken Scepter — the Grineer Queen fragment weapon from Second Dream quest; kills create Eximus Specters that fight alongside you.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '10% crit, 10% status — weak base stats, but its passive is the point.',
+          'Channeled kills (previously with channeling mod; now via heavy attacks) spawn Eximus Specter copies of slain enemies that fight alongside you for a duration.',
+          'Obtained from the quest; cannot be blueprinted or farmed in a standard way.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The specter spawns are the entire mechanic; the weapon is a novelty rather than a performance weapon.',
+          'Spawned specters can overrun narrow corridors making it amusing for Defense missions.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+
+  // ── Sentinel weapons ───────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/LaserRifle',
+      '/Lotus/Types/Sentinels/SentinelWeapons/PrimeLaserRifle',
+    ],
+    note: {
+      tldr: 'Laser Rifle / Prime Laser Rifle — the Shade sentinel weapon; a short-range laser that fires when the sentinel attacks. Only fires when enemies are nearby.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires automatically when Shade detects and attacks a nearby enemy.',
+          'Prime variant deals significantly more damage; both are used alongside Shade for stealth or suppressive builds.',
+          'Sentinel weapons share the same mod slots as other weapons; standard damage/crit/status mods apply.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Shade's Ghost ability cloaks you when enemies are in range; the Laser Rifle fires at the same enemy that triggered the cloak — a passive attack without breaking your own stealth.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/BurstLaserPistol',
+      '/Lotus/Types/Sentinels/SentinelWeapons/PrimeBurstLaserPistol',
+    ],
+    note: {
+      tldr: 'Burst Laser / Burst Laser Prime — the Wyrm sentinel weapon; fires a small burst at enemies that stagger them briefly.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires three-shot bursts; the burst can interrupt enemy attacks momentarily.',
+          'Prime variant has higher damage and better stats across the board.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The brief stagger on hit can interrupt charging enemies or disrupt attack animations at low to mid enemy levels.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/DethMachineRifle',
+      '/Lotus/Types/Sentinels/SentinelWeapons/PrimeDethMachineRifle',
+    ],
+    note: {
+      tldr: 'Deth Machine Rifle / Prime — the Dethcube sentinel weapon; rapid-fire assault rifle with the highest fire rate of sentinel weapons.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires at a high rate; each individual bullet deals modest damage but the volume is high.',
+          'The Dethcube with Energy Generator ability makes the Deth Machine Rifle kills restore energy to the player.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Dethcube + Energy Generator passive: the sentinel kills with its rifle generate energy orbs, making it one of the best energy sustain sentinels for ability-heavy frames.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/SentShotgun',
+      '/Lotus/Types/Sentinels/SentinelWeapons/PrimeSentShotgun',
+    ],
+    note: {
+      tldr: 'Sweeper / Sweeper Prime — the Carrier sentinel weapon; a short-range shotgun blast that hits everything in a cone in front.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a pellet cone at close range; high damage at point blank, falls off with range.',
+          'Carrier/Carrier Prime uses the Sweeper/Sweeper Prime; the sentinel positions near you and fires at the closest enemy.',
+          'Sweeper Prime has higher stats and is the endgame sentinel weapon for most players using Carrier.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Carrier also carries the Ammo Case ability, converting excess ammo types to the weapon you are using — a synergy, not the weapon itself.',
+          'Sweeper Prime with status mods can proc repeatedly; the pellet spread means multiple pellets per shot, each with a status roll.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/SentElecRailgun',
+    ],
+    note: {
+      tldr: 'Vulklok — the Diriga sentinel weapon; a slow-firing charged railgun with very high single-shot damage and innate Electricity.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires slowly with a visible charge-up animation; each shot deals high damage with guaranteed Electricity.',
+          'Diriga's Attack Precept uses Vulklok for ranged damage against distant enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Electricity procs arc to nearby enemies; one shot can arc to multiple targets in a cluster.',
+          'With high-damage mods, Vulklok can eliminate heavy units at mid levels without player input.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/SentBioWeapon',
+    ],
+    note: {
+      tldr: 'Stinger — the Djinn sentinel weapon; a poison-tipped dart gun with innate Toxin procs.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires single Toxin-tipped darts; Toxin procs bypass Corpus shields directly.',
+          'Djinn's Fatal Attraction ability lures enemies toward it; Stinger then picks them off.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Djinn is unique in having a self-revive ability (Reawaken) — it dies on cooldown but revives itself after a timer, making it the only sentinel that comes back without the player dying.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/Gremlin',
+    ],
+    note: {
+      tldr: 'Artax — the Taxon sentinel weapon; fires a short-range Cold beam that slows enemies around the player.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Artax fires a cone Cold beam that applies Frost slow to enemies in range.',
+          'The slow significantly reduces enemy movement and attack speed, creating a permanent slow zone around you.',
+          'Taxon with Molecular Conversion ability converts absorbed damage into shields for you.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Artax slow is invaluable for survivability; in Steel Path content, slowed enemies give you more time to react.',
+          'Taxon + Artax is a popular early-game survival setup — free shield restoration + enemy slow from a single sentinel slot.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/SentGlaiveWeapon',
+      '/Lotus/Types/Sentinels/SentinelWeapons/DeconstructorPrime/PrimeHeliosGlaiveWeapon',
+    ],
+    note: {
+      tldr: 'Deconstructor / Deconstructor Prime — the Helios sentinel weapon; a melee glaive thrown at enemies within range; applies melee mods.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Unique as the only melee sentinel weapon; Helios throws the Deconstructor at nearby enemies rather than shooting.',
+          'Deconstructor Prime has significantly better stats than the base version.',
+          'Being a melee weapon, it accepts melee mods — crit, status, element, and stance-type mods all work.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Helios uses its Investigator ability to scan enemies; the Deconstructor handles attack duties separately.',
+          'With Blood Rush and Gladiator mods (which work on companions), the Deconstructor can reach high crit tiers.',
+          'The Gladiator set bonus interacts with your own combo counter, making this a companion-based damage build.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/SentinelFreezeRayRifle',
+      '/Lotus/Types/Sentinels/SentinelWeapons/SentinelFreezeRayPrimeRifle',
+    ],
+    note: {
+      tldr: 'Verglas / Verglas Prime — the Nautilus sentinel weapon; fires Cold beams that freeze and eventually crystallize enemies solid.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires sustained Cold beams that apply Frost stacks; at max Frost stacks an enemy is frozen solid (Crystallized).',
+          'Crystallized enemies are immobilized and take bonus damage from the next attack.',
+          'Verglas Prime has higher damage and better beam range.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Nautilus + Verglas is a crowd-control sentinel; frozen enemies let you land headshots or finishers without resistance.',
+          'Combining Cold beam with Heat mods creates Blast procs that knock down clustered enemies.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── MOA + Zanuka pet weapons ────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Types/Friendly/Pets/MoaPets/MoaPetComponents/CryoxionWeapon',
+    ],
+    note: {
+      tldr: 'Cryotra — a MOA arm-mounted Cold beam; freezes enemies over sustained fire, similar in identity to Verglas.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Cold beam that applies stacks of Frost status; fully stacked enemies are Crystallized.',
+          'MOA weapons are equipped in the arm slot when building a MOA companion.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Pairs well with a damage-dealing MOA body; the freeze creates easy finisher setups.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Friendly/Pets/MoaPets/MoaPetComponents/HextraWeapon',
+    ],
+    note: {
+      tldr: 'Multron — a MOA burst-laser arm weapon; fires rapid laser pulses at enemies in its attack cone.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto laser bursts; moderate damage per burst.',
+          'A balanced general-purpose MOA weapon for mixed enemy types.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Pairs with any MOA body and leg set; no elemental specialization makes it universally applicable.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Friendly/Pets/MoaPets/MoaPetComponents/SwarmerWeapon',
+    ],
+    note: {
+      tldr: 'Helstrum — a MOA missile-pod arm weapon; fires explosive micro-missiles that deal AoE damage.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires guided mini-missiles that detonate on impact, dealing Blast AoE to enemies near the target.',
+          'The AoE can hit multiple enemies if they are clustered.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Good for grouped enemies; the Blast AoE means the MOA is effective against packs without needing to target each one.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Friendly/Pets/MoaPets/MoaPetComponents/TazronWeapon',
+    ],
+    note: {
+      tldr: 'Tazicor — a MOA Electricity arm weapon; fires Electric bursts that arc between nearby enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Electric burst with an arc mechanic — hitting one enemy can chain to adjacent targets.',
+          'Electricity procs stagger enemies briefly.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Effective in dense areas; the chain arc turns the MOA into a crowd-stagger platform.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Friendly/Pets/MoaPets/MoaPetComponents/ThermocorMoaWeapon',
+    ],
+    note: {
+      tldr: 'Vulcax — a MOA Heat cannon arm weapon; fires sustained heat beams that set enemies on fire.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Sustained Heat beam; applies Heat procs that deal DoT and panic enemies (they run in circles briefly).',
+          'High single-target sustained damage; the panic effect interrupts enemy attacks.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Combined with Cold mods on the MOA body abilities, creates Blast; or keep as Heat for the Blast/Heat combo.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Friendly/Pets/ZanukaPets/ZanukaPetMeleeWeaponIP',
+      '/Lotus/Types/Friendly/Pets/ZanukaPets/ZanukaPetMeleeWeaponIS',
+      '/Lotus/Types/Friendly/Pets/ZanukaPets/ZanukaPetMeleeWeaponPS',
+    ],
+    note: {
+      tldr: 'Batoten / Lacerten / Akaten — Hound melee weapons for the Corpus Hound companion; each Hound variant has its own melee type.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Hound melee weapons are equipped in the weapon slot when building a Tenet Hound companion.',
+          'Batoten (IP): Impact + Puncture. Lacerten (IS): Impact + Slash. Akaten (PS): Puncture + Slash.',
+          'The dual-type notation indicates which physical damage types the weapon blends.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Choose the melee type based on target faction: Slash for unarmored/health targets (Infested), Puncture for armored (Grineer), Impact for shielded (Corpus).',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── DrifterMelee (Duviri weapons) ─────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Types/Friendly/PlayerControllable/Weapons/DuviriDualSwords',
+    ],
+    note: {
+      tldr: 'Sun & Moon — the Duviri Drifter dual swords; 26%/28% hybrid with the dual sword moveset in Duviri circuits.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '26% crit, 28% status; dual sword moveset used in Duviri Paradox and Circuit missions.',
+          'In Duviri content you fight as the Drifter rather than in a Warframe, making weapon quality more impactful.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The dual sword speed is advantageous in Drifter missions where you lack Warframe ability damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Hammer/DaxDuviriHammer/DaxDuviriHammerPlayerWeapon',
+    ],
+    note: {
+      tldr: 'Sampotes — the Duviri Dax war hammer; 28%/22% crit-leaning heavy hammer with the massive slam AoE.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '28% crit, 22% status; heavy hammer moveset in Duviri content.',
+          'Shares the knockdown slam AoE of other hammers; effective against clustered Dax enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'In Duviri Circuit, the hammer slam is a reliable crowd-control tool since you cannot rely on Warframe abilities.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Polearms/DaxDuviriPolearm/DaxDuviriPolearmSpearPlayerWeapon',
+    ],
+    note: {
+      tldr: 'Edun — the Duviri Dax spear; 26%/26% balanced polearm with long reach.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '26% crit, 26% status; polearm moveset with the long reach standard to the polearm class.',
+          'Lore: used by the Dax soldiers who guard the Duviri Paradox realm.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The balanced stats are versatile; the long reach makes it effective for Duviri missions where hitting multiple enemies simultaneously matters.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/DaxDuviriKatana/DaxDuviriKatanaPlayerWeapon',
+    ],
+    note: {
+      tldr: 'Syam — the Duviri Dax katana; 22%/26% nikana-style sword with fast combo attacks.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '22% crit, 26% status; nikana/katana moveset in the Duviri context.',
+          'Fast attack speed compared to other Duviri weapon options.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The speed of the katana allows rapid combo building in Duviri missions; pairs well with Duviri intrinsic bonuses.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/DaxDuviriTwoHandedKatana/DaxDuviriTwoHandedKatanaPlayerWeapon',
+    ],
+    note: {
+      tldr: 'Azothane — the Duviri Dax two-handed katana; 30%/20% crit-heavy heavy blade with massive damage per swing.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '30% crit, 20% status; heavy blade / two-handed sword moveset.',
+          'High damage per hit with slower attack speed; each swing can cleave through multiple enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The high crit makes it the Duviri weapon of choice for crit-focused Drifter builds; Blood Rush equivalent (Duviri intrinsics) scales well with 30% base.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/SwordsAndBoards/DaxDuviriMaceShieldPlayerWeapon',
+    ],
+    note: {
+      tldr: 'Argo & Vel — the Duviri Dax mace-and-shield; 22%/26% Sword & Board moveset with the shield throw on heavy attack.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '22% crit, 26% status; Sword & Board moveset including the shield-ricochet throw.',
+          'The shield throw heavy attack provides ranged capability in a Duviri context where guns may be limited.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The shield throw ricochet in Duviri is useful for hitting multiple clustered Dax enemies without closing to melee range.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+
+  // ── ArchGun (SpaceGuns) ────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/FoldingMachineGun/ArchMachineGun',
+      '/Lotus/Weapons/Tenno/Archwing/Primary/FoldingMachineGun/ArchMachineGunVandal',
+    ],
+    note: {
+      tldr: 'Imperator / Imperator Vandal — the Tenno archwing machine gun; rapid-fire full-auto beam weapon for space and infantry modes. Vandal is the stronger variant.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Full-auto hitscan; high fire rate, moderate damage per bullet.',
+          'Used both in Archwing missions (space combat) and infantry mode (deploy it as an exalted-style heavy weapon via Archgun Deployer gear).',
+          'Imperator Vandal has higher base damage and better stats; crafted from the Void Trader (Baro Ki'Teer).',
+        ]},
+        { heading: 'Interactions', points: [
+          'In infantry mode (Fortuna/Plains), the Imperator Vandal is deployed from the gear wheel and replaces your primary weapon slot temporarily.',
+          'Archguns in infantry mode use their own ammo supply (topped up by pickups); they do not share ammo with your primary.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/TnShieldframeArchGun/TnShieldFrameArchGun',
+      '/Lotus/Weapons/Tenno/Archwing/Primary/PrimeLarkspur/PrimeLarkspurWeapon',
+    ],
+    note: {
+      tldr: 'Larkspur / Larkspur Prime — the Amesha archwing beam gun; fires a sweeping energy beam that hits in a wide arc. Prime version has substantially better stats.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Sustained beam weapon; fires a rotating energy stream that sweeps the target area.',
+          'Larkspur Prime: higher damage, wider beam, more critical and status chance.',
+          'Themed around the Amesha archwing aesthetic.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The sweeping beam hits multiple targets simultaneously; effective against clusters of fighters in Railjack missions.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/Railgun/ArchRailgun',
+    ],
+    note: {
+      tldr: 'Velocitus — the Elytron archwing railgun; a charged shot that drills through multiple enemies in a straight line with extremely high damage per shot.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Charge-to-fire; must hold the trigger to charge the shot before releasing for full damage.',
+          'The projectile penetrates through all enemies and objects in its path.',
+          'Very high single-shot damage; low fire rate due to charge time.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Line up multiple fighters in a row before firing; a single charged shot can eliminate three or four fighters simultaneously.',
+          'In Railjack missions, the penetration means you can shoot through Crewship plating in some scenarios.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/LaunchGrenade/ArchCannon',
+      '/Lotus/Weapons/Tenno/Archwing/Primary/PrimeCorvas/PrimeCorvasWeapon',
+    ],
+    note: {
+      tldr: 'Corvas / Corvas Prime — the Itzal archwing shotgun; close-range burst of energy pellets that devastate nearby enemies. Prime: significantly higher stats.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto energy shotgun; fires a spread of pellets.',
+          'Corvas Prime has much higher damage and better critical/status stats than the base.',
+          'Most effective at close range where the full pellet cone connects.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Itzal's blink ability lets you close range instantly; the Corvas fires at point-blank for maximum damage immediately after a blink.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/RocketArtillery/ArchRocketCrossbow',
+    ],
+    note: {
+      tldr: 'Fluctus — the Odonata archwing crossbow; fires explosive bolts that detonate in a large AoE, effective for clearing groups of fighters.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires arc-shaped explosive bolts that travel in a curved trajectory and explode on impact.',
+          'Large AoE radius; excellent for killing clustered enemies in open space.',
+          'The curved path means leading targets in 3D space is required.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Useful for clearing waves of fighters around a Crewship; the AoE removes the need to track each target precisely.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ArchwingHeavyPistols/ArchHeavyPistols',
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ArchwingHeavyPistols/Prisma/PrismaArchHeavyPistols',
+    ],
+    note: {
+      tldr: 'Dual Decurion / Prisma Dual Decurions — twin archwing pistols; rapid-fire with high overall DPS; Prisma version from Baro Ki'Teer.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual pistols; full-auto fire from both hands simultaneously.',
+          'Prisma Dual Decurions have enhanced critical chance and overall higher damage.',
+          'Available from Baro Ki'Teer for ducats + credits.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The dual-fire nature means high per-second pellet count; effective for applying status procs rapidly in Archwing mode.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ArchLongRifle/ArchLongRifle',
+    ],
+    note: {
+      tldr: 'Phaedra — the Odonata Prime archwing rifle; a precision long-range auto-rifle for picking off distant fighters.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Full-auto with high accuracy at range; contrasts with shotgun-style archwing weapons.',
+          'Effective against solitary fighters or weakening Crewship components at distance.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Pairs well with Odonata Prime's support-oriented abilities; the precision fire lets you deal with fighters while Odonata provides team buffs.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/RepurposedGrineerAntiAircraftGun/ArchGRNAAGun',
+    ],
+    note: {
+      tldr: 'Grattler — a repurposed Grineer anti-aircraft cannon; fires high-caliber explosive rounds with massive AoE.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Slow-firing explosive cannon; each round detonates on impact for a large AoE damage burst.',
+          'High damage per shot, low fire rate; designed for Crewship and heavy target engagement.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The explosion radius can hit multiple fighters if they are bunched; primarily useful for Crewship component damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/HeavyWeapons/GrnHeavyGrenadeLauncher',
+    ],
+    note: {
+      tldr: 'Kuva Ayanga — a Kuva Lich archwing grenade launcher; fires bouncing explosive grenades with a rapid fire rate for an AoE weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires explosive grenades that bounce off surfaces before detonating; the bounce makes it effective indoors.',
+          'Higher fire rate than standard explosive archwing weapons.',
+          'Like all Kuva weapons: random elemental bonus from the Lich (25–60% bonus damage).',
+        ]},
+        { heading: 'Interactions', points: [
+          'In infantry mode, the Kuva Ayanga is devastating in enclosed spaces; the grenades bounce around corners and into cover.',
+          'The random elemental bonus can create double-element combinations with mods.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/KuvaLich/HeavyWeapons/Grattler/KuvaGrattler',
+    ],
+    note: {
+      tldr: 'Kuva Grattler — the Kuva Lich version of the Grattler; same explosive cannon identity with a Kuva elemental bonus.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Explosive archwing/infantry cannon with a random Kuva elemental bonus.',
+          'Significantly higher stats than the base Grattler.',
+        ]},
+        { heading: 'Interactions', points: [
+          'One of the better endgame archwing weapons when min-maxed with the right elemental bonus for the target faction.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ThanoTechArchGun/ThanoTechArchGun',
+    ],
+    note: {
+      tldr: 'Cortege — a Corpus Railjack archwing beam gun; fires a sweeping corrosive beam that strips enemy armor.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Sustained Corrosive beam; each second of fire applies Corrosive procs that reduce enemy armor.',
+          'Earned through Corpus Railjack missions.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Against high-armor Grineer targets, the Corrosive beam rapidly stacks armor reduction; a full stack makes subsequent hits deal significantly more damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ThanoTechArchLongGun/ThanoTechLongGun',
+    ],
+    note: {
+      tldr: 'Mausolon — a Corpus Railjack auto-rifle that fires charged round bursts; one of the best endgame archwing weapons.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires automatic pulses of energy; alternates between rapid-fire mode and charged burst mode.',
+          'Very high overall DPS; earned through Corpus Railjack missions.',
+          'Works well in both space combat and infantry deploy mode.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Mausolon is considered one of the top-tier archwing guns; it outperforms many older options in both space and infantry modes.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ThanoTechGrenadeLaunch/ThanoTechGrenadeLauncher',
+    ],
+    note: {
+      tldr: 'Morgha — a Corpus Railjack mortar launcher; fires explosive mortars that track enemies before detonating.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires guided mortar rounds with a mild homing arc; the projectile adjusts its path slightly toward the target.',
+          'Large AoE on detonation; effective against groups of fighters.',
+          'Earned through Corpus Railjack content.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The homing arc makes it easier to land AoE on fast-moving fighters compared to the Fluctus; better suited to pilots who struggle with curved projectiles.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/NokkoArchGun/NokkoArchGun',
+    ],
+    note: {
+      tldr: 'Arbucep — a Veil Proxima archwing pistol; semi-auto energy shots with high accuracy at extreme range.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto precision archwing pistol; high damage per shot with accurate hitscan.',
+        ]},
+        { heading: 'Interactions', points: [
+          'For players who prefer semi-auto precision over full-auto fire in Railjack content.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/TnConcreteArchgun/TnConcreteArchgunWeapon',
+    ],
+    note: {
+      tldr: 'Mandonel — a Grineer Railjack-origin archwing cannon that fires concrete slugs; the highest per-shot Impact damage of any archwing weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Slow-firing concrete slug cannon; each shot deals massive Impact damage.',
+          'The Impact damage type is most effective against shielded Corpus targets.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Against Corpus Crewships the massive Impact burst can strip shield cells rapidly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ArchBurstGun/ArchBurstGun',
+    ],
+    note: {
+      tldr: 'Cyngas — the Itzal burst-fire archwing pistol; fires tight three-round bursts at range.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Three-round burst; moderate damage per burst, good accuracy.',
+          'A reliable mid-range archwing option before Railjack-tier weapons are available.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Pairs well with Itzal's long-range blink for repositioning; fire a burst, blink, fire another burst from an unexpected angle.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── ArchMelee (SpaceMelee) ─────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/Archsword/ArchSwordWeapon',
+      '/Lotus/Weapons/Tenno/Archwing/Melee/VoidTraderArchsword/VTArchSwordWeapon',
+    ],
+    note: {
+      tldr: 'Veritux / Prisma Veritux — the Tenno archwing sword; fast melee in space with wide sweeping slashes. Prisma from Baro Ki'Teer.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Archwing melee weapons are used when you close to melee range in space combat; they hit with a swinging arc.',
+          'Prisma Veritux has higher stats than the base Veritux.',
+          'Archwing melee ignores the standard melee mod system in older builds but newer patch behavior applies some mods.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Closing range in archwing for melee is faster than shooting in some engagements; the blink archwing (Itzal) excels at this.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/Archaxe/ArchAxeWeapon',
+    ],
+    note: {
+      tldr: 'Onorix — the Tenno archwing axe; slower but heavier-hitting archwing melee with a wider cleave.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Archwing axe; lower attack speed than the sword but higher damage per swing.',
+          'The wider cleave arc hits enemies in a broader zone.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Better than the sword against clustered enemy formations where the wider arc hits multiple fighters per swing.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/ArchHammer/ArchHammer',
+    ],
+    note: {
+      tldr: 'Rathbone — the Tenno archwing hammer; the slowest archwing melee but with devastating slam range on each hit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Heaviest archwing melee; each swing delivers maximum damage in the widest possible arc.',
+          'The slam hits everything in a large sphere around the impact point.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Closing into a cluster and swinging the Rathbone can eliminate an entire fighter wing simultaneously.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/ArchScythe/ArchScythe',
+    ],
+    note: {
+      tldr: 'Kaszas — the Grineer archwing scythe; fast sweeping archwing melee with a long blade arc.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Archwing scythe; moderate attack speed with long sweep range on each strike.',
+          'A Grineer-origin archwing weapon; built from Grineer components.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The long sweep arc makes it effective against spread formations; hits enemies slightly farther away than the sword.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/Archswordandshield/ArchSwordShield',
+    ],
+    note: {
+      tldr: 'Centaur — the Tenno archwing sword-and-shield; the shield can parry incoming projectiles in archwing combat.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Archwing Sword & Board; the shield blocks incoming damage when facing threats head-on.',
+          'The shield reflection can redirect incoming fighter fire back at the attacker.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The parry/reflect is unique to the Centaur in archwing; useful for tanking in Archwing Interception without dodging.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/ArchSwordHook/ArchHookSwordWeapon',
+    ],
+    note: {
+      tldr: 'Agkuza — the Elytron archwing hook sword; fires a tethering hook that pulls enemies toward you before a melee finisher.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Unique archwing melee: the alt attack fires a hook projectile that tethers to an enemy.',
+          'Pulling the hook yanks the enemy toward you into point-blank melee range.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The hook-and-pull lets you engage enemies at range, drag them close, then execute with a melee blow — a different rhythm from other archwing melee weapons.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/GrnArchHand/GrnArchHandWeapon',
+    ],
+    note: {
+      tldr: 'Knux — a Grineer archwing fist weapon; close-range rapid punch combos that deal Impact damage.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Archwing gauntlet; fast punch combos at very close range.',
+          'Impact-dominant damage type effective against shielded Corpus targets in space.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The fastest archwing melee attack speed; allows the most hits per engagement when closing range via blink.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
