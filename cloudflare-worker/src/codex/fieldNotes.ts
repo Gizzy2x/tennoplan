@@ -5622,6 +5622,629 @@ const WEAPON_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
+
+  // ── Rifles — auto ──────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Rifle/StartingRifle',
+      '/Lotus/Weapons/Tenno/Rifle/Rifle',
+      '/Lotus/Weapons/Tenno/Rifle/VIPRifle',
+      '/Lotus/Weapons/Tenno/Rifle/BratonPrime',
+    ],
+    note: {
+      tldr: 'The Braton family — the Tenno standard-issue auto rifle, from MR0 starter through Vandal to Prime; same full-auto hitscan identity, improving stats each tier.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Full-auto hitscan at a steady cadence; moderate spread, effective at medium range, nothing exotic about trigger or projectile.',
+          'Braton Vandal raises crit to 16% and status to 16% for a balanced hybrid; Braton Prime shifts to 26% status for a dedicated status build.',
+          'Mk1-Braton is the MR0 starter — covers every mechanic the auto rifle loop uses, good for learning before upgrading in place.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Braton Prime is a reliable no-gimmick status platform; its 26% status lets you stack Corrosive or Viral fast without anything exotic.',
+          'Braton Vandal is a solid event-reward all-rounder that holds up well past its MR requirement.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Rifle/TennoAR',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeSoma/PrimeSomaRifle',
+    ],
+    note: {
+      tldr: 'The Soma — an iconic high-crit auto rifle with a gentle fire-rate ramp; the go-to crit primary for much of the mid-game.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fire rate ramps up slightly over the first half-second of sustained trigger — a brief spin-up before reaching peak output.',
+          'Very high crit (30%) and very low status (7%/10%) — a pure crit platform; status builds are the wrong direction here.',
+          'Large magazine and high ammo efficiency make it forgiving for newer players learning elemental and crit modding.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions is the defining pairing: high crit drives bleed procs on every critical hit, bypassing armor entirely.',
+          'Soma Prime is a direct stat upgrade — same identity, better numbers, build identically.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/LongGuns/GrineerAssaultRifle/GrnAssaultRifle',
+      '/Lotus/Weapons/VoidTrader/PrismaGrakata',
+    ],
+    note: {
+      tldr: 'The Grakata — a very high fire rate Grineer assault rifle; volume of fire compensates for moderate per-shot stats.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fast auto with 25% crit and 20%/21% status — both high enough for hybrid builds despite being individually moderate.',
+          'Sheer rounds-per-second means status procs and crit hits land consistently; the fire rate does the work.',
+          "Prisma Grakata is Baro Ki'Teer's improved version — slightly better stats, same playstyle.",
+        ]},
+        { heading: 'Interactions', points: [
+          'Ammo drain is significant at sustained fire — Ammo Mutation or restocking mid-mission is recommended for long runs.',
+          "Dual Grakatas exist as a secondary weapon; the primary version hits harder per shot and handles differently.",
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/LongGuns/GrineerM16Homage/GrineerM16Rifle',
+      '/Lotus/Weapons/Grineer/LongGuns/GrineerM16Homage/KarakWraith',
+    ],
+    note: {
+      tldr: 'The Karak — the Grineer standard rifle; reliable auto with good ammo efficiency, significantly improved by the Wraith variant.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Standard auto hitscan with low crit (9%/13%) and moderate status (15%/25%) — leans toward status builds.',
+          'Karak Wraith raises status to 25%, making it a more serious platform for elemental proc builds.',
+          'Consistent and easy to use; no exotic mechanics — what you see is what you get.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A solid early-to-mid-game status rifle for players learning elemental modding without exotic trigger management.',
+          'Kuva Karak (listed separately) substantially upgrades the stat line and adds a Lich bonus element.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Karak/KuvaKarak'],
+    note: {
+      tldr: 'Kuva Karak — the Lich upgrade: 23% crit and 31% status make it a genuine hybrid platform, plus a baked-in Lich bonus element.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Same auto hitscan identity as the Karak but substantially improved — the jump to 23% crit opens Hunter Munitions builds.',
+          'The Lich progenitor element is chosen at acquisition and added to every shot automatically.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The bonus element acts like a free elemental mod slot — factor the Lich element into your build when picking which one to use.',
+          'A competitive hybrid auto rifle at lower investment than many meta alternatives.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Rifle/BoltoRifle',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeBoltor/PrimeBoltor',
+    ],
+    note: {
+      tldr: 'The Boltor — fires Puncture bolts as actual projectiles, not hitscan; the Prime version is a high-status status platform.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires physical bolts that travel through the air — lead targets at distance, as bolts are not instant-hit.',
+          'Boltor: low crit (10%), moderate status (14%). Boltor Prime reverses this — 12% crit, 34% status — firmly a status build.',
+          'Bolts deal primarily Puncture, effective against armored enemies even before status procs.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Boltor Prime's 34% status lets you stack Corrosive or Viral quickly; one of the early go-to status primaries in the game's history.",
+          'Telos Boltor (Arbiters of Hexis) shifts the family toward crit (30%) — a different build direction, listed separately.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Syndicates/ArbitersOfHexis/LongGuns/AHBoltor'],
+    note: {
+      tldr: 'Telos Boltor — the Arbiters of Hexis variant: 30% crit flips the Boltor identity from status to crit, plus a syndicate proc on the meter.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Same projectile bolt identity as the Boltor family but 30% crit completely changes the viable build paths.',
+          'Arbiters of Hexis syndicate proc fires an energy burst when the syndicate meter fills — passive bonus damage on sustained use.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions with 30% crit makes it function as a crit-bleed rifle — unusual and effective for the Boltor line.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Rifle/HeavyRifle',
+      '/Lotus/Weapons/Grineer/LongGuns/WraithGorgon/WraithGorgon',
+      '/Lotus/Weapons/Grineer/LongGuns/VoidTraderGorgon/VTGorgon',
+    ],
+    note: {
+      tldr: 'The Gorgon — a heavy machine gun with a spin-up period before reaching full fire rate; high sustained output once spinning.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Holding the trigger spins the barrels up before reaching full fire rate — roughly a half-second delay before peak output.',
+          'Gorgon: 17% crit, 9% status — low stats, mostly a volume weapon; Gorgon Wraith shifts toward status (15% crit, 21% status).',
+          'Prisma Gorgon jumps to 30% crit and 15% status — making Hunter Munitions viable for the first time in the family.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Large magazine means long uninterrupted fire; effective for corridor defense or sustained pressure on a group.',
+          'Ammo-hungry at full spin — bring Ammo Mutation for anything past a few waves.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/ClanTech/Energy/CrpHeavyRifle',
+      '/Lotus/Weapons/Corpus/LongGuns/Machinegun/SupraVandal',
+    ],
+    note: {
+      tldr: 'The Supra — a Corpus heavy auto rifle; 30% status and reliable sustained fire, low crit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto hitscan with 12%/16% crit and 30% status — a dedicated status platform, not a crit weapon.',
+          'Supra Vandal bumps crit slightly to 16% while retaining 30% status; same identity, better numbers.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A solid clan-tech status rifle; consistent for elemental proc builds without needing exotic mechanics.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/LongGuns/CorpusUMP/CorpusUMP',
+      '/Lotus/Weapons/Corpus/LongGuns/CorpusUMP/PrismaCorpusUMP',
+    ],
+    note: {
+      tldr: 'The Tetra — a Corpus auto rifle that fires bouncing energy bolts; the ricochet hits targets a straight shot would miss.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Energy bolts ricochet off walls, floors, and ceilings — a missed shot in a corridor can bounce into a target behind cover.',
+          'Very low crit (4%/10%) and moderate status (20%/24%) — weak stat-wise; the bounce mechanic is the entire identity.',
+          'Prisma Tetra improves slightly but the base stat problem remains.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Tenet Tetra dramatically upgrades both crit and status — if you want this mechanic at endgame, use the Tenet version.',
+          'The ricochet is situationally useful in enclosed tilesets; awkward in wide-open areas.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBETetra/CrpBETetra'],
+    note: {
+      tldr: 'Tenet Tetra — same ricocheting energy bolt mechanic as the Tetra but with 28% crit, 30% status, and a Sister bonus element.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'The bounce identity carries over from the Tetra family, now on a stat line competitive with endgame weapons.',
+          'Sister progenitor element is set at acquisition and adds a free elemental type to every shot.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Both crit and status are high enough for hybrid builds; in tight corridors, bouncing rounds can hit clustered enemies multiple times.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/TennoTommyGun/TennoTommyGunRifle',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeStradavar/PrimeStradavarGun',
+    ],
+    note: {
+      tldr: 'The Stradavar — toggles between full-auto and semi-auto modes; 24% crit fits either fire style.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Alt-fire toggles between auto (faster, slightly more spread) and semi-auto (precise, deliberate); switching is instant mid-fight.',
+          '24% crit and 12% status across both variants — a crit-focused weapon regardless of fire mode.',
+          'Stradavar Prime is a direct stat upgrade with no mechanical change — same toggle, better numbers.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The toggle lets you switch from horde-clearing auto to precision semi for single targets without swapping weapons.',
+          'Hunter Munitions works in both modes; semi gives more control for deliberate crit-bleed shots on priority targets.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/TnBardRifle/TnBardRifle',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeTenora/TenoraPrimeWeapon',
+    ],
+    note: {
+      tldr: "The Tenora — Octavia's signature rifle; fire rate ramps up with sustained auto fire, reaching strong crit (28%/30%) at full speed.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fire rate gradually increases while holding the trigger — longer sustained fire equals faster fire rate.',
+          'High crit (28%/30%) at the ramp-up peak; low status (16%/24%) — a crit platform that rewards not releasing the trigger.',
+          "Alt-fire shifts to a charged single shot that fires one high-damage round without interrupting the auto rhythm.",
+        ]},
+        { heading: 'Interactions', points: [
+          "Octavia's signature — gains bonus reload speed and fire rate in her hands.",
+          'Hunter Munitions pairs naturally; let the fire rate ramp before engaging to maximise bleed proc density.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/TnoMiter/TnoMiter',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimePanthera/PrimePanthera',
+    ],
+    note: {
+      tldr: 'The Panthera — rapid-fire auto sawblade launcher with an alt-fire that releases a single large spinning disc.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: rapid auto stream of small circular saw blades that embed in enemies and deal Slash damage.',
+          'Alt-fire: launches a single large sawblade disc that travels and can be detonated with a second alt-fire press for an AoE burst.',
+          'Moderate crit (12%/18%) and good status (24%/30%) on Prime — a hybrid that leans toward status in the primary fire mode.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The alt-fire disc is the burst option — save it for groups or heavies, use primary auto for sustained pressure.',
+          'Prime version is the meaningful upgrade; the base Panthera is a solid stepping stone.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Thanotech/ThanoRifle/ThanotechRifle',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeTrumna/PrimeTrumnaWeapon',
+    ],
+    note: {
+      tldr: 'The Trumna — an Entrati auto rifle with an alt-fire grenade that charges up on primary kills before detonating for AoE.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: auto, 24% crit, 30%/34% status — a solid hybrid on paper that does real damage in its own right.',
+          'Alt-fire: an explosive grenade that charges from primary kills; once charged it detonates for a large Blast AoE on alt-fire press.',
+          'The grenade charge gates the alt-fire — you need to be killing things with the primary to fuel it.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The grenade AoE is very strong for clearing groups; use primary auto to charge it, then detonate into the next cluster.',
+          'Trumna Prime improves status to 34% — a meaningful bump that keeps it competitive in Steel Path.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/TnSMG/TnSMGWeapon',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeBaza/PrimeBazaGun',
+    ],
+    note: {
+      tldr: 'The Baza — a silent SMG-style primary rifle; one of very few silent non-bow primaries, with strong crit (26%/28%) for stealth builds.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Silent noise — does not alert unaware enemies, even in open rooms, making it ideal for spy missions and stealth runs.',
+          'High crit (26%/28%) and low status (10%/14%) — a crit-focused SMG that rewards Hunter Munitions builds.',
+          'Shorter effective range than most primaries; high fire rate in a compact package.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The silence is the defining feature — equip it when you need to clear a room without triggering reinforcements.',
+          'Baza Prime adds meaningful crit and status improvements; the silent + crit identity remains identical.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/GyreRifle/GyreRifleWeapon',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeAlternox/PrimeAlternoxWeapon',
+    ],
+    note: {
+      tldr: "The Alternox — Gyre's signature auto rifle; fires electric bolts that chain between nearby enemies, with high status (30%/40%).",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Electric bolts arc to additional nearby enemies on hit — one shot can proc status on multiple targets through the chain.',
+          '14%/20% crit and 30%/40% status — firmly a status weapon; Alternox Prime reaches 40% status, one of the higher status primaries.',
+          'The chaining means grouped enemies all receive status procs even if only the frontmost is targeted.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Gyre's signature — gains bonus in her hands; her electricity-focused kit amplifies the chaining damage and status.",
+          'Viral + innate Electricity is a strong pairing since the chain spreads both to the whole group.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/LoginPrimary/SundialRifle'],
+    note: {
+      tldr: 'The Zenith — a Daily Tribute auto rifle with a scope that deploys a radar marking enemies through walls.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Switching to ADS (scope mode) deploys a radar device at the target point that highlights enemies through walls for a duration.',
+          'Primary fire: auto hitscan with 10% crit and 34% status — high status for an auto rifle.',
+          'The radar is the defining utility: it provides persistent enemy awareness that persists after you lower the scope.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The radar is genuinely useful in spy missions, defense, and interception — knowing enemy positions before they reach you is strong.',
+          'Obtainable only from the Daily Tribute milestone system — a time-gated but permanent addition.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnBeltFedRifle/TnBeltFedRifleWeapon'],
+    note: {
+      tldr: 'The Reconifex — a heavy belt-fed auto rifle with strong crit (28%) and a large magazine; straightforward sustained fire.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Belt-fed auto with 28% crit and 16% status — a crit-leaning weapon that works well with Hunter Munitions.',
+          'Large magazine means extended fire before reloading; the reload is slow when it does come.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A reliable crit-bleed platform with no exotic mechanics to manage; useful when you want consistent output without mode-switching.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnOrokinRifle/GrnOrokinRifleWeapon'],
+    note: {
+      tldr: 'The Gotva Prime — a Grineer Orokin-era auto rifle with a balanced 23% crit and 27% status; a solid hybrid without exotic gimmicks.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto hitscan with stats high enough for either crit or status build directions — the 23%/27% split supports hybrid modding.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A no-nonsense auto rifle that performs reliably without requiring specific synergies or mechanics to unlock its potential.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Sentients/SentRifleNewWar/SentRifleNewWarGun'],
+    note: {
+      tldr: 'The Basmu — a Sentient rifle from The New War; deals solid status damage and restores health on kill.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto with 15% crit and 29% status — a status-first rifle.',
+          'Kills with the Basmu restore a portion of health, making it a passive sustain option across a mission.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The health-on-kill is most valuable in sustained missions where attrition matters; pairs with Warframes that otherwise struggle to recover health.',
+          "Its Sentient origin gives it Void-damage compatibility in specific encounters, though it doesn't adapt like enemy Sentients do.",
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnRailjackRifle/RailjackRifleGun'],
+    note: {
+      tldr: 'The Quellor — a Railjack-origin auto rifle with high status (38%) and a secondary fire that alters its projectile pattern.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto with 12% crit and 38% status — one of the higher status primaries in the auto rifle class.',
+          'Obtained from Railjack mission rewards; no crafting required, but the source limits early availability.',
+        ]},
+        { heading: 'Interactions', points: [
+          'High status makes it strong for Corrosive or Viral builds; the low crit means Hunter Munitions is not worth pursuing here.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/TnPriestSpear/TnPriestSpearGun',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeScourge/PrimeScourgeWeapon',
+    ],
+    note: {
+      tldr: "The Scourge — Harrow's signature; a very low-crit status auto rifle whose alt-fire spear weakens enemies caught near it.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto fire with 2%/10% crit and 30% status — base crit is essentially zero; this is a pure status weapon.',
+          'Alt-fire launches a spear that embeds in a surface or enemy; primary fire shots deal increased damage to targets near the embedded spear.',
+          'Scourge Prime raises crit to 10% — still status-first, but now Hunter Munitions is at least viable on paper.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Harrow's signature — gains bonus in his hands; his kit's crowd-control playstyle keeps targets near the embedded spear.",
+          'Place the spear in the middle of a group, then spray primary fire into the cluster for amplified status damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Sentients/Shedu/SheduHeavyWeapon'],
+    note: {
+      tldr: 'The Shedu — a Sentient arm cannon; emptying the magazine triggers a radial Void discharge that damages enemies and restores energy.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto fire with 25% crit and 23% status — a balanced hybrid stat line.',
+          'When the magazine runs empty, instead of a conventional reload it releases a radial Void blast that deals damage and restores energy to the player.',
+          'This means you want to fire until empty deliberately; early reloading wastes the discharge.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The energy restore on empty is significant — pairs well with energy-hungry Warframes that benefit from passive energy income.',
+          'Obtainable by defeating Eidolon Vomvalysts and other Sentient enemies in the Plains of Eidolon at night.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Cephalon/Primary/CephPrimary/CephPrimary',
+      '/Lotus/Weapons/Syndicates/CephalonSuda/LongGuns/CSSimulor',
+    ],
+    note: {
+      tldr: 'The Simulor — fires energy orbs that merge when stacked together, releasing AoE pulses; area-denial over direct fire.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Each shot creates an energy orb at the target location. A second orb fired near the first causes them to merge into a larger pulsing vortex that pulls in and damages enemies.',
+          'The orbs linger at fixed points in space — you are placing zones of damage, not shooting enemies directly.',
+          'Synoid Simulor (Cephalon Suda) adds higher status (35%) and the Cephalon Suda Entropy proc — energy restore on meter fill.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Works best in controlled positions (defense, interception) where you can place orbs in enemy paths before they arrive.',
+          'The orb-merging requirement means accurate placement matters more than aim at individual enemies.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Infested/LongGuns/InfCrpShockSwarm/InfCrpShockSwarmRifle'],
+    note: {
+      tldr: 'The Mutalist Quanta — an Infested Corpus hybrid; fires globs that create toxic puddles, very weak stats.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto with 3% crit and 15% status — exceptionally low stats; this is not a competitive weapon.',
+          'Fires Infested goop blobs that create small Toxin zones on impact.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Primarily a mastery rank item or collector piece; there are far stronger options for any content where damage matters.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/LongGuns/CrpArSniper/CrpArSniperRifle'],
+    note: {
+      tldr: 'The Ambassador — a Corpus auto rifle whose alt-fire charges and fires a piercing laser beam that punches through multiple enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: standard auto hitscan with 14% crit and 26% status.',
+          'Alt-fire: charges up and releases a high-velocity beam that pierces through enemies in a line — good for prioritizing heavy units in a group.',
+          'The two modes cover different roles: auto spray for groups, charged beam for priority targets or long-range precision.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The alt-fire beam shares mods with the primary — elements and damage you apply via mods affect both modes.',
+          'Strong as a hybrid weapon when you want the flexibility of auto spray and a hard-hitting option in one slot.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnRifleErsatz/TnRifleErsatzWeapon'],
+    note: {
+      tldr: 'The Aeolak — a 1999-era Technocyte auto rifle with solid hybrid stats (21% crit, 33% status); a reliable status-hybrid platform.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto hitscan with a balanced stat line — 21% crit is enough for Hunter Munitions, 33% status procs reliably for elemental builds.',
+          'A weapon from the 1999 Technocyte Coda storyline; acquired through that content.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The hybrid stats make modding flexible; both crit-bleed and elemental status approaches work without forcing a specific direction.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Lasria/AK47/TC2024AK47Weapon'],
+    note: {
+      tldr: 'The Ax-52 — a 1999-era Lasrian assault rifle; strong crit (26%) for a clean crit or Hunter Munitions build.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto hitscan with 26% crit and 18% status — crit-leaning; the stat line is better suited to crit builds than status.',
+          'A conventional-looking assault rifle from the 1999 setting; no exotic mechanics.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions is the natural fit given the 26% crit; a no-complexity crit-bleed rifle.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Lasria/LasGooAK/LasGooAKPlayerWeapon'],
+    note: {
+      tldr: 'The Efv-5 Jupiter — a 1999 Lasrian rifle that fires viscous bolts; hybrid stats (21% crit, 25% status).',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto fire with 21% crit and 25% status — enough on both sides to run a hybrid build.',
+          'Fires goo-like projectiles with a short travel time; not fully hitscan.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A flexible mid-range auto for the 1999 content pool; both crit and status builds are viable without specialising hard.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Infested/InfestedLich/LongGuns/CodaBubonico/CodaBubonicoCannon'],
+    note: {
+      tldr: 'The Coda Bubonico — the Infested Lich rifle variant of the Bubonico arm cannon; high crit (27%) with a Lich bonus element.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto, 27% crit and 10% status — a crit-first weapon in contrast to the Shotgun-type base Bubonico.',
+          'Carries the Infested Lich progenitor bonus element, baked into every shot.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions pairs well with the 27% crit; the bonus element adds flexibility without using an extra mod slot.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/LongGuns/CrpRubanRifle/CrpRubanRifle'],
+    note: {
+      tldr: 'The Stahlta — a Corpus steel-needle auto rifle with an alt-fire charged shot that releases a high-velocity burst.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary: auto with 24% crit and 22% status — a balanced hybrid stat line.',
+          'Alt-fire charges and fires a condensed burst of steel needles in a tight cone, dealing higher burst damage to a single point.',
+          'The alt-fire is a bonus damage tool; the primary auto is the sustained damage mode.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The alt-fire charged burst is effective on heavy units and bosses where you want concentrated spike damage.',
+          'Hybrid modding works well given the balanced stats; Viral + slash or Corrosive are natural pairings.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnInkRifle/TnInkRifleWeapon'],
+    note: {
+      tldr: "The Enkaus — Jade's signature beam rifle; fires continuous ink that marks targets, and marked targets take amplified follow-up damage.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Held trigger (continuous beam), 16% crit and 32% status — the beam applies status reliably at sustained fire.',
+          'Hitting enemies with the ink beam marks them; subsequent shots deal increased damage to marked targets.',
+          'The marking loop rewards staying on the same target rather than spraying across groups.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Jade's signature weapon — gains a bonus in her hands; her kit's mark-and-detonate playstyle fits the ink-marking loop.",
+          'Status builds work well since the beam naturally procs multiple status types while building up mark stacks.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
