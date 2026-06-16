@@ -5183,6 +5183,445 @@ const WEAPON_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
+
+  // ── Shotguns (all alarming; semi/auto/duplex/charge/held; pellets, spread, or beam) ──
+  {
+    keys: [
+      '/Lotus/Weapons/MK1Series/MK1Strun',
+      '/Lotus/Weapons/Tenno/Shotgun/Shotgun',
+      '/Lotus/Weapons/Tenno/Shotgun/ShotgunVandal',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeStrun/PrimeStrunWeapon',
+    ],
+    note: {
+      tldr: 'The Strun family — the original Tenno pump-action shotgun, from the MR0 starter through Wraith to Prime; same semi-auto wide-cone identity throughout.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires 8 pellets per shot in a wide cone; effective inside ~15m, falls off sharply at range.',
+          'Semi-auto pacing encourages deliberate shots — each pull commits to a full burst.',
+          'Strun Wraith bumps stats meaningfully; Strun Prime raises crit to 24%, opening Hunter Munitions builds.',
+        ]},
+        { heading: 'Interactions', points: [
+          'ADS (aiming down sights) tightens the pellet spread slightly — useful for borderline-range targets.',
+          'A reliable progression ladder: start with Mk1, upgrade in place as mastery allows.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Shotgun/QuadShotgun'],
+    note: {
+      tldr: 'The Hek — high single-shot damage, relatively tight spread for a shotgun; punishes at close-to-mid range.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires 7 pellets with tighter spread than most shotguns — more effective at range than wider-pattern competitors.',
+          'Low base crit (10%) and status (11%); strength is raw damage per pellet, not stat synergy.',
+          'Semi-auto and ammo-efficient — each burst kills at most MR ranges, so fewer shots are needed per encounter.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A solid mid-game MR4 primary; the tight spread means more pellets land on target even at distance.',
+          'Replaced competitively by Vaykor Hek or Kuva Hek for harder content, but the base Hek stays reliable as a workhorse.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Syndicates/SteelMeridian/LongGuns/SMHek'],
+    note: {
+      tldr: 'Vaykor Hek — same tight-spread semi-auto as the Hek but 25% crit, a syndicate Justice burst, and the Scattered Justice augment.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Retains the Hek’s 7-pellet tight-spread identity but raises crit to 25%, making Hunter Munitions builds genuinely effective.',
+          'Steel Meridian’s Justice proc releases a radial damage burst when the syndicate meter fills — a passive bonus on sustained use.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Scattered Justice augment (Vaykor Hek exclusive) adds more pellets per shot at the cost of tighter spread — transforms it from a precision tool into a crowd-clearance shotgun.',
+          'One of the more accessible endgame-capable primaries; Hunter Munitions + high crit makes it punish armored units via bleed procs.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Hek/KuvaHekWeapon'],
+    note: {
+      tldr: 'Kuva Hek — adds a Lich progenitor element AND a Four-Barrel alt-fire that dumps all barrels simultaneously for massive single-target burst.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire is a Vaykor Hek-tier shotgun with the Lich’s bonus element baked in; 23% crit for reliable crit builds.',
+          'Alt-fire fires all four barrels simultaneously at 4× ammo cost — devastating single burst against priority targets.',
+          'The alt-fire is the defining upgrade: use semi for crowd clearing, dump alt-fire into a heavy that needs deleting.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Lich progenitor element is set at acquisition — Toxin pairs with Cold for Viral; Heat can build combined elements via mods.',
+          'Strong in Steel Path on heavies; the alt-fire burst can remove a unit that semi-fire would take several shots to drop.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Shotgun/FullAutoShotgun',
+      '/Lotus/Weapons/Tenno/Shotgun/PrimeBoar',
+    ],
+    note: {
+      tldr: 'The Boar — full-auto pellet fire at the cost of ammo efficiency; volume over precision.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto trigger means holding fire sprays pellets continuously — effective for sustained close-range pressure.',
+          'Low base crit and status (10%/8% base, 15%/11% Prime); output comes from fire volume rather than per-shot build synergy.',
+          'Boar Prime is a meaningful step up: larger magazine and improved stats that let real status or crit builds function.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Ammo-hungry at sustained fire — Ammo Mutation or restocking mid-mission is strongly recommended for anything beyond short runs.',
+          'Auto fire feels forgiving in tight corridors; the sustained rate makes status application consistent even with lower per-shot status chance.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Shotgun/DoubleBarrelShotgun',
+      '/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Sobek/KuvaSobek',
+    ],
+    note: {
+      tldr: 'The Sobek — large-drum auto shotgun; the Acid Shells augment turns each reload into a lingering Corrosive puddle.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto trigger, 20-round drum magazine — long reload, but the large mag means extended fire before needing to reload.',
+          'Base crit and status are modest; the weapon’s identity is almost entirely built around its Acid Shells augment.',
+          'Acid Shells: each reload places a Corrosive puddle at your feet that strips armor and damages enemies who step in it.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Deliberately triggering partial reloads to place puddles is the core strategy — you don’t need to empty the drum, just reload to drop the zone.',
+          'Kuva Sobek adds a Lich progenitor element; the added element can combine with Acid Shells’ Corrosive to broaden the debuff.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/DoubleBarrelShotgun/TennoDoubleBarrelShotgun',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeTigris/PrimeTigris',
+      '/Lotus/Weapons/Syndicates/NewLoka/LongGuns/NLTigris',
+    ],
+    note: {
+      tldr: 'The Tigris family — Duplex double-barrel shotgun: both barrels fire nearly simultaneously, then you must reload; enormous burst damage for a 2-shot mag.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Duplex trigger: one pull fires both barrels in rapid succession; after two shots you must reload before the next burst.',
+          'The 2-shot effective mag means every engagement is one burst-and-reload cycle — more like a precision burst weapon than a spray tool.',
+          'Tigris Prime delivers some of the highest base burst damage of any primary weapon; most non-boss enemies are a one-burst kill.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Reload speed mods (Fast Hands, Primed Fast Hands) are high priority — you reload after almost every kill, so faster reloads tighten the loop.',
+          'Sancti Tigris (New Loka) has slightly lower raw damage than Prime but releases a Radiation burst that damages nearby enemies on each kill.',
+          'Not ammo-efficient in total shots, but each burst is so lethal that fewer are needed — bring a secondary for sustained long missions.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/LongGuns/CrpShotgun/CrpShotgun',
+      '/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEArcaPlasmor/CrpBEArcaPlasmor',
+    ],
+    note: {
+      tldr: 'The Arca Plasmor — fires a wide horizontal energy wave, not pellets; hits everything in a sweeping arc and knocks enemies back.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'A single wide energy plane travels forward — not a pellet spread but a wave that hits every enemy in its horizontal path.',
+          'On hit, enemies are knocked back (or off ledges), which is disruptive when you need them stationary for abilities or finishers.',
+          'Tenet Arca Plasmor adds a Corpus Sister bonus element and substantially higher status (34% vs 28%), making status builds viable.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Multishot mods add extra parallel waves rather than more pellets — extends horizontal coverage, not per-wave status ticks.',
+          'The knockback is counterproductive with Warframes that need crowds held in place (Nidus, Nezha, etc.) — plan around it.',
+          'The wave can pass through thin geometry in some cases, giving more consistent AoE coverage than pellet weapons in dense environments.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/TnHeavyShotgun/TnHeavyShotgunGun',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeCorinth/PrimeCorinth',
+    ],
+    note: {
+      tldr: 'The Corinth — a high-crit semi-auto shotgun with an alt-fire grenade that detonates in mid-air, not on impact.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: semi-auto, 7 pellets, 30% crit — one of the stronger crit primaries in the shotgun class.',
+          'Alt-fire launches a timed airburst grenade — it detonates at a set range mid-air, not on surface contact, for Blast AoE above or behind cover.',
+          'The grenade’s fixed timer means leading the arc to the right distance takes practice, but the airburst clears groups reliably once learned.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions pairs naturally: 30% crit + bleed-on-crit turns it into an armor-ignoring damage machine.',
+          'Corinth Prime nudges status to 9% (from 6%), making a hybrid crit-status build slightly more viable.',
+          'Cautious Shot (or Primed Cautious Shot) eliminates self-stagger from the alt-fire grenade if you use it aggressively.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/TnAlchemistShotgun/TnAlchemistShotgun',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeCedo/PrimeCedoWeapon',
+    ],
+    note: {
+      tldr: 'The Cedo — auto shotgun that gains bonus crit per unique status type on the target; its alt-fire disc stacks those status types instantly.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire has near-zero base status (0%/2%) — the shots themselves rarely proc; the weapon gains crit FROM status on the target.',
+          'For each unique status type active on the target, primary fire crit chance increases — stack multiple different types before firing.',
+          'Alt-fire throws a ricocheting disc that inflicts several different status types across enemies it hits — use it first, then open fire into the primed targets.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Lavos’s signature weapon — his element-cycling kit applies multiple status types simultaneously, making the disc-then-shotgun loop especially efficient in his hands.',
+          'The disc is setup, not damage; its value is the status diversity it creates for the primary fire’s crit bonus.',
+          'Two different types (e.g., Viral + Slash) are enough to see a meaningful crit boost; more types continue to scale it higher.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/LongGuns/GrnSpark/GrnSparkRifle',
+      '/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Kohm/KuvaKohm',
+    ],
+    note: {
+      tldr: 'The Kohm — spinning-barrel shotgun that ramps from 1 projectile per shot to ~7 as you hold the trigger; enormous status output at full spin.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Starts firing a single projectile; sustained fire spins the barrels up to ~7 projectiles per shot — the first second of fire is weak, the rest is a storm.',
+          'At full spin with Multishot mods, the per-second projectile count becomes massive, spreading status types across groups with minimal precision needed.',
+          'Very ammo-hungry at full spin — fire rate multiplies ammo drain faster than the display implies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kuva Kohm adds a Lich progenitor element and improved stats — already the premier sustained-status primary in many builds, the bonus element adds flexibility.',
+          'Ammo Mutation or an ammo-efficient secondary is essential for long missions; sustained fire will drain reserves quickly.',
+          'Viral + Slash is the classic setup: projectile volume spreads Viral fast across groups, then Slash bleeds strip health ignoring armor.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/LongGuns/GrineerFlakCannon/FlakCannon',
+      '/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Drakgoon/KuvaDrakgoon',
+    ],
+    note: {
+      tldr: 'The Drakgoon — charge-fire flak cannon releasing bouncing fragments; excels in tight corridors, awkward in open spaces.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Charging releases a cluster of flak fragments that bounce off walls, floors, and ceilings before dissipating — bank shots around corners in corridors.',
+          'Longer charge = more fragments; a full charge saturates a tight space.',
+          'Base Drakgoon has very low crit (5%); Kuva Drakgoon jumps to 19% — a substantial change that opens real crit builds unavailable to the base.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Bouncing makes it awkward in wide open areas where fragments miss before reaching enemies — tight spaces are its home.',
+          'Kuva Drakgoon gains a Lich progenitor element alongside the improved crit; combined, it plays almost like a different weapon from the base.',
+          'Charge time mods reduce the hold needed for a full burst, making the loop snappier in fast-paced fights.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/LongGuns/CrpShapeBlast/CrpShapeBlastShotgun'],
+    note: {
+      tldr: 'The Exergis — fires a single crystallized shard that shatters into radial fragments on impact; high status, low crit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires one projectile (not a pellet spread) — a precision slug that spawns secondary fragments outward on impact.',
+          'High status (36%) across the initial hit and the shards; excellent for applying multiple proc types to a target or small group.',
+          'Low crit (8%) — firmly a status weapon; trying to run it as a crit platform misses what it does well.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Multishot mods add additional crystal slugs per shot, each shattering independently — more projectiles, more shatter points, more status coverage.',
+          'Viral + Slash or Corrosive setups make good use of the fast, reliable status stacking on single targets.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/LongGuns/CrpSplitLaser/CrpSplitLaser'],
+    note: {
+      tldr: 'The Convectrix — held-trigger twin beams that sweep in a widening arc; highest base status of any primary shotgun at 45%.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Holding the trigger sweeps two beams left and right in an ever-widening fan — a sustained sweeping area cone, not a burst.',
+          'At 45% status, the sweep is extremely reliable at applying procs across everything in its path.',
+          'Awkward against a single target the beams sweep past, but excellent against groups clustered in the sweep zone.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Multishot on beam weapons adds extra parallel beams; each beam hits and statuses independently — meaningful output increase per mod rank.',
+          'Corrosive or Viral status spread to an entire group with one sustained trigger hold in a corridor — strong area denial.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Infested/LongGuns/Tentacluster/InfestedShotgun'],
+    note: {
+      tldr: 'The Phage — seven simultaneous Infested beams that fan wide when hip-firing or converge into a tight burst when aimed.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires 7 independent beams; each can proc status separately — a full convergence hit applies status at an extremely high rate to a single target.',
+          'Hip-fire spreads beams into a wide fan for AoE status on groups; ADS converges them for single-target saturation.',
+          'Moderate crit (19%) means you can lean either status or hybrid depending on whether you aim or hip-fire.',
+        ]},
+        { heading: 'Interactions', points: [
+          'ADS convergence is its strongest mode against priority targets — all 7 beams on one enemy stacks multiple status types nearly instantly.',
+          'Works best in corridors or tight spaces; wide open areas scatter beams past enemies without landing the full 7.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/RevenantShotgun/RevenantShotgun',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimePhantasma/PhantasmaPrimeShotgun',
+    ],
+    note: {
+      tldr: 'The Phantasma — a continuous ice-shard spray with an alt-fire seeking fireball; Revenant’s signature, covering two ranges and two damage types.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: held beam spraying icy shards in a close-range cone — very low crit (3%/11%) but steady status (22%).',
+          'Alt-fire launches a self-tracking fireball that homes to an enemy and detonates on contact for Heat AoE — extends effective range beyond the ice spray.',
+          'Phantasma Prime adds meaningful crit (11% vs 3%), making hybrid builds more viable than on the base.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Revenant’s signature weapon — gains bonus fire rate and magazine capacity while Mesmer Skin is active.',
+          'Ice spray contributes Cold; fireball contributes Heat — can be combined for Blast, or kept separate for two independent proc types.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/TnGlassShotgun/TnGlassShotgunGun',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeAstilla/AstillaPrimeWeapon',
+    ],
+    note: {
+      tldr: 'The Astilla — fires glass slugs that shatter into radial fragments on impact; high status from both the slug and the shards.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Each slug deals direct hit damage AND spawns a burst of glass shards on impact — both the slug and shards can proc status independently.',
+          'High status (33%/37%) across slug and shards makes it one of the faster status-applicators in the auto-shotgun class.',
+          'Auto trigger with moderate crit (17%/21%) — hybrid builds are reasonable on the Prime.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The shard burst spreads outward on impact — in tight spaces or against clustered enemies, shards from one slug can hit secondary targets.',
+          'Fast auto-fire + dual-source status procs (slug + shards) means Viral or Corrosive lands quickly without waiting on individual proc chances.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Infested/LongGuns/InfArmCannon/InfArmCannon'],
+    note: {
+      tldr: 'The Bubonico — Infested arm cannon with high-crit rotary primary fire and a charged alt-fire spore pod that releases a Viral/Corrosive cloud.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: auto rotary shots with 25% crit and innate Toxin — a legitimate crit platform for a shotgun-category weapon.',
+          'Alt-fire: charged spore pod that detonates into a Viral + Corrosive cloud at the landing point, applying AoE status to everything in range.',
+          'The two modes serve different roles: primary for single-target crit DPS, alt-fire for group status saturation.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Innate Toxin on the primary fire combines with Cold for Viral, or Heat for a mixed element — flexible elemental building without using an extra mod slot.',
+          'Lead with the spore pod to apply Viral/Corrosive, then switch to primary crit fire into the debuffed targets.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/Zariman/LongGuns/PumpShotgun/ZarimanPumpShotgun'],
+    note: {
+      tldr: 'The Felarx — a Zariman pump-action shotgun with strong crit (20%) that unlocks Incarnon Evolution passives via The Circuit in Duviri.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto pump feel; 20% crit and only 6% status at base — a crit platform, not a status weapon.',
+          'Like all Zariman weapons, it has an Incarnon Evolution path unlocked through The Circuit (Duviri); completing stages improves stats and adds passives.',
+          'Judge it at max evolution, not at base — the evolution stages substantially change its ceiling.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions pairs well with the pump-action crit: bleed-on-crit is the main damage loop against armored enemies.',
+          'Completing Incarnon Evolution stages in The Circuit is the most important investment — prioritize that before expensive mods.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnoLotusPodShotgun/TnoLotusPodShotgun'],
+    note: {
+      tldr: 'The Steflos — Cyte-09’s signature shotgun; fires sticky pods that burst into lingering spore clouds for area denial and status application.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Each shot sticks a pod to surfaces or enemies; after a short delay it bursts into a spore cloud that deals damage and status to anything caught in it.',
+          'Semi-auto, moderate crit (14%) and status (22%) — a mid-range status platform with area-denial depth.',
+          'Pod placement matters: stick them at choke points or at an enemy’s feet, then let the cloud work.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Cyte-09’s signature — gains a handling bonus in her hands; her kit’s biological hazard playstyle synergizes with the cloud mechanic.',
+          'Multiple overlapping clouds from several stuck pods stack their status output, saturating a doorway or corridor.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/PaxDuviricusShotgun/PaxDuviricusShotgun'],
+    note: {
+      tldr: 'The Rauta — a Duviri Dax shotgun; weak at base but carries an Incarnon Evolution passive that restores ability energy on kills.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto with very low crit (6%) and status (12%) at base — not competitive on raw damage without Incarnon Evolution progress.',
+          'A Duviri weapon: Incarnon Evolution stages unlock through The Circuit and significantly upgrade its utility, including energy-on-kill.',
+          'The energy restoration passive is the reason to use it — pairs well with Warframes that burn through energy quickly.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Treat it as a utility pick: you may trade raw damage efficiency for the passive energy income it provides across a mission.',
+          'Complete its evolution stages before investing in damage mods — the passives are what justify the slot.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Infested/InfestedLich/LongGuns/1999InfShotgun/1999InfShotgunWeapon'],
+    note: {
+      tldr: 'The Coda Bassocyst — the Infested Lich shotgun; high status (40%), semi-auto, organic barb that detonates into a zone on impact.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a pressurised organic barb that detonates into a small zone at the impact point — catches everything in the burst radius.',
+          'High status (40%) and moderate crit (18%) let it function as a status-first weapon with a real hybrid secondary build path.',
+          'The Coda (Infested Lich) variant adds a progenitor bonus element determined by the Lich at acquisition.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The zone-on-impact provides a small AoE that catches grouped enemies — more forgiving against clusters than single-slug precision weapons.',
+          'Choose the Lich’s bonus element to fit status targets: Toxin + Cold = Viral; other elements can build combined types via mods.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
