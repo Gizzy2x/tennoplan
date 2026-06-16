@@ -7022,6 +7022,390 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
 
+
+  // ── Secondaries — semi-auto / revolver families ────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistol/Pistol',
+      '/Lotus/Weapons/Tenno/Pistol/LatoVandal',
+      '/Lotus/Weapons/Tenno/Pistol/LatoPrime',
+      '/Lotus/Weapons/Tenno/Akimbo/AkimboPistol',
+      '/Lotus/Weapons/MK1Series/MK1Furis',
+    ],
+    note: {
+      tldr: 'The Lato — the Tenno standard-issue sidearm; MR0 starter that scales from basic to competitive through Vandal and Prime tiers.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto hitscan pistol; low recoil, moderate stats on the base version.',
+          'Lato: 10% crit, 6% status. Lato Vandal: 26% crit, 10% status. Lato Prime: 30% crit, 20% status.',
+          'Aklato (dual) doubles the fire rate but halves reload efficiency.',
+          'Mk1-Furis is the starter auto pistol alternative — different weapon, grouped here as starter secondary alongside the Lato.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Lato Prime is a founding-Tenno-exclusive weapon — extremely rare and cosmetically significant; stats are solid but not exceptional.',
+          'Lato Vandal at 26% crit is a genuine Hunter Munitions platform for its mastery bracket.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistol/RevolverPistol',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeVasto/PrimeVastoPistol',
+      '/Lotus/Weapons/Tenno/Akimbo/DualVastos',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeVasto/AkPrimeVasto/AkPrimeVastoPistol',
+    ],
+    note: {
+      tldr: 'The Vasto — a high-damage revolver-style pistol with strong crit (20%+); Prime and Akvasto Prime versions are endgame-capable.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto, higher damage per shot than auto pistols, slower fire rate.',
+          'Vasto: 20% crit, 8% status. Vasto Prime: 22% crit, 22% status. Akvasto Prime: 22% crit, 22% status (dual).',
+          'The balanced 22%/22% on the Primes supports hybrid builds effectively.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Vasto Prime and Akvasto Prime are competitive mid-to-high-level secondaries with no exotic mechanics — straightforward hybrid platforms.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistol/HeavyPistol',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeLex/PrimeLex',
+      '/Lotus/Weapons/Tenno/Akimbo/AkLexPistols',
+      '/Lotus/Weapons/Tenno/Akimbo/AkLexPrimePistols',
+    ],
+    note: {
+      tldr: 'The Lex — a heavy semi-auto pistol; low fire rate, high single-shot damage. Lex Prime and Aklex Prime reach 25% crit for Hunter Munitions builds.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto with a slow fire rate and very high per-shot damage — precision pistol.',
+          'Lex: 20% crit, 10% status. Lex Prime: 25% crit, 25% status — a balanced hybrid at the Prime tier.',
+          'Aklex Prime (dual) doubles throughput at the cost of magazine efficiency.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Lex Prime was one of the dominant secondaries before Incarnon-era releases; still solid for players who prefer deliberate semi-auto fire.',
+          'The high per-shot damage means multishot mods are particularly valuable here compared to auto secondaries.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/Magnum/Magnum',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeMagnus/PrimeMagnusWeapon',
+      '/Lotus/Weapons/Tenno/Akimbo/DualMagnus',
+      '/Lotus/Weapons/Tenno/Akimbo/DualMagnusPrime',
+    ],
+    note: {
+      tldr: 'The Magnus — a Tenno semi-auto pistol with balanced hybrid stats (22%/22%); Prime is a reliable general-purpose secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto hitscan; consistent fire rate between the heavy Lex and lighter revolvers.',
+          'Magnus: 22% crit, 22% status. Magnus Prime: 28% crit, 28% status — one of the more balanced hybrid pistols.',
+          'Akmagnus / Akmagnus Prime double the throughput in the dual wield configuration.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Magnus Prime at 28%/28% is flexible enough to run purely as a crit weapon, a status weapon, or a hybrid — rare versatility for a pistol.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistol/BurstPistol',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeSicarus/PrimeSicarusPistol',
+    ],
+    note: {
+      tldr: 'The Sicarus — a three-round burst pistol; Sicarus Prime brings it to 25% crit and 20% status for a solid burst secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Three rounds per trigger pull; consistent burst cadence regardless of trigger speed.',
+          'Sicarus: 16% crit, 6% status — baseline burst. Sicarus Prime: 25% crit, 20% status — meaningfully better in both dimensions.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Sicarus Prime at 25% crit is a natural Hunter Munitions secondary for players who prefer burst over full-auto.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnBardPistolGun',
+      '/Lotus/Weapons/Tenno/Pistols/PrimePandero/PanderoPrimeWeapon',
+    ],
+    note: {
+      tldr: "The Pandero — Octavia's signature pistol; semi-auto with 30% crit and a unique alt-fire fan-shot that unloads the magazine in a spread.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: deliberate semi-auto with high crit (30%/30%) and moderate status (10%/24%).',
+          'Alt-fire: fires multiple rounds in a wide fan pattern simultaneously, draining several rounds of the magazine at once.',
+          'Pandero Prime raises status to 24% and adds a slightly higher fire rate.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Octavia's signature — gains a reload speed bonus in her hands.",
+          'The fan-shot alt-fire is good for close-range burst damage; the deliberate primary is better for longer ranges with full aim.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistol/HandShotGun',
+      '/Lotus/Weapons/Tenno/Pistol/BroncoPrime',
+      '/Lotus/Weapons/Tenno/Akimbo/AkimboShotGun',
+      '/Lotus/Weapons/Tenno/Akimbo/PrimeAkimboShotGun',
+    ],
+    note: {
+      tldr: 'The Bronco — a two-shot break-action hand shotgun; fires two high-damage buckshot blasts before reloading.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto shotgun pistol — fires two pellet blasts per magazine, each delivering multiple pellets in a tight spread.',
+          'Very low crit (6%) and status (9%/13%) per pellet; the two-shot capacity means the damage window is short.',
+          'Akbronco / Akbronco Prime dual-wield doubles magazine and sustained fire but the per-pellet stats remain low.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Best as a panic-button close-range burst in situations where you need brief high burst damage and switch back to primary.',
+          'Bronco Prime marginally improves on the base; neither version competes with dedicated secondary shotguns at endgame.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/SawnOffShotgun/TennoHandShotgun',
+      '/Lotus/Weapons/Tenno/Pistols/PrimePyrana/PrimePyranaPistol',
+    ],
+    note: {
+      tldr: 'The Pyrana — a semi-auto hand shotgun; Pyrana Prime spawns a spectral second pistol on crit headshot kills, doubling your fire rate.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto shotgun pistol with multiple pellets per shot; 20%/24% crit and 3%/4% status — pure crit platform.',
+          'Pyrana Prime: headshot kills with a critical hit spawn a ghost copy of the Pyrana that fires alongside you for several seconds.',
+          'The spectral copy benefits from your mods — it fires at the same damage and status chance as your original.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The ghost Pyrana effectively doubles your fire rate during its active window; focus headshots to maximize uptime.',
+          'Build for crit headshots; the ghost refresh loop sustains in dense waves where headshots are plentiful.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/AllNew1hSG/AllNew1hSG',
+    ],
+    note: {
+      tldr: 'The Euphona Prime — a dual-mode hand cannon; primary fire is a tight shotgun burst, alt-fire is a single high-damage Projectile slug.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: tight pellet spread, high per-pellet damage, 30% crit — a high-crit hand shotgun.',
+          'Alt-fire: single precision slug that deals higher single-target damage at range.',
+          'The two modes cover different engagement types without switching weapons.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Shotgun primary for groups or close targets; slug for range or armored priority targets.',
+          'Both modes share mods — elements and crit mods apply to both fire types.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrineerHandShotgun/GrineerHandCannon',
+      '/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Brakk/KuvaBrakk',
+    ],
+    note: {
+      tldr: 'The Brakk — a Grineer burst hand shotgun; fires a tight cone of pellets rapidly. Kuva Brakk adds 29% crit and a Lich element.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto shotgun pistol — multiple pellets per shot in a tight spread, very effective at close range.',
+          'Base Brakk: 17% crit, 5% status — crit-leaning but stats too low for endgame. Kuva Brakk: 29% crit, 11% status.',
+          'Kuva Brakk adds the Lich progenitor bonus element baked into each shot.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kuva Brakk is a strong close-range secondary; 29% crit with a bonus element creates powerful elemental combinations.',
+          'The tight pellet cone means it is best treated as a semi-auto shotgun pistol — effective at point-blank, falls off at range.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CorpusHandShotgun/CorpusHandCannon',
+      '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBEDetron/CrpBEDetron',
+    ],
+    note: {
+      tldr: 'The Detron — a Corpus hand-cannon shotgun; fires Radiation pellets that bypass shields. Tenet Detron dramatically improves crit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Shotgun pistol with innate Radiation damage — Radiation bypasses Corpus shields and confuses enemies.',
+          'Base Detron: 4% crit, 13% status — weak stats. Tenet Detron: 18% crit, 10% status and a Sister bonus element.',
+          'Pellets spread in a small cone; close range is most effective.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Innate Radiation makes it naturally strong against Corpus (shield-bypass) and Corrupted (Radiation confusion proc).',
+          'Tenet Detron is the endgame version; the base Detron is a mastery item in modern content.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/AutomaticHandCrossbow/AutoCrossBow',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeBallistica/PrimeBallistica',
+      '/Lotus/Weapons/Syndicates/RedVeil/Pistols/RVBallistica',
+    ],
+    note: {
+      tldr: 'The Ballistica — a semi-auto hand crossbow; fires bolts with projectile travel time. Rakta Ballistica (Red Veil) adds a life-leech proc.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto crossbow firing physical bolts — projectile travel, not hitscan; lead moving targets at distance.',
+          'Ballistica: 3% crit, 10% status — low base stats. Ballistica Prime: 20% crit, 15% status.',
+          'Rakta Ballistica fires a spread of bolts on alt-fire and has a Red Veil Entropy proc that grants brief invulnerability on kill.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Ballistica Prime is the competitive version; 20% crit makes Hunter Munitions viable for a bolt secondary.',
+          'Rakta Ballistica is primarily sought for the invulnerability proc (useful in high-level survival as a panic button) and not raw damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/GrineerPistol/GrnScopedPistolPlayer',
+      '/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Seer/KuvaSeer',
+    ],
+    note: {
+      tldr: 'The Seer — a scoped Grineer pistol; Kuva Seer raises it to 21% crit and 33% status for a hybrid secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto with a scope that increases zoom when aiming; base Seer is low-stat (5% crit, 13% status).',
+          'Kuva Seer: 21% crit, 33% status with a Lich progenitor element — a proper hybrid secondary.',
+          'The scope zooms in significantly on ADS; effective at longer ranges than most pistols.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kuva Seer is the build target; the base Seer is a mastery step.',
+          'The Lich element on Kuva Seer allows building strong two-element combinations without using extra mod slots.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/GrineerPistol/GrnHeavyPistol',
+      '/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Kraken/KuvaKraken',
+    ],
+    note: {
+      tldr: 'The Kraken — a Grineer burst pistol; Kuva Kraken jumps to 21% crit and 29% status for a viable hybrid burst secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Two-round burst per trigger pull; base Kraken has very low stats (5% crit, 13% status).',
+          'Kuva Kraken: 21% crit, 29% status with a Lich progenitor element — a genuine mid-tier hybrid.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kuva Kraken is the only version worth building seriously; base Kraken is a mastery weapon.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrineerLeverActionPistol/GLAPistol',
+      '/Lotus/Weapons/Syndicates/SteelMeridian/Pistols/SMMarelok',
+    ],
+    note: {
+      tldr: 'The Marelok — a Grineer lever-action pistol with 15% crit and 30% status; Vaykor Marelok raises both and adds a syndicate Justice proc.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Slow-fire semi-auto with high damage per shot; lever-action animation gives it a longer trigger-to-fire delay than most pistols.',
+          'Marelok: 15% crit, 30% status. Vaykor Marelok: 20% crit, 35% status.',
+          'Vaykor Marelok has the Steel Meridian Justice proc — a radial damage burst when the syndicate meter fills.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The 30%/35% status makes it a strong elemental proc secondary; the slow fire rate means each shot can proc reliably.',
+          'Vaykor Marelok is the endgame choice for players running Steel Meridian or wanting a status-heavy slow pistol.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnPriestPistolWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeKnell/PrimeKnellWeapon',
+    ],
+    note: {
+      tldr: "The Knell — Harrow's signature pistol; headshot kills stack a combo counter that boosts the next shot's crit chance dramatically.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto pistol. On headshot kill, a combo counter increments and the next shot fires with a substantial bonus crit chance.',
+          'Each stack also causes a headshot kill to fully reload the magazine — indefinite ammo efficiency if headshots are consistent.',
+          'Knell: 20% crit, 5% status. Knell Prime: 40% crit, 10% status — one of the highest base crit pistols.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Harrow's signature — gains bonus in his hands.",
+          'The headshot-kill requirement rewards precise play; in dense waves the reload loop sustains almost indefinitely.',
+          'At high combo stacks the crit chance can reach near-100% — effectively guaranteed criticals on the buffed shot.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnJetTurbinePistolWeapon',
+    ],
+    note: {
+      tldr: 'The Athodai — a Daily Tribute auto pistol with 32% crit; its damage dramatically ramps up after the magazine runs empty.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Full-auto semi-auto (high fire rate) with 32% crit and 8% status — pure crit platform.',
+          'After emptying the magazine, the next magazine fires at significantly increased fire rate and damage for a brief window.',
+          'The ramp means intentionally firing to empty is part of the rhythm — do not reload early.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions on a 32% crit auto pistol is very effective; the post-empty burst window is when bleed stacks peak.',
+          'Obtainable only from the Daily Tribute milestone system — time-gated.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnOdaliskSmgPistol',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeVelox/PrimeVeloxPistol',
+    ],
+    note: {
+      tldr: 'The Velox — a semi-auto burst pistol; Velox Prime reaches 14% crit and 32% status for a status-leaning secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Burst pistol; Velox Prime: 14% crit, 32% status — a status-priority secondary.',
+        ]},
+        { heading: 'Interactions', points: [
+          'High status for a burst pistol makes it useful for elemental proc builds where crit is not the priority.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
