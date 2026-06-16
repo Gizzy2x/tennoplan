@@ -9881,7 +9881,7 @@ const WEAPON_NOTES: SharedNote[] = [
       sections: [
         { heading: 'Mechanics', points: [
           '25% crit, 20% status; single dagger.',
-          'Ground finisher attacks deal a portion of the target's maximum health as bonus damage (via the Covert Lethality mechanic if you use a finisher mod).',
+          'Ground finisher attacks deal a portion of the target’s maximum health as bonus damage (via the Covert Lethality mechanic if you use a finisher mod).',
         ]},
         { heading: 'Interactions', points: [
           'Daggers have access to ground finishers and stealth finishers; combined with Covert Lethality mod, these ignore enemy health pools entirely.',
@@ -10691,7 +10691,7 @@ const WEAPON_NOTES: SharedNote[] = [
           'Sentinel weapons share the same mod slots as other weapons; standard damage/crit/status mods apply.',
         ]},
         { heading: 'Interactions', points: [
-          'Shade's Ghost ability cloaks you when enemies are in range; the Laser Rifle fires at the same enemy that triggered the cloak — a passive attack without breaking your own stealth.',
+          'Shade’s Ghost ability cloaks you when enemies are in range; the Laser Rifle fires at the same enemy that triggered the cloak — a passive attack without breaking your own stealth.',
         ]},
       ],
       status: 'beta',
@@ -10765,7 +10765,7 @@ const WEAPON_NOTES: SharedNote[] = [
       sections: [
         { heading: 'Mechanics', points: [
           'Fires slowly with a visible charge-up animation; each shot deals high damage with guaranteed Electricity.',
-          'Diriga's Attack Precept uses Vulklok for ranged damage against distant enemies.',
+          'Diriga’s Attack Precept uses Vulklok for ranged damage against distant enemies.',
         ]},
         { heading: 'Interactions', points: [
           'The Electricity procs arc to nearby enemies; one shot can arc to multiple targets in a cluster.',
@@ -10784,7 +10784,7 @@ const WEAPON_NOTES: SharedNote[] = [
       sections: [
         { heading: 'Mechanics', points: [
           'Fires single Toxin-tipped darts; Toxin procs bypass Corpus shields directly.',
-          'Djinn's Fatal Attraction ability lures enemies toward it; Stinger then picks them off.',
+          'Djinn’s Fatal Attraction ability lures enemies toward it; Stinger then picks them off.',
         ]},
         { heading: 'Interactions', points: [
           'Djinn is unique in having a self-revive ability (Reawaken) — it dies on cooldown but revives itself after a timer, making it the only sentinel that comes back without the player dying.',
@@ -11093,7 +11093,7 @@ const WEAPON_NOTES: SharedNote[] = [
         { heading: 'Mechanics', points: [
           'Full-auto hitscan; high fire rate, moderate damage per bullet.',
           'Used both in Archwing missions (space combat) and infantry mode (deploy it as an exalted-style heavy weapon via Archgun Deployer gear).',
-          'Imperator Vandal has higher base damage and better stats; crafted from the Void Trader (Baro Ki'Teer).',
+          'Imperator Vandal has higher base damage and better stats; crafted from the Void Trader (Baro Ki’Teer).',
         ]},
         { heading: 'Interactions', points: [
           'In infantry mode (Fortuna/Plains), the Imperator Vandal is deployed from the gear wheel and replaces your primary weapon slot temporarily.',
@@ -11157,7 +11157,7 @@ const WEAPON_NOTES: SharedNote[] = [
           'Most effective at close range where the full pellet cone connects.',
         ]},
         { heading: 'Interactions', points: [
-          'Itzal's blink ability lets you close range instantly; the Corvas fires at point-blank for maximum damage immediately after a blink.',
+          'Itzal’s blink ability lets you close range instantly; the Corvas fires at point-blank for maximum damage immediately after a blink.',
         ]},
       ],
       status: 'beta',
@@ -11188,12 +11188,12 @@ const WEAPON_NOTES: SharedNote[] = [
       '/Lotus/Weapons/Tenno/Archwing/Primary/ArchwingHeavyPistols/Prisma/PrismaArchHeavyPistols',
     ],
     note: {
-      tldr: 'Dual Decurion / Prisma Dual Decurions — twin archwing pistols; rapid-fire with high overall DPS; Prisma version from Baro Ki'Teer.',
+      tldr: 'Dual Decurion / Prisma Dual Decurions — twin archwing pistols; rapid-fire with high overall DPS; Prisma version from Baro Ki’Teer.',
       sections: [
         { heading: 'Mechanics', points: [
           'Dual pistols; full-auto fire from both hands simultaneously.',
           'Prisma Dual Decurions have enhanced critical chance and overall higher damage.',
-          'Available from Baro Ki'Teer for ducats + credits.',
+          'Available from Baro Ki’Teer for ducats + credits.',
         ]},
         { heading: 'Interactions', points: [
           'The dual-fire nature means high per-second pellet count; effective for applying status procs rapidly in Archwing mode.',
@@ -11214,7 +11214,7 @@ const WEAPON_NOTES: SharedNote[] = [
           'Effective against solitary fighters or weakening Crewship components at distance.',
         ]},
         { heading: 'Interactions', points: [
-          'Pairs well with Odonata Prime's support-oriented abilities; the precision fire lets you deal with fighters while Odonata provides team buffs.',
+          'Pairs well with Odonata Prime’s support-oriented abilities; the precision fire lets you deal with fighters while Odonata provides team buffs.',
         ]},
       ],
       status: 'beta',
@@ -11379,7 +11379,7 @@ const WEAPON_NOTES: SharedNote[] = [
           'A reliable mid-range archwing option before Railjack-tier weapons are available.',
         ]},
         { heading: 'Interactions', points: [
-          'Pairs well with Itzal's long-range blink for repositioning; fire a burst, blink, fire another burst from an unexpected angle.',
+          'Pairs well with Itzal’s long-range blink for repositioning; fire a burst, blink, fire another burst from an unexpected angle.',
         ]},
       ],
       status: 'beta',
@@ -11393,7 +11393,7 @@ const WEAPON_NOTES: SharedNote[] = [
       '/Lotus/Weapons/Tenno/Archwing/Melee/VoidTraderArchsword/VTArchSwordWeapon',
     ],
     note: {
-      tldr: 'Veritux / Prisma Veritux — the Tenno archwing sword; fast melee in space with wide sweeping slashes. Prisma from Baro Ki'Teer.',
+      tldr: 'Veritux / Prisma Veritux — the Tenno archwing sword; fast melee in space with wide sweeping slashes. Prisma from Baro Ki’Teer.',
       sections: [
         { heading: 'Mechanics', points: [
           'Archwing melee weapons are used when you close to melee range in space combat; they hit with a swinging arc.',

@@ -27,8 +27,8 @@
 // ---------------------------------------------------------------------------
 
 import type { EnrichedItem } from '../../src/codex/enricher';
-import type { ItemStats, ItemRarity } from '../../src/types';
-import type { PePlusData, PePowersuit, PeWeapon, PeUpgrade, PeRecipe } from './peplus';
+import type { ItemStats, ItemRarity, WeaponFireMode, WeaponAttack } from '../../src/types';
+import type { PePlusData, PePowersuit, PeWeapon, PeUpgrade, PeRecipe, PeBehaviour, PeAttackData } from './peplus';
 import { peName } from './peplus';
 import { logger } from '../../src/logger';
 
@@ -53,6 +53,9 @@ export interface OverlayReport {
   /** Weapons where the mapped damagePerShot sum deviated >2% from totalDamage —
    *  a slot reorder/new-type signal (non-fatal; schema guard owns the hard fail). */
   damageSumWarnings: number;
+  /** Weapons given structured fireModes[] from PE+ behaviours[] (radial AoE
+   *  split / charge / beam / burst / alt-fire). Subset with interesting structure. */
+  fireModeWeapons:  number;
   /** Mods given a computed Endo-to-max upgrade cost (matched + synthesized). */
   upgradeCosts:     number;
   /** Items given a foundry build cost from ExportRecipes (any category). */
@@ -78,6 +81,7 @@ export function applyPePlusAuthority(items: EnrichedItem[], pe: PePlusData): Ove
     enumFills:       0,
     damageBreakdowns:  0,
     damageSumWarnings: 0,
+    fireModeWeapons:   0,
     upgradeCosts:      0,
     buildCosts:        0,
     peOnly:          {},
@@ -152,6 +156,11 @@ function overlayWeapon(item: EnrichedItem, peRec: PeWeapon | undefined, report: 
   // melee, which WFCD ships no `damage` map for (the DamageStrip's known gap).
   const dmg = deriveDamageTypes(peRec.damagePerShot, peRec.totalDamage, report);
   if (dmg) { item.damageTypes = dmg; report.damageBreakdowns++; }
+
+  // Structured fire modes — behaviours[] carries the direct-vs-radial AoE split,
+  // charge vs base, beam flag and alt-fire/Incarnon profiles the flat field can't.
+  const fireModes = deriveFireModes(peRec.behaviours, isMeleeCategory(peRec.productCategory));
+  if (fireModes) { item.fireModes = fireModes; report.fireModeWeapons++; }
 
   // Enum fills — WFCD casing is the display convention; only patch holes.
   if (!item.weaponTrigger && peRec.trigger) { item.weaponTrigger = normalizeTrigger(peRec.trigger); report.enumFills++; }
@@ -250,6 +259,8 @@ function synthesizeMissing(
     if (Object.keys(stats).length > 0) item.stats = stats;
     const dmg = deriveDamageTypes(rec.damagePerShot, rec.totalDamage, report);
     if (dmg) { item.damageTypes = dmg; report.damageBreakdowns++; }
+    const fireModes = deriveFireModes(rec.behaviours, isMeleeCategory(rec.productCategory));
+    if (fireModes) { item.fireModes = fireModes; report.fireModeWeapons++; }
     if (typeof rec.masteryReq === 'number') item.masteryRank   = rec.masteryReq;
     if (rec.trigger)                        item.weaponTrigger = normalizeTrigger(rec.trigger);
     if (rec.noise)                          item.weaponNoise   = titleCase(rec.noise);
@@ -377,6 +388,128 @@ function deriveDamageTypes(
     report.damageSumWarnings++;
   }
   return out;
+}
+
+// ─── Structured fire modes from behaviours[] ──────────────────────────────────
+
+/** PE+ named DT_* damage-type keys → our lowercase UI vocabulary (same words as
+ *  DPS_INDEX_TO_KEY / WeaponSummaryCard). DT_EXPLOSION→blast is the key one: it's
+ *  the radial AoE the flat damagePerShot lumps into the impact total. */
+const DT_TO_KEY: Record<string, string> = {
+  DT_IMPACT: 'impact', DT_PUNCTURE: 'puncture', DT_SLASH: 'slash',
+  DT_FIRE: 'heat', DT_FREEZE: 'cold', DT_ELECTRICITY: 'electricity', DT_POISON: 'toxin',
+  DT_EXPLOSION: 'blast', DT_RADIATION: 'radiation', DT_GAS: 'gas', DT_MAGNETIC: 'magnetic',
+  DT_VIRAL: 'viral', DT_CORROSIVE: 'corrosive', DT_RADIANT: 'void',
+  DT_FINISHER: 'true', DT_SENTIENT: 'sentient',
+};
+
+const MELEE_CATEGORIES = new Set(['Melee', 'SpaceMelee', 'DrifterMelee']);
+function isMeleeCategory(productCategory: string): boolean {
+  return MELEE_CATEGORIES.has(productCategory);
+}
+
+/** One IAttackData block → WeaponAttack; undefined when it has no positive,
+ *  mappable damage. procChance becomes statusChance. */
+function attackFrom(block: PeAttackData | undefined): WeaponAttack | undefined {
+  if (!block) return undefined;
+  const damage: Record<string, number> = {};
+  for (const [k, v] of Object.entries(block)) {
+    if (k === 'procChance') continue;
+    if (typeof v !== 'number' || !(v > 0)) continue;
+    const key = DT_TO_KEY[k];
+    if (!key) continue;                                  // unmapped exotic slot
+    damage[key] = (damage[key] ?? 0) + v;
+  }
+  if (Object.keys(damage).length === 0) return undefined;
+  const attack: WeaponAttack = { damage };
+  if (typeof block.procChance === 'number' && block.procChance > 0) attack.statusChance = block.procChance;
+  return attack;
+}
+
+/** The generic ~10-damage quick-melee placeholder impact (3.33/3.33/3.33, proc
+ *  0.1) PE+ attaches to alt-fire/projectile behaviours — never the real hit. */
+function isPlaceholderImpact(b: PeAttackData | undefined): boolean {
+  if (!b) return false;
+  return Math.abs((b.DT_IMPACT ?? 0) - 3.33333) < 0.02
+      && Math.abs((b.DT_PUNCTURE ?? 0) - 3.33333) < 0.02
+      && Math.abs((b.DT_SLASH ?? 0) - 3.33334) < 0.02;
+}
+
+function triggerFromState(stateName: string | undefined): string | undefined {
+  if (!stateName) return undefined;
+  if (/TriggerCharge/.test(stateName))    return 'Charge';
+  if (/TriggerContinous/.test(stateName)) return 'Held';
+  if (/TriggerSemiAuto/.test(stateName))  return 'Semi';
+  if (/TriggerAutoBurst/.test(stateName)) return 'Auto Burst';
+  if (/TriggerBurst/.test(stateName))     return 'Burst';
+  if (/TriggerDuplex/.test(stateName))    return 'Duplex';
+  if (/TriggerAuto/.test(stateName))      return 'Auto';
+  return undefined;
+}
+
+/**
+ * Map PE+ behaviours[] → WeaponFireMode[]. For each firing state, the direct hit
+ * is taken from chargedProjectile > projectile > a non-placeholder impact (so
+ * the quick-melee placeholder impact drops whenever a real projectile exists),
+ * and explosiveAttack becomes the radial AoE component. Returns undefined unless
+ * the result carries structure the flat damageTypes can't (radial / charge /
+ * beam / burst / >1 mode), keeping the blob lean.
+ */
+function deriveFireModes(
+  behaviours: PeBehaviour[] | undefined,
+  isMelee:    boolean,
+): WeaponFireMode[] | undefined {
+  if (!Array.isArray(behaviours) || behaviours.length === 0) return undefined;
+
+  const modes: WeaponFireMode[] = [];
+  for (const b of behaviours) {
+    const isBeam  = !!b.stateName && /TriggerContinous/.test(b.stateName);
+    const trigger = triggerFromState(b.stateName);
+
+    let directBlock: PeAttackData | undefined;
+    let radialBlock: PeAttackData | undefined;
+    if (b.chargedProjectile) {                           // charge weapons: full-charge headline
+      directBlock = b.chargedProjectile.attack;
+      radialBlock = b.chargedProjectile.explosiveAttack;
+    } else if (b.projectile) {
+      directBlock = b.projectile.attack;
+      radialBlock = b.projectile.explosiveAttack;
+    } else if (b.impact && !isPlaceholderImpact(b.impact)) {
+      directBlock = b.impact;                            // hitscan / beam
+    }
+
+    const direct = attackFrom(directBlock);
+    if (!direct) continue;                               // no real damage in this state
+
+    const mode: WeaponFireMode = { name: '', direct };
+    const radial = attackFrom(radialBlock);
+    if (radial) mode.radial = radial;
+    if (trigger) mode.trigger = trigger;
+    if (isBeam) mode.isBeam = true;
+    if (typeof b.fireIterations === 'number' && b.fireIterations > 1) mode.burst = b.fireIterations;
+    modes.push(mode);
+  }
+
+  if (modes.length === 0) return undefined;
+  labelModes(modes, isMelee);
+
+  const interesting = modes.length > 1
+    || modes.some((m) => m.radial || m.isBeam || m.burst || m.trigger === 'Charge');
+  return interesting ? modes : undefined;
+}
+
+/** Assign honest, simple labels in place — ranged: Normal/Charged/Beam then Alt
+ *  Fire; melee: Melee then Thrown (glaives). */
+function labelModes(modes: WeaponFireMode[], isMelee: boolean): void {
+  modes.forEach((m, i) => {
+    if (isMelee) {
+      m.name = i === 0 ? 'Melee' : 'Thrown';
+    } else if (i === 0) {
+      m.name = m.isBeam ? 'Beam' : m.trigger === 'Charge' ? 'Charged' : 'Normal';
+    } else {
+      m.name = 'Alt Fire';
+    }
+  });
 }
 
 /**
