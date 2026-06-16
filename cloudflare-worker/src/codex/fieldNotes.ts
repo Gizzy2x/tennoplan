@@ -10371,6 +10371,310 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
 
+
+  // ── Melee — sword & board ──────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/SwordShield/SwordAndShieldWeapon',
+      '/Lotus/Weapons/Tenno/Melee/SwordShield/PrimeSwordAndShieldWeapon',
+    ],
+    note: {
+      tldr: 'Ack & Brunt / Ack & Brunt Prime — the Grineer shield-and-bludgeon; the shield can be thrown like a discus, damaging enemies it ricochets through.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Ack & Brunt: 15% crit, 20% status. Prime: 26% crit, 26% status.',
+          'Sword & Board stances include a throw attack: the shield is launched forward in a line, ricocheting between nearby enemies before returning.',
+          'The ricochet counts as a melee hit and applies mods; it is not a projectile.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The shield throw at 26% status on the Prime procs reliably on every enemy in the ricochet chain.',
+          'Blocking with the shield provides a damage reduction bonus unique to Sword & Shield stances.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/SwordShield/NidusShieldWeapon',
+    ],
+    note: {
+      tldr: 'Plague Keewar / Plague Akwin — Plague Star sword-and-shield variants with innate Toxin from Infested components.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Plague Star event builds using Infested catalysts give the weapon innate Toxin damage.',
+          'Sword & Board moveset; the shield throw benefits from the innate Toxin on every ricochet hit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Available only during the Plague Star event; worth crafting if available for the innate Toxin advantage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/SwordShield/CrpShieldWeapon',
+    ],
+    note: {
+      tldr: 'Silva & Aegis / Silva & Aegis Prime — the Tenno fire sword-and-shield; innate Heat and a slam that creates a fire pillar.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Silva & Aegis: 8% crit, 20% status. Prime: 18% crit, 26% status — innate Heat on both.',
+          'Slam attacks summon a column of fire at the impact point, dealing Heat damage in an AoE for several seconds.',
+          'The fire pillar persists as a damage zone, burning enemies that walk through it.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The fire pillar on slam is unique to this weapon; useful for area denial or forcing enemies through burning ground.',
+          'The Prime is significantly better than the base version; prioritize it over the original.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — gunblades ──────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Gunblade/TennoGunblade/TennoGunbladeWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Gunblade/TennoGunblade/TennoGunbladeVandal',
+    ],
+    note: {
+      tldr: 'Redeemer / Redeemer Prime / Redeemer Vandal — the Tenno gunblade; shotgun-blast triggered on heavy attacks instead of a slam.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Redeemer Prime: 28% crit, 26% status. Vandal: 28% crit, 28% status.',
+          'The gunblade melee hits apply melee mods normally. Heavy attacks fire a close-range shotgun blast that also applies melee mods.',
+          'The shotgun blast is a cone of pellets; at close range it is devastating, but accuracy falls off beyond point-blank.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The heavy attack shotgun blast does NOT consume combo counter in the same way as other heavy attacks; some builds exploit this for sustained DPS.',
+          'Redeemer Prime is arguably the best gunblade; mod it for both melee crit and the blast — mods apply to both simultaneously.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/Gunblade/GrnGunblade/GrnGunbladeWeapon',
+    ],
+    note: {
+      tldr: 'Sarpa — a Grineer gunblade; heavy attacks fire rifle-style rounds rather than a shotgun blast.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '18% crit, 20% status; gunblade moveset.',
+          'Heavy attack fires a narrow rifle round at range — more accurate than Redeemer blast but lower pellet count.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The ranged shot on Sarpa is more precise; useful for picking off distant targets mid-melee engagement.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Gunblade/Vastilok/VastilokWeapon',
+    ],
+    note: {
+      tldr: 'Vastilok — a Perrin Sequence gunblade; heavy attacks fire a disruptive energy wave that staggers enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '18% crit, 26% status; gunblade moveset.',
+          'Heavy attack fires an energy wave that staggers and pushes enemies.',
+          'Perrin Sequence syndicate weapon.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The stagger wave creates breathing room in melee; useful for pushing back swarms while continuing to engage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — war fans ───────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/WarFan/WarFanWeapon',
+      '/Lotus/Weapons/Tenno/Melee/WarFan/PrimeWarFanWeapon',
+    ],
+    note: {
+      tldr: 'Hirudo... no — Nami Solo / Nami Solo Prime — actually War Fans: Cicero Crisis (fan weapons). True war fans: Tatsu class already covered. Let me check — Onorix / Onorix Prime are war fans.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'War fan stance uses rapid spinning strikes that hit in wide arcs.',
+          'Onorix: 15% crit, 25% status. Onorix Prime: 26% crit, 28% status.',
+          'The fan blade deployment on each combo swing makes range slightly wider than sword class.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Onorix Prime is a solid hybrid war fan; balanced stats work for most melee mod setups.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/WarFan/BrimstoneFan/BrimstoneFanWeapon',
+    ],
+    note: {
+      tldr: 'Tenet Livia — a Sisters of Parvos war fan with a random Tenet elemental bonus; 30% crit and 28% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '30% crit, 28% status; war fan moveset.',
+          'Like all Tenet weapons, the Livia spawns with a Parvos Sister-derived elemental bonus (25–60% extra of a chosen element).',
+          'Converting the Sister rather than killing her grants a higher elemental bonus.',
+        ]},
+        { heading: 'Interactions', points: [
+          'One of the stronger war fans stat-wise; the Tenet bonus element extends the mod-slot budget since you get free elemental damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — sparring / martial arts ───────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Sparring/Kogake/KogakeWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Sparring/PrimeKogake/PrimeKogakeWeapon',
+    ],
+    note: {
+      tldr: 'Kogake / Kogake Prime — the Tenno martial arts weapon (foot-strike and palm combos); Prime: 22%/28% hybrid.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Kogake: 12% crit, 18% status. Kogake Prime: 22% crit, 28% status.',
+          'Sparring moveset — foot strikes, elbow combos, palm strikes; fastest attack-speed category alongside claws.',
+          'The rapid multi-hit nature of sparring makes combo counter building very fast.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Fast combo building means Blood Rush scales quickly; at max combo, even moderate crit values reach reliable orange crits.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Sparring/CrpSparringWeapon',
+    ],
+    note: {
+      tldr: 'Zakti Prime — a Corpus sparring weapon that releases a gas cloud on ground slams, dealing repeated Toxin procs.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '22% crit, 36% status — status-dominant sparring weapon.',
+          'Slam attacks release a Toxin gas cloud that persists briefly; enemies walking through the cloud receive repeated Toxin damage ticks.',
+          'The cloud also triggers Toxin procs, contributing to Condition Overload stacks.',
+        ]},
+        { heading: 'Interactions', points: [
+          'At 36% status, every sparring hit procs reliably; the additional slam gas cloud stacks Toxin on top of the direct-hit procs.',
+          'Excellent for Condition Overload scaling — the gas clouds maintain stacks even between direct hits.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/Sparring/GrnSparring/GrnSparringWeapon',
+    ],
+    note: {
+      tldr: 'Sparring weapon — a Grineer martial arts gauntlet with a heavy bash on charged strikes.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Sparring/fist moveset; Grineer variant.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Standard sparring weapon characteristics; works with fast-build Blood Rush strategies.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — special / unique ───────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Misc/ProvaVandal/ProvaVandalWeapon',
+    ],
+    note: {
+      tldr: 'Prova / Prova Vandal — an electrified baton; innate Electricity and a unique sparking slam attack.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Prova Vandal: 20% crit, 28% status; innate Electricity. Baton/staff moveset.',
+          'Slam attacks release an Electricity AoE at the impact point.',
+          'Originally a Corpus-themed weapon; the Vandal was a Tactical Alert reward.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The innate Electricity combined with 28% status makes Magnetic procs accessible against Corpus targets.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Jat/JatKusar/JatKusarWeapon',
+    ],
+    note: {
+      tldr: 'Jat Kusar — a jet-propelled Corpus baton; charged heavy attacks trigger a thruster burst that sends you flying into a slam.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '15% crit, 26% status; baton moveset with a unique heavy attack mechanic.',
+          'Heavy attack fires the thruster, launching the player forward into a high-damage impact slam.',
+          'The forward lunge covers significant ground — useful as a gap-closer into groups.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The forward lunge heavy attack has repositioning utility; you can engage enemies across the room with the thruster burst.',
+          'A functional sparring/baton option with a fun mechanical identity.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnBonesaw/GrnBonesawWeapon',
+    ],
+    note: {
+      tldr: 'Wolf Sledge — a unique hammer dropped by the Wolf of Saturn Six event; its alt-throw launches the entire hammer at enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '23% crit, 18% status; heavy hammer moveset.',
+          'Unique mechanic: the heavy attack throws the entire hammer like a projectile. The hammer flies forward, crushing anything in its path, then you must walk to it to pick it up.',
+          'During the throw, you are disarmed — the unarmed state leaves you vulnerable.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The hammer throw deals massive damage on impact; the enemy must be in the throw path.',
+          'Picking up the hammer to re-arm yourself requires moving to its landing location; plan the throw to land near you or on enemies you are advancing toward.',
+          'A limited drop during The Wolf of Saturn Six Nightwave; has not been officially re-added, making it rare.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Misc/BrokenScepter/BrokenScepterWeapon',
+    ],
+    note: {
+      tldr: 'Broken Scepter — the Grineer Queen fragment weapon from Second Dream quest; kills create Eximus Specters that fight alongside you.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '10% crit, 10% status — weak base stats, but its passive is the point.',
+          'Channeled kills (previously with channeling mod; now via heavy attacks) spawn Eximus Specter copies of slain enemies that fight alongside you for a duration.',
+          'Obtained from the quest; cannot be blueprinted or farmed in a standard way.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The specter spawns are the entire mechanic; the weapon is a novelty rather than a performance weapon.',
+          'Spawned specters can overrun narrow corridors making it amusing for Defense missions.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
