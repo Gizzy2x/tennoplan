@@ -7809,6 +7809,782 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
 
+
+  // ── Secondaries — special mechanics ───────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Zariman/Pistols/HeavyPistol/ZarimanHeavyPistol',
+    ],
+    note: {
+      tldr: 'The Laetum — a Zariman evolved pistol; gains bonus crit after consecutive kills and unlocks an Incarnon alt-fire form.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Starts as a semi-auto Void-damage pistol; after activating Incarnon mode (charged up by kills), it transforms into a fully-automatic spray weapon.',
+          'Base: 22% crit, 22% status. Incarnon mode substantially elevates crit to near-guaranteed with a different fire pattern.',
+          'Void damage interacts with Void Adaptation (Operator passive) and Sentient enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'One of the Incarnon weapons from Angels of the Zariman content; requires Voidplume and Pathos Clamp to craft.',
+          'The Incarnon form is triggered by a gauge filled during combat — consistent kill momentum maintains the mode longer.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnWraitheSidearmWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeEpitaph/PrimeEpitaphSidearmWeapon',
+    ],
+    note: {
+      tldr: "The Epitaph — Wisp's signature sidearm; primary fire is silent Cold bolts; alt-fire lays a Wisp-style landing pad that applies Cold and Blast to any enemy entering it.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: rapid Cold bolts, silent, 2%/4% crit and 4%/14% status — weak stats.',
+          'Alt-fire: places a ground pad (similar to Wisp reservoirs aesthetically) that fires a burst of Cold/Blast on entering enemies.',
+          'Epitaph Prime raises crit to 4% and status to 14%; still low, so the pad mechanic is the actual value.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Wisp's signature — gains bonus stats in her hands.",
+          'The ground pad is a setup tool: place it in enemy movement paths for an automatic Cold proc on every entry.',
+          'Cold procs set up freeze and can feed Ephemera Cold Sorbet or simply slow enemies for melee follow-up.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnYareliPistolWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeKompressa/PrimeKompressa',
+    ],
+    note: {
+      tldr: "The Kompressa — Yareli's signature pistol; fires Water bubbles that hold enemies briefly before detonating for a burst.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto bubble launcher — bubbles linger at the impact point, trapping small enemies inside and then popping for damage.',
+          'Kompressa: 6% crit, 30% status. Kompressa Prime: 16% crit, 36% status.',
+          'The bubble trap briefly immobilises lighter enemies, creating a window for follow-up shots or melee.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Yareli's signature — gains bonus stats on her Merulina board.",
+          'Kompressa Prime at 36% status can prime groups through multi-bubble application; useful as a secondary primer.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/SapientPistol/SapientPistol',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeAkarius/PrimeAkariusWeapon',
+    ],
+    note: {
+      tldr: 'The Akarius — fire-and-forget rockets that seek targets after launch; Akarius Prime reaches 18% crit and 34% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires small rockets that home onto the closest enemy after release — no aiming required past the initial direction.',
+          'Akarius: 6% crit, 28% status. Akarius Prime: 18% crit, 34% status.',
+          'The homing is loose — rockets track toward targets but do not course-correct sharply; they may miss fast-moving enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Good for blind-fire situations or covering flanks; the homing means you can fire without direct line of sight.',
+          'Akarius Prime is a strong hybrid secondary; 34% status makes Viral priming reliable even on homing rockets.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/QuillDartGunWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeHystrix/PrimeHystrixWeapon',
+    ],
+    note: {
+      tldr: "The Hystrix — Wisp's signature quill pistol; switches between four elemental ammo types; Hystrix Prime gets 28% crit.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires quills in four selectable elemental types: Heat, Cold, Electricity, Toxin — switched via alt-fire.',
+          'Hystrix: 24% crit, 10% status. Hystrix Prime: 28% crit, 20% status — crit-leaning across both versions.',
+          'The element-switching mechanic lets you instantly swap elements without modding.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Wisp's signature — gains bonus stats in her hands.",
+          'The elemental switching means you can quickly cover different faction weaknesses or status combinations without changing mods.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnChoirframeKunai/TnChoirframeKunai',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeAkjagara/AkJagaraPrime',
+    ],
+    note: {
+      tldr: 'The Akjagara — dual bladed pistols; high status (28%/32%) with an arcing projectile trajectory.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto dual pistols that fire bladed projectiles with a slight arc; not fully hitscan at range.',
+          'Akjagara: 6% crit, 28% status. Akjagara Prime: 18% crit, 32% status.',
+          'Cantare is a single-handed variant with similar knife-toss identity at 18% crit, 22% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Akjagara Prime is a solid status secondary; lead targets at range due to the projectile arc.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Thanotech/EntratiWristGun/EntratiWristGunWeapon',
+    ],
+    note: {
+      tldr: 'The Onos — an Entrati wrist-mounted secondary; alt-fire charges up and releases an enormous Void-beam burst.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: auto-fire Energy bolts, 26% crit, 22% status — solid hybrid base.',
+          'Alt-fire: holds charge and fires a massive Void cannon blast that deals heavy single-target or AoE damage.',
+          'A weapon from the Entrati faction; requires Zariman/Entrati standing to acquire.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The charged alt-fire is the defining moment; save the charge for heavy units or grouped enemies.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Thanotech/ThanoPistol/ThanotechPistol',
+    ],
+    note: {
+      tldr: 'The Sepulcrum — an Entrati semi-auto pistol with 30% crit; fires homing bio-projectiles that deal Viral damage.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto, 30% crit and 14% status — crit-dominant.',
+          'Innate Viral damage makes every crit a potential Viral proc without needing modded elements.',
+        ]},
+        { heading: 'Interactions', points: [
+          'High crit + innate Viral is a strong combination; Hunter Munitions layered on top makes it a Viral-bleed machine.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/SniperPistol/CrpScopeGun',
+    ],
+    note: {
+      tldr: 'The Arca Scisco — a Corpus scoped semi-auto pistol; zoomed ADS gives it sniper-level accuracy for a secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '18% crit, 26% status — moderate hybrid. The scope zooms significantly on ADS.',
+          'At full zoom it functions like a long-range semi-auto pistol; without zoom, accuracy degrades notably.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Works as a precision secondary for players who want long-range coverage without occupying the primary slot with a sniper.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Grimoire/TnGrimoire',
+      '/Lotus/Weapons/Tenno/Grimoire/TnDoppelgangerGrimoire',
+    ],
+    note: {
+      tldr: 'The Grimoire — a Tenno secondary spellbook; fires magic energy pages that ricochet and pierce, with a charged alt-fire that blasts a large AoE.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto firing energy pages as projectiles; they pierce through enemies and ricochet off surfaces.',
+          'Tenno Grimoire: 20% crit, 26% status. Doppelganger Grimoire: 8% crit, 10% status.',
+          'Alt-fire charges and releases a burst AoE around the player.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The ricochet-and-pierce means pages can hit an enemy multiple times in tight corridors.',
+          'The Doppelganger version is a variant from a specific mission/companion; the main Grimoire is the standard endgame secondary.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpSentAmalgPistol/CrpSentAmalgPistol',
+    ],
+    note: {
+      tldr: 'The Cyanex — a Corpus-Sentient secondary that fires homing spores; very high status (32%) and moderate crit (8%).',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a small cluster of homing spores that track to the nearest enemy after launch.',
+          '8% crit, 32% status — status platform; the homing removes the need for precise aim.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Good for applying status from cover or on fast-moving targets; the homing forgives imprecise fire.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpSentExperimentPistol/CrpSentExperimentPistol',
+    ],
+    note: {
+      tldr: 'The Ocucor — a Corpus-Sentient pistol with a chain-arc beam on ADS; 16% crit and 24% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: semi-auto bolts. Alt-fire / ADS activates a chain-arc beam mode that connects between nearby enemies.',
+          '16% crit, 24% status — balanced hybrid.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The beam arc mode applies status to chained enemies simultaneously; effective in groups but the chain range is limited.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Secondaries — Infested pistols ─────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/ClanTech/Bio/AcidDartPistol',
+    ],
+    note: {
+      tldr: 'The Acrid — a clan-research Infested dart pistol; fires Toxin darts that bypass shields, applying poison procs.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto dart pistol with innate Toxin damage — Toxin bypasses shields and hits health directly.',
+          '5% crit, 10% status — low base stats; primarily notable for innate shield-bypass on Corpus.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Useful against Corpus where shields make other damage types less efficient; Toxin hits health regardless of shield.',
+          'Primarily a mastery or collector piece in the modern meta.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Pistols/InfestedPistol',
+    ],
+    note: {
+      tldr: 'The Embolist — an Infested syringe pistol; fires a close-range Toxin mist cloud rather than a projectile.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a persistent cloud of Toxin gas at point-blank range; not a projectile, more like a triggered AoE.',
+          '3% crit, 41% status — extremely high status but the close range and low damage limit its use.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The 41% status is high enough to proc consistently but the delivery mechanism is too close-range to use safely in most missions.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Pistols/InfestedDartPistol/InfestedDartPistol',
+      '/Lotus/Weapons/Infested/InfestedLich/Pistols/CodaTysis',
+    ],
+    note: {
+      tldr: 'The Tysis — an Infested dart pistol at 50% status; fires sticky Toxin darts that embed and proc repeatedly.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto sticky darts; darts embed in the target and apply a Corrosive/Toxin proc before dissolving.',
+          'Tysis: 3% crit, 50% status — one of the highest status percentages on any secondary.',
+          'Coda Tysis adds the Infested Lich element on top of an already high-status platform.',
+        ]},
+        { heading: 'Interactions', points: [
+          '50% status means nearly every dart triggers a status proc; Corrosive procs stack toward full armor strip.',
+          'Best used as a primer weapon in fast-swap builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Pistols/InfProximityStars/InfProximityStars',
+      '/Lotus/Weapons/Infested/InfestedLich/Pistols/CodaPox',
+    ],
+    note: {
+      tldr: 'The Pox — thrown Infested proximity bombs that create a gas cloud on impact, applying Toxin to enemies entering the zone.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown grenade secondary — projectiles arc to the target and detonate on contact or proximity, releasing a gas cloud.',
+          '1% crit, 35% status — pure status tool; the cloud procs Toxin on everything inside it.',
+          'Coda Pox adds the Infested Lich element to the cloud damage.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Place clouds in choke points or on objectives; enemies walking through take repeated Toxin procs.',
+          'The cloud persists briefly — useful for area denial on defense targets.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Pistols/InfBeamPistol/InfBeamPistol',
+      '/Lotus/Weapons/Infested/InfestedLich/Pistols/CodaCatabolyst',
+    ],
+    note: {
+      tldr: 'The Catabolyst — an Infested beam pistol; the magazine expires and the weapon is thrown as an explosive to detonate.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Continuous beam secondary until the magazine empties; at that point, instead of reloading, the weapon is thrown and explodes for a large AoE Blast.',
+          '11% crit, 43%/50% status — a strong status beam, and the detonation is a meaningful AoE burst.',
+          'Do not manually reload — fire to empty and let the explosion trigger automatically.',
+        ]},
+        { heading: 'Interactions', points: [
+          'In dense waves, beam-until-empty then detonate is a rhythm that both damages and group-clears.',
+          'Coda Catabolyst raises status to 50%; the beam becomes an extremely reliable primer before the final explosion.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Pistols/InfVomitGun/InfVomitGunWep',
+    ],
+    note: {
+      tldr: 'The Dual Toxocyst — dual Infested pistols with 37% status; each headshot kill temporarily increases fire rate.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto Infested pistols; 5% crit, 37% status — status-dominant.',
+          'Headshot kills trigger a brief fire rate boost — in dense groups with consistent headshots, the boost is nearly permanent.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Status-heavy builds benefit most; Viral + Corrosive from headshot-maintained spray is effective in Corpus or Grineer content.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Pistols/InfUzi/InfUziWeapon',
+    ],
+    note: {
+      tldr: 'The Zymos — an Infested SMG secondary with 30% status; fires bursts of Pathogen spores that linger briefly.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto-fire spore launcher; 5% crit, 30% status — status-focused.',
+          'Spores land on surfaces briefly before expiring, dealing Toxin to enemies that walk into them.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The lingering spores serve as light area-denial near objectives; better than most Infested pistols as a status tool.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/InfestedLich/Pistols/1999InfSporePistol/1999InfSporePistolWeapon',
+    ],
+    note: {
+      tldr: 'Dual Coda Torxica — dual Infested Lich pistols with 25% crit and 28% status; a hybrid secondary with a Lich element.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual Infested pistols from the Infested Lich system; 25% crit and 28% status support hybrid builds.',
+          'Lich progenitor element adds a third damage type.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The balanced hybrid stats make it flexible; the Lich element allows strong elemental combinations.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Secondaries — throwing weapons ─────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/Kunai',
+      '/Lotus/Weapons/MK1Series/MK1Kunai',
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/StalkerKunai',
+    ],
+    note: {
+      tldr: 'Kunai — thrown knives with silent flight; Despair (Stalker variant) has 16% crit and 16% status for a silent precision secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown projectile secondary — each throw fires a knife silently; effective against unalerted enemies.',
+          'Kunai: 8% crit, 8% status — low stats. Despair (Stalker drop): 16% crit, 16% status.',
+          'All Kunai variants are silent; they do not alert nearby enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Despair is the build target for players wanting a silent throwing-knife secondary; acquirable from Stalker drops.',
+          'Silent throwing weapons work well alongside the Shade sentinel or in stealth-build runs.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/TennoStars',
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/PrimeThrowingStar/PrimeHikou',
+    ],
+    note: {
+      tldr: 'The Hikou — thrown shurikens; Hikou Prime raises status to 28% for an elemental proc throwing weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown shurikens; very fast fire rate but low damage per throw.',
+          'Hikou: 4% crit, 10% status. Hikou Prime: 6% crit, 28% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hikou Prime with 28% status becomes a status primer; the fast throw rate stacks elemental procs quickly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/LiDagger/LiDagger',
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/PrimeLiDagger/PrimeLiDagger',
+    ],
+    note: {
+      tldr: 'The Spira — a precision thrown dagger with 30% crit; Spira Prime keeps 30% crit and adds 14% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown daggers — faster than kunai, slightly different arc.',
+          'Spira: 30% crit, 8% status. Spira Prime: 30% crit, 14% status — pure crit platform.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Spira Prime with 30% crit is the go-to crit throwing secondary; Hunter Munitions builds work on throwing weapons.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/GlassKunai/GlassKunaiWeapon',
+    ],
+    note: {
+      tldr: "The Fusilai — Gara's glass-shard secondary; thrown shards shatter on impact, dealing Slash and applying bleed.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown glass shards; 23% crit, 29% status — a strong hybrid throwing weapon.',
+          'Innate Slash damage means consistent bleed proc stacking alongside elemental mods.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Gara's signature — gains bonus stats in her hands.",
+          'Both crit and status are high enough for hybrid builds; one of the better throwing secondaries for raw stats.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/U18ThrowingKnives/U18throwingknives',
+    ],
+    note: {
+      tldr: 'The Talons — thrown knives that deploy razor loops on impact, creating a zone that damages enemies passing through.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '22% crit, 26% status — solid hybrid stats.',
+          'On impact, the Talons create a lingering razor-blade loop at the target location that damages enemies within.',
+          'Area-denial secondary — the loops make it useful for coverage of narrow passages or objectives.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Status procs apply inside the loop zone; place Talons at choke points for sustained proc coverage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/TnOraxiaFlechette/TnOraxiaFlechette',
+    ],
+    note: {
+      tldr: 'The Scyotid — a 1999 Technocyte Coda throwing weapon; flechettes that apply Infested status procs on hit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown flechettes (small aerodynamic darts); 24% crit, 18% status.',
+          'From the 1999 Coda content pool.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A competent throwing secondary from 1999 content; both stats support hybrid modding.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Secondaries — 1999 faction ─────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Lasria/LasSilencedPistol/LasSilencedPistolWeapon',
+    ],
+    note: {
+      tldr: 'The Vesper 77 — a Lasrian silenced pistol; 24% crit and 26% status in a compact, silent semi-auto form.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto hitscan, silent — does not alert unaware enemies.',
+          '24% crit, 26% status — a hybrid silent secondary with good stats for its class.',
+        ]},
+        { heading: 'Interactions', points: [
+          'One of the few silent secondary options with competitive hybrid stats; pairs well with stealth builds or the Baza primary.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Lasria/LasGooPistol/LasGooPistolPlayerWeapon',
+    ],
+    note: {
+      tldr: 'The Efv-8 Mars — a Lasrian pistol that fires viscous projectiles; 27% crit and 17% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto pistol with slightly arcing bolts; 27% crit, 17% status — crit-leaning.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A 1999 content secondary with solid crit for Hunter Munitions builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/1999EntHybridPistolWeapon/1999EntHybridPistolWeapon',
+    ],
+    note: {
+      tldr: 'The Riot-848 — an Entarchy hybrid pistol from 1999; 26% crit and 26% status for an evenly balanced secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Balanced hybrid stats (26% crit, 26% status) in a semi-auto form; from the 1999 Entarchy faction.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The even split means both crit and status builds work without compromising; one of the more flexible 1999 secondaries.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Secondaries — miscellaneous / remaining ────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrnQueenGuardDualPistol/GrnQueenGuardDualPistols',
+    ],
+    note: {
+      tldr: 'Twin Rogga — Grineer Queen Guard dual shotgun pistols; very high damage per shot, very small magazine.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual heavy hand shotguns; low crit (10%), low status (7%), but high per-pellet damage.',
+          'Small magazine (2 shots) means you are constantly reloading in extended engagements.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Best used for burst close-range damage; reload after every two shots makes sustained fire impractical.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrnOrokinPistol/GrnOrokinPistol',
+    ],
+    note: {
+      tldr: 'The Sagek Prime — a Grineer Orokin-era semi-auto pistol with exceptional 30% crit; pure crit platform.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '30% crit, 1% status — one of the highest base crits on a secondary pistol; not a status weapon at all.',
+          'Semi-auto with high per-shot damage.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions with 30% crit makes it a straightforward bleed-stack machine in a pistol-slot form.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpLaserPistol',
+      '/Lotus/Weapons/Corpus/Pistols/CorpusModularPistol/Vandal/CrpLaserPistolVandal',
+    ],
+    note: {
+      tldr: 'The Spectra — a Corpus laser pistol beam; Spectra Vandal raises crit to 20% and status to 28% for a hybrid beam secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Continuous beam secondary; very precise, applies damage per tick.',
+          'Spectra: 14% crit, 22% status. Spectra Vandal: 20% crit, 28% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Spectra Vandal is the competitive version; 20%/28% supports hybrid tick-damage builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/ConclaveLeverPistol/ConclaveLeverPistol',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeZylok/ZylokPrimePistol',
+    ],
+    note: {
+      tldr: 'The Zylok — a Conclave-origin lever-action pistol; Zylok Prime reaches 12% crit and 36% status for a status secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Lever-action semi-auto pistol; slow fire rhythm, higher per-shot damage.',
+          'Zylok: 8% crit, 26% status. Zylok Prime: 12% crit, 36% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Zylok Prime is a useful status secondary for elemental proc builds; the slow fire rate is compensated by high status per shot.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TigrisRedeemerSetPistol/TnoBladedPistols',
+    ],
+    note: {
+      tldr: 'The Akjagara — dual bladed pistols; paired with the Broken Scepter and Redeemer set, 6% crit and 28% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Part of a set with the Broken Scepter Melee and Tigris / Redeemer; they share a set bonus when used together.',
+          '6% crit, 28% status — status-leaning.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The set bonus improves performance when paired with the other set weapons; individually competitive but the set synergy is the draw.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/HarlequinGun/HarlequinPistols',
+    ],
+    note: {
+      tldr: 'The Akzani — Mirage Prime signature dual pistols; high fire rate, 14% crit and 14% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual auto pistols with a fast fire rate; 14% crit, 14% status — balanced but not exceptional.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Mirage's signature — gains a bonus in her hands; her Hall of Mirrors clones duplicate the fire, amplifying total output significantly.",
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/SundialPistol/SundialPistol',
+    ],
+    note: {
+      tldr: 'The Azima — a Daily Tribute auto pistol that deploys a spinning turret from the magazine on alt-fire.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Auto pistol; 16% crit, 16% status. Alt-fire deploys a ground turret from the pistol body that auto-fires at enemies for several seconds.',
+          'Reloading cancels the deployed turret.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Deploy the turret, then swap to a primary — you effectively get a free auto-firing secondary while using your primary.',
+          'Obtainable only from Daily Tribute milestones.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Syndicates/ArbitersOfHexis/Pistols/AHAkbolto',
+      '/Lotus/Weapons/Tenno/Pistol/CrossBow',
+      '/Lotus/Weapons/Tenno/Akimbo/AkimboBolto',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeAkbolto/PrimeAkBoltoWeapon',
+    ],
+    note: {
+      tldr: 'The Bolto — a Tenno bolt-firing pistol; Akbolto Prime reaches 36% crit for an extremely high-crit throwing-bolt secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto bolt pistol; bolts travel as projectiles, not hitscan — slight travel time.',
+          'Bolto: 16% crit, 2% status. Akbolto Prime (dual): 36% crit, 14% status.',
+          'Telos Akbolto (Arbiters of Hexis) adds the AH Justice proc and higher status (29%) at the cost of some crit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Akbolto Prime at 36% crit is a strong Hunter Munitions secondary; one of the highest crit bolts available.',
+          'Telos Akbolto is a dual-purpose status+syndicate proc option for players aligned with Arbiters of Hexis.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrineerCrossbow/GrineerGooGun',
+    ],
+    note: {
+      tldr: 'The Stug — a Grineer goo pistol; fires goo globs that stick to surfaces and detonate after a delay.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires goo blobs that adhere to surfaces; after a short delay each blob detonates.',
+          '5% crit, 0% status — extremely low stats; the goo mechanic is the only identity.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Primarily a mastery weapon; the delayed goo detonations have a small AoE but the damage is negligible at any meaningful content level.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBEDiplos/CrpBriefcaseAkimboPistol',
+    ],
+    note: {
+      tldr: 'The Tenet Diplos — Sister dual-akimbo pistols with 36% crit; a high-crit dual-auto secondary with a Sister element.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual pistols with 36% crit and 14% status — crit-dominant; one of the highest crit akimbo secondaries.',
+          'Sister progenitor element baked in.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions on dual pistols with 36% crit delivers extremely consistent bleed-stacking output.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBEIgniter/CrpIgniterPistol',
+    ],
+    note: {
+      tldr: 'The Tenet Spirex — a Sister pistol that fires accelerating energy bolts; 26% crit and 40% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto bolts that gain speed the longer they travel — most effective at medium-to-long range.',
+          '26% crit, 40% status — a strong hybrid secondary with high status.',
+          'Sister progenitor element baked in.',
+        ]},
+        { heading: 'Interactions', points: [
+          'At 40% status, Viral priming is fast even in single shots; the accelerating bolt means standing back is advantageous.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
