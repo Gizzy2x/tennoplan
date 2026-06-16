@@ -106,6 +106,14 @@ export interface PeWeapon {
    *  README prefers this over the flat damagePerShot for anything richer than a
    *  single hit. Consumed by deriveFireModes in the overlay. */
   behaviours?:         PeBehaviour[];
+  // ── Melee scalars (productCategory === 'Melee' etc.) ──
+  slamRadius?:            number;
+  slideAttack?:           number;
+  heavyAttackDamage?:     number;
+  heavySlamAttack?:       number;
+  heavySlamRadialDamage?: number;
+  heavySlamRadius?:       number;
+  windUp?:                number;
 }
 
 /** ExportUpgrades entry (mods). NO levelStats prose for most rows — WFCD

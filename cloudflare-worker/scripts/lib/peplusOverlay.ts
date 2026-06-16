@@ -56,6 +56,9 @@ export interface OverlayReport {
   /** Weapons given structured fireModes[] from PE+ behaviours[] (radial AoE
    *  split / charge / beam / burst / alt-fire). Subset with interesting structure. */
   fireModeWeapons:  number;
+  /** Melee weapons given the heavy/slide/slam-radius/wind-up scalars PE+ carries
+   *  that the WFCD codex lacks. */
+  meleeScalarWeapons: number;
   /** Mods given a computed Endo-to-max upgrade cost (matched + synthesized). */
   upgradeCosts:     number;
   /** Items given a foundry build cost from ExportRecipes (any category). */
@@ -82,6 +85,7 @@ export function applyPePlusAuthority(items: EnrichedItem[], pe: PePlusData): Ove
     damageBreakdowns:  0,
     damageSumWarnings: 0,
     fireModeWeapons:   0,
+    meleeScalarWeapons: 0,
     upgradeCosts:      0,
     buildCosts:        0,
     peOnly:          {},
@@ -161,6 +165,10 @@ function overlayWeapon(item: EnrichedItem, peRec: PeWeapon | undefined, report: 
   // charge vs base, beam flag and alt-fire/Incarnon profiles the flat field can't.
   const fireModes = deriveFireModes(peRec.behaviours, isMeleeCategory(peRec.productCategory));
   if (fireModes) { item.fireModes = fireModes; report.fireModeWeapons++; }
+
+  // Melee scalars PE+ carries that the WFCD codex lacks entirely
+  // (heavy/slide/slam-radius/wind-up). Additive — no WFCD value to override.
+  if (applyMeleeScalars(item, peRec)) report.meleeScalarWeapons++;
 
   // Enum fills — WFCD casing is the display convention; only patch holes.
   if (!item.weaponTrigger && peRec.trigger) { item.weaponTrigger = normalizeTrigger(peRec.trigger); report.enumFills++; }
@@ -261,6 +269,7 @@ function synthesizeMissing(
     if (dmg) { item.damageTypes = dmg; report.damageBreakdowns++; }
     const fireModes = deriveFireModes(rec.behaviours, isMeleeCategory(rec.productCategory));
     if (fireModes) { item.fireModes = fireModes; report.fireModeWeapons++; }
+    if (applyMeleeScalars(item, rec)) report.meleeScalarWeapons++;
     if (typeof rec.masteryReq === 'number') item.masteryRank   = rec.masteryReq;
     if (rec.trigger)                        item.weaponTrigger = normalizeTrigger(rec.trigger);
     if (rec.noise)                          item.weaponNoise   = titleCase(rec.noise);
@@ -406,6 +415,25 @@ const DT_TO_KEY: Record<string, string> = {
 const MELEE_CATEGORIES = new Set(['Melee', 'SpaceMelee', 'DrifterMelee']);
 function isMeleeCategory(productCategory: string): boolean {
   return MELEE_CATEGORIES.has(productCategory);
+}
+
+/** Melee scalar fields PE+ carries that WFCD/the codex does not — heavy & slide
+ *  attacks, slam radii, heavy-attack wind-up. Names match ItemStats 1:1. */
+const MELEE_SCALARS = [
+  'slamRadius', 'slideAttack', 'heavyAttackDamage', 'heavySlamAttack',
+  'heavySlamRadialDamage', 'heavySlamRadius', 'windUp',
+] as const;
+
+/** Copy the PE+ melee scalars onto a melee weapon's stats (additive, >0 only).
+ *  Returns true when at least one was written. */
+function applyMeleeScalars(item: EnrichedItem, peRec: PeWeapon): boolean {
+  if (!isMeleeCategory(peRec.productCategory)) return false;
+  let wrote = false;
+  for (const f of MELEE_SCALARS) {
+    const v = peRec[f];
+    if (typeof v === 'number' && v > 0) { (item.stats ??= {})[f] = v; wrote = true; }
+  }
+  return wrote;
 }
 
 /** One IAttackData block → WeaponAttack; undefined when it has no positive,
