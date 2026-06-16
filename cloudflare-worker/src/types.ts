@@ -453,6 +453,44 @@ export type BountyTier =
   | 'Lv31-40'
   | 'Lv41-50';
 
+/**
+ * One attack component of a weapon fire mode — either the direct/impact hit or
+ * the radial (explosion) burst. Derived from PE+ behaviours[] IAttackData.
+ */
+export interface WeaponAttack {
+  /** Absolute damage by lowercase type key — same vocabulary as `damageTypes`
+   *  ('impact','puncture','slash','heat','cold','electricity','toxin','blast',
+   *  'radiation','gas','magnetic','viral','corrosive','void'). */
+  damage:        Record<string, number>;
+  /** Status/proc chance for this specific attack, 0..1. */
+  statusChance?: number;
+}
+
+/**
+ * One firing state of a weapon: base fire, a charged shot, a continuous beam, a
+ * secondary alt-fire/Incarnon profile, or a thrown melee. Derived from PE+
+ * `behaviours[]`. The flat `damageTypes` field stays the quick single-number
+ * summary; `fireModes` carries the structure it can't — the direct-vs-radial
+ * AoE split (so a launcher's explosion isn't lumped into its impact), charge vs
+ * base, beam flagging, and a real second profile for Incarnon/alt-fire weapons.
+ * Emitted only when a weapon has structure worth carrying (radial, charge, beam,
+ * burst, or >1 mode); plain single-hit weapons rely on `damageTypes` alone.
+ */
+export interface WeaponFireMode {
+  /** Short label: 'Normal' | 'Charged' | 'Beam' | 'Alt Fire' | 'Melee' | 'Thrown'. */
+  name:          string;
+  /** Trigger for this mode: 'Auto'|'Semi'|'Burst'|'Charge'|'Held'. Absent for melee. */
+  trigger?:      string;
+  /** The direct/impact hit. */
+  direct:        WeaponAttack;
+  /** Radial/AoE (explosion) component, when this attack detonates. */
+  radial?:       WeaponAttack;
+  /** True for continuous-beam weapons (damage is per damage-tick). */
+  isBeam?:       boolean;
+  /** Shots released per trigger pull when >1 (burst / simultaneous-pellet bursts). */
+  burst?:        number;
+}
+
 export interface TennoplanItem {
   // ── Identity ────────────────────────────────────────────────
   uniqueName:    string;
@@ -554,6 +592,13 @@ export interface TennoplanItem {
    * modifiers can shift it. Zero/missing entries are omitted by the parser.
    */
   damageTypes?:   Record<string, number>;
+  /**
+   * Structured per-fire-mode damage from PE+ behaviours[] — direct + radial AoE
+   * split, charge vs base, beam flag, and secondary (alt-fire/Incarnon) profiles.
+   * Weapon only; absent when the weapon has only a single plain hit (use
+   * `damageTypes` then). See {@link WeaponFireMode}.
+   */
+  fireModes?:     WeaponFireMode[];
 
   // ── Mod-specific (category === 'Mod') ──────────────────────
   /** Per-rank stat lines. levelStats[0] = R0, levelStats[N] = RN. */

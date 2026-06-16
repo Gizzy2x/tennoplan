@@ -51,6 +51,32 @@ export interface PePowersuit {
   variantType?:        string;
 }
 
+/** One IAttackData damage block — NAMED damage-type keys (DT_IMPACT, DT_FIRE, …)
+ *  plus a per-attack procChance. Self-describing: the key IS the type. */
+export type PeAttackData = Record<string, number> & { procChance?: number };
+
+/** PE+ projectile config — direct hit (`attack`), radial explosion
+ *  (`explosiveAttack`), and embedded-projectile death burst (`embedDeathAttack`). */
+export interface PeProjectile {
+  attack?:          PeAttackData;
+  explosiveAttack?: PeAttackData;
+  embedDeathAttack?: PeAttackData;
+}
+
+/** One firing STATE from PE+ behaviours[]. `stateName` carries the trigger
+ *  (…/Loadout_TriggerAuto|TriggerSemiAuto|TriggerCharge|TriggerContinous);
+ *  `impact` is the direct hitscan block (a generic ~10-dmg placeholder when a
+ *  projectile co-exists); `projectile`/`chargedProjectile` hold projectile +
+ *  AoE splits. Absent stateName = melee. */
+export interface PeBehaviour {
+  stateName?:         string;
+  fireIterations?:    number;
+  burst?:             unknown;
+  impact?:            PeAttackData;
+  projectile?:        PeProjectile;
+  chargedProjectile?: PeProjectile;
+}
+
 /** ExportWeapons entry. Crit/status are FRACTIONS (0.12) — same unit as WFCD. */
 export interface PeWeapon {
   name:                string;   // dict key
@@ -76,6 +102,10 @@ export interface PeWeapon {
   tradable?:           boolean;
   productCategory:     string;   // LongGuns | Pistols | Melee | ...
   variantType?:        string;
+  /** Per-firing-state damage structure (direct/radial/charge/alt-fire). PE+'s
+   *  README prefers this over the flat damagePerShot for anything richer than a
+   *  single hit. Consumed by deriveFireModes in the overlay. */
+  behaviours?:         PeBehaviour[];
 }
 
 /** ExportUpgrades entry (mods). NO levelStats prose for most rows — WFCD

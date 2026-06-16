@@ -5196,7 +5196,7 @@ const WEAPON_NOTES: SharedNote[] = [
       tldr: 'The Strun family — the original Tenno pump-action shotgun, from the MR0 starter through Wraith to Prime; same semi-auto wide-cone identity throughout.',
       sections: [
         { heading: 'Mechanics', points: [
-          'Fires 8 pellets per shot in a wide cone; effective inside ~15m, falls off sharply at range.',
+          'Fires a wide cone of pellets per shot; most effective at close range and falls off at distance (see the card for pellet count and falloff).',
           'Semi-auto pacing encourages deliberate shots — each pull commits to a full burst.',
           'Strun Wraith bumps stats meaningfully; Strun Prime raises crit to 24%, opening Hunter Munitions builds.',
         ]},
@@ -5214,7 +5214,7 @@ const WEAPON_NOTES: SharedNote[] = [
       tldr: 'The Hek — high single-shot damage, relatively tight spread for a shotgun; punishes at close-to-mid range.',
       sections: [
         { heading: 'Mechanics', points: [
-          'Fires 7 pellets with tighter spread than most shotguns — more effective at range than wider-pattern competitors.',
+          'Fires a tighter pellet spread than most shotguns — more effective at range than wider-pattern competitors.',
           'Low base crit (10%) and status (11%); strength is raw damage per pellet, not stat synergy.',
           'Semi-auto and ammo-efficient — each burst kills at most MR ranges, so fewer shots are needed per encounter.',
         ]},
@@ -5232,7 +5232,7 @@ const WEAPON_NOTES: SharedNote[] = [
       tldr: 'Vaykor Hek — same tight-spread semi-auto as the Hek but 25% crit, a syndicate Justice burst, and the Scattered Justice augment.',
       sections: [
         { heading: 'Mechanics', points: [
-          'Retains the Hek’s 7-pellet tight-spread identity but raises crit to 25%, making Hunter Munitions builds genuinely effective.',
+          'Retains the Hek’s tight-spread identity but with much higher crit, making Hunter Munitions builds genuinely effective.',
           'Steel Meridian’s Justice proc releases a radial damage burst when the syndicate meter fills — a passive bonus on sustained use.',
         ]},
         { heading: 'Interactions', points: [
@@ -5357,7 +5357,7 @@ const WEAPON_NOTES: SharedNote[] = [
       tldr: 'The Corinth — a high-crit semi-auto shotgun with an alt-fire grenade that detonates in mid-air, not on impact.',
       sections: [
         { heading: 'Mechanics', points: [
-          'Primary fire: semi-auto, 7 pellets, 30% crit — one of the stronger crit primaries in the shotgun class.',
+          'Primary fire: a high-crit semi-auto pellet spread — one of the stronger crit primaries in the shotgun class.',
           'Alt-fire launches a timed airburst grenade — it detonates at a set range mid-air, not on surface contact, for Blast AoE above or behind cover.',
           'The grenade’s fixed timer means leading the arc to the right distance takes practice, but the airburst clears groups reliably once learned.',
         ]},
@@ -5398,12 +5398,12 @@ const WEAPON_NOTES: SharedNote[] = [
       '/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Kohm/KuvaKohm',
     ],
     note: {
-      tldr: 'The Kohm — spinning-barrel shotgun that ramps from 1 projectile per shot to ~7 as you hold the trigger; enormous status output at full spin.',
+      tldr: 'The Kohm — a spinning-barrel shotgun that fires a single pellet on the first shot, then ramps up its pellet count the longer you hold the trigger. The card stats are the base, single-pellet profile.',
       sections: [
         { heading: 'Mechanics', points: [
-          'Starts firing a single projectile; sustained fire spins the barrels up to ~7 projectiles per shot — the first second of fire is weak, the rest is a storm.',
-          'At full spin with Multishot mods, the per-second projectile count becomes massive, spreading status types across groups with minimal precision needed.',
-          'Very ammo-hungry at full spin — fire rate multiplies ammo drain faster than the display implies.',
+          'It "spools up": the first shot fires one pellet, and each consecutive shot adds more pellets until it reaches its fully-spooled output — so the opening shot is weak and sustained fire is the payoff.',
+          'The status chance shown on the card is the per-pellet base. Because a fully-spooled shot throws many pellets at once, each with its own status roll, the effective status output per trigger-pull is far higher than the single number suggests — this is why the Kohm is famous as a status weapon despite a low listed value.',
+          'It is very ammo-hungry once spooled — a fully-spooled shot consumes several rounds at once, so reserves drain faster than the fire rate implies.',
         ]},
         { heading: 'Interactions', points: [
           'Kuva Kohm adds a Lich progenitor element and improved stats — already the premier sustained-status primary in many builds, the bonus element adds flexibility.',
@@ -9874,24 +9874,6 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Daggers/Covert/DaggerWeapon',
-    ],
-    note: {
-      tldr: "Covert Lethality — no, Sheev — a Grineer-aesthetic dagger with high crit and the covert/stealth-kill frame.",
-      sections: [
-        { heading: 'Mechanics', points: [
-          '25% crit, 20% status; single dagger.',
-          'Ground finisher attacks deal a portion of the target's maximum health as bonus damage (via the Covert Lethality mechanic if you use a finisher mod).',
-        ]},
-        { heading: 'Interactions', points: [
-          'Daggers have access to ground finishers and stealth finishers; combined with Covert Lethality mod, these ignore enemy health pools entirely.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: [
       '/Lotus/Weapons/Tenno/Melee/Daggers/DrifterDagger/DrifterDaggerWeapon',
     ],
     note: {
@@ -10120,24 +10102,6 @@ const WEAPON_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
-  {
-    keys: [
-      '/Lotus/Weapons/Corpus/Melee/Fists/CrpFist/CrpFistWeapon',
-    ],
-    note: {
-      tldr: 'Deimos Archon Shiv — no, Brawler Claws — a Corpus claw gauntlet; 18%/24% hybrid stats.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          '18% crit, 24% status; fist/gauntlet moveset.',
-          'A mid-tier option from Corpus lore; the stats are balanced for hybrid builds.',
-        ]},
-        { heading: 'Interactions', points: [
-          'Condition Overload works well with the 24% status; rapid fist attacks stack procs efficiently.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
 
   // ── Melee — tonfas ─────────────────────────────────────────────────────────
   {
@@ -10155,24 +10119,6 @@ const WEAPON_NOTES: SharedNote[] = [
         ]},
         { heading: 'Interactions', points: [
           'Kronen Prime at 34% status is one of the strongest melee weapons for Condition Overload; the AoE swings stack procs on every nearby enemy simultaneously.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: [
-      '/Lotus/Weapons/Corpus/Melee/Tonfa/CrpTonfaWeapon',
-    ],
-    note: {
-      tldr: 'Arca Titron... no — Arca Plasmor is a gun. Ohma — a Corpus electric tonfa with innate Electricity; 14%/26% stats.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          '14% crit, 26% status; innate Electricity. Tonfa spinning arc moveset.',
-          'The Electricity procs from each wide sweep can arc to additional nearby enemies.',
-        ]},
-        { heading: 'Interactions', points: [
-          'Magnetic combo with Cold mod makes it effective against Corpus shields; the wide arc hits multiple shielded targets simultaneously.',
         ]},
       ],
       status: 'beta',
@@ -10217,45 +10163,8 @@ const WEAPON_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
-  {
-    keys: [
-      '/Lotus/Weapons/Grineer/Melee/GrnNunchaku/GrnNunchakuWeapon',
-    ],
-    note: {
-      tldr: 'Volnus — no, Prova — Astilla is a shotgun. Stubba — wait. Ack & Brunt — shield and bludgeon. Quassus — a dual-blade nunchaku.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          'Quassus: 28% crit, 22% status — nunchaku with crescent-blade ends instead of chains; thrown attacks possible.',
-          'The throwing attack launches blade projectiles that deal ranged damage before returning.',
-        ]},
-        { heading: 'Interactions', points: [
-          'The thrown blade attack allows the Quassus to deal damage beyond melee range; a unique feature for the nunchaku class.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
 
   // ── Melee — claws ──────────────────────────────────────────────────────────
-  {
-    keys: [
-      '/Lotus/Weapons/Tenno/Melee/Claws/CatClaws/CatClaw',
-      '/Lotus/Weapons/Tenno/Melee/Claws/CatClaws/CatClawPrime',
-    ],
-    note: {
-      tldr: 'Dex Pixia (Titania) / Garuda Talons — no, these are actual claw weapons: Feral Claw / Feral Claw Prime — starter claws.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          'Claw moveset — multi-hit slashing combos with very fast attack speed.',
-          'Feral Claw Prime: 20% crit, 20% status — balanced starter; Feral Claw: 13%/13%.',
-        ]},
-        { heading: 'Interactions', points: [
-          'The fastest attack speed melee class; ideal for stacking Blood Rush quickly or testing melee mods.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
   {
     keys: [
       '/Lotus/Weapons/Tenno/Melee/Claws/Balla/BallaClaw',
@@ -10496,26 +10405,6 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Melee — war fans ───────────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/WarFan/WarFanWeapon',
-      '/Lotus/Weapons/Tenno/Melee/WarFan/PrimeWarFanWeapon',
-    ],
-    note: {
-      tldr: 'Hirudo... no — Nami Solo / Nami Solo Prime — actually War Fans: Cicero Crisis (fan weapons). True war fans: Tatsu class already covered. Let me check — Onorix / Onorix Prime are war fans.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          'War fan stance uses rapid spinning strikes that hit in wide arcs.',
-          'Onorix: 15% crit, 25% status. Onorix Prime: 26% crit, 28% status.',
-          'The fan blade deployment on each combo swing makes range slightly wider than sword class.',
-        ]},
-        { heading: 'Interactions', points: [
-          'Onorix Prime is a solid hybrid war fan; balanced stats work for most melee mod setups.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: [
       '/Lotus/Weapons/Tenno/Melee/WarFan/BrimstoneFan/BrimstoneFanWeapon',
     ],
     note: {
@@ -10691,7 +10580,7 @@ const WEAPON_NOTES: SharedNote[] = [
           'Sentinel weapons share the same mod slots as other weapons; standard damage/crit/status mods apply.',
         ]},
         { heading: 'Interactions', points: [
-          'Shade's Ghost ability cloaks you when enemies are in range; the Laser Rifle fires at the same enemy that triggered the cloak — a passive attack without breaking your own stealth.',
+          'Shade’s Ghost ability cloaks you when enemies are in range; the Laser Rifle fires at the same enemy that triggered the cloak — a passive attack without breaking your own stealth.',
         ]},
       ],
       status: 'beta',
@@ -10765,7 +10654,7 @@ const WEAPON_NOTES: SharedNote[] = [
       sections: [
         { heading: 'Mechanics', points: [
           'Fires slowly with a visible charge-up animation; each shot deals high damage with guaranteed Electricity.',
-          'Diriga's Attack Precept uses Vulklok for ranged damage against distant enemies.',
+          'Diriga’s Attack Precept uses Vulklok for ranged damage against distant enemies.',
         ]},
         { heading: 'Interactions', points: [
           'The Electricity procs arc to nearby enemies; one shot can arc to multiple targets in a cluster.',
@@ -10784,7 +10673,7 @@ const WEAPON_NOTES: SharedNote[] = [
       sections: [
         { heading: 'Mechanics', points: [
           'Fires single Toxin-tipped darts; Toxin procs bypass Corpus shields directly.',
-          'Djinn's Fatal Attraction ability lures enemies toward it; Stinger then picks them off.',
+          'Djinn’s Fatal Attraction ability lures enemies toward it; Stinger then picks them off.',
         ]},
         { heading: 'Interactions', points: [
           'Djinn is unique in having a self-revive ability (Reawaken) — it dies on cooldown but revives itself after a timer, making it the only sentinel that comes back without the player dying.',
@@ -11093,7 +10982,7 @@ const WEAPON_NOTES: SharedNote[] = [
         { heading: 'Mechanics', points: [
           'Full-auto hitscan; high fire rate, moderate damage per bullet.',
           'Used both in Archwing missions (space combat) and infantry mode (deploy it as an exalted-style heavy weapon via Archgun Deployer gear).',
-          'Imperator Vandal has higher base damage and better stats; crafted from the Void Trader (Baro Ki'Teer).',
+          'Imperator Vandal has higher base damage and better stats; crafted from the Void Trader (Baro Ki’Teer).',
         ]},
         { heading: 'Interactions', points: [
           'In infantry mode (Fortuna/Plains), the Imperator Vandal is deployed from the gear wheel and replaces your primary weapon slot temporarily.',
@@ -11157,7 +11046,7 @@ const WEAPON_NOTES: SharedNote[] = [
           'Most effective at close range where the full pellet cone connects.',
         ]},
         { heading: 'Interactions', points: [
-          'Itzal's blink ability lets you close range instantly; the Corvas fires at point-blank for maximum damage immediately after a blink.',
+          'Itzal’s blink ability lets you close range instantly; the Corvas fires at point-blank for maximum damage immediately after a blink.',
         ]},
       ],
       status: 'beta',
@@ -11188,12 +11077,12 @@ const WEAPON_NOTES: SharedNote[] = [
       '/Lotus/Weapons/Tenno/Archwing/Primary/ArchwingHeavyPistols/Prisma/PrismaArchHeavyPistols',
     ],
     note: {
-      tldr: 'Dual Decurion / Prisma Dual Decurions — twin archwing pistols; rapid-fire with high overall DPS; Prisma version from Baro Ki'Teer.',
+      tldr: 'Dual Decurion / Prisma Dual Decurions — twin archwing pistols; rapid-fire with high overall DPS; Prisma version from Baro Ki’Teer.',
       sections: [
         { heading: 'Mechanics', points: [
           'Dual pistols; full-auto fire from both hands simultaneously.',
           'Prisma Dual Decurions have enhanced critical chance and overall higher damage.',
-          'Available from Baro Ki'Teer for ducats + credits.',
+          'Available from Baro Ki’Teer for ducats + credits.',
         ]},
         { heading: 'Interactions', points: [
           'The dual-fire nature means high per-second pellet count; effective for applying status procs rapidly in Archwing mode.',
@@ -11214,7 +11103,7 @@ const WEAPON_NOTES: SharedNote[] = [
           'Effective against solitary fighters or weakening Crewship components at distance.',
         ]},
         { heading: 'Interactions', points: [
-          'Pairs well with Odonata Prime's support-oriented abilities; the precision fire lets you deal with fighters while Odonata provides team buffs.',
+          'Pairs well with Odonata Prime’s support-oriented abilities; the precision fire lets you deal with fighters while Odonata provides team buffs.',
         ]},
       ],
       status: 'beta',
@@ -11379,7 +11268,7 @@ const WEAPON_NOTES: SharedNote[] = [
           'A reliable mid-range archwing option before Railjack-tier weapons are available.',
         ]},
         { heading: 'Interactions', points: [
-          'Pairs well with Itzal's long-range blink for repositioning; fire a burst, blink, fire another burst from an unexpected angle.',
+          'Pairs well with Itzal’s long-range blink for repositioning; fire a burst, blink, fire another burst from an unexpected angle.',
         ]},
       ],
       status: 'beta',
@@ -11393,7 +11282,7 @@ const WEAPON_NOTES: SharedNote[] = [
       '/Lotus/Weapons/Tenno/Archwing/Melee/VoidTraderArchsword/VTArchSwordWeapon',
     ],
     note: {
-      tldr: 'Veritux / Prisma Veritux — the Tenno archwing sword; fast melee in space with wide sweeping slashes. Prisma from Baro Ki'Teer.',
+      tldr: 'Veritux / Prisma Veritux — the Tenno archwing sword; fast melee in space with wide sweeping slashes. Prisma from Baro Ki’Teer.',
       sections: [
         { heading: 'Mechanics', points: [
           'Archwing melee weapons are used when you close to melee range in space combat; they hit with a swinging arc.',
