@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------
 // "Cephalon's Notes" — authored knowledge overlay (Codex Knowledge Layer, B1).
 //
 // The wedge underframe/Overframe don't do: the practical, own-words knowledge
@@ -6239,6 +6239,462 @@ const WEAPON_NOTES: SharedNote[] = [
         { heading: 'Interactions', points: [
           "Jade's signature weapon — gains a bonus in her hands; her kit's mark-and-detonate playstyle fits the ink-marking loop.",
           'Status builds work well since the beam naturally procs multiple status types while building up mark stacks.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+
+  // ── Rifles — burst ─────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Rifle/BurstonRifle',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeBurston/PrimeBurston',
+    ],
+    note: {
+      tldr: 'The Burston — a three-round burst hitscan rifle; Burston Prime raises crit to 25% for Hunter Munitions builds.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Three-round burst on each trigger pull; the burst fires at a fixed cadence regardless of trigger-mash speed.',
+          'Burston: 12.5% crit, 17.5% status — mediocre stats. Burston Prime jumps to 25% crit and 22% status, making it competitive.',
+          'All three rounds share modded elements and crit/status stats — a single burst can proc multiple status effects.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Burston Prime with Hunter Munitions is an efficient bleed-stacker; each burst lands 3 crits at 25% base probability.',
+          'The burst is less ammo-efficient at close range than auto alternatives but offers better control at medium range.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Rifle/Sybaris',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeSybaris/PrimeSybaris',
+      '/Lotus/Weapons/Dex/DexSybaris',
+    ],
+    note: {
+      tldr: 'The Sybaris — a two-round burst crit rifle; Prime version reaches 28% crit for Hunter Munitions bleed builds.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Two-round burst per trigger pull — slightly faster output than a single semi-auto shot, more controlled than full-auto.',
+          'Sybaris: 20% crit, 10% status. Sybaris Prime: 28% crit, 14% status. Dex Sybaris: 25% crit, 10% status.',
+          'All three variants are crit weapons; status builds are not productive here.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions with 28% crit on the Prime makes it a reliable bleed-stacking burst rifle.',
+          'Dex Sybaris is the anniversary gift version — functionally similar to the Prime, available without crafting.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/TnBurstRifle/TnBurstRifleWeapon',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeTiberon/PrimeTiberonWeapon',
+    ],
+    note: {
+      tldr: 'The Tiberon — a select-fire rifle toggling between semi, burst, and full-auto; 25% crit on Prime.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Three fire modes selectable mid-combat: single, three-round burst, full-auto. Switching is instant.',
+          'Tiberon Prime: 25% crit, 20% status — a solid hybrid that works across all three modes.',
+          'Base Tiberon has lower stats; the Prime version is where this weapon becomes competitive.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The select-fire means you adapt to the situation: full-auto for crowds, burst for medium-range groups, semi for precision.',
+          'Builds that work in auto mode also work in burst and semi — no mode-specific mod swapping needed.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/LongGuns/GrineerBurstRifle/GrineerBurstRifle',
+      '/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Hind/KuvaHind',
+    ],
+    note: {
+      tldr: 'The Hind — a five-round burst Grineer rifle; Kuva Hind adds a Lich element and significantly higher stats.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Five rounds per burst, all hitscan — the longer burst means more status procs per trigger pull.',
+          'Base Hind: very low crit (5%), low status (5%) — barely functional as a stat weapon.',
+          'Kuva Hind jumps to 18% crit and 30% status — a different weapon entirely, with a progenitor bonus element.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kuva Hind is the only worth building; the base Hind is a mastery farm item.',
+          'The 30% status on Kuva Hind means a five-round burst can stack multiple elemental procs reliably.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/LongGuns/GrnBurstRifle4/GrnBurstRifle4',
+      '/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Quartakk/KuvaQuartakk',
+    ],
+    note: {
+      tldr: 'The Quartakk — a unique four-round burst that fires all four rounds simultaneously (a shotgun-like spread), not sequentially.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'All four bullets in the burst release at once in a tight spread — functionally closer to a shotgun than a traditional burst rifle.',
+          'Because all shots share one trigger event, status is calculated per-projectile; the simultaneous release can apply up to 4 status procs at once.',
+          'Kuva Quartakk raises crit to 20% and status to 25%, and adds a progenitor bonus element.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The simultaneous-burst behavior means landing all four on one target is essentially a guaranteed status proc cluster per shot.',
+          'At range the spread separates; tight grouping only at close-to-medium range.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/LongGuns/CrpShootgunRifle/CrpShootgunRifle'],
+    note: {
+      tldr: 'The Battacor — a Corpus three-round burst hitscan rifle that builds a Void charge on kills, releasing a powerful beam shot on trigger release.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Kills with the Battacor charge a Void energy counter; releasing the trigger with a full charge fires a large piercing Void beam.',
+          'The three-round burst is the charging mechanism as much as the damage delivery — kill-farm to unlock the beam.',
+          '26% crit, 20% status — crit-leaning, with the beam shot dealing significantly amplified Void damage.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Void beam bypasses most damage reductions and armor on Sentient enemies — particularly effective in Sentient-heavy missions.',
+          'Pairs naturally with kill-heavy missions (Defense, Survival); sparse-spawn missions charge the beam slowly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/LongGuns/InfRifle/InfRifleWeapon',
+      '/Lotus/Weapons/Infested/InfestedLich/LongGuns/CodaHema/CodaHema',
+    ],
+    note: {
+      tldr: 'The Hema — drains health instead of ammo to fire; very high status (35%), heals on headshot kills.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Has no ammo pool — every burst drains a fixed percentage of max health. Health is the only resource it consumes.',
+          'Three-round burst, 35% status — very strong status platform once you accept the health cost.',
+          'Headshot kills with the Hema restore health, partially offsetting the drain; effective in high-kill-rate missions.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Warframes with large health pools (Nidus, Inaros, Revenant) tolerate the health drain much better than glass-cannon frames.',
+          'Coda Hema is the Infested Lich variant; similar identity with the Lich bonus element and potentially different stats.',
+          'The research cost (5000 Mutagen Samples for clan) was famously expensive — Hema is one of the hardest-to-research weapons.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Infested/LongGuns/InfCrpShotgun/InfCrpShotgunRifle'],
+    note: {
+      tldr: 'The Paracyst — an Infested Corpus harpoon rifle; alt-fire fires a harpoon chain that tethers an enemy and reels them in.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Primary fire: burst hitscan. Alt-fire: a projectile that hooks onto an enemy and drags them toward you.',
+          'The harpoon pull is the unique mechanic — forces a target to close distance, enabling melee follow-up or repositioning the enemy into a cluster.',
+          'Low crit (5%), moderate status (17.5%) — the primary fire is secondary to the harpoon utility.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Pair with AoE or melee combos: pull a heavy into a group, then detonate; or pull a priority target into melee range.',
+          'Primarily a mastery/curiosity item; the harpoon is fun but rarely the most efficient approach.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnExplodingBurstRifle/GrnExplodingBurstRifle'],
+    note: {
+      tldr: 'The Harpak — a Grineer burst rifle whose rounds embed in targets and explode after a short delay, dealing bonus Blast damage.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a burst of rounds that embed in the target; after a brief delay each round detonates for additional Blast damage.',
+          'Low crit (7.5%), moderate status (15%) — a gimmick weapon where the delayed explosion is the identity, not the raw stat line.',
+          'The AoE from the explosions can hit nearby enemies, giving it some crowd-splash potential.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Effective when enemies are stationary or slowed — moving targets may walk away before rounds detonate.',
+          'Mastery fodder for most players; the explosion mechanic is interesting but the stat line is too low to compete.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnCrossbow2/TnCrossbow2Weapon'],
+    note: {
+      tldr: 'The Higasa — a Tennogen burst crossbow; high status (30%) for a crossbow-style burst weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Burst-fire crossbow with physical bolts; 20% crit and 30% status — status-leaning with some hybrid potential.',
+          'Bolt travel time applies — not hitscan; lead targets at range.',
+        ]},
+        { heading: 'Interactions', points: [
+          'High status makes it a strong elemental proc platform; the bolt travel reduces accuracy at long range.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/PrimePerigale/PrimePerigaleWeapon'],
+    note: {
+      tldr: 'The Perigale Prime — a burst sniper-rifle hybrid; each burst lands 4 shots, with very high crit (38%) and perfect accuracy.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a four-round burst with zero spread — all four hit the exact same point at medium-long range.',
+          '38% crit and 18% status — heavily crit-focused; Hunter Munitions is the obvious companion mod.',
+          'Classified as a rifle not a sniper, so it does not use the Sniper combo counter or sniper damage falloff rules.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The zero-spread burst means a single target takes all four rounds; point-target burst-fire with high crit is its specialty.',
+          'A strong crit rifle for precise single-target work without the range-restriction of snipers.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnBotanicRifle/TnBotanicRifleWeapon'],
+    note: {
+      tldr: 'The Thornbak — a plant-themed burst rifle from the Coda faction; moderate stats with an organic-Infested aesthetic.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Burst-fire hitscan; mid-tier crit and status — a competent burst option from the 1999 Coda content.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Part of the 1999 Technocyte Coda weapon set; acquired through that storyline.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnRifleSpear/TnRifleSpearWeapon'],
+    note: {
+      tldr: 'The Afentis — Citrine’s signature burst rifle; fires crystalline shards and gains bonus crit chance on a freshly reloaded mag.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Three-round burst of crystalline shards with 26% crit and 34% status — a genuine hybrid.',
+          'After a full reload, the first burst fires with a significant crit bonus — rewarding deliberate reload timing.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Citrine’s signature — gains bonus stats in her hands; her crystal-focused kit creates synergy for reload-reset plays.',
+          'The post-reload crit window rewards reloading just before engaging a priority target.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Rifles — semi-auto ─────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Rifle/LatronRifle',
+      '/Lotus/Weapons/Tenno/Rifle/WraithLatron',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeLatron/PrimeLatron',
+    ],
+    note: {
+      tldr: 'The Latron — the Tenno’s precision semi-auto; high crit (25%/28%) rewards deliberate aimed shots.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'One round per trigger pull; low recoil and high accuracy make it effective at any range.',
+          'Latron: 25% crit, 15% status. Latron Wraith: 30% crit, 20% status. Latron Prime: 28% crit, 22% status.',
+          'All three are crit-first; the Wraith has the highest crit, the Prime a better overall balance.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Hunter Munitions pairs well across the whole family; deliberate semi-auto fire applies controlled crit-bleed stacks.',
+          'The Wraith is a notable event/market reward that outperforms the Prime on raw crit.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnMarksman/GrnMarksman'],
+    note: {
+      tldr: 'The Grinlok — a Grineer single-shot semi-auto marksman rifle; moderate stats, heavy Grineer visual identity.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto hitscan with 25% crit and 15% status — crit-leaning, straightforward single-shot platform.',
+          'Prisma Grinlok (Baro) raises crit to 30% for a cleaner Hunter Munitions build.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A reliable mid-game semi-auto crit rifle; the Prisma variant is worth the Ducats when available.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/LongGuns/CrpBFG/CrpBFGWeapon',
+      '/Lotus/Weapons/Corpus/LongGuns/PrimeFulmin/PrimeFulminWeapon',
+    ],
+    note: {
+      tldr: 'The Fulmin — toggles between a silent semi-auto electric mode and a shotgun mode; high crit (28%/30%) in both.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Alt-fire toggles between semi-auto electric beam (silent, longer range) and auto shotgun mode (loud, close range).',
+          'The semi-auto mode fires a tight single Electric shot; shotgun mode fans out multiple pellets.',
+          'Fulmin Prime: 30% crit, 22% status in rifle mode — a strong crit-hybrid in either configuration.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Silent mode is usable in stealth runs; the toggle lets you adapt to the mission without gear swapping.',
+          'Hunter Munitions applies to both modes; the semi-auto mode is the more controlled crit-bleed delivery mechanism.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnSniperCrossbow/TnSniperCrossbow'],
+    note: {
+      tldr: 'The Veldt — a semi-auto rifle that highlights enemies hit with a passive radar reveal, marking their outline through walls briefly.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto hitscan with 18% crit and 15% status — below-average stats for its class.',
+          'Hitting an enemy adds it to your radar and reveals its outline briefly through obstacles — passive reconnaissance on every shot.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The radar marking is situationally useful in missions where tracking enemies through walls matters (spy, capture).',
+          'Primarily a mastery weapon; the damage profile is too modest for serious use in later content.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Chakkhurr/KuvaChakkhurr'],
+    note: {
+      tldr: 'The Kuva Chakkhurr — a massive single-shot Grineer rifle; one shot per trigger pull deals enormous damage with 37.5% crit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Single-shot semi-auto with very high damage per shot and 37.5% crit — a slow, powerful precision weapon.',
+          'Deals primarily Impact + Slash, with innate Heat and a very high crit multiplier (2.6x).',
+          'Carries a Lich progenitor bonus element at acquisition, making it a two-element weapon automatically.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The high base damage and 37.5% crit make each shot extremely powerful; build around crit multiplier and elemental damage.',
+          'The single-shot cadence means you want to be deliberate — a missed shot is a notable loss of DPS.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBESniper/CrpBESniperWeapon'],
+    note: {
+      tldr: 'The Vinquibus — a semi-auto Corpus laser rifle that fires tracking bolts that home onto the closest enemy after the initial hit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto firing energy bolts that, after impacting one enemy, redirect toward nearby targets.',
+          'The tracking behavior makes it forgiving against fast-moving or partially-covered enemies.',
+          'From the Corpus Sister of Parvos faction with a Sister bonus element built in.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The homing redirect is useful in cover-heavy maps; shot placement matters less once the initial hit is made.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEGun2/CrpBEGun2Weapon'],
+    note: {
+      tldr: 'The Phenmor — a Corpus semi-auto rifle that builds a critical charge on consecutive hits, eventually dealing a massive amplified shot.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Base stats: 15% crit, 28% status. The crit charge mechanic temporarily elevates effective crit massively on the charged shot.',
+          'Landing consecutive hits without missing increments a hidden counter; when full, the next shot deals a dramatically amplified crit.',
+          'The amplified shot resets the counter — requires sustained precision fire to cycle efficiently.',
+        ]},
+        { heading: 'Interactions', points: [
+          'High accuracy and rapid target acquisition maximise the charge cycling; a poor approach for spray-and-pray play.',
+          'The Sister progenitor element is baked in at acquisition — the bonus type affects which elemental combinations work best.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEGun/CrpBEGunWeapon'],
+    note: {
+      tldr: 'The Purgator — a Corpus energy cannon whose charged shot mechanic chains between nearby targets on hit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto with a charged alt-fire mode; the chain-arc hit jumps to additional enemies within a small radius.',
+          'Sister progenitor element built in; crit and status lines depend on the specific Purgator variant acquired.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The chain effect makes it strong in tight groups; individual isolated targets see no bonus from the chain.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/LongGuns/TnCrossbow/TnCrossbow',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeNagantaka/PrimeNagantakaWeapon',
+    ],
+    note: {
+      tldr: 'The Nagantaka — a semi-auto crossbow with very high status (32%/36%); fires quarrels that induce bleed and toxin on hit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto crossbow firing physical quarrels — projectile travel time, not hitscan.',
+          'Nagantaka: 32% status, 10% crit. Nagantaka Prime: 36% status, 14% crit — pure status platform.',
+          'The quarrels deal primarily Slash and Toxin, providing built-in bleed and toxin proc stacking.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Even without Hunter Munitions the innate Slash damage generates bleed; adding elemental mods layers Toxin or Viral on top.',
+          'Nagantaka Prime is a high-performance status weapon in a compact semi-auto package.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/LongGuns/CrpRifle/CrpRifle',
+      '/Lotus/Weapons/Corpus/LongGuns/DeraVandal/DeraVandal',
+    ],
+    note: {
+      tldr: 'The Dera — a Corpus semi-auto laser rifle; the Vandal variant reaches 20% crit and 20% status for a balanced mid-range option.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto hitscan with low base stats; Dera Vandal raises both crit and status to 20% each.',
+          'Accurate at range with minimal spread per shot.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Vandal is the only version worth building; balanced hybrid stats at 20%/20% let either build direction work.',
+          'A solid training-wheels hybrid rifle before graduating to higher-tier options.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnMarksman2/GrnMarksman2Weapon'],
+    note: {
+      tldr: 'The Argonak — a Grineer semi-auto marksman rifle that reveals enemy weak spots on aim-glide.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto hitscan; while aiming during an aim-glide (bullet-jump then aim), the Argonak highlights enemy weak points through obstacles.',
+          '12% crit, 28% status — status-leaning; the weak-spot reveal is the defining mechanic, not raw damage stats.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The weak-point reveal works well for solo stealth/spy play where repositioning via aim-glide is common.',
+          'Best when you aim-glide regularly; the mechanic rewards mobile aerial play styles.',
         ]},
       ],
       status: 'beta',
