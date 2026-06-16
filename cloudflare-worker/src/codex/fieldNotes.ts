@@ -9874,24 +9874,6 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Daggers/Covert/DaggerWeapon',
-    ],
-    note: {
-      tldr: "Covert Lethality — no, Sheev — a Grineer-aesthetic dagger with high crit and the covert/stealth-kill frame.",
-      sections: [
-        { heading: 'Mechanics', points: [
-          '25% crit, 20% status; single dagger.',
-          'Ground finisher attacks deal a portion of the target’s maximum health as bonus damage (via the Covert Lethality mechanic if you use a finisher mod).',
-        ]},
-        { heading: 'Interactions', points: [
-          'Daggers have access to ground finishers and stealth finishers; combined with Covert Lethality mod, these ignore enemy health pools entirely.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: [
       '/Lotus/Weapons/Tenno/Melee/Daggers/DrifterDagger/DrifterDaggerWeapon',
     ],
     note: {
@@ -10120,24 +10102,6 @@ const WEAPON_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
-  {
-    keys: [
-      '/Lotus/Weapons/Corpus/Melee/Fists/CrpFist/CrpFistWeapon',
-    ],
-    note: {
-      tldr: 'Deimos Archon Shiv — no, Brawler Claws — a Corpus claw gauntlet; 18%/24% hybrid stats.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          '18% crit, 24% status; fist/gauntlet moveset.',
-          'A mid-tier option from Corpus lore; the stats are balanced for hybrid builds.',
-        ]},
-        { heading: 'Interactions', points: [
-          'Condition Overload works well with the 24% status; rapid fist attacks stack procs efficiently.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
 
   // ── Melee — tonfas ─────────────────────────────────────────────────────────
   {
@@ -10155,24 +10119,6 @@ const WEAPON_NOTES: SharedNote[] = [
         ]},
         { heading: 'Interactions', points: [
           'Kronen Prime at 34% status is one of the strongest melee weapons for Condition Overload; the AoE swings stack procs on every nearby enemy simultaneously.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: [
-      '/Lotus/Weapons/Corpus/Melee/Tonfa/CrpTonfaWeapon',
-    ],
-    note: {
-      tldr: 'Arca Titron... no — Arca Plasmor is a gun. Ohma — a Corpus electric tonfa with innate Electricity; 14%/26% stats.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          '14% crit, 26% status; innate Electricity. Tonfa spinning arc moveset.',
-          'The Electricity procs from each wide sweep can arc to additional nearby enemies.',
-        ]},
-        { heading: 'Interactions', points: [
-          'Magnetic combo with Cold mod makes it effective against Corpus shields; the wide arc hits multiple shielded targets simultaneously.',
         ]},
       ],
       status: 'beta',
@@ -10217,45 +10163,8 @@ const WEAPON_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
-  {
-    keys: [
-      '/Lotus/Weapons/Grineer/Melee/GrnNunchaku/GrnNunchakuWeapon',
-    ],
-    note: {
-      tldr: 'Volnus — no, Prova — Astilla is a shotgun. Stubba — wait. Ack & Brunt — shield and bludgeon. Quassus — a dual-blade nunchaku.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          'Quassus: 28% crit, 22% status — nunchaku with crescent-blade ends instead of chains; thrown attacks possible.',
-          'The throwing attack launches blade projectiles that deal ranged damage before returning.',
-        ]},
-        { heading: 'Interactions', points: [
-          'The thrown blade attack allows the Quassus to deal damage beyond melee range; a unique feature for the nunchaku class.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
 
   // ── Melee — claws ──────────────────────────────────────────────────────────
-  {
-    keys: [
-      '/Lotus/Weapons/Tenno/Melee/Claws/CatClaws/CatClaw',
-      '/Lotus/Weapons/Tenno/Melee/Claws/CatClaws/CatClawPrime',
-    ],
-    note: {
-      tldr: 'Dex Pixia (Titania) / Garuda Talons — no, these are actual claw weapons: Feral Claw / Feral Claw Prime — starter claws.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          'Claw moveset — multi-hit slashing combos with very fast attack speed.',
-          'Feral Claw Prime: 20% crit, 20% status — balanced starter; Feral Claw: 13%/13%.',
-        ]},
-        { heading: 'Interactions', points: [
-          'The fastest attack speed melee class; ideal for stacking Blood Rush quickly or testing melee mods.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
   {
     keys: [
       '/Lotus/Weapons/Tenno/Melee/Claws/Balla/BallaClaw',
@@ -10494,26 +10403,6 @@ const WEAPON_NOTES: SharedNote[] = [
   },
 
   // ── Melee — war fans ───────────────────────────────────────────────────────
-  {
-    keys: [
-      '/Lotus/Weapons/Tenno/Melee/WarFan/WarFanWeapon',
-      '/Lotus/Weapons/Tenno/Melee/WarFan/PrimeWarFanWeapon',
-    ],
-    note: {
-      tldr: 'Hirudo... no — Nami Solo / Nami Solo Prime — actually War Fans: Cicero Crisis (fan weapons). True war fans: Tatsu class already covered. Let me check — Onorix / Onorix Prime are war fans.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          'War fan stance uses rapid spinning strikes that hit in wide arcs.',
-          'Onorix: 15% crit, 25% status. Onorix Prime: 26% crit, 28% status.',
-          'The fan blade deployment on each combo swing makes range slightly wider than sword class.',
-        ]},
-        { heading: 'Interactions', points: [
-          'Onorix Prime is a solid hybrid war fan; balanced stats work for most melee mod setups.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
   {
     keys: [
       '/Lotus/Weapons/Tenno/Melee/WarFan/BrimstoneFan/BrimstoneFanWeapon',
