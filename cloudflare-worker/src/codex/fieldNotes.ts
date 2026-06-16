@@ -10675,6 +10675,411 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
 
+
+  // ── Sentinel weapons ───────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/LaserRifle',
+      '/Lotus/Types/Sentinels/SentinelWeapons/PrimeLaserRifle',
+    ],
+    note: {
+      tldr: 'Laser Rifle / Prime Laser Rifle — the Shade sentinel weapon; a short-range laser that fires when the sentinel attacks. Only fires when enemies are nearby.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires automatically when Shade detects and attacks a nearby enemy.',
+          'Prime variant deals significantly more damage; both are used alongside Shade for stealth or suppressive builds.',
+          'Sentinel weapons share the same mod slots as other weapons; standard damage/crit/status mods apply.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Shade's Ghost ability cloaks you when enemies are in range; the Laser Rifle fires at the same enemy that triggered the cloak — a passive attack without breaking your own stealth.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/BurstLaserPistol',
+      '/Lotus/Types/Sentinels/SentinelWeapons/PrimeBurstLaserPistol',
+    ],
+    note: {
+      tldr: 'Burst Laser / Burst Laser Prime — the Wyrm sentinel weapon; fires a small burst at enemies that stagger them briefly.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires three-shot bursts; the burst can interrupt enemy attacks momentarily.',
+          'Prime variant has higher damage and better stats across the board.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The brief stagger on hit can interrupt charging enemies or disrupt attack animations at low to mid enemy levels.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/DethMachineRifle',
+      '/Lotus/Types/Sentinels/SentinelWeapons/PrimeDethMachineRifle',
+    ],
+    note: {
+      tldr: 'Deth Machine Rifle / Prime — the Dethcube sentinel weapon; rapid-fire assault rifle with the highest fire rate of sentinel weapons.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires at a high rate; each individual bullet deals modest damage but the volume is high.',
+          'The Dethcube with Energy Generator ability makes the Deth Machine Rifle kills restore energy to the player.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Dethcube + Energy Generator passive: the sentinel kills with its rifle generate energy orbs, making it one of the best energy sustain sentinels for ability-heavy frames.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/SentShotgun',
+      '/Lotus/Types/Sentinels/SentinelWeapons/PrimeSentShotgun',
+    ],
+    note: {
+      tldr: 'Sweeper / Sweeper Prime — the Carrier sentinel weapon; a short-range shotgun blast that hits everything in a cone in front.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a pellet cone at close range; high damage at point blank, falls off with range.',
+          'Carrier/Carrier Prime uses the Sweeper/Sweeper Prime; the sentinel positions near you and fires at the closest enemy.',
+          'Sweeper Prime has higher stats and is the endgame sentinel weapon for most players using Carrier.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Carrier also carries the Ammo Case ability, converting excess ammo types to the weapon you are using — a synergy, not the weapon itself.',
+          'Sweeper Prime with status mods can proc repeatedly; the pellet spread means multiple pellets per shot, each with a status roll.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/SentElecRailgun',
+    ],
+    note: {
+      tldr: 'Vulklok — the Diriga sentinel weapon; a slow-firing charged railgun with very high single-shot damage and innate Electricity.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires slowly with a visible charge-up animation; each shot deals high damage with guaranteed Electricity.',
+          'Diriga's Attack Precept uses Vulklok for ranged damage against distant enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Electricity procs arc to nearby enemies; one shot can arc to multiple targets in a cluster.',
+          'With high-damage mods, Vulklok can eliminate heavy units at mid levels without player input.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/SentBioWeapon',
+    ],
+    note: {
+      tldr: 'Stinger — the Djinn sentinel weapon; a poison-tipped dart gun with innate Toxin procs.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires single Toxin-tipped darts; Toxin procs bypass Corpus shields directly.',
+          'Djinn's Fatal Attraction ability lures enemies toward it; Stinger then picks them off.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Djinn is unique in having a self-revive ability (Reawaken) — it dies on cooldown but revives itself after a timer, making it the only sentinel that comes back without the player dying.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/Gremlin',
+    ],
+    note: {
+      tldr: 'Artax — the Taxon sentinel weapon; fires a short-range Cold beam that slows enemies around the player.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Artax fires a cone Cold beam that applies Frost slow to enemies in range.',
+          'The slow significantly reduces enemy movement and attack speed, creating a permanent slow zone around you.',
+          'Taxon with Molecular Conversion ability converts absorbed damage into shields for you.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Artax slow is invaluable for survivability; in Steel Path content, slowed enemies give you more time to react.',
+          'Taxon + Artax is a popular early-game survival setup — free shield restoration + enemy slow from a single sentinel slot.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/SentGlaiveWeapon',
+      '/Lotus/Types/Sentinels/SentinelWeapons/DeconstructorPrime/PrimeHeliosGlaiveWeapon',
+    ],
+    note: {
+      tldr: 'Deconstructor / Deconstructor Prime — the Helios sentinel weapon; a melee glaive thrown at enemies within range; applies melee mods.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Unique as the only melee sentinel weapon; Helios throws the Deconstructor at nearby enemies rather than shooting.',
+          'Deconstructor Prime has significantly better stats than the base version.',
+          'Being a melee weapon, it accepts melee mods — crit, status, element, and stance-type mods all work.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Helios uses its Investigator ability to scan enemies; the Deconstructor handles attack duties separately.',
+          'With Blood Rush and Gladiator mods (which work on companions), the Deconstructor can reach high crit tiers.',
+          'The Gladiator set bonus interacts with your own combo counter, making this a companion-based damage build.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Sentinels/SentinelWeapons/SentinelFreezeRayRifle',
+      '/Lotus/Types/Sentinels/SentinelWeapons/SentinelFreezeRayPrimeRifle',
+    ],
+    note: {
+      tldr: 'Verglas / Verglas Prime — the Nautilus sentinel weapon; fires Cold beams that freeze and eventually crystallize enemies solid.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires sustained Cold beams that apply Frost stacks; at max Frost stacks an enemy is frozen solid (Crystallized).',
+          'Crystallized enemies are immobilized and take bonus damage from the next attack.',
+          'Verglas Prime has higher damage and better beam range.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Nautilus + Verglas is a crowd-control sentinel; frozen enemies let you land headshots or finishers without resistance.',
+          'Combining Cold beam with Heat mods creates Blast procs that knock down clustered enemies.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── MOA + Zanuka pet weapons ────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Types/Friendly/Pets/MoaPets/MoaPetComponents/CryoxionWeapon',
+    ],
+    note: {
+      tldr: 'Cryotra — a MOA arm-mounted Cold beam; freezes enemies over sustained fire, similar in identity to Verglas.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Cold beam that applies stacks of Frost status; fully stacked enemies are Crystallized.',
+          'MOA weapons are equipped in the arm slot when building a MOA companion.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Pairs well with a damage-dealing MOA body; the freeze creates easy finisher setups.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Friendly/Pets/MoaPets/MoaPetComponents/HextraWeapon',
+    ],
+    note: {
+      tldr: 'Multron — a MOA burst-laser arm weapon; fires rapid laser pulses at enemies in its attack cone.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto laser bursts; moderate damage per burst.',
+          'A balanced general-purpose MOA weapon for mixed enemy types.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Pairs with any MOA body and leg set; no elemental specialization makes it universally applicable.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Friendly/Pets/MoaPets/MoaPetComponents/SwarmerWeapon',
+    ],
+    note: {
+      tldr: 'Helstrum — a MOA missile-pod arm weapon; fires explosive micro-missiles that deal AoE damage.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires guided mini-missiles that detonate on impact, dealing Blast AoE to enemies near the target.',
+          'The AoE can hit multiple enemies if they are clustered.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Good for grouped enemies; the Blast AoE means the MOA is effective against packs without needing to target each one.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Friendly/Pets/MoaPets/MoaPetComponents/TazronWeapon',
+    ],
+    note: {
+      tldr: 'Tazicor — a MOA Electricity arm weapon; fires Electric bursts that arc between nearby enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Electric burst with an arc mechanic — hitting one enemy can chain to adjacent targets.',
+          'Electricity procs stagger enemies briefly.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Effective in dense areas; the chain arc turns the MOA into a crowd-stagger platform.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Friendly/Pets/MoaPets/MoaPetComponents/ThermocorMoaWeapon',
+    ],
+    note: {
+      tldr: 'Vulcax — a MOA Heat cannon arm weapon; fires sustained heat beams that set enemies on fire.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Sustained Heat beam; applies Heat procs that deal DoT and panic enemies (they run in circles briefly).',
+          'High single-target sustained damage; the panic effect interrupts enemy attacks.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Combined with Cold mods on the MOA body abilities, creates Blast; or keep as Heat for the Blast/Heat combo.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Types/Friendly/Pets/ZanukaPets/ZanukaPetMeleeWeaponIP',
+      '/Lotus/Types/Friendly/Pets/ZanukaPets/ZanukaPetMeleeWeaponIS',
+      '/Lotus/Types/Friendly/Pets/ZanukaPets/ZanukaPetMeleeWeaponPS',
+    ],
+    note: {
+      tldr: 'Batoten / Lacerten / Akaten — Hound melee weapons for the Corpus Hound companion; each Hound variant has its own melee type.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Hound melee weapons are equipped in the weapon slot when building a Tenet Hound companion.',
+          'Batoten (IP): Impact + Puncture. Lacerten (IS): Impact + Slash. Akaten (PS): Puncture + Slash.',
+          'The dual-type notation indicates which physical damage types the weapon blends.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Choose the melee type based on target faction: Slash for unarmored/health targets (Infested), Puncture for armored (Grineer), Impact for shielded (Corpus).',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── DrifterMelee (Duviri weapons) ─────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Types/Friendly/PlayerControllable/Weapons/DuviriDualSwords',
+    ],
+    note: {
+      tldr: 'Sun & Moon — the Duviri Drifter dual swords; 26%/28% hybrid with the dual sword moveset in Duviri circuits.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '26% crit, 28% status; dual sword moveset used in Duviri Paradox and Circuit missions.',
+          'In Duviri content you fight as the Drifter rather than in a Warframe, making weapon quality more impactful.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The dual sword speed is advantageous in Drifter missions where you lack Warframe ability damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Hammer/DaxDuviriHammer/DaxDuviriHammerPlayerWeapon',
+    ],
+    note: {
+      tldr: 'Sampotes — the Duviri Dax war hammer; 28%/22% crit-leaning heavy hammer with the massive slam AoE.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '28% crit, 22% status; heavy hammer moveset in Duviri content.',
+          'Shares the knockdown slam AoE of other hammers; effective against clustered Dax enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'In Duviri Circuit, the hammer slam is a reliable crowd-control tool since you cannot rely on Warframe abilities.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Polearms/DaxDuviriPolearm/DaxDuviriPolearmSpearPlayerWeapon',
+    ],
+    note: {
+      tldr: 'Edun — the Duviri Dax spear; 26%/26% balanced polearm with long reach.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '26% crit, 26% status; polearm moveset with the long reach standard to the polearm class.',
+          'Lore: used by the Dax soldiers who guard the Duviri Paradox realm.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The balanced stats are versatile; the long reach makes it effective for Duviri missions where hitting multiple enemies simultaneously matters.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/DaxDuviriKatana/DaxDuviriKatanaPlayerWeapon',
+    ],
+    note: {
+      tldr: 'Syam — the Duviri Dax katana; 22%/26% nikana-style sword with fast combo attacks.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '22% crit, 26% status; nikana/katana moveset in the Duviri context.',
+          'Fast attack speed compared to other Duviri weapon options.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The speed of the katana allows rapid combo building in Duviri missions; pairs well with Duviri intrinsic bonuses.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/DaxDuviriTwoHandedKatana/DaxDuviriTwoHandedKatanaPlayerWeapon',
+    ],
+    note: {
+      tldr: 'Azothane — the Duviri Dax two-handed katana; 30%/20% crit-heavy heavy blade with massive damage per swing.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '30% crit, 20% status; heavy blade / two-handed sword moveset.',
+          'High damage per hit with slower attack speed; each swing can cleave through multiple enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The high crit makes it the Duviri weapon of choice for crit-focused Drifter builds; Blood Rush equivalent (Duviri intrinsics) scales well with 30% base.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/SwordsAndBoards/DaxDuviriMaceShieldPlayerWeapon',
+    ],
+    note: {
+      tldr: 'Argo & Vel — the Duviri Dax mace-and-shield; 22%/26% Sword & Board moveset with the shield throw on heavy attack.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '22% crit, 26% status; Sword & Board moveset including the shield-ricochet throw.',
+          'The shield throw heavy attack provides ranged capability in a Duviri context where guns may be limited.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The shield throw ricochet in Duviri is useful for hitting multiple clustered Dax enemies without closing to melee range.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
