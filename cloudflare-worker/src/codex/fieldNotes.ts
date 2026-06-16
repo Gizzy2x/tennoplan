@@ -11080,6 +11080,442 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
 
+
+  // ── ArchGun (SpaceGuns) ────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/FoldingMachineGun/ArchMachineGun',
+      '/Lotus/Weapons/Tenno/Archwing/Primary/FoldingMachineGun/ArchMachineGunVandal',
+    ],
+    note: {
+      tldr: 'Imperator / Imperator Vandal — the Tenno archwing machine gun; rapid-fire full-auto beam weapon for space and infantry modes. Vandal is the stronger variant.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Full-auto hitscan; high fire rate, moderate damage per bullet.',
+          'Used both in Archwing missions (space combat) and infantry mode (deploy it as an exalted-style heavy weapon via Archgun Deployer gear).',
+          'Imperator Vandal has higher base damage and better stats; crafted from the Void Trader (Baro Ki'Teer).',
+        ]},
+        { heading: 'Interactions', points: [
+          'In infantry mode (Fortuna/Plains), the Imperator Vandal is deployed from the gear wheel and replaces your primary weapon slot temporarily.',
+          'Archguns in infantry mode use their own ammo supply (topped up by pickups); they do not share ammo with your primary.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/TnShieldframeArchGun/TnShieldFrameArchGun',
+      '/Lotus/Weapons/Tenno/Archwing/Primary/PrimeLarkspur/PrimeLarkspurWeapon',
+    ],
+    note: {
+      tldr: 'Larkspur / Larkspur Prime — the Amesha archwing beam gun; fires a sweeping energy beam that hits in a wide arc. Prime version has substantially better stats.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Sustained beam weapon; fires a rotating energy stream that sweeps the target area.',
+          'Larkspur Prime: higher damage, wider beam, more critical and status chance.',
+          'Themed around the Amesha archwing aesthetic.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The sweeping beam hits multiple targets simultaneously; effective against clusters of fighters in Railjack missions.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/Railgun/ArchRailgun',
+    ],
+    note: {
+      tldr: 'Velocitus — the Elytron archwing railgun; a charged shot that drills through multiple enemies in a straight line with extremely high damage per shot.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Charge-to-fire; must hold the trigger to charge the shot before releasing for full damage.',
+          'The projectile penetrates through all enemies and objects in its path.',
+          'Very high single-shot damage; low fire rate due to charge time.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Line up multiple fighters in a row before firing; a single charged shot can eliminate three or four fighters simultaneously.',
+          'In Railjack missions, the penetration means you can shoot through Crewship plating in some scenarios.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/LaunchGrenade/ArchCannon',
+      '/Lotus/Weapons/Tenno/Archwing/Primary/PrimeCorvas/PrimeCorvasWeapon',
+    ],
+    note: {
+      tldr: 'Corvas / Corvas Prime — the Itzal archwing shotgun; close-range burst of energy pellets that devastate nearby enemies. Prime: significantly higher stats.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto energy shotgun; fires a spread of pellets.',
+          'Corvas Prime has much higher damage and better critical/status stats than the base.',
+          'Most effective at close range where the full pellet cone connects.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Itzal's blink ability lets you close range instantly; the Corvas fires at point-blank for maximum damage immediately after a blink.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/RocketArtillery/ArchRocketCrossbow',
+    ],
+    note: {
+      tldr: 'Fluctus — the Odonata archwing crossbow; fires explosive bolts that detonate in a large AoE, effective for clearing groups of fighters.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires arc-shaped explosive bolts that travel in a curved trajectory and explode on impact.',
+          'Large AoE radius; excellent for killing clustered enemies in open space.',
+          'The curved path means leading targets in 3D space is required.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Useful for clearing waves of fighters around a Crewship; the AoE removes the need to track each target precisely.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ArchwingHeavyPistols/ArchHeavyPistols',
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ArchwingHeavyPistols/Prisma/PrismaArchHeavyPistols',
+    ],
+    note: {
+      tldr: 'Dual Decurion / Prisma Dual Decurions — twin archwing pistols; rapid-fire with high overall DPS; Prisma version from Baro Ki'Teer.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dual pistols; full-auto fire from both hands simultaneously.',
+          'Prisma Dual Decurions have enhanced critical chance and overall higher damage.',
+          'Available from Baro Ki'Teer for ducats + credits.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The dual-fire nature means high per-second pellet count; effective for applying status procs rapidly in Archwing mode.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ArchLongRifle/ArchLongRifle',
+    ],
+    note: {
+      tldr: 'Phaedra — the Odonata Prime archwing rifle; a precision long-range auto-rifle for picking off distant fighters.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Full-auto with high accuracy at range; contrasts with shotgun-style archwing weapons.',
+          'Effective against solitary fighters or weakening Crewship components at distance.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Pairs well with Odonata Prime's support-oriented abilities; the precision fire lets you deal with fighters while Odonata provides team buffs.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/RepurposedGrineerAntiAircraftGun/ArchGRNAAGun',
+    ],
+    note: {
+      tldr: 'Grattler — a repurposed Grineer anti-aircraft cannon; fires high-caliber explosive rounds with massive AoE.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Slow-firing explosive cannon; each round detonates on impact for a large AoE damage burst.',
+          'High damage per shot, low fire rate; designed for Crewship and heavy target engagement.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The explosion radius can hit multiple fighters if they are bunched; primarily useful for Crewship component damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/HeavyWeapons/GrnHeavyGrenadeLauncher',
+    ],
+    note: {
+      tldr: 'Kuva Ayanga — a Kuva Lich archwing grenade launcher; fires bouncing explosive grenades with a rapid fire rate for an AoE weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires explosive grenades that bounce off surfaces before detonating; the bounce makes it effective indoors.',
+          'Higher fire rate than standard explosive archwing weapons.',
+          'Like all Kuva weapons: random elemental bonus from the Lich (25–60% bonus damage).',
+        ]},
+        { heading: 'Interactions', points: [
+          'In infantry mode, the Kuva Ayanga is devastating in enclosed spaces; the grenades bounce around corners and into cover.',
+          'The random elemental bonus can create double-element combinations with mods.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/KuvaLich/HeavyWeapons/Grattler/KuvaGrattler',
+    ],
+    note: {
+      tldr: 'Kuva Grattler — the Kuva Lich version of the Grattler; same explosive cannon identity with a Kuva elemental bonus.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Explosive archwing/infantry cannon with a random Kuva elemental bonus.',
+          'Significantly higher stats than the base Grattler.',
+        ]},
+        { heading: 'Interactions', points: [
+          'One of the better endgame archwing weapons when min-maxed with the right elemental bonus for the target faction.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ThanoTechArchGun/ThanoTechArchGun',
+    ],
+    note: {
+      tldr: 'Cortege — a Corpus Railjack archwing beam gun; fires a sweeping corrosive beam that strips enemy armor.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Sustained Corrosive beam; each second of fire applies Corrosive procs that reduce enemy armor.',
+          'Earned through Corpus Railjack missions.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Against high-armor Grineer targets, the Corrosive beam rapidly stacks armor reduction; a full stack makes subsequent hits deal significantly more damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ThanoTechArchLongGun/ThanoTechLongGun',
+    ],
+    note: {
+      tldr: 'Mausolon — a Corpus Railjack auto-rifle that fires charged round bursts; one of the best endgame archwing weapons.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires automatic pulses of energy; alternates between rapid-fire mode and charged burst mode.',
+          'Very high overall DPS; earned through Corpus Railjack missions.',
+          'Works well in both space combat and infantry deploy mode.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Mausolon is considered one of the top-tier archwing guns; it outperforms many older options in both space and infantry modes.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ThanoTechGrenadeLaunch/ThanoTechGrenadeLauncher',
+    ],
+    note: {
+      tldr: 'Morgha — a Corpus Railjack mortar launcher; fires explosive mortars that track enemies before detonating.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires guided mortar rounds with a mild homing arc; the projectile adjusts its path slightly toward the target.',
+          'Large AoE on detonation; effective against groups of fighters.',
+          'Earned through Corpus Railjack content.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The homing arc makes it easier to land AoE on fast-moving fighters compared to the Fluctus; better suited to pilots who struggle with curved projectiles.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/NokkoArchGun/NokkoArchGun',
+    ],
+    note: {
+      tldr: 'Arbucep — a Veil Proxima archwing pistol; semi-auto energy shots with high accuracy at extreme range.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto precision archwing pistol; high damage per shot with accurate hitscan.',
+        ]},
+        { heading: 'Interactions', points: [
+          'For players who prefer semi-auto precision over full-auto fire in Railjack content.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/TnConcreteArchgun/TnConcreteArchgunWeapon',
+    ],
+    note: {
+      tldr: 'Mandonel — a Grineer Railjack-origin archwing cannon that fires concrete slugs; the highest per-shot Impact damage of any archwing weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Slow-firing concrete slug cannon; each shot deals massive Impact damage.',
+          'The Impact damage type is most effective against shielded Corpus targets.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Against Corpus Crewships the massive Impact burst can strip shield cells rapidly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Primary/ArchBurstGun/ArchBurstGun',
+    ],
+    note: {
+      tldr: 'Cyngas — the Itzal burst-fire archwing pistol; fires tight three-round bursts at range.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Three-round burst; moderate damage per burst, good accuracy.',
+          'A reliable mid-range archwing option before Railjack-tier weapons are available.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Pairs well with Itzal's long-range blink for repositioning; fire a burst, blink, fire another burst from an unexpected angle.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── ArchMelee (SpaceMelee) ─────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/Archsword/ArchSwordWeapon',
+      '/Lotus/Weapons/Tenno/Archwing/Melee/VoidTraderArchsword/VTArchSwordWeapon',
+    ],
+    note: {
+      tldr: 'Veritux / Prisma Veritux — the Tenno archwing sword; fast melee in space with wide sweeping slashes. Prisma from Baro Ki'Teer.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Archwing melee weapons are used when you close to melee range in space combat; they hit with a swinging arc.',
+          'Prisma Veritux has higher stats than the base Veritux.',
+          'Archwing melee ignores the standard melee mod system in older builds but newer patch behavior applies some mods.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Closing range in archwing for melee is faster than shooting in some engagements; the blink archwing (Itzal) excels at this.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/Archaxe/ArchAxeWeapon',
+    ],
+    note: {
+      tldr: 'Onorix — the Tenno archwing axe; slower but heavier-hitting archwing melee with a wider cleave.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Archwing axe; lower attack speed than the sword but higher damage per swing.',
+          'The wider cleave arc hits enemies in a broader zone.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Better than the sword against clustered enemy formations where the wider arc hits multiple fighters per swing.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/ArchHammer/ArchHammer',
+    ],
+    note: {
+      tldr: 'Rathbone — the Tenno archwing hammer; the slowest archwing melee but with devastating slam range on each hit.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Heaviest archwing melee; each swing delivers maximum damage in the widest possible arc.',
+          'The slam hits everything in a large sphere around the impact point.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Closing into a cluster and swinging the Rathbone can eliminate an entire fighter wing simultaneously.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/ArchScythe/ArchScythe',
+    ],
+    note: {
+      tldr: 'Kaszas — the Grineer archwing scythe; fast sweeping archwing melee with a long blade arc.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Archwing scythe; moderate attack speed with long sweep range on each strike.',
+          'A Grineer-origin archwing weapon; built from Grineer components.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The long sweep arc makes it effective against spread formations; hits enemies slightly farther away than the sword.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/Archswordandshield/ArchSwordShield',
+    ],
+    note: {
+      tldr: 'Centaur — the Tenno archwing sword-and-shield; the shield can parry incoming projectiles in archwing combat.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Archwing Sword & Board; the shield blocks incoming damage when facing threats head-on.',
+          'The shield reflection can redirect incoming fighter fire back at the attacker.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The parry/reflect is unique to the Centaur in archwing; useful for tanking in Archwing Interception without dodging.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/ArchSwordHook/ArchHookSwordWeapon',
+    ],
+    note: {
+      tldr: 'Agkuza — the Elytron archwing hook sword; fires a tethering hook that pulls enemies toward you before a melee finisher.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Unique archwing melee: the alt attack fires a hook projectile that tethers to an enemy.',
+          'Pulling the hook yanks the enemy toward you into point-blank melee range.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The hook-and-pull lets you engage enemies at range, drag them close, then execute with a melee blow — a different rhythm from other archwing melee weapons.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Archwing/Melee/GrnArchHand/GrnArchHandWeapon',
+    ],
+    note: {
+      tldr: 'Knux — a Grineer archwing fist weapon; close-range rapid punch combos that deal Impact damage.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Archwing gauntlet; fast punch combos at very close range.',
+          'Impact-dominant damage type effective against shielded Corpus targets in space.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The fastest archwing melee attack speed; allows the most hits per engagement when closing range via blink.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
