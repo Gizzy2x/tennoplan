@@ -7406,6 +7406,409 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
 
+
+  // ── Secondaries — auto / SMG pistols ──────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistol/AutoPistol',
+      '/Lotus/Weapons/Tenno/Akimbo/AkimboAutoPistols',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeAfuris/PrimeAFurisWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/DexFuris/DexFuris',
+      '/Lotus/Weapons/MK1Series/MK1Furis',
+    ],
+    note: {
+      tldr: 'The Furis — a lightweight auto pistol; Afuris Prime reaches 16% crit and 30% status for a status-hybrid dual-auto secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Full-auto hitscan pistol; base Furis is low-stat (5% crit, 12% status) but Afuris Prime raises status to 30%.',
+          'Afuris (dual Furis) doubles fire rate and magazine size; Afuris Prime adds meaningful hybrid stats.',
+          'Dex Furis (anniversary gift) hits 14% crit, 28% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Afuris Prime and Dex Furis are the buildable versions; the base Furis and Mk1-Furis are starter and mastery items.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/GrineerPistol/GrineerLightPistol',
+      '/Lotus/Weapons/Grineer/Pistols/WraithSingleViper/WraithSingleViper',
+      '/Lotus/Weapons/Tenno/Akimbo/AkimboViperPistols',
+      '/Lotus/Weapons/Grineer/Pistols/WraithTwinVipers/WraithTwinVipers',
+    ],
+    note: {
+      tldr: 'The Viper — a Grineer rapid-fire pistol; very high fire rate, poor accuracy, modest stats until the Wraith variants.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Full-auto with extremely fast fire rate and significant spread — a hose, not a beam.',
+          'Viper: 15% crit, 11% status. Viper Wraith: 19% crit, 9% status. Twin Vipers / Twin Vipers Wraith double the output further.',
+          'Ammo drain is very fast; bring Ammo Mutation for sustained missions.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Best at close range where spread is acceptable; effective for applying elemental status procs through volume.',
+          'Twin Vipers Wraith is a fun close-range spray weapon but is outclassed by more modern alternatives at endgame.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CorpusMinigun/CorpusMinigun',
+      '/Lotus/Weapons/Corpus/Pistols/CorpusMinigun/DualCorpusMinigun',
+      '/Lotus/Weapons/Syndicates/PerrinSequence/Pistols/PSDualCestra',
+    ],
+    note: {
+      tldr: 'The Cestra — a Corpus auto pistol with a brief spin-up; Dual Cestra and Secura Dual Cestra improve stats significantly.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Spin-up: fire rate ramps over the first half-second to peak output.',
+          'Cestra: 6% crit, 20% status. Dual Cestra: 6% crit, 20% status (doubled output). Secura Dual Cestra: 16% crit, 28% status.',
+          'Secura Dual Cestra adds the Perrin Sequence Entropy proc — an energy restore on kill.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Secura Dual Cestra is the meaningful version; base Cestra stats are too low for endgame content.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/GrineerPistol/GrineerAkimboPistol',
+      '/Lotus/Weapons/Grineer/Pistols/GrnUzi/GrnUziWeapon',
+      '/Lotus/Weapons/Grineer/Pistols/GrnAmphisPistol/GrnAmphisPistol',
+      '/Lotus/Weapons/Grineer/Pistols/GrnDWUniques/GrnTwinKohmaks',
+      '/Lotus/Weapons/Grineer/Pistols/GrnKohmPistol/GrnKohmPistol',
+      '/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Stubba/KuvaStubba',
+    ],
+    note: {
+      tldr: 'Grineer auto pistols — Stubba, Kohmak, Quatz, Twin Gremlins; Kuva Twin Stubbas is the standout with 23% crit and 31% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'A group of Grineer auto and SMG-style pistols with different fire rhythms but broadly similar low-moderate stats.',
+          'Stubba: 23% crit, 13% status — crit-leaning single auto. Quatz: semi-auto with toggle to full-auto.',
+          'Kohmak / Twin Kohmak: burst-fire Grineer microgun. Twin Gremlins: low-accuracy auto pistol pair.',
+          'Kuva Twin Stubbas: 23% crit, 31% status with a Lich element — a competitive hybrid.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kuva Twin Stubbas is the only weapon in this group competitive in Steel Path; the rest are mastery items.',
+          'Prisma Twin Gremlins (Baro) improves to 23% crit, 23% status — a balanced mid-tier pickup.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/LongGuns/GrineerAssaultRifle/TwinGrakatas',
+    ],
+    note: {
+      tldr: 'Twin Grakatas — dual Grineer Grakata pistols; 25% crit and 17% status, very high fire rate, significant spread.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Akimbo version of the primary Grakata; very high fire rate, moderate accuracy at range.',
+          '25% crit, 17% status — crit-primary; Hunter Munitions is the natural pairing.',
+          'High ammo consumption; Ammo Mutation or frequent resupply needed for long missions.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Beloved for the spray-and-pray aesthetic; effective at close-to-medium range.',
+          'The primary Grakata is more ammo-efficient; the Twin Grakatas trade that for doubled throughput.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TennoUzi/TennoUzi',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeAkstiletto/PrimeAkstiletto',
+    ],
+    note: {
+      tldr: 'The Akstiletto — dual micro-SMG pistols; Akstiletto Prime reaches 15% crit and 30% status for a status-hybrid auto secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'High fire-rate dual pistols; Akstiletto: 18% crit, 18% status. Akstiletto Prime: 15% crit, 30% status.',
+          'Prime shifts toward status — the higher status makes elemental build directions more reliable than the base.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Akstiletto Prime is a strong status secondary for its MR requirement; competitive in mid-game and viable into Steel Path with proper elemental builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/SomaSidearm/AkimboSomaPistols',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeAksomati/PrimeAksomati',
+    ],
+    note: {
+      tldr: 'The Aksomati — rapid-fire dual pistols based on Soma; Aksomati Prime reaches 24% crit and 18% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Very fast fire rate dual pistols; Aksomati: 24% crit, 8% status. Aksomati Prime: 24% crit, 18% status.',
+          'Crit-leaning both versions; Hunter Munitions is the reliable build direction.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Aksomati Prime delivers high crit-bleed output in the secondary slot; the elevated status on the Prime also opens hybrid modding.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Pistols/TnGuandoPistolGun',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeZakti/PrimeZaktiPistol',
+    ],
+    note: {
+      tldr: 'The Zakti — a small-calibre pistol that fires explosive darts; Zakti Prime has 8% crit and 42% status for a status-dominant secondary.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires darts that detonate on impact for a small AoE; the explosions proc status rather than the dart itself.',
+          'Zakti: 2% crit, 20% status. Zakti Prime: 8% crit, 42% status — among the highest status secondaries in the pistol slot.',
+          'AoE allows status procs to land on nearby enemies even if only one target is aimed at.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Zakti Prime is a genuine status-spread tool; 42% status with AoE can Viral-prime a group in a few shots.',
+          'Low damage per dart; it is a primer weapon, best paired with a high-damage secondary weapon via quick-swap.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Secondaries — AoE / explosive pistols ──────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpHandRL/CorpusHandRocketLauncher',
+      '/Lotus/Weapons/Corpus/Pistols/CrpHandRL/PrismaAngstrum',
+    ],
+    note: {
+      tldr: 'The Angstrum — a Corpus hand rocket launcher; fires a burst of mini-rockets that explode on impact for AoE Blast damage.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires 3 rockets simultaneously (or 1 Prisma Angstrum alt-fire) that explode on contact for Blast damage in a radius.',
+          '16%/18% crit, 22%/26% status — solid hybrid stats with the AoE adding group-proc potential.',
+          'Self-damage risk at close range; fire at the ground in front of a group rather than at individual targets.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Prisma Angstrum (Baro) is a meaningful upgrade; its alt-fire condenses all rockets into a single high-damage salvo.',
+          'Pairs well with Warframes that group enemies (Vauban, Limbo, Nidus) — concentrated explosions on a cluster.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpAirPistol/CrpAirPistolArray',
+    ],
+    note: {
+      tldr: 'The Sonicor — a Corpus compressed-air cannon; fires a shockwave projectile that ragdolls enemies on impact.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto; fires a slow-moving spherical shockwave that violently ragdolls any enemy in its path.',
+          '10% crit, 0% status — no status; the weapon is purely about the ragdoll crowd control.',
+          'The ragdoll can launch enemies off ledges, into environmental hazards, or simply scatter a group.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Effective in defense to push enemies off objectives; near environmental hazards (cliffs, fans, vents) the ragdoll is lethal.',
+          'Not a damage weapon — it is a displacement tool; pair with a high-damage primary.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrnTorpedoPistol/GrnTorpedoPistol',
+    ],
+    note: {
+      tldr: 'The Kulstar — a Grineer hand mortar; fires a round that bounces twice before exploding, detonating three times total.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a single explosive round that bounces off surfaces twice; on the third contact (or timeout) it detonates for an AoE Blast.',
+          'The bouncing means the detonation point is not where you aimed; lead targets and bounce off walls to reach cover.',
+          '17% crit, 19% status — decent hybrid stats but the bounce mechanics make precision placement the challenge.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Very effective in enclosed maps where bouncing into a room corners a cluster; awkward in open areas.',
+          'The three-bounce delay means it is not a reactive weapon — commit to positioning before firing.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/ThrowingWeapons/StickyBomb/StickyBombs',
+      '/Lotus/Weapons/Syndicates/NewLoka/Pistols/NLCastanas',
+    ],
+    note: {
+      tldr: 'The Castanas — sticky electric grenades thrown as secondaries; detonate on command (alt-fire) or after a short fuse.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Thrown as a secondary; each cast throws multiple sticky grenades that adhere to surfaces and enemies.',
+          'Alt-fire detonates ALL currently active Castanas simultaneously for a large coordinated Electricity burst.',
+          'Sancti Castanas (New Loka) adds higher status and the Loka Justice proc on the syndicate meter.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Stick them to one enemy and detonate for concentrated single-target burst; or spread across a group for area denial.',
+          'The simultaneous detonation makes them a setup weapon — you choose when and where all explosions happen.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/ThrowingWeapons/GrnVorStickyBomb/GrnVorStickyBomb',
+    ],
+    note: {
+      tldr: 'The Aegrit — Grineer sticky grenade secondary; 37% crit makes it the highest-crit throwing weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Sticky grenades similar to Castanas but with dramatically higher crit (37%) and moderate status (19%).',
+          'The 37% crit is unusual for a throwing/explosive secondary and makes Hunter Munitions viable on a grenade weapon.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Crit-focused builds take advantage of the high base crit; combine with Blast element for AoE crit-bleed clusters.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Secondaries — Corpus beam / charge pistols ────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Syndicates/CephalonSuda/Pistols/CSDroidArray',
+      '/Lotus/Weapons/Syndicates/CephalonSuda/Pistols/CSSynoidGammacor',
+    ],
+    note: {
+      tldr: 'The Gammacor — a Cephalon Suda beam secondary; Synoid Gammacor reaches 20% crit and 28% status with the Suda Entropy proc.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Continuous hitscan beam; damage applied per-tick.',
+          'Gammacor: 8% crit, 20% status. Synoid Gammacor: 20% crit, 28% status.',
+          'Cephalon Suda Entropy proc restores energy to you on fill — sustained beam use with kills can maintain a passive energy income.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Synoid Gammacor was a dominant secondary for energy-hungry frames before stat power-creep; the energy restore is still useful.',
+          'Beam weapons accumulate tick damage quickly; status and crit apply per tick at the beam rate.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpChargeGun/CrpChargeGun',
+      '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBECycron/CrpBECycron',
+    ],
+    note: {
+      tldr: 'The Cycron — a charged-burst energy secondary; fires a ricocheting disc. Tenet Cycron reaches 20% crit and 40% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto; fires a bouncing energy disc that ricochets off walls and enemies.',
+          'Cycron: 12% crit, 30% status. Tenet Cycron: 20% crit, 40% status — one of the higher status secondaries available.',
+          'The ricochet means the disc can hit the same enemy multiple times in an enclosed space.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Tenet Cycron with 40% status and a Sister element is a strong status primer/damage secondary in tight corridors.',
+          'In open areas the ricochet provides less benefit; most effective in corridors and rooms.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/GrineerMicrowavegun/GrnMicrowavePistol',
+      '/Lotus/Weapons/Grineer/KuvaLich/Secondaries/Nukor/KuvaNukor',
+    ],
+    note: {
+      tldr: 'The Nukor — a Grineer microwave-beam secondary that chains to nearby enemies; Kuva Nukor at 50% status is one of the best status primers in the game.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Fires a continuous microwave beam that automatically arcs to nearby enemies in a chain — one shot can hit a group.',
+          'Nukor: 3% crit, 29% status. Kuva Nukor: 7% crit, 50% status — the highest natural status in any secondary pistol.',
+          'The chain mechanic means every enemy in proximity to the target receives status ticks simultaneously.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kuva Nukor is the premier status primer for secondaries; 50% status with chaining means an entire squad of enemies can be Viral-primed in under a second.',
+          'Its low damage is intentional — equip it to prime, then swap to a high-damage primary or melee to benefit from the amplified damage.',
+          'The Lich progenitor element adds a third damage type on top of the innate Radiation — choose Heat for maximum coverage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Pistols/HeatGun/GrnHeatGun',
+    ],
+    note: {
+      tldr: 'The Atomos — a Grineer Heat beam that chains between enemies; moderate stats, effective as an elemental spread weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Continuous beam that chains to nearby enemies after the first hit, spreading Heat damage across a group.',
+          '15% crit, 21% status — a hybrid stat line but secondary to the chain-spread identity.',
+          'Chain range is shorter than the Nukor; hits fewer enemies per second but at higher damage per tick.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Heat procs applied via chain strip armor over time (5 Heat procs = full strip), useful against light Grineer armor in mid-game.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpElectroMag/CrpElectroMag',
+    ],
+    note: {
+      tldr: 'The Staticor — a Corpus charge-fire pistol; brief charge releases a Electricity orb that explodes for AoE damage, with 28% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Charge to fire — longer charge = larger explosion radius and higher damage.',
+          '14% crit, 28% status — status-leaning; the AoE means status procs apply to all caught in the blast.',
+          'Releasing without a full charge fires a smaller burst; full charge is the intended use.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The AoE + 28% status makes it effective for priming groups if you can land the charge in the middle of a cluster.',
+          'The charge time makes it poor for fast-moving individual targets; shine in stationary defense or enemy-cluster situations.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Pistols/CrpSonificBlastor/CrpBlastorWeapon',
+      '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBEPlinx/CrpBEPlinxWeapon',
+    ],
+    note: {
+      tldr: 'The Plinx — a single-shot Corpus pistol with 32% crit; Tenet Plinx jumps to 44% crit with a Sister element for one of the highest crit secondaries.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Semi-auto hitscan with very high crit: base Plinx 32%, Tenet Plinx 44% — far above most secondary pistols.',
+          'Status is low (4%/12%) — a pure crit platform; status builds are the wrong direction.',
+          'Tenet Plinx adds the Sister progenitor element baked in.',
+        ]},
+        { heading: 'Interactions', points: [
+          'At 44% crit the Tenet Plinx is a reliable Hunter Munitions bleed machine in the secondary slot.',
+          'The very high crit multiplier pairs with Blood Rush (with the combo counter) to reach extreme multipliers.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
