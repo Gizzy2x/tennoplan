@@ -5886,7 +5886,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/LongGuns/TnoMiter/TnoMiter',
+      '/Lotus/Weapons/Tenno/LongGuns/Miter/TnoMiter',
       '/Lotus/Weapons/Tenno/LongGuns/PrimePanthera/PrimePanthera',
     ],
     note: {
@@ -6249,7 +6249,7 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Rifles — burst ─────────────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Rifle/BurstonRifle',
+      '/Lotus/Weapons/Tenno/Rifle/BurstRifle',
       '/Lotus/Weapons/Tenno/LongGuns/PrimeBurston/PrimeBurston',
     ],
     note: {
@@ -6270,9 +6270,9 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Rifle/Sybaris',
-      '/Lotus/Weapons/Tenno/LongGuns/PrimeSybaris/PrimeSybaris',
-      '/Lotus/Weapons/Dex/DexSybaris',
+      '/Lotus/Weapons/Tenno/LongGuns/TnoLeverAction/TnoLeverActionRifle',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeSybaris/PrimeSybarisRifle',
+      '/Lotus/Weapons/Tenno/LongGuns/DexTheThird/DexTheThird',
     ],
     note: {
       tldr: 'The Sybaris — a two-round burst crit rifle; Prime version reaches 28% crit for Hunter Munitions bleed builds.',
@@ -6292,8 +6292,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/LongGuns/TnBurstRifle/TnBurstRifleWeapon',
-      '/Lotus/Weapons/Tenno/LongGuns/PrimeTiberon/PrimeTiberonWeapon',
+      '/Lotus/Weapons/Tenno/LongGuns/DrakeRifle/DrakeRifle',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeTiberon/PrimeTiberonRifle',
     ],
     note: {
       tldr: 'The Tiberon — a select-fire rifle toggling between semi, burst, and full-auto; 25% crit on Prime.',
@@ -6313,7 +6313,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Grineer/LongGuns/GrineerBurstRifle/GrineerBurstRifle',
+      '/Lotus/Weapons/Grineer/LongGuns/BurstRifle/GrnBurstRifle',
       '/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Hind/KuvaHind',
     ],
     note: {
@@ -6334,7 +6334,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Grineer/LongGuns/GrnBurstRifle4/GrnBurstRifle4',
+      '/Lotus/Weapons/Grineer/LongGuns/GrnFourBarrelRifle/GrnFourBarrelRifleWeapon',
       '/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Quartakk/KuvaQuartakk',
     ],
     note: {
@@ -6354,7 +6354,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Corpus/LongGuns/CrpShootgunRifle/CrpShootgunRifle'],
+    keys: ['/Lotus/Weapons/Corpus/LongGuns/CrpSentExperimentRifle/CrpSentExperimentRifle'],
     note: {
       tldr: 'The Battacor — a Corpus three-round burst hitscan rifle that builds a Void charge on kills, releasing a powerful beam shot on trigger release.',
       sections: [
@@ -6373,8 +6373,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Infested/LongGuns/InfRifle/InfRifleWeapon',
-      '/Lotus/Weapons/Infested/InfestedLich/LongGuns/CodaHema/CodaHema',
+      '/Lotus/Weapons/Infested/LongGuns/InfWFAccompanyingPri/InfestedBurstRifle',
+      '/Lotus/Weapons/Infested/InfestedLich/LongGuns/CodaHema',
     ],
     note: {
       tldr: 'The Hema — drains health instead of ammo to fire; very high status (35%), heals on headshot kills.',
@@ -6394,7 +6394,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Infested/LongGuns/InfCrpShotgun/InfCrpShotgunRifle'],
+    keys: ['/Lotus/Weapons/Infested/LongGuns/QuantaFullyInfested/InfQuantaRifle'],
     note: {
       tldr: 'The Paracyst — an Infested Corpus harpoon rifle; alt-fire fires a harpoon chain that tethers an enemy and reels them in.',
       sections: [
@@ -6412,7 +6412,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnExplodingBurstRifle/GrnExplodingBurstRifle'],
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnHarpoonGun/GrnHarpoonGun'],
     note: {
       tldr: 'The Harpak — a Grineer burst rifle whose rounds embed in targets and explode after a short delay, dealing bonus Blast damage.',
       sections: [
@@ -6430,7 +6430,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnCrossbow2/TnCrossbow2Weapon'],
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/Gunbrella/ShrineMaidenGunbrellaWeapon'],
     note: {
       tldr: 'The Higasa — a Tennogen burst crossbow; high status (30%) for a crossbow-style burst weapon.',
       sections: [
@@ -6446,7 +6446,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Tenno/LongGuns/PrimePerigale/PrimePerigaleWeapon'],
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/PrimePerigale/PrimePerigaleSniper'],
     note: {
       tldr: 'The Perigale Prime — a burst sniper-rifle hybrid; each burst lands 4 shots, with very high crit (38%) and perfect accuracy.',
       sections: [
@@ -6464,7 +6464,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnBotanicRifle/TnBotanicRifleWeapon'],
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnModQuestRifle/TnModQuestRifleWeapon'],
     note: {
       tldr: 'The Thornbak — a plant-themed burst rifle from the Coda faction; moderate stats with an organic-Infested aesthetic.',
       sections: [
@@ -6479,7 +6479,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnRifleSpear/TnRifleSpearWeapon'],
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnHopliteSpear/TnHopliteSpearGunWeapon'],
     note: {
       tldr: 'The Afentis — Citrine’s signature burst rifle; fires crystalline shards and gains bonus crit chance on a freshly reloaded mag.',
       sections: [
@@ -6499,9 +6499,9 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Rifles — semi-auto ─────────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Rifle/LatronRifle',
-      '/Lotus/Weapons/Tenno/Rifle/WraithLatron',
-      '/Lotus/Weapons/Tenno/LongGuns/PrimeLatron/PrimeLatron',
+      '/Lotus/Weapons/Tenno/Rifle/SemiAutoRifle',
+      '/Lotus/Weapons/Tenno/LongGuns/WraithLatron/WraithLatron',
+      '/Lotus/Weapons/Tenno/Rifle/LatronPrime',
     ],
     note: {
       tldr: 'The Latron — the Tenno’s precision semi-auto; high crit (25%/28%) rewards deliberate aimed shots.',
@@ -6520,7 +6520,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnMarksman/GrnMarksman'],
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrineerLeverActionRifle/GLARifle'],
     note: {
       tldr: 'The Grinlok — a Grineer single-shot semi-auto marksman rifle; moderate stats, heavy Grineer visual identity.',
       sections: [
@@ -6537,8 +6537,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/LongGuns/CrpBFG/CrpBFGWeapon',
-      '/Lotus/Weapons/Corpus/LongGuns/PrimeFulmin/PrimeFulminWeapon',
+      '/Lotus/Weapons/Tenno/LongGuns/TnWispRifle/TnWispRifle',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeFulmin/PrimeFulmin',
     ],
     note: {
       tldr: 'The Fulmin — toggles between a silent semi-auto electric mode and a shotgun mode; high crit (28%/30%) in both.',
@@ -6557,7 +6557,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnSniperCrossbow/TnSniperCrossbow'],
+    keys: ['/Lotus/Weapons/Tenno/LongGuns/TnRevolverRifle/TnRevolverRifleGun'],
     note: {
       tldr: 'The Veldt — a semi-auto rifle that highlights enemies hit with a passive radar reveal, marking their outline through walls briefly.',
       sections: [
@@ -6574,7 +6574,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Chakkhurr/KuvaChakkhurr'],
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnKuvaLichRifle/GrnKuvaLichRifleWeapon'],
     note: {
       tldr: 'The Kuva Chakkhurr — a massive single-shot Grineer rifle; one shot per trigger pull deals enormous damage with 37.5% crit.',
       sections: [
@@ -6592,7 +6592,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBESniper/CrpBESniperWeapon'],
+    keys: ['/Lotus/Weapons/Tenno/Bayonet/TnBayonetRifleWeapon'],
     note: {
       tldr: 'The Vinquibus — a semi-auto Corpus laser rifle that fires tracking bolts that home onto the closest enemy after the initial hit.',
       sections: [
@@ -6609,7 +6609,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEGun2/CrpBEGun2Weapon'],
+    keys: ['/Lotus/Weapons/Tenno/Zariman/LongGuns/SemiAutoRifle/ZarimanSemiAutoRifle'],
     note: {
       tldr: 'The Phenmor — a Corpus semi-auto rifle that builds a critical charge on consecutive hits, eventually dealing a massive amplified shot.',
       sections: [
@@ -6627,24 +6627,8 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEGun/CrpBEGunWeapon'],
-    note: {
-      tldr: 'The Purgator — a Corpus energy cannon whose charged shot mechanic chains between nearby targets on hit.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          'Semi-auto with a charged alt-fire mode; the chain-arc hit jumps to additional enemies within a small radius.',
-          'Sister progenitor element built in; crit and status lines depend on the specific Purgator variant acquired.',
-        ]},
-        { heading: 'Interactions', points: [
-          'The chain effect makes it strong in tight groups; individual isolated targets see no bonus from the chain.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
-  {
     keys: [
-      '/Lotus/Weapons/Tenno/LongGuns/TnCrossbow/TnCrossbow',
+      '/Lotus/Weapons/Tenno/LongGuns/GarudaCrossbow/GarudaCrossbow',
       '/Lotus/Weapons/Tenno/LongGuns/PrimeNagantaka/PrimeNagantakaWeapon',
     ],
     note: {
@@ -6665,8 +6649,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/LongGuns/CrpRifle/CrpRifle',
-      '/Lotus/Weapons/Corpus/LongGuns/DeraVandal/DeraVandal',
+      '/Lotus/Weapons/ClanTech/Energy/EnergyRifle',
+      '/Lotus/Weapons/ClanTech/Energy/DeraVandal',
     ],
     note: {
       tldr: 'The Dera — a Corpus semi-auto laser rifle; the Vandal variant reaches 20% crit and 20% status for a balanced mid-range option.',
@@ -6684,7 +6668,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnMarksman2/GrnMarksman2Weapon'],
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/LaserAimRifle/LaserAimRifle'],
     note: {
       tldr: 'The Argonak — a Grineer semi-auto marksman rifle that reveals enemy weak spots on aim-glide.',
       sections: [
@@ -6705,8 +6689,7 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Rifles — beam / continuous ─────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Corpus/LongGuns/ElecRifle/ElecRifle',
-      '/Lotus/Weapons/Corpus/LongGuns/CrpBatteryRifle2/CrpBatteryRifle2',
+      '/Lotus/Weapons/Corpus/LongGuns/ChainLightningGun/ChainLightningRifle',
     ],
     note: {
       tldr: 'The Amprex — a continuous Electric arc that chains to nearby enemies; extremely high status (35%) makes it a premier group-crowd proc weapon.',
@@ -6727,8 +6710,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Infested/LongGuns/InfArkveld/InfArkveldsGun',
-      '/Lotus/Weapons/Infested/InfestedLich/LongGuns/CodaSynapse/CodaSynapse',
+      '/Lotus/Weapons/Infested/LongGuns/InfestedRifle',
+      '/Lotus/Weapons/Infested/InfestedLich/LongGuns/CodaSynapse',
     ],
     note: {
       tldr: 'The Synapse — a continuous Infested beam that deals primarily Corrosive damage and has innate armor-stripping ability.',
@@ -6748,8 +6731,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Grineer/LongGuns/GrineerFlameThrower/GrineerFlameThrower',
-      '/Lotus/Weapons/Grineer/LongGuns/WraithIgnis/WraithIgnis',
+      '/Lotus/Weapons/ClanTech/Chemical/FlameThrower',
+      '/Lotus/Weapons/ClanTech/Chemical/FlameThrowerWraith',
     ],
     note: {
       tldr: 'The Ignis — a continuous flamethrower; wide cone coverage at close-to-medium range with very high Heat status (35%).',
@@ -6770,8 +6753,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/LongGuns/CrpFreezeRayRifle/CrpFreezeRayRifle',
-      '/Lotus/Weapons/Corpus/LongGuns/VandalGlaxion/GlaxionVandal',
+      '/Lotus/Weapons/Corpus/LongGuns/CrpFreezeRay/CrpFreezeRayRifle',
+      '/Lotus/Weapons/Corpus/LongGuns/CrpFreezeRay/Vandal/CrpFreezeRayVandalRifle',
     ],
     note: {
       tldr: 'The Glaxion — a continuous Cold beam; applies Freeze status on every tick, instantly stopping enemies who proc it.',
@@ -6790,7 +6773,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEBeam/CrpBEBeamWeapon'],
+    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEGlaxion/CrpBEGlaxion'],
     note: {
       tldr: 'The Tenet Glaxion — a Sister of Parvos beam variant; innate Cold + Radiation and a Sister bonus element, high status (40%).',
       sections: [
@@ -6807,7 +6790,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/LongGuns/CrpBFGBeamRifle/CrpBFGBeamRifle',
+      '/Lotus/Weapons/ClanTech/Energy/CrpLaserRifle',
     ],
     note: {
       tldr: 'The Flux Rifle — a continuous Corpus laser beam; precise hitscan with very high status (35%).',
@@ -6825,7 +6808,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEBeam2/CrpBEBeam2Weapon'],
+    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEFluxRifle/CrpBEFluxRifle'],
     note: {
       tldr: 'The Tenet Flux Rifle — a Sister of Parvos beam; 20% crit, 35% status, Sister bonus element.',
       sections: [
@@ -6842,8 +6825,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/LongGuns/CrpSatiBeamRifle/CrpSatiBeamRifle',
-      '/Lotus/Weapons/Corpus/LongGuns/CrpSatiBeamRifleVandal/CrpSatiBeamRifleVandal',
+      '/Lotus/Weapons/Corpus/LongGuns/CrpShockRifle/CrpShockRifle',
+      '/Lotus/Weapons/Corpus/LongGuns/CrpShockRifle/QuantaVandal',
     ],
     note: {
       tldr: 'The Quanta — a Corpus cube-launcher beam rifle; alt-fire fires floating cubes that the beam can detonate for AoE Electricity.',
@@ -6862,7 +6845,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEBeam3/CrpBEBeam3Weapon'],
+    keys: ['/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEQuanta/CrpBEQuanta'],
     note: {
       tldr: 'The Tenet Quanta — Sister variant of the Quanta; same cube-detonation mechanic with 25% crit, 35% status, and a Sister element.',
       sections: [
@@ -6881,8 +6864,8 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Rifles — charge / single-shot ──────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Corpus/LongGuns/CrpBFG/CrpBFGRifle',
-      '/Lotus/Weapons/Corpus/LongGuns/CrpOpticorVandal/CrpOpticorVandal',
+      '/Lotus/Weapons/Corpus/LongGuns/CrpBFG/CrpBFG',
+      '/Lotus/Weapons/Corpus/LongGuns/CrpBFG/Vandal/VandalCrpBFG',
     ],
     note: {
       tldr: 'The Opticor — a charge-to-fire Corpus laser cannon; holds charge and fires a single high-damage piercing beam.',
@@ -6903,8 +6886,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Grineer/LongGuns/GrnAntiGravRifle/GrnAntiGravRifle',
-      '/Lotus/Weapons/Corpus/BoardExec/Primary/CrpBEFerrox/CrpBEFerroxWeapon',
+      '/Lotus/Weapons/Corpus/LongGuns/Spears/Railgun/CorpusRailgun',
     ],
     note: {
       tldr: 'The Ferrox — a Grineer charge rifle that fires a javelin which tethers to a surface and creates a Gravity Pull zone, dragging nearby enemies toward it.',
@@ -6923,7 +6905,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnJavlokRifle/GrnJavlokRifle'],
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrnFlameSpear/GrnFlameSpear'],
     note: {
       tldr: 'The Javlok — a Grineer throwable charge rifle; alt-fire throws the weapon itself as a flaming javelin that explodes on impact.',
       sections: [
@@ -6941,7 +6923,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Tenno/Rifle/Miter'],
+    keys: ['/Lotus/Weapons/Grineer/LongGuns/GrineerSawbladeGun/SawBladeGun'],
     note: {
       tldr: 'The Miter — a throwable disc launcher; large circular sawblades travel in an arc and pierce multiple enemies.',
       sections: [
@@ -6959,7 +6941,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Infested/LongGuns/InfCrpBow/InfCrpBow'],
+    keys: ['/Lotus/Weapons/Infested/Bow/InfCernosBow/InfCernos'],
     note: {
       tldr: 'The Mutalist Cernos — an Infested bow; arrows release a gas cloud of Toxin on impact instead of dealing direct damage.',
       sections: [
@@ -6980,8 +6962,7 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Rifles — crossbow / silent ──────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/LongGuns/Attica/Attica',
-      '/Lotus/Weapons/Tenno/LongGuns/PrimeAttica/PrimeAttica',
+      '/Lotus/Weapons/Tenno/LongGuns/TnoPrmryXbow/TnoPrmryXbowWeapon',
     ],
     note: {
       tldr: 'The Attica — a rapid-fire crossbow; fires physical bolts quickly and silently with 25%/30% crit.',
@@ -7002,8 +6983,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/LongGuns/TnCrossbow3/TnCrossbow3',
-      '/Lotus/Weapons/Tenno/LongGuns/PrimeZhuge/PrimeZhuge',
+      '/Lotus/Weapons/Tenno/LongGuns/RepeatingCrossbow/RepeatingCrossbow',
+      '/Lotus/Weapons/Tenno/LongGuns/PrimeZhuge/PrimeZhugeCrossbow',
     ],
     note: {
       tldr: 'The Zhuge — a rapid-fire silent crossbow with a large magazine; Prime version jumps to 30% crit and 40% status for a strong hybrid.',
@@ -7137,7 +7118,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Pistols/TnBardPistolGun',
+      '/Lotus/Weapons/Tenno/Pistols/TnBardPistol/TnBardPistolGun',
       '/Lotus/Weapons/Tenno/Pistols/PrimePandero/PanderoPrimeWeapon',
     ],
     note: {
@@ -7347,7 +7328,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Pistols/TnPriestPistolWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/TnPriestPistolScope/TnPriestPistolWeapon',
       '/Lotus/Weapons/Tenno/Pistols/PrimeKnell/PrimeKnellWeapon',
     ],
     note: {
@@ -7369,7 +7350,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Pistols/TnJetTurbinePistolWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/TnJetTurbine/TnJetTurbinePistolWeapon',
     ],
     note: {
       tldr: 'The Athodai — a Daily Tribute auto pistol with 32% crit; its damage dramatically ramps up after the magazine runs empty.',
@@ -7389,7 +7370,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Pistols/TnOdaliskSmgPistol',
+      '/Lotus/Weapons/Tenno/Pistols/TnOdaliskSmg/TnOdaliskSmgPistol',
       '/Lotus/Weapons/Tenno/Pistols/PrimeVelox/PrimeVeloxPistol',
     ],
     note: {
@@ -7561,7 +7542,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Pistols/TnGuandoPistolGun',
+      '/Lotus/Weapons/Tenno/Pistols/TnGuandoPistol/TnGuandoPistolGun',
       '/Lotus/Weapons/Tenno/Pistols/PrimeZakti/PrimeZaktiPistol',
     ],
     note: {
@@ -7833,7 +7814,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Pistols/TnWraitheSidearmWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/TnWraitheSidearm/TnWraitheSidearmWeapon',
       '/Lotus/Weapons/Tenno/Pistols/PrimeEpitaph/PrimeEpitaphSidearmWeapon',
     ],
     note: {
@@ -7855,7 +7836,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Pistols/TnYareliPistolWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/TnYareliPistol/TnYareliPistolWeapon',
       '/Lotus/Weapons/Tenno/Pistols/PrimeKompressa/PrimeKompressa',
     ],
     note: {
@@ -7897,7 +7878,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Pistols/QuillDartGunWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/QuillDartgun/QuillDartGunWeapon',
       '/Lotus/Weapons/Tenno/Pistols/PrimeHystrix/PrimeHystrixWeapon',
     ],
     note: {
@@ -7918,7 +7899,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Pistols/TnChoirframeKunai/TnChoirframeKunai',
+      '/Lotus/Weapons/Tenno/Pistols/TigrisRedeemerSetPistol/TnoBladedPistols',
       '/Lotus/Weapons/Tenno/Pistols/PrimeAkjagara/AkJagaraPrime',
     ],
     note: {
@@ -8416,7 +8397,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/Pistols/CrpLaserPistol',
+      '/Lotus/Weapons/ClanTech/Energy/CrpLaserPistol',
       '/Lotus/Weapons/Corpus/Pistols/CorpusModularPistol/Vandal/CrpLaserPistolVandal',
     ],
     note: {
@@ -8489,7 +8470,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Pistols/SundialPistol/SundialPistol',
+      '/Lotus/Weapons/Tenno/Pistols/SundialGun/SundialPistol',
     ],
     note: {
       tldr: 'The Azima — a Daily Tribute auto pistol that deploys a spinning turret from the magazine on alt-fire.',
@@ -8549,7 +8530,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBEDiplos/CrpBriefcaseAkimboPistol',
+      '/Lotus/Weapons/Corpus/Pistols/CrpBriefcaseAkimbo/CrpBriefcaseAkimboPistol',
     ],
     note: {
       tldr: 'The Tenet Diplos — Sister dual-akimbo pistols with 36% crit; a high-crit dual-auto secondary with a Sister element.',
@@ -8567,7 +8548,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/BoardExec/Secondary/CrpBEIgniter/CrpIgniterPistol',
+      '/Lotus/Weapons/Corpus/Pistols/CrpIgniterPistol/CrpIgniterPistol',
     ],
     note: {
       tldr: 'The Tenet Spirex — a Sister pistol that fires accelerating energy bolts; 26% crit and 40% status.',
@@ -8707,8 +8688,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Swords/KatanaAndWakizashi/Nikana',
-      '/Lotus/Weapons/Tenno/Melee/Swords/KatanaAndWakizashi/NikanaPrime',
+      '/Lotus/Weapons/Tenno/Melee/Swords/KatanaAndWakizashi/Katana',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeKatana/PrimeNikana',
     ],
     note: {
       tldr: 'Nikana / Nikana Prime — the core Tenno katana; Nikana Prime at 28%/28% is a high-tier hybrid melee with strong combo potential.',
@@ -8726,11 +8707,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/ExcaliburSword/ExcaliburUmbraKatana'],
-    note: { tldr: '', sections: [], status: 'beta' },
-  },
-  {
-    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/ExcaliburSword/SkiajatiKatana'],
+    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/UmbraKatana/UmbraKatana'],
     note: {
       tldr: "Skiajati — Excalibur Umbra's signature nikana; slide attacks turn the player invisible briefly.",
       sections: [
@@ -8748,7 +8725,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Swords/Tatsu/TatsuKatana',
+      '/Lotus/Weapons/Tenno/Melee/Swords/TnTwoHandedKatana/TnTwoHandedKatana',
       '/Lotus/Weapons/Tenno/Melee/Swords/PrimeTatsu/PrimeTatsuWeapon',
     ],
     note: {
@@ -8850,7 +8827,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/StalkerSword/StalkerSwordWeapon'],
+    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/StalkerTwo/StalkerTwoGreatSword'],
     note: {
       tldr: "War — the Stalker's great sword; 26%/26% with innate Shadow damage. Obtained as a Stalker drop.",
       sections: [
@@ -8866,7 +8843,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Orokin/Melee/OrokinSword/OrokinHeavySword'],
+    keys: ['/Lotus/Weapons/Orokin/BallasSword/BallasSwordWeapon'],
     note: {
       tldr: 'Paracesis — an Orokin-slaying greatsword; gains permanent damage stacks each forma applied, scaling with investment.',
       sections: [
@@ -8885,8 +8862,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Swords/Masseter/MasseterWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeMasseter/PrimeMasseterWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Swords/TnChiselKanabo/TnChiselKanabo',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeMasseter/PrimeMasseter',
     ],
     note: {
       tldr: 'Masseter / Masseter Prime — a Tenno heavy sword; Prime reaches 26% crit and 36% status for a status-leaning hybrid.',
@@ -8903,7 +8880,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/Pennant/PennantSword'],
+    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/TnRailjackGreatKatana/TnRailJackGreatKatanaWeapon'],
     note: {
       tldr: 'Pennant — a heavy blade with a passive damage multiplier that increases with each kill during a heavy attack kill chain.',
       sections: [
@@ -8921,8 +8898,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Swords/Sarofang/SarofangWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeSarofang/PrimeSarofangWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Axe/WolfFrameAxeWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Axe/PrimeVorunaAxeWeapon',
     ],
     note: {
       tldr: 'Sarofang / Sarofang Prime — a Tenno 1h sword with a blade-charged heavy slam that deals AoE damage.',
@@ -8939,7 +8916,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/VitricaGreatSword/VitricaWeapon'],
+    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/NWIIIOrokinSword/NWOrokinSword'],
     note: {
       tldr: "Vitrica — Glassmaker's great sword; heavy attacks create glass shards that linger and damage enemies walking through them.",
       sections: [
@@ -8998,8 +8975,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Swords/OkinaPairedKarambit/OkinaWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeOkina/PrimeOkinaWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Swords/TennoSai/TennoSais',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeOkina/PrimeOkina',
     ],
     note: {
       tldr: 'Okina / Okina Prime — paired karambits; very fast attack speed with a focus on spin and whirling attacks.',
@@ -9017,9 +8994,9 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Swords/NamiSkyla/NamiSkyla',
+      '/Lotus/Weapons/Tenno/Melee/Swords/CutlassAndPoignard/CutlassPoignardSwords',
       '/Lotus/Weapons/Tenno/Melee/Swords/PrimeNamiSkyla/PrimeNamiSkyla',
-      '/Lotus/Weapons/Tenno/Melee/Swords/NamiSolo/NamiSolo',
+      '/Lotus/Weapons/Tenno/Melee/Swords/CutlassAndPoignard/TennoCutlass',
     ],
     note: {
       tldr: 'Nami Skyla / Nami Skyla Prime — Tenno dual swords with a paired single version (Nami Solo); Prime at 22%/34% is a strong status dual weapon.',
@@ -9037,8 +9014,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Swords/PangalinSword/PangalinSwordWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Swords/PrimePangolin/PrimePangolinWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PangolinSword/PangolinLongSword',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimePangolinSword/PrimePangolinSword',
     ],
     note: {
       tldr: 'Pangolin Sword / Pangolin Prime — single-handed curved sword; Prime at 26%/30% is a solid hybrid 1h sword.',
@@ -9088,7 +9065,7 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
   {
-    keys: ['/Lotus/Weapons/Tenno/Melee/Swords/Mios/MiosBladeWhip'],
+    keys: ['/Lotus/Weapons/Infested/Melee/Swords/Mios/Mios'],
     note: {
       tldr: "Mios — Equinox's signature blade-whip; deals Slash, 19% crit, 25% status, with extended combo reach.",
       sections: [
@@ -9148,7 +9125,7 @@ const WEAPON_NOTES: SharedNote[] = [
     keys: [
       '/Lotus/Weapons/Tenno/Melee/Staff/GrnStaff',
       '/Lotus/Weapons/Tenno/Melee/Staff/SingleStaff',
-      '/Lotus/Weapons/Tenno/Melee/Staff/Pupacyst/PupacystStaff',
+      '/Lotus/Weapons/Infested/Melee/Staff/InfStaff/InfStaff',
     ],
     note: {
       tldr: 'Amphis / Cadus / Pupacyst — single-ended staves with different elemental identities; moderate stats, all use the staff stance.',
@@ -9167,8 +9144,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Staff/Tipedo/Tipedo',
-      '/Lotus/Weapons/Tenno/Melee/Staff/PrimeTipedo/PrimeTipedoWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Staff/MonkSpade/TnoMonkStaff',
+      '/Lotus/Weapons/Tenno/Melee/Staff/TipedoPrime/TipedoPrimeWeapon',
     ],
     note: {
       tldr: 'Tipedo / Tipedo Prime — a Tenno spinning staff; faster attack speed than standard staves, 20%/24% crit and 20%/24% status.',
@@ -9207,8 +9184,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Polearms/OrthosPoleArm/OrthosPoleArmWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Polearms/OrthosPrimeWeapon/OrthosPrimeWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Polearms/PolearmWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Polearms/PrimePolearmWeapon',
     ],
     note: {
       tldr: 'Orthos / Orthos Prime — a double-ended polearm; spins hit both sides simultaneously. Prime at 24%/36% is status-dominant.',
@@ -9227,7 +9204,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Polearms/Tonbo/Tonbo',
+      '/Lotus/Weapons/Tenno/Melee/Polearms/FlowerPowerPolearm/FlowerPowerPolearmWep',
       '/Lotus/Weapons/Grineer/Melee/GrineerHalberd/GrnHalberd',
       '/Lotus/Weapons/Tenno/Melee/Polearms/TnHalberdPolearm/TnHalberdPolearmWeapon',
     ],
@@ -9266,7 +9243,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/Melee/Polearm/Serro/SerroWeapon',
+      '/Lotus/Weapons/Corpus/Melee/Polearm/CorpusPolearm01/CorpusPolearmWeapon',
     ],
     note: {
       tldr: 'Serro — a Corpus electric polearm with innate Electricity; 8% crit, 26% status.',
@@ -9307,7 +9284,7 @@ const WEAPON_NOTES: SharedNote[] = [
     keys: [
       '/Lotus/Weapons/Tenno/Melee/Scythe/ParisScythe/ParisScythe',
       '/Lotus/Weapons/Tenno/Melee/Scythe/EtherScytheWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Scythe/ReaperPrime/ReaperPrime',
+      '/Lotus/Weapons/Tenno/Melee/Scythe/ReaperWeapon',
     ],
     note: {
       tldr: 'Anku / Ether Reaper / Reaper Prime — the scythe family; Reaper Prime at 35%/25% is one of the best crit scythes.',
@@ -9365,7 +9342,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Grineer/Melee/Scythe/GrnDrillScythe/GrnDrillScythePrimary',
+      '/Lotus/Weapons/Grineer/Melee/Scythe/GrnDrillScythe/GrnDrillScythe',
     ],
     note: {
       tldr: 'Galariak Prime — a Grineer drill-scythe; 19%/32% hybrid stats with the scythe moveset.',
@@ -9383,7 +9360,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Scythe/TnChoirScythe/TnChoirScytheWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Scythe/TnChoirScythe/TnChoirScythe',
     ],
     note: {
       tldr: "Harmony — Octavia's Prime signature scythe; nearby allies gain buffs when you perform combos.",
@@ -9419,8 +9396,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Sentients/Venato/VenatoWeapon',
-      '/Lotus/Weapons/Sentients/VenatoPrime/VenatoPrimeWeapon',
+      '/Lotus/Weapons/Sentients/SentJointedScythe/SentJointedScytheWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Scythe/PrimeVento/PrimeVentoScythe',
     ],
     note: {
       tldr: 'Venato / Venato Prime — a Sentient scythe; ignores Sentient resistance adaptation, essential for Eidolon content.',
@@ -9464,7 +9441,7 @@ const WEAPON_NOTES: SharedNote[] = [
   {
     keys: [
       '/Lotus/Weapons/Tenno/Melee/Glaives/Boomerang/BoomerangWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Glaives/PrimeKestrel/PrimeKestrelWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Glaives/PrimeKestrel/PrimeKestrel',
     ],
     note: {
       tldr: 'Kestrel / Kestrel Prime — a slower heavy glaive; Prime reaches 20%/40% status for a high-status thrown melee.',
@@ -9483,7 +9460,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Glaives/Orvius/OtherGlaiveWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Glaives/TeshinGlaive/TnTeshinGlaiveWep',
     ],
     note: {
       tldr: "Orvius — Mirage's signature glaive; suspended mid-air when thrown, detonating in a large burst on command.",
@@ -9503,7 +9480,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Zariman/Melee/Glaive/ZarimanGlaiveWeapon',
+      '/Lotus/Weapons/Corpus/Melee/Glaive/CrpGhostCatcherGlaive/CrpGhostCatcherGlaive',
     ],
     note: {
       tldr: 'Xoris — a Zariman glaive whose combo counter never decays; the permanent combo supports infinite Blood Rush scaling.',
@@ -9523,7 +9500,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/Melee/Glaive/CrpGlaive/CrpGlaiveWeapon',
+      '/Lotus/Weapons/Corpus/Melee/Glaive/CrpGlaive/CrpGlaive',
     ],
     note: {
       tldr: 'Falcor — a Corpus Energy glaive; 12%/34% status with Electricity damage and the throw-and-return mechanic.',
@@ -9580,7 +9557,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Infested/Melee/InfGlaive/PathocystWeapon',
+      '/Lotus/Weapons/Infested/Melee/InfBoomerang/InfBoomerangWeapon',
       '/Lotus/Weapons/Infested/InfestedLich/Melee/CodaPathocyst/CodaPathocyst',
     ],
     note: {
@@ -9600,7 +9577,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Glaives/Zenistar/ZenistarWeapon',
+      '/Lotus/Weapons/Tenno/Melee/SunDialAxe/SundialAxeWeapon',
     ],
     note: {
       tldr: 'Zenistar — a Daily Tribute glaive; hold-throw embeds in a surface and creates a persistent fire disc that damages all nearby enemies.',
@@ -9641,7 +9618,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Whip/Lecta/LectaWhipWeapon',
+      '/Lotus/Weapons/Corpus/Melee/Whip/CorpusWhipWeapon',
       '/Lotus/Weapons/Syndicates/PerrinSequence/Melee/PSLecta',
     ],
     note: {
@@ -9662,7 +9639,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Whip/Scoliac/ScoliacWhip',
+      '/Lotus/Weapons/Infested/Melee/Whip/InfestedWhip/InfestedWhipWeapon',
     ],
     note: {
       tldr: "Scoliac — Nidus's signature whip; innate Toxin, 13%/29% hybrid, and slam attacks spawn Infested crawlers.",
@@ -9699,7 +9676,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Whip/Korumm/KorummWhip',
+      '/Lotus/Weapons/Archon/Melee/Trident/ArchonTridentPlayerWep',
     ],
     note: {
       tldr: 'Korumm — a Tenno blade-whip; 24%/30% hybrid with the longest reach of the whip class.',
@@ -9716,8 +9693,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Swords/StalkerMios/StalkerMiosWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Swords/StalkerMios/OperationsLaceraWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Swords/StalkerMios/StalkerMios',
+      '/Lotus/Weapons/Tenno/Melee/Swords/StalkerMios/OperationsLacera',
     ],
     note: {
       tldr: 'Lacera / Ceti Lacera — an electric whip-sword; 5%/45% status on base Lacera makes it the highest natural status melee weapon.',
@@ -9737,7 +9714,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Whip/Verdilac/VerdilacWeapon',
+      '/Lotus/Weapons/Archon/Melee/Whip/ArchonWhipPlayerWep',
     ],
     note: {
       tldr: "Verdilac — Stalker's signature whip; hits reset the combo counter to max, trivialising Blood Rush scaling.",
@@ -9757,7 +9734,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Whip/Spinnerex/SpinnerexWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Whips/SpiderWhip/SpiderWhipWeapon',
     ],
     note: {
       tldr: 'Spinnerex — a Coda Technocyte whip from 1999; 16%/40% status, one of the highest status whips.',
@@ -9777,9 +9754,9 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Melee — daggers ────────────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Knives/Skana/SkanaKnife',
-      '/Lotus/Weapons/Tenno/Melee/Knives/Fang/FangKnife',
-      '/Lotus/Weapons/Tenno/Melee/Knives/PrimeFang/PrimeFangKnife',
+      '/Lotus/Weapons/Tenno/Melee/LongSword/LongSword',
+      '/Lotus/Weapons/Tenno/Melee/DualDagger/DualDagger',
+      '/Lotus/Weapons/Tenno/Melee/DualDagger/FangPrimeDagger',
     ],
     note: {
       tldr: 'Skana / Fang / Fang Prime — the starter and earliest daggers; fast attack speed but modest stats. Fang Prime at 20%/26% is the usable version.',
@@ -9798,8 +9775,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Knives/BootlegSword/BootlegSword',
-      '/Lotus/Weapons/Tenno/Melee/Knives/PrimeHeat/HeatDagger',
+      '/Lotus/Weapons/Tenno/Melee/Dagger/CeramicDagger',
+      '/Lotus/Weapons/Tenno/Melee/Dagger/Dagger',
     ],
     note: {
       tldr: 'Ceramic Dagger / Heat Dagger — a short Grineer blade and an Orokin fire dagger. Heat Dagger at 20%/20% is the more modern option.',
@@ -9817,8 +9794,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Knives/Karyst/Karyst',
-      '/Lotus/Weapons/Tenno/Melee/Knives/PrimeKaryst/PrimeKaryst',
+      '/Lotus/Weapons/Tenno/Melee/Swords/KrisDagger/KrisDagger',
+      '/Lotus/Weapons/Tenno/Melee/Swords/PrimeKaryst/PrimeKrisDagger',
     ],
     note: {
       tldr: 'Karyst / Karyst Prime — a Tenno venom dagger with innate Toxin; Prime at 22%/38% is the highest-status single dagger.',
@@ -9837,24 +9814,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/Melee/Knives/CrpKnife/CrpKnifeWeapon',
-    ],
-    note: {
-      tldr: 'Syrinx — a Corpus nano-blade dagger; 16%/26% stats and the corpus dagger aesthetic.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          '16% crit, 26% status; single dagger moveset.',
-        ]},
-        { heading: 'Interactions', points: [
-          'A solid mid-tier single dagger; outclassed by Karyst Prime but useful if you prefer the Corpus kit.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: [
-      '/Lotus/Weapons/Tenno/Melee/Daggers/StalkerDagger/StalkerDaggerWeapon',
+      '/Lotus/Weapons/Syndicates/RedVeil/Melee/RVDarkDagger',
     ],
     note: {
       tldr: "Rakta Dark Dagger — the Stalker's dagger refined by Red Veil syndicate; life steal on hits and Entropy proc on syndicate bar fill.",
@@ -9872,29 +9832,11 @@ const WEAPON_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
-  {
-    keys: [
-      '/Lotus/Weapons/Tenno/Melee/Daggers/DrifterDagger/DrifterDaggerWeapon',
-    ],
-    note: {
-      tldr: 'Drifter — a Duviri combat dagger; 22%/28% stats, part of the Duviri Paradox Drifter combat system.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          '22% crit, 28% status; dagger moveset.',
-          'Unlocked through Duviri Paradox content; used in Drifter missions where you fight without Warframe abilities.',
-        ]},
-        { heading: 'Interactions', points: [
-          'In Duviri combat, Drifter weapons take the place of Warframe abilities; stat quality matters more here since you lack ability damage.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
 
   // ── Melee — hammers ────────────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Hammers/PrimeAnkrym/PrimeAnkrymWeapon',
+      '/Lotus/Weapons/Tenno/Melee/PrimeFragor/PrimeFragor',
     ],
     note: {
       tldr: 'Fragor Prime — the premier hammer; 35% crit and devastating slam AoE. Often considered the best hammer.',
@@ -9914,25 +9856,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Grineer/Melee/GrnHammers/GrnHammer/GrnHammerWeapon',
-    ],
-    note: {
-      tldr: 'Shildeg — a Grineer tank commander hammer with 32% crit; shares the massive slam AoE identity.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          '32% crit, 18% status; heavy hammer moveset.',
-          'High slam damage with wide knockdown radius on airborne slams.',
-        ]},
-        { heading: 'Interactions', points: [
-          'Alternative to Fragor Prime at nearly comparable crit; useful if you prefer the Grineer aesthetic.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: [
-      '/Lotus/Weapons/Corpus/Melee/CrpHammer/CrpHammerWeapon',
+      '/Lotus/Weapons/Corpus/Melee/Hammer/CorpusHammerWeapon',
     ],
     note: {
       tldr: 'Arca Titron — a Corpus electromagnetic hammer that supercharges your melee with Electricity on activation.',
@@ -9952,7 +9876,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/Melee/HammerWeapon/HammerWeapon',
+      '/Lotus/Weapons/Tenno/Melee/PrimeVolnus/VolnusPrimeWeapon',
     ],
     note: {
       tldr: 'Volnus Prime — a Corpus precision hammer; 26%/26% balanced stats, unusually quick for the hammer class.',
@@ -9971,8 +9895,8 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Melee — axes ───────────────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Axes/WarAxe/WarAxeWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Axes/PrimeWarAxe/PrimeWarAxeWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Gauntlet/BrawlerKnuckles/BrawlerKnuckles',
+      '/Lotus/Weapons/Tenno/Melee/PrimeTekko/PrimeTekko',
     ],
     note: {
       tldr: 'Tekko / Tekko Prime — axes (not fists); wide sweeping cleave attacks. Prime: 30%/18%.',
@@ -9990,7 +9914,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Grineer/Melee/GrnTwinAxes/GrnTwinAxesWeapon',
+      '/Lotus/Weapons/Grineer/Melee/GrineerClaws/GrnClaws',
     ],
     note: {
       tldr: 'Ripkas — a Grineer dual-chainsaw axe; 25%/28% hybrid with mechanical saw aesthetics and grinding attacks.',
@@ -10008,7 +9932,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Axes/KuvaAxe/KuvaAxeWeapon',
+      '/Lotus/Weapons/Grineer/Melee/GrnKuvaLichScythe/GrnKuvaLichScytheWeapon',
     ],
     note: {
       tldr: 'Kuva Shildeg — a Kuva-lich axe that comes with a random innate elemental bonus (25–60% bonus damage of any element).',
@@ -10025,28 +9949,11 @@ const WEAPON_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
-  {
-    keys: [
-      '/Lotus/Weapons/Tenno/Melee/Axes/DuviriAxe/DuviriAxeWeapon',
-    ],
-    note: {
-      tldr: 'Syam — a Duviri war axe; 28%/26% hybrid stats with the axe cleave moveset.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          '28% crit, 26% status; heavy axe from Duviri content.',
-        ]},
-        { heading: 'Interactions', points: [
-          'A well-rounded Duviri axe; the near-even stats allow either build direction.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
 
   // ── Melee — fists / gauntlets ──────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Fists/Hirudo/HirudoFistWeapon',
+      '/Lotus/Weapons/Infested/Melee/InfWFAccompanyingSparring/InfestedKogake',
     ],
     note: {
       tldr: 'Hirudo — an Infested gauntlet with 20% crit and lifesteal on critical hits; the main life-steal melee for Tenno.',
@@ -10066,7 +9973,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Fists/PrimeCestus/PrimeCestus',
+      '/Lotus/Weapons/Tenno/Melee/Gauntlet/PrimeAnkyros/PrimeAnkyros',
     ],
     note: {
       tldr: 'Ankyros Prime — the Tenno gauntlet; 25%/14% crit-heavy fist weapon with fast attack speed.',
@@ -10084,8 +9991,8 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Fists/GauntletSword/GauntletSwordWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Fists/PrimeGauntletSword/PrimeGauntletSwordWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Claws/TennoClaws',
+      '/Lotus/Weapons/Tenno/Melee/PrimeVenKa/PrimeVenkaClaws',
     ],
     note: {
       tldr: 'Venka / Venka Prime — bladed claw-gauntlets; Prime has the highest crit of the gauntlet class at 35%.',
@@ -10106,8 +10013,8 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Melee — tonfas ─────────────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Tonfas/TonfaWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Tonfas/PrimeTonfaWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Tonfa/TonfaContestWinner/TennoTonfa',
+      '/Lotus/Weapons/Tenno/Melee/Tonfa/TonfaContestWinnerPrime/TonfaContestWinnerPrimeWeapon',
     ],
     note: {
       tldr: 'Kronen / Kronen Prime — the Tenno tonfas; spinning blade strikes with wide arcs. Prime: 24%/34% — top-tier status tonfa.',
@@ -10124,29 +10031,12 @@ const WEAPON_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
-  {
-    keys: [
-      '/Lotus/Weapons/Grineer/Melee/GrnTonfa/GrnTonfaWeapon',
-    ],
-    note: {
-      tldr: 'Batlava — a Grineer reinforced tonfa; 18%/24% stats in the spinning arc tonfa moveset.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          '18% crit, 24% status; tonfa spinning moveset.',
-        ]},
-        { heading: 'Interactions', points: [
-          'A mid-tier tonfa; outclassed by Kronen Prime but a workable option before it is available.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
 
   // ── Melee — nunchaku ───────────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Nunchaku/NunchakuWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Nunchaku/PrimeNunchakuWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Nunchaku/Nunchaku/Nunchaku',
+      '/Lotus/Weapons/Tenno/Melee/PrimeNinkondi/PrimeNikondi',
     ],
     note: {
       tldr: 'Ninkondi / Ninkondi Prime — the Tenno nunchaku with innate Electricity; Prime: 30%/28% hybrid — best nunchaku.',
@@ -10167,41 +10057,7 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Melee — claws ──────────────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Claws/Balla/BallaClaw',
-    ],
-    note: {
-      tldr: 'Balla — the Duviri claw weapon; 30%/24% hybrid stats, part of the Drifter claw set.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          '30% crit, 24% status; claw moveset from Duviri.',
-        ]},
-        { heading: 'Interactions', points: [
-          'Strong claw stats for Blood Rush builds; the 30% crit reaches reliable orange crits quickly at max combo.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: [
-      '/Lotus/Weapons/Corpus/Melee/CrpClaw/CrpClawWeapon',
-    ],
-    note: {
-      tldr: 'Defiled Snapdragon — a rogue claw weapon; 26%/20% stats with the multi-hit claw moveset.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          '26% crit, 20% status; claw moveset.',
-        ]},
-        { heading: 'Interactions', points: [
-          'A viable claw with decent crit; works for standard Blood Rush crit builds.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
-  {
-    keys: [
-      '/Lotus/Weapons/Infested/Melee/InfClaw/InfClawWeapon',
+      '/Lotus/Weapons/Infested/Melee/InfTransformClaw/InfTransformClawsWeapon',
     ],
     note: {
       tldr: 'Keratinos — an Infested claw built from Vallis tags; 14%/40% status — highest status claw weapon.',
@@ -10223,8 +10079,8 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Melee — machetes ───────────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Grineer/Melee/GrnMachete/GrnMachete',
-      '/Lotus/Weapons/Grineer/Melee/GrnMachete/GrnMacheteWraith',
+      '/Lotus/Weapons/Grineer/Melee/GrineerMachetteAndCleaver/Machete',
+      '/Lotus/Weapons/Grineer/Melee/GrineerMachetteAndCleaver/WraithMacheteWeapon',
     ],
     note: {
       tldr: 'Machete / Machete Wraith — Grineer broad-blade; the Wraith at 20%/18% is the usable variant.',
@@ -10243,7 +10099,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Machetes/ShortMachete/ShortMacheteWeapon',
+      '/Lotus/Weapons/Infested/Melee/Swords/Mire/MireSword',
     ],
     note: {
       tldr: 'Mire — an Infested machete with innate Toxin; a progression weapon toward the Plague Star machetes.',
@@ -10261,7 +10117,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Infested/Melee/InfMachete/Lesion',
+      '/Lotus/Weapons/Infested/Melee/TipedoStaff/InfTipedoStaff',
     ],
     note: {
       tldr: 'Lesion — an Infested machete with 24%/34% stats and a passive that poisons nearby enemies on each kill.',
@@ -10284,8 +10140,7 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Melee — sword & board ──────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/SwordShield/SwordAndShieldWeapon',
-      '/Lotus/Weapons/Tenno/Melee/SwordShield/PrimeSwordAndShieldWeapon',
+      '/Lotus/Weapons/Grineer/Melee/GrineerTylAxeAndBoar/RegorAxeShield',
     ],
     note: {
       tldr: 'Ack & Brunt / Ack & Brunt Prime — the Grineer shield-and-bludgeon; the shield can be thrown like a discus, damaging enemies it ricochets through.',
@@ -10305,7 +10160,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/SwordShield/NidusShieldWeapon',
+      '/Lotus/Weapons/Ostron/Melee/ModularMeleeInfested/Handles/InfestedHandleOne',
     ],
     note: {
       tldr: 'Plague Keewar / Plague Akwin — Plague Star sword-and-shield variants with innate Toxin from Infested components.',
@@ -10323,7 +10178,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/Melee/SwordShield/CrpShieldWeapon',
+      '/Lotus/Weapons/Tenno/Melee/SwordsAndBoards/MeleeContestWinnerOne/TennoSwordShield',
     ],
     note: {
       tldr: 'Silva & Aegis / Silva & Aegis Prime — the Tenno fire sword-and-shield; innate Heat and a slam that creates a fire pillar.',
@@ -10345,8 +10200,8 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Melee — gunblades ──────────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Gunblade/TennoGunblade/TennoGunbladeWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Gunblade/TennoGunblade/TennoGunbladeVandal',
+      '/Lotus/Weapons/Tenno/Melee/Gunblade/TnoGunblade',
+      '/Lotus/Weapons/Tenno/Melee/Gunblade/RedeemerPrime/RedeemerPrimeWep',
     ],
     note: {
       tldr: 'Redeemer / Redeemer Prime / Redeemer Vandal — the Tenno gunblade; shotgun-blast triggered on heavy attacks instead of a slam.',
@@ -10366,7 +10221,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Grineer/Melee/Gunblade/GrnGunblade/GrnGunbladeWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Gunblade/GunbladeAutomatic/TnoGunbladeAutomatic',
     ],
     note: {
       tldr: 'Sarpa — a Grineer gunblade; heavy attacks fire rifle-style rounds rather than a shotgun blast.',
@@ -10384,7 +10239,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Gunblade/Vastilok/VastilokWeapon',
+      '/Lotus/Weapons/Grineer/Melee/GunBlade/GrnGunBlade/GrnGunblade',
     ],
     note: {
       tldr: 'Vastilok — a Perrin Sequence gunblade; heavy attacks fire a disruptive energy wave that staggers enemies.',
@@ -10405,7 +10260,7 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Melee — war fans ───────────────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/WarFan/BrimstoneFan/BrimstoneFanWeapon',
+      '/Lotus/Weapons/Corpus/Melee/CrpBriefcase2HKatana/CrpBriefcase2HKatana',
     ],
     note: {
       tldr: 'Tenet Livia — a Sisters of Parvos war fan with a random Tenet elemental bonus; 30% crit and 28% status.',
@@ -10426,8 +10281,8 @@ const WEAPON_NOTES: SharedNote[] = [
   // ── Melee — sparring / martial arts ───────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Sparring/Kogake/KogakeWeapon',
-      '/Lotus/Weapons/Tenno/Melee/Sparring/PrimeKogake/PrimeKogakeWeapon',
+      '/Lotus/Weapons/Tenno/Melee/BrassKnuckles/BrassKnuckles',
+      '/Lotus/Weapons/Tenno/Melee/PrimeKogake/KogakePrimeKnuckles',
     ],
     note: {
       tldr: 'Kogake / Kogake Prime — the Tenno martial arts weapon (foot-strike and palm combos); Prime: 22%/28% hybrid.',
@@ -10446,7 +10301,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/Melee/Sparring/CrpSparringWeapon',
+      '/Lotus/Weapons/Tenno/Pistols/PrimeZakti/PrimeZaktiPistol',
     ],
     note: {
       tldr: 'Zakti Prime — a Corpus sparring weapon that releases a gas cloud on ground slams, dealing repeated Toxin procs.',
@@ -10464,28 +10319,11 @@ const WEAPON_NOTES: SharedNote[] = [
       status: 'beta',
     },
   },
-  {
-    keys: [
-      '/Lotus/Weapons/Grineer/Melee/Sparring/GrnSparring/GrnSparringWeapon',
-    ],
-    note: {
-      tldr: 'Sparring weapon — a Grineer martial arts gauntlet with a heavy bash on charged strikes.',
-      sections: [
-        { heading: 'Mechanics', points: [
-          'Sparring/fist moveset; Grineer variant.',
-        ]},
-        { heading: 'Interactions', points: [
-          'Standard sparring weapon characteristics; works with fast-build Blood Rush strategies.',
-        ]},
-      ],
-      status: 'beta',
-    },
-  },
 
   // ── Melee — special / unique ───────────────────────────────────────────────
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Misc/ProvaVandal/ProvaVandalWeapon',
+      '/Lotus/Weapons/ClanTech/Energy/ElectroProd',
     ],
     note: {
       tldr: 'Prova / Prova Vandal — an electrified baton; innate Electricity and a unique sparking slam attack.',
@@ -10504,7 +10342,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Corpus/Melee/Jat/JatKusar/JatKusarWeapon',
+      '/Lotus/Weapons/Grineer/Melee/GrnKusarigama/GrnKusarigamaWeapon',
     ],
     note: {
       tldr: 'Jat Kusar — a jet-propelled Corpus baton; charged heavy attacks trigger a thruster burst that sends you flying into a slam.',
@@ -10524,7 +10362,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Grineer/Melee/GrnBonesaw/GrnBonesawWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Hammer/ThrowingHammer',
     ],
     note: {
       tldr: 'Wolf Sledge — a unique hammer dropped by the Wolf of Saturn Six event; its alt-throw launches the entire hammer at enemies.',
@@ -10545,7 +10383,7 @@ const WEAPON_NOTES: SharedNote[] = [
   },
   {
     keys: [
-      '/Lotus/Weapons/Tenno/Melee/Misc/BrokenScepter/BrokenScepterWeapon',
+      '/Lotus/Weapons/Grineer/Melee/GrnQueenSceptre/GrnQueenSceptreWeapon',
     ],
     note: {
       tldr: 'Broken Scepter — the Grineer Queen fragment weapon from Second Dream quest; kills create Eximus Specters that fight alongside you.',
