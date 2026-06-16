@@ -56,3 +56,6 @@ Research/
 
 # TypeScript incremental build state
 *.tsbuildinfo
+
+# Codex CLI (separate tool) local config
+.codex/
