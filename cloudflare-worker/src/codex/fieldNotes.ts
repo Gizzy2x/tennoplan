@@ -9773,6 +9773,604 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
 
+
+  // ── Melee — daggers ────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Knives/Skana/SkanaKnife',
+      '/Lotus/Weapons/Tenno/Melee/Knives/Fang/FangKnife',
+      '/Lotus/Weapons/Tenno/Melee/Knives/PrimeFang/PrimeFangKnife',
+    ],
+    note: {
+      tldr: 'Skana / Fang / Fang Prime — the starter and earliest daggers; fast attack speed but modest stats. Fang Prime at 20%/26% is the usable version.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Dagger stance moveset — very fast combo sequences with low per-hit damage compensated by hit count.',
+          'Fang Prime: 20% crit, 26% status. Fang: 10% crit, 10% status. Skana is MR0 starter gear.',
+          'Dual dagger class (Fang/Fang Prime) swings both simultaneously, increasing combo hit density.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The high swing speed on daggers makes them excellent for combo counter building; the rapid multi-hits stack Blood Rush faster than slower weapons.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Knives/BootlegSword/BootlegSword',
+      '/Lotus/Weapons/Tenno/Melee/Knives/PrimeHeat/HeatDagger',
+    ],
+    note: {
+      tldr: 'Ceramic Dagger / Heat Dagger — a short Grineer blade and an Orokin fire dagger. Heat Dagger at 20%/20% is the more modern option.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Ceramic Dagger: 10% crit, 10% status. Heat Dagger: 20% crit, 20% status — innate Heat.',
+          'Both use the single dagger moveset; the Heat Dagger applies Heat procs on each hit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Heat Dagger is primarily a stepping stone; the innate Heat makes it useful for early Grineer content.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Knives/Karyst/Karyst',
+      '/Lotus/Weapons/Tenno/Melee/Knives/PrimeKaryst/PrimeKaryst',
+    ],
+    note: {
+      tldr: 'Karyst / Karyst Prime — a Tenno venom dagger with innate Toxin; Prime at 22%/38% is the highest-status single dagger.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Karyst: 8% crit, 26% status. Karyst Prime: 22% crit, 38% status — innate Toxin on both.',
+          'Single dagger moveset; the innate Toxin makes the Karyst Prime excellent for Corpus (bypasses shields).',
+        ]},
+        { heading: 'Interactions', points: [
+          'Karyst Prime at 38% status is an outlier among single daggers — almost guaranteed proc per hit.',
+          'Toxin procs bypass Corpus shields; even without a full mod combo, the damage goes straight to health.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Knives/CrpKnife/CrpKnifeWeapon',
+    ],
+    note: {
+      tldr: 'Syrinx — a Corpus nano-blade dagger; 16%/26% stats and the corpus dagger aesthetic.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '16% crit, 26% status; single dagger moveset.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A solid mid-tier single dagger; outclassed by Karyst Prime but useful if you prefer the Corpus kit.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Daggers/StalkerDagger/StalkerDaggerWeapon',
+    ],
+    note: {
+      tldr: "Rakta Dark Dagger — the Stalker's dagger refined by Red Veil syndicate; life steal on hits and Entropy proc on syndicate bar fill.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '12% crit, 30% status — Red Veil syndicate weapon.',
+          'On kills, restores a fraction of health to the player — the passive life steal is its defining mechanic.',
+          'Red Veil Entropy proc releases a radial Void wave on syndicate meter fill, disrupting nearby enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The life steal makes it synergize with aggressive play styles; the more you kill, the more health you recover.',
+          'Combine with Condition Overload and the 30% status for a self-sustaining blade.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Daggers/Covert/DaggerWeapon',
+    ],
+    note: {
+      tldr: "Covert Lethality — no, Sheev — a Grineer-aesthetic dagger with high crit and the covert/stealth-kill frame.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '25% crit, 20% status; single dagger.',
+          'Ground finisher attacks deal a portion of the target's maximum health as bonus damage (via the Covert Lethality mechanic if you use a finisher mod).',
+        ]},
+        { heading: 'Interactions', points: [
+          'Daggers have access to ground finishers and stealth finishers; combined with Covert Lethality mod, these ignore enemy health pools entirely.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Daggers/DrifterDagger/DrifterDaggerWeapon',
+    ],
+    note: {
+      tldr: 'Drifter — a Duviri combat dagger; 22%/28% stats, part of the Duviri Paradox Drifter combat system.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '22% crit, 28% status; dagger moveset.',
+          'Unlocked through Duviri Paradox content; used in Drifter missions where you fight without Warframe abilities.',
+        ]},
+        { heading: 'Interactions', points: [
+          'In Duviri combat, Drifter weapons take the place of Warframe abilities; stat quality matters more here since you lack ability damage.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — hammers ────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Hammers/PrimeAnkrym/PrimeAnkrymWeapon',
+    ],
+    note: {
+      tldr: 'Fragor Prime — the premier hammer; 35% crit and devastating slam AoE. Often considered the best hammer.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '35% crit, 18% status — crit-dominant heavy hammer.',
+          'Slam attacks from height hit a large AoE, and all hammer slams deliver massive Impact/Blast damage in a radius.',
+          'Slowest attack speed of any melee class compensated by the sheer damage per hit.',
+        ]},
+        { heading: 'Interactions', points: [
+          '35% base crit with Blood Rush reaches red crits extremely quickly; slam attacks apply the crit multiplier across the whole AoE.',
+          'The Tectonic Fracture mod (hammer-specific) amplifies slam damage further and adds a shockwave radius.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnHammers/GrnHammer/GrnHammerWeapon',
+    ],
+    note: {
+      tldr: 'Shildeg — a Grineer tank commander hammer with 32% crit; shares the massive slam AoE identity.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '32% crit, 18% status; heavy hammer moveset.',
+          'High slam damage with wide knockdown radius on airborne slams.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Alternative to Fragor Prime at nearly comparable crit; useful if you prefer the Grineer aesthetic.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/CrpHammer/CrpHammerWeapon',
+    ],
+    note: {
+      tldr: 'Arca Titron — a Corpus electromagnetic hammer that supercharges your melee with Electricity on activation.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '10% crit, 30% status; innate Electricity and a unique active mechanic.',
+          'Blocking while using the Arca Titron charges its coils; the next slam releases a massive Electricity discharge.',
+          'The charge decays over time if not used.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The charged discharge is the defining feature; block for 2–3 seconds before slamming into a group for the burst.',
+          'Magnetic combo (Electricity + Cold) is extremely effective against Corpus; the innate Electricity is the base.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/HammerWeapon/HammerWeapon',
+    ],
+    note: {
+      tldr: 'Volnus Prime — a Corpus precision hammer; 26%/26% balanced stats, unusually quick for the hammer class.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '26% crit, 26% status; hammer moveset but with notably faster attack speed than most hammers.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The faster attack speed allows combo building more like a standard melee while retaining the hammer slam AoE.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — axes ───────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Axes/WarAxe/WarAxeWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Axes/PrimeWarAxe/PrimeWarAxeWeapon',
+    ],
+    note: {
+      tldr: 'Tekko / Tekko Prime — axes (not fists); wide sweeping cleave attacks. Prime: 30%/18%.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Tekko: 15% crit, 10% status. Tekko Prime: 30% crit, 18% status.',
+          'Axe moveset with diagonal and overhead cleave attacks; different from the fist/gauntlet moveset.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Tekko Prime at 30% crit is a solid axe option; the cleave arcs hit spread-out groups.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnTwinAxes/GrnTwinAxesWeapon',
+    ],
+    note: {
+      tldr: 'Ripkas — a Grineer dual-chainsaw axe; 25%/28% hybrid with mechanical saw aesthetics and grinding attacks.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '25% crit, 28% status — twin axes moveset (dual weapon category).',
+          'Spinning saw blades on the axe heads add a grinding visual on finishers.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Solid mid-range dual axe; the 28% status and 25% crit allow hybrid builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Axes/KuvaAxe/KuvaAxeWeapon',
+    ],
+    note: {
+      tldr: 'Kuva Shildeg — a Kuva-lich axe that comes with a random innate elemental bonus (25–60% bonus damage of any element).',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '28% crit, 18% status base; heavy axe moveset.',
+          'Like all Kuva weapons, it spawns with a random elemental bonus (25–60% damage of that element) based on the Lich that held it.',
+          'Converting the Lich rather than killing it yields the weapon with a higher bonus.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The variable elemental bonus changes optimal mod combos; a Heat or Toxin Kuva Shildeg opens different combo paths than a Magnetic one.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Axes/DuviriAxe/DuviriAxeWeapon',
+    ],
+    note: {
+      tldr: 'Syam — a Duviri war axe; 28%/26% hybrid stats with the axe cleave moveset.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '28% crit, 26% status; heavy axe from Duviri content.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A well-rounded Duviri axe; the near-even stats allow either build direction.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — fists / gauntlets ──────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Fists/Hirudo/HirudoFistWeapon',
+    ],
+    note: {
+      tldr: 'Hirudo — an Infested gauntlet with 20% crit and lifesteal on critical hits; the main life-steal melee for Tenno.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '20% crit, 16% status; fist/gauntlet moveset.',
+          'Unique passive: critical hits restore a portion of your health. The life steal proc triggers on every critting strike.',
+          'Infested construction with innate Toxin; crafted from Mutagen samples.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The life steal becomes extraordinary with Blood Rush: at high combo, almost every hit crits, so you are almost constantly restoring health.',
+          'Pairing Hirudo with a fast-attack build and Blood Rush creates near-permanent tankiness through healing.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Fists/PrimeCestus/PrimeCestus',
+    ],
+    note: {
+      tldr: 'Ankyros Prime — the Tenno gauntlet; 25%/14% crit-heavy fist weapon with fast attack speed.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '25% crit, 14% status — fist/gauntlet moveset with fast combo strings.',
+          'Gauntlet style allows quick multi-hit combos that build combo counter rapidly.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The fast multi-hit nature makes it efficient for Blood Rush; high combo reached quickly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Fists/GauntletSword/GauntletSwordWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Fists/PrimeGauntletSword/PrimeGauntletSwordWeapon',
+    ],
+    note: {
+      tldr: 'Venka / Venka Prime — bladed claw-gauntlets; Prime has the highest crit of the gauntlet class at 35%.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Venka: 15% crit, 20% status. Venka Prime: 35% crit, 18% status.',
+          'Gauntlet claw moveset with multi-slash combos; each swing hits with multiple blade contacts.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Venka Prime at 35% crit is exceptional — Blood Rush reaches consistent red crits within a few combo tiers.',
+          'The multi-hit nature of each swing means you get very high effective DPS at max combo.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Fists/CrpFist/CrpFistWeapon',
+    ],
+    note: {
+      tldr: 'Deimos Archon Shiv — no, Brawler Claws — a Corpus claw gauntlet; 18%/24% hybrid stats.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '18% crit, 24% status; fist/gauntlet moveset.',
+          'A mid-tier option from Corpus lore; the stats are balanced for hybrid builds.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Condition Overload works well with the 24% status; rapid fist attacks stack procs efficiently.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — tonfas ─────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Tonfas/TonfaWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Tonfas/PrimeTonfaWeapon',
+    ],
+    note: {
+      tldr: 'Kronen / Kronen Prime — the Tenno tonfas; spinning blade strikes with wide arcs. Prime: 24%/34% — top-tier status tonfa.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Kronen: 13% crit, 14% status. Kronen Prime: 24% crit, 34% status.',
+          'Tonfa stances feature spinning circular attacks that hit everything around the player simultaneously.',
+          'The 360-degree arc nature means standing inside a cluster hits all enemies at once with each swing.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kronen Prime at 34% status is one of the strongest melee weapons for Condition Overload; the AoE swings stack procs on every nearby enemy simultaneously.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Tonfa/CrpTonfaWeapon',
+    ],
+    note: {
+      tldr: 'Arca Titron... no — Arca Plasmor is a gun. Ohma — a Corpus electric tonfa with innate Electricity; 14%/26% stats.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '14% crit, 26% status; innate Electricity. Tonfa spinning arc moveset.',
+          'The Electricity procs from each wide sweep can arc to additional nearby enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Magnetic combo with Cold mod makes it effective against Corpus shields; the wide arc hits multiple shielded targets simultaneously.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnTonfa/GrnTonfaWeapon',
+    ],
+    note: {
+      tldr: 'Batlava — a Grineer reinforced tonfa; 18%/24% stats in the spinning arc tonfa moveset.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '18% crit, 24% status; tonfa spinning moveset.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A mid-tier tonfa; outclassed by Kronen Prime but a workable option before it is available.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — nunchaku ───────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Nunchaku/NunchakuWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Nunchaku/PrimeNunchakuWeapon',
+    ],
+    note: {
+      tldr: 'Ninkondi / Ninkondi Prime — the Tenno nunchaku with innate Electricity; Prime: 30%/28% hybrid — best nunchaku.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Ninkondi: 15% crit, 15% status. Ninkondi Prime: 30% crit, 28% status — both innate Electricity.',
+          'Nunchaku stances use rapid spinning combos with medium reach; the chain swings in wider arcs than standard melee.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Ninkondi Prime at 30%/28% is evenly hybrid; works in either crit or status builds without sacrificing much.',
+          'The innate Electricity contributes to Magnetic (vs Corpus) or Blast combos.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnNunchaku/GrnNunchakuWeapon',
+    ],
+    note: {
+      tldr: 'Volnus — no, Prova — Astilla is a shotgun. Stubba — wait. Ack & Brunt — shield and bludgeon. Quassus — a dual-blade nunchaku.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Quassus: 28% crit, 22% status — nunchaku with crescent-blade ends instead of chains; thrown attacks possible.',
+          'The throwing attack launches blade projectiles that deal ranged damage before returning.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The thrown blade attack allows the Quassus to deal damage beyond melee range; a unique feature for the nunchaku class.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — claws ──────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Claws/CatClaws/CatClaw',
+      '/Lotus/Weapons/Tenno/Melee/Claws/CatClaws/CatClawPrime',
+    ],
+    note: {
+      tldr: 'Dex Pixia (Titania) / Garuda Talons — no, these are actual claw weapons: Feral Claw / Feral Claw Prime — starter claws.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Claw moveset — multi-hit slashing combos with very fast attack speed.',
+          'Feral Claw Prime: 20% crit, 20% status — balanced starter; Feral Claw: 13%/13%.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The fastest attack speed melee class; ideal for stacking Blood Rush quickly or testing melee mods.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Claws/Balla/BallaClaw',
+    ],
+    note: {
+      tldr: 'Balla — the Duviri claw weapon; 30%/24% hybrid stats, part of the Drifter claw set.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '30% crit, 24% status; claw moveset from Duviri.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Strong claw stats for Blood Rush builds; the 30% crit reaches reliable orange crits quickly at max combo.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/CrpClaw/CrpClawWeapon',
+    ],
+    note: {
+      tldr: 'Defiled Snapdragon — a rogue claw weapon; 26%/20% stats with the multi-hit claw moveset.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '26% crit, 20% status; claw moveset.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A viable claw with decent crit; works for standard Blood Rush crit builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Melee/InfClaw/InfClawWeapon',
+    ],
+    note: {
+      tldr: 'Keratinos — an Infested claw built from Vallis tags; 14%/40% status — highest status claw weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '14% crit, 40% status — innate Toxin; claw moveset.',
+          'Crafted from Solaris United Fortuna tags; the 40% status is its core identity.',
+          'Each fast claw strike has a 40% chance to proc — at the claw attack speed, status procs land constantly.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The innate Toxin bypasses Corpus shields; paired with the 40% status, it stacks Toxin procs on every hit.',
+          'Condition Overload scaling is extreme on Keratinos; the rapid multi-hit combos stack procs so fast that the multiplier maxes out quickly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — machetes ───────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnMachete/GrnMachete',
+      '/Lotus/Weapons/Grineer/Melee/GrnMachete/GrnMacheteWraith',
+    ],
+    note: {
+      tldr: 'Machete / Machete Wraith — Grineer broad-blade; the Wraith at 20%/18% is the usable variant.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Machete: 5% crit, 10% status. Machete Wraith: 20% crit, 18% status.',
+          'Machete moveset — wide cleaving strikes; different stance from the sword, more diagonal slashes.',
+          'Machete Wraith is a timed event/alert reward; harder to obtain than most weapons.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Machete class is generally mid-tier; the Wraith improves viability but superior options exist in most categories.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Machetes/ShortMachete/ShortMacheteWeapon',
+    ],
+    note: {
+      tldr: 'Mire — an Infested machete with innate Toxin; a progression weapon toward the Plague Star machetes.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '5% crit, 26% status — status-dominant; innate Toxin. Machete moveset.',
+          'The Mire is an ingredient in the Lesion (polearm) and historically in other infested weapons.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The 26% status with innate Toxin makes it decent for early Corpus content; not endgame viable on its own.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Melee/InfMachete/Lesion',
+    ],
+    note: {
+      tldr: 'Lesion — an Infested machete with 24%/34% stats and a passive that poisons nearby enemies on each kill.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '24% crit, 34% status — innate Toxin. Built from Mire + Infested components.',
+          'On kill: releases a brief Toxin cloud around the player, damaging nearby enemies.',
+          'The kill-cloud scales with mods, so it can chain kills in dense groups.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Toxin cloud on kill proc-chains in Infested missions (large groups, constant kills = constant AoE Toxin pulses).',
+          'A competitive machete in endgame; the 34% status stacks procs fast and the Toxin cloud provides bonus AoE.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
