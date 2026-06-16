@@ -9121,6 +9121,658 @@ const WEAPON_NOTES: SharedNote[] = [
     },
   },
 
+
+  // ── Melee — polearms ───────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Staff/Staff',
+      '/Lotus/Weapons/Tenno/Melee/Staff/PrimeBo/PrimeBoWeapon',
+      '/Lotus/Weapons/MK1Series/MK1Bo',
+    ],
+    note: {
+      tldr: 'Bo / Bo Prime / Mk1-Bo — the Tenno staff; wide sweeping polearm combos. Bo Prime at 24%/32% is a strong status staff.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Staff stance moveset with long-range sweeping combos that cover wide arcs.',
+          'Bo: 13% crit, 20% status. Bo Prime: 24% crit, 32% status.',
+          'The Mk1-Bo is the MR0 starter staff — statistically the weakest version.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Bo Prime is a competitive status staff; the long range and 32% status let you Viral-prime clustered groups effectively.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Staff/GrnStaff',
+      '/Lotus/Weapons/Tenno/Melee/Staff/SingleStaff',
+      '/Lotus/Weapons/Tenno/Melee/Staff/Pupacyst/PupacystStaff',
+    ],
+    note: {
+      tldr: 'Amphis / Cadus / Pupacyst — single-ended staves with different elemental identities; moderate stats, all use the staff stance.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Amphis: 13% crit, 21% status — innate Electricity. Cadus: 15% crit, 25% status — innate Toxin.',
+          'Pupacyst: 13% crit, 27% status — Infested staff from Cetus Bounty; innate Toxin with a unique head design.',
+          'All use staff stances.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Cadus and Pupacyst are the more useful options for status builds; the innate elemental types let you reach combination procs faster.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Staff/Tipedo/Tipedo',
+      '/Lotus/Weapons/Tenno/Melee/Staff/PrimeTipedo/PrimeTipedoWeapon',
+    ],
+    note: {
+      tldr: 'Tipedo / Tipedo Prime — a Tenno spinning staff; faster attack speed than standard staves, 20%/24% crit and 20%/24% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Uses both staff and polearm stances; higher attack speed than standard staves.',
+          'Tipedo: 20% crit, 20% status. Tipedo Prime: 24% crit, 24% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Tipedo Prime is a reliable hybrid melee with fast attack speed; the balanced stats work in either build direction.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Polearms/TnGuandaoPolearm/TnGuandaoPolearmWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Polearms/PrimeGuandao/PrimeGuandaoWeapon',
+    ],
+    note: {
+      tldr: 'Guandao / Guandao Prime — the longest-range polearm; sweeping blade attacks that hit enemies at exceptional range. Prime: 32%/20%.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Polearm stance with very long reach — among the longest effective range melee options in the game.',
+          'Guandao: 28% crit, 4% status. Guandao Prime: 32% crit, 20% status.',
+          'High crit leans toward crit builds; the Prime version adds meaningful status for hybrid play.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The extreme range means you can hit enemies from outside their melee retaliation range on some attacks.',
+          'Guandao Prime is a strong crit polearm; at 32% crit Blood Rush reaches reliable orange crits very quickly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Polearms/OrthosPoleArm/OrthosPoleArmWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Polearms/OrthosPrimeWeapon/OrthosPrimeWeapon',
+    ],
+    note: {
+      tldr: 'Orthos / Orthos Prime — a double-ended polearm; spins hit both sides simultaneously. Prime at 24%/36% is status-dominant.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Double-bladed staff — spin attacks hit in both directions. Polearm stances combine with staff stances.',
+          'Orthos: 6% crit, 18% status. Orthos Prime: 24% crit, 36% status.',
+          'The two-sided hitbox means standing in the center of a group lets you hit enemies on both sides with a spin.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Orthos Prime at 36% status is a strong Condition Overload melee; the wide hit coverage on both sides makes proc stacking efficient.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Polearms/Tonbo/Tonbo',
+      '/Lotus/Weapons/Grineer/Melee/GrineerHalberd/GrnHalberd',
+      '/Lotus/Weapons/Tenno/Melee/Polearms/TnHalberdPolearm/TnHalberdPolearmWeapon',
+    ],
+    note: {
+      tldr: 'Tonbo / Kesheg / Cassowar — functional polearms with innate elemental damage; moderate stats, varied faction origins.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Tonbo: 5% crit, 25% status — innate Electricity. Kesheg: 19% crit, 23% status — Grineer war-mace polearm.',
+          'Cassowar: 6% crit, 28% status — a more modern polearm with higher status.',
+          'All use the polearm stance category.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Cassowar at 28% status is the most viable of these for status proc builds; others are primarily mid-game stepping stones.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Polearms/Naginata/ShrineMaidenNaginataWeapon',
+    ],
+    note: {
+      tldr: 'Amanata — a Tenno naginata with 24%/24% hybrid stats; graceful polearm stance with wide sweeping cuts.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '24% crit, 24% status — evenly balanced hybrid polearm.',
+          'Uses the polearm stance category with flowing naginata-style combos.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Even 24%/24% split makes modding flexible; works for crit, status, or hybrid builds without leaning too hard either way.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Polearm/Serro/SerroWeapon',
+    ],
+    note: {
+      tldr: 'Serro — a Corpus electric polearm with innate Electricity; 8% crit, 26% status.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Polearm stance; innate Electricity means every hit can arc to nearby enemies via the proc.',
+          '8% crit, 26% status — status is the identity; crit builds are not viable here.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The innate Electricity helps with Magnetic combos on Corpus; a niche clan-tech option for elemental polearm builds.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrineerJetPoweredPolearm/GrineerJetPolearm',
+    ],
+    note: {
+      tldr: 'Jat Kittag — a Grineer jet-powered war hammer used as a polearm; slam attacks create a massive knockdown AoE.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'The Jat Kittag uses the hammer moveset with a jet-pack thruster — airborne slams create a huge knockdown radius.',
+          '15% crit, 25% status — moderate hybrid. The knockdown AoE is the defining mechanic.',
+          'Crafted from the Miter (rifle) as an ingredient.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The slam wave from airborne heavy attacks can knock down entire rooms; effective for disrupting dense enemy groups.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — scythes ────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Scythe/ParisScythe/ParisScythe',
+      '/Lotus/Weapons/Tenno/Melee/Scythe/EtherScytheWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Scythe/ReaperPrime/ReaperPrime',
+    ],
+    note: {
+      tldr: 'Anku / Ether Reaper / Reaper Prime — the scythe family; Reaper Prime at 35%/25% is one of the best crit scythes.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Scythe stances use sweeping arc combos with wide lateral reach.',
+          'Anku: 20% crit, 10% status. Ether Reaper: 20% crit, 20% status. Reaper Prime: 35% crit, 25% status.',
+          'Reaper Prime is the endgame standout — 35% crit on a scythe is exceptional.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Reaper Prime with Blood Rush reaches near-guaranteed crits at high combo; fast combo build-up from scythe stance multi-hit combos.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Scythe/StalkerScytheWeapon',
+    ],
+    note: {
+      tldr: "Hate — the Stalker's scythe; 30% crit and 20% status, obtained as a Stalker drop.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '30% crit, 20% status; scythe moveset with rapid spinning sweeps.',
+          'Dropped by the Stalker; requires Stalker drops + blueprint craft.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A prestige scythe that holds up well; 30% crit with fast scythe swings builds combo rapidly.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Melee/InfEmbolistScythe/InfestedScythe',
+      '/Lotus/Weapons/Infested/InfestedLich/Melee/CodaCaustacyst/CodaCaustacyst',
+    ],
+    note: {
+      tldr: 'Caustacyst / Coda Caustacyst — an Infested scythe; leaves a trail of Acid on the ground that damages enemies walking through it.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Caustacyst: 9% crit, 37% status. Coda Caustacyst: 19% crit, 41% status.',
+          'Slide attacks and combos leave a visible corrosive trail on the floor; enemies standing in the trail take repeated Corrosive status procs.',
+          'The trail persists briefly — placing it in enemy movement paths or on defense objectives creates sustained damage.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Corrosive trail gradually strips armor via repeated procs; effective as a passive area-denial tool during Survival or Defense.',
+          'Coda Caustacyst with 41% status procs the trail faster, applying Corrosion stacks more aggressively.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/Scythe/GrnDrillScythe/GrnDrillScythePrimary',
+    ],
+    note: {
+      tldr: 'Galariak Prime — a Grineer drill-scythe; 19%/32% hybrid stats with the scythe moveset.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '19% crit, 32% status — status-leaning hybrid scythe.',
+          'Uses the scythe stance category with standard sweep combos.',
+        ]},
+        { heading: 'Interactions', points: [
+          'A mid-tier scythe; the 32% status makes Condition Overload proc stacking efficient.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Scythe/TnChoirScythe/TnChoirScytheWeapon',
+    ],
+    note: {
+      tldr: "Harmony — Octavia's Prime signature scythe; nearby allies gain buffs when you perform combos.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '20% crit, 36% status; scythe moveset.',
+          "Executing melee combos near allies applies a tempo buff that boosts their damage briefly.",
+        ]},
+        { heading: 'Interactions', points: [
+          "Octavia Prime's signature — plays into her rhythm-focused kit; the ally buff rewards fighting near teammates.",
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/HeavyScythe/DuviriScythe/DuviriHeavyScytheWeapon',
+    ],
+    note: {
+      tldr: 'Hespar — the Duviri heavy scythe; broad arcing slams that hit an entire group in front at once.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '24% crit, 28% status; heavy scythe moveset with wider sweeps than standard scythes.',
+          'From Duviri content; the heavy-scythe class features slam combos with larger AoE footprints.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Solid Duviri heavy melee; the wider sweep arc makes it easier to hit spread-out groups than standard scythes.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Sentients/Venato/VenatoWeapon',
+      '/Lotus/Weapons/Sentients/VenatoPrime/VenatoPrimeWeapon',
+    ],
+    note: {
+      tldr: 'Venato / Venato Prime — a Sentient scythe; ignores Sentient resistance adaptation, essential for Eidolon content.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Venato: 27% crit, 24% status. Venato Prime: 34% crit, 32% status.',
+          'Deals Void and Slash damage; Void bypasses Sentient adaptation, making it consistently effective against adapting enemies.',
+          'Scythe moveset with fluid sweeps.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Void-damage property means adapted Sentients cannot resist it; use it against Eidolons, Ropalolyst, and Murex fights.',
+          'Venato Prime at 34%/32% is also simply a strong melee in general content; the Void damage is a bonus on top.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — glaives ────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Glaives/LightGlaive/LightGlaiveWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Glaives/PrimeGlaive/PrimeGlaiveWeapon',
+    ],
+    note: {
+      tldr: 'Glaive / Glaive Prime — the iconic Tenno thrown melee; a spinning disc that returns after being thrown; Prime: 22%/30%.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Melee disc that can be thrown (aim + throw) and will return to the player after hitting targets or a surface.',
+          'While airborne, the disc deals melee damage with mods applied; it can hit multiple enemies on the throw path and the return.',
+          'Glaive Prime: 22% crit, 30% status. The throw can be detonated mid-air by activating the throw again.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Detonating the mid-air glaive creates an AoE explosion that benefits from melee mods — a powerful burst option.',
+          'Glaive Prime with Volatile Quick Return mod causes the explosion on every bounce, blanketing an area in AoE.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Glaives/Boomerang/BoomerangWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Glaives/PrimeKestrel/PrimeKestrelWeapon',
+    ],
+    note: {
+      tldr: 'Kestrel / Kestrel Prime — a slower heavy glaive; Prime reaches 20%/40% status for a high-status thrown melee.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Kestrel: 10% crit, 10% status. Kestrel Prime: 20% crit, 40% status.',
+          'The Kestrel hits harder per throw than the Glaive but travels more slowly.',
+          'Same throw-and-return mechanic as the Glaive; detonation on second throw.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Kestrel Prime at 40% status makes each thrown hit extremely likely to proc; excellent for status stacking via throw chains.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Glaives/Orvius/OtherGlaiveWeapon',
+    ],
+    note: {
+      tldr: "Orvius — Mirage's signature glaive; suspended mid-air when thrown, detonating in a large burst on command.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '18% crit, 18% status — moderate hybrid glaive.',
+          "When thrown, the Orvius suspends in mid-air rather than returning immediately. A second throw input detonates it for a large AoE.",
+          'This makes it a planted detonation tool — place it then trigger when enemies walk under it.',
+        ]},
+        { heading: 'Interactions', points: [
+          "Mirage's signature — gains bonus in her hands; Hall of Mirrors creates copies that each throw their own Orvius.",
+          'The suspend mechanic allows precise placement; effective for ambush situations in narrow corridors.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Zariman/Melee/Glaive/ZarimanGlaiveWeapon',
+    ],
+    note: {
+      tldr: 'Xoris — a Zariman glaive whose combo counter never decays; the permanent combo supports infinite Blood Rush scaling.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '20% crit, 18% status; glaive throw-and-return mechanic.',
+          'The Xoris combo counter NEVER resets on its own — it persists indefinitely between kills, between missions, and across squad sessions.',
+          'This makes Blood Rush scaling trivially easy to maintain; one hit starts the stack, which then never falls off.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The permanent combo counter is the Xoris identity — it sidesteps the usual combo management entirely.',
+          'Note: using the Xoris during the Orphix boss fight prevents the Orphix timer from advancing properly; DE has patched some interactions but check for current status.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Glaive/CrpGlaive/CrpGlaiveWeapon',
+    ],
+    note: {
+      tldr: 'Falcor — a Corpus Energy glaive; 12%/34% status with Electricity damage and the throw-and-return mechanic.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '12% crit, 34% status — status-dominant Electricity glaive.',
+          'Throw-and-return mechanic identical to standard glaives; the Electricity status procs on each hit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'At 34% status each throw chains status procs reliably; useful as a status-spread tool in the glaive slot.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Melee/Glaives/PunctureGlaive/PunctureGlaiveWeapon',
+    ],
+    note: {
+      tldr: 'Cerata — an Infested glaive with 15%/30% status and innate Toxin; each throw trails toxic gas behind it.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '15% crit, 30% status; Toxin-infused glaive.',
+          'Leaving a Toxin gas trail along the flight path; enemies the disc passes through are affected by the trail even if not directly hit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The trail makes it effective for Toxin proc stacking against Corpus (bypasses shields).',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrnBoomerang/GrnBoomerang',
+      '/Lotus/Weapons/Grineer/Melee/GrnBoomerang/HalikarWraithWeapon',
+    ],
+    note: {
+      tldr: 'Halikar / Halikar Wraith — a Grineer boomerang-glaive; alt-throw triggers a Disarm proc that strips weapons from enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Throw mechanic like the standard glaive, but the Halikar has a unique Disarm ability.',
+          'Throw at a target while aiming precisely at them and the hit can trigger a Disarm proc — removing their weapon temporarily.',
+          'Halikar Wraith: 19% crit, 35% status.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The Disarm is most valuable against Eximus units or heavy Gunners whose weapons deal most of their threat.',
+          'Wraith version is the endgame choice; the 35% status also makes it a viable proc glaive.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Infested/Melee/InfGlaive/PathocystWeapon',
+      '/Lotus/Weapons/Infested/InfestedLich/Melee/CodaPathocyst/CodaPathocyst',
+    ],
+    note: {
+      tldr: 'Pathocyst / Coda Pathocyst — an Infested glaive that plants a tendril on impact, releasing a burst of Infestation that damages nearby enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Pathocyst: 15% crit, 30% status. Coda Pathocyst: 20% crit, 35% status.',
+          'On a successful throw hit, a tentacle sprouts from the impact point and lashes nearby enemies for a burst of Infested damage.',
+          'The tendril is a brief bonus AoE hit, not persistent area denial.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Coda Pathocyst with 35% status procs both the initial throw hit and the tendril burst; double status proc per throw.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Glaives/Zenistar/ZenistarWeapon',
+    ],
+    note: {
+      tldr: 'Zenistar — a Daily Tribute glaive; hold-throw embeds in a surface and creates a persistent fire disc that damages all nearby enemies.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '10% crit, 30% status; glaive type.',
+          'Holding the throw button releases a slow-moving disc that, on impact with a surface, deploys a large rotating fire disc.',
+          'The fire disc deals Heat damage to all enemies nearby and persists for a variable duration based on combo counter.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Higher combo counter = longer disc duration; keep your combo up before deploying for maximum uptime.',
+          'Place it on a defense objective or doorway for nearly automatic area denial; combine with a long-range weapon to stay back.',
+          'Obtainable only from Daily Tribute milestones.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
+  // ── Melee — whips ──────────────────────────────────────────────────────────
+  {
+    keys: [
+      '/Lotus/Weapons/Grineer/Melee/GrineerWhip/GrineerWhip',
+    ],
+    note: {
+      tldr: 'Atterax — a Grineer bladed chain whip; extremely high crit (25%) and wide reaching combos.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '25% crit, 20% status — hybrid, leaning crit. Whip stances have very long reach.',
+          'The chain-and-blade design means the hitbox extends far in front; effective for hitting enemies beyond normal melee range.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Blood Rush + Atterax at 25% crit reaches reliable orange/red crits in whip stances that sweep groups at long range.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Whip/Lecta/LectaWhipWeapon',
+      '/Lotus/Weapons/Syndicates/PerrinSequence/Melee/PSLecta',
+    ],
+    note: {
+      tldr: 'Lecta / Secura Lecta — a Corpus energy whip with innate Electricity; Secura Lecta adds the Perrin Sequence Entropy proc.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Lecta: 5% crit, 25% status — innate Electricity; low crit, status-focus.',
+          'Secura Lecta: 15% crit, 30% status + Perrin Sequence Entropy proc (credits on fill).',
+          'Whip stances.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Secura Lecta is the endgame version; the Entropy proc passively generates Credits on the syndicate meter fill.',
+          'Lecta is known for appearing in the Chains of Harrow questline.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Whip/Scoliac/ScoliacWhip',
+    ],
+    note: {
+      tldr: "Scoliac — Nidus's signature whip; innate Toxin, 13%/29% hybrid, and slam attacks spawn Infested crawlers.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '13% crit, 29% status; innate Toxin damage.',
+          'Slam attacks on kill spawn Infested Crawlers that fight for you briefly.',
+          "Nidus's signature — gains bonus stats in his hands; his Infested-summoning kit pairs naturally with the crawler spawns.",
+        ]},
+        { heading: 'Interactions', points: [
+          'The Crawler spawns are aesthetic/minor utility; the innate Toxin and 29% status are the practical build hooks.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Corpus/Melee/Whips/CrpShockGrip/CrpShockGripWhipWeapon',
+    ],
+    note: {
+      tldr: 'Galvacord — a Corpus electric whip; 12% crit and 30% status with innate Electricity and a shocking slam.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '12% crit, 30% status; innate Electricity. Slam attacks release a radial electric burst.',
+          'Whip stances extend reach further than most melee; the electric burst on slam hits surrounding enemies.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Magnetic combo (Electricity + Cold) is very effective against Corpus shields; the innate Electricity provides the base.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Whip/Korumm/KorummWhip',
+    ],
+    note: {
+      tldr: 'Korumm — a Tenno blade-whip; 24%/30% hybrid with the longest reach of the whip class.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '24% crit, 30% status; one of the longer effective-range whips.',
+        ]},
+        { heading: 'Interactions', points: [
+          'The combination of hybrid stats and long reach makes it effective for both status stacking and crit builds at range.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Swords/StalkerMios/StalkerMiosWeapon',
+      '/Lotus/Weapons/Tenno/Melee/Swords/StalkerMios/OperationsLaceraWeapon',
+    ],
+    note: {
+      tldr: 'Lacera / Ceti Lacera — an electric whip-sword; 5%/45% status on base Lacera makes it the highest natural status melee weapon.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          'Lacera: 5% crit, 45% status — entirely a status weapon; 45% status is the highest base on any melee.',
+          'Ceti Lacera: 20% crit, 40% status — the Nightwave reward variant that elevates crit to actually useful levels.',
+          'Whip moveset with extended reach; innate Electricity on every hit.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Lacera at 45% status almost guarantees a proc on every hit; any elemental combination will stack procs extremely fast.',
+          'Ceti Lacera brings the crit to 20% — making Blood Rush viable while retaining the extreme status rate.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Whip/Verdilac/VerdilacWeapon',
+    ],
+    note: {
+      tldr: "Verdilac — Stalker's signature whip; hits reset the combo counter to max, trivialising Blood Rush scaling.",
+      sections: [
+        { heading: 'Mechanics', points: [
+          '30% crit, 21% status; whip moveset.',
+          "Unique mechanic: landing a hit instantly resets the combo to its MAXIMUM value rather than decaying it.",
+          'This means the first hit after any break already grants the full Blood Rush bonus.',
+        ]},
+        { heading: 'Interactions', points: [
+          'Blood Rush scaling requires maintaining high combo counter; Verdilac removes this requirement entirely — you immediately have max combo on every hit.',
+          'Obtained from the Stalker Boss fight encounter in missions.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+  {
+    keys: [
+      '/Lotus/Weapons/Tenno/Melee/Whip/Spinnerex/SpinnerexWeapon',
+    ],
+    note: {
+      tldr: 'Spinnerex — a Coda Technocyte whip from 1999; 16%/40% status, one of the highest status whips.',
+      sections: [
+        { heading: 'Mechanics', points: [
+          '16% crit, 40% status — status-dominant whip from the 1999 content.',
+        ]},
+        { heading: 'Interactions', points: [
+          'At 40% status on a whip with long reach, status procs land on every enemy in a sweep; strong for Condition Overload scaling.',
+        ]},
+      ],
+      status: 'beta',
+    },
+  },
+
 ];
 
 /** uniqueName → authored Cephalon's Notes (single-variant + shared, merged). */
