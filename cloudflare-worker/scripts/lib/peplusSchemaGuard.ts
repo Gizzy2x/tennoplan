@@ -88,6 +88,8 @@ const SCHEMA: readonly ExportSpec[] = [
       o('description'), o('magazineSize'), o('reloadTime'), o('accuracy'),
       o('multishot'), o('omegaAttenuation'), o('masteryReq'), o('trigger'), o('noise'),
       o('behaviours'), o('codexSecret'), o('tradable'), o('variantType'),
+      o('slamRadius'), o('slideAttack'), o('heavyAttackDamage'), o('heavySlamAttack'),
+      o('heavySlamRadialDamage'), o('heavySlamRadius'), o('windUp'),
     ],
     knownKeys: [
       'accuracy', 'additionalItems', 'bayonetOtherWeaponType', 'behaviours',

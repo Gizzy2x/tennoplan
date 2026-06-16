@@ -752,6 +752,20 @@ export interface ItemStats {
   followThrough?:     number;
   slamAttack?:        number;
   slamRadialDamage?:  number;
+  /** Slam shockwave radius in metres. (PE+ slamRadius) */
+  slamRadius?:        number;
+  /** Sliding-attack damage. (PE+ slideAttack) */
+  slideAttack?:       number;
+  /** Heavy (charged) attack damage. (PE+ heavyAttackDamage) */
+  heavyAttackDamage?: number;
+  /** Heavy slam direct damage. (PE+ heavySlamAttack) */
+  heavySlamAttack?:   number;
+  /** Heavy slam radial/AoE damage. (PE+ heavySlamRadialDamage) */
+  heavySlamRadialDamage?: number;
+  /** Heavy slam shockwave radius in metres. (PE+ heavySlamRadius) */
+  heavySlamRadius?:   number;
+  /** Heavy-attack wind-up time in seconds (lower = faster). (PE+ windUp) */
+  windUp?:            number;
   [key: string]:   number | undefined;   // extensible for future stats
 }
 
