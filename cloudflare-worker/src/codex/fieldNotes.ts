@@ -5196,7 +5196,7 @@ const WEAPON_NOTES: SharedNote[] = [
       tldr: 'The Strun family — the original Tenno pump-action shotgun, from the MR0 starter through Wraith to Prime; same semi-auto wide-cone identity throughout.',
       sections: [
         { heading: 'Mechanics', points: [
-          'Fires 8 pellets per shot in a wide cone; effective inside ~15m, falls off sharply at range.',
+          'Fires a wide cone of pellets per shot; most effective at close range and falls off at distance (see the card for pellet count and falloff).',
           'Semi-auto pacing encourages deliberate shots — each pull commits to a full burst.',
           'Strun Wraith bumps stats meaningfully; Strun Prime raises crit to 24%, opening Hunter Munitions builds.',
         ]},
@@ -5214,7 +5214,7 @@ const WEAPON_NOTES: SharedNote[] = [
       tldr: 'The Hek — high single-shot damage, relatively tight spread for a shotgun; punishes at close-to-mid range.',
       sections: [
         { heading: 'Mechanics', points: [
-          'Fires 7 pellets with tighter spread than most shotguns — more effective at range than wider-pattern competitors.',
+          'Fires a tighter pellet spread than most shotguns — more effective at range than wider-pattern competitors.',
           'Low base crit (10%) and status (11%); strength is raw damage per pellet, not stat synergy.',
           'Semi-auto and ammo-efficient — each burst kills at most MR ranges, so fewer shots are needed per encounter.',
         ]},
@@ -5232,7 +5232,7 @@ const WEAPON_NOTES: SharedNote[] = [
       tldr: 'Vaykor Hek — same tight-spread semi-auto as the Hek but 25% crit, a syndicate Justice burst, and the Scattered Justice augment.',
       sections: [
         { heading: 'Mechanics', points: [
-          'Retains the Hek’s 7-pellet tight-spread identity but raises crit to 25%, making Hunter Munitions builds genuinely effective.',
+          'Retains the Hek’s tight-spread identity but with much higher crit, making Hunter Munitions builds genuinely effective.',
           'Steel Meridian’s Justice proc releases a radial damage burst when the syndicate meter fills — a passive bonus on sustained use.',
         ]},
         { heading: 'Interactions', points: [
@@ -5357,7 +5357,7 @@ const WEAPON_NOTES: SharedNote[] = [
       tldr: 'The Corinth — a high-crit semi-auto shotgun with an alt-fire grenade that detonates in mid-air, not on impact.',
       sections: [
         { heading: 'Mechanics', points: [
-          'Primary fire: semi-auto, 7 pellets, 30% crit — one of the stronger crit primaries in the shotgun class.',
+          'Primary fire: a high-crit semi-auto pellet spread — one of the stronger crit primaries in the shotgun class.',
           'Alt-fire launches a timed airburst grenade — it detonates at a set range mid-air, not on surface contact, for Blast AoE above or behind cover.',
           'The grenade’s fixed timer means leading the arc to the right distance takes practice, but the airburst clears groups reliably once learned.',
         ]},
@@ -5398,12 +5398,12 @@ const WEAPON_NOTES: SharedNote[] = [
       '/Lotus/Weapons/Grineer/KuvaLich/LongGuns/Kohm/KuvaKohm',
     ],
     note: {
-      tldr: 'The Kohm — spinning-barrel shotgun that ramps from 1 projectile per shot to ~7 as you hold the trigger; enormous status output at full spin.',
+      tldr: 'The Kohm — a spinning-barrel shotgun that fires a single pellet on the first shot, then ramps up its pellet count the longer you hold the trigger. The card stats are the base, single-pellet profile.',
       sections: [
         { heading: 'Mechanics', points: [
-          'Starts firing a single projectile; sustained fire spins the barrels up to ~7 projectiles per shot — the first second of fire is weak, the rest is a storm.',
-          'At full spin with Multishot mods, the per-second projectile count becomes massive, spreading status types across groups with minimal precision needed.',
-          'Very ammo-hungry at full spin — fire rate multiplies ammo drain faster than the display implies.',
+          'It "spools up": the first shot fires one pellet, and each consecutive shot adds more pellets until it reaches its fully-spooled output — so the opening shot is weak and sustained fire is the payoff.',
+          'The status chance shown on the card is the per-pellet base. Because a fully-spooled shot throws many pellets at once, each with its own status roll, the effective status output per trigger-pull is far higher than the single number suggests — this is why the Kohm is famous as a status weapon despite a low listed value.',
+          'It is very ammo-hungry once spooled — a fully-spooled shot consumes several rounds at once, so reserves drain faster than the fire rate implies.',
         ]},
         { heading: 'Interactions', points: [
           'Kuva Kohm adds a Lich progenitor element and improved stats — already the premier sustained-status primary in many builds, the bonus element adds flexibility.',
